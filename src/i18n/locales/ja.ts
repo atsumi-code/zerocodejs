@@ -101,7 +101,7 @@ export default {
     saveButton: '保存する'
   },
   partsManager: {
-    createType: '新規タイプ作成',
+    createType: 'タイプ追加',
     editType: 'タイプ編集',
     typeName: 'タイプ名',
     typeDescription: '説明',
