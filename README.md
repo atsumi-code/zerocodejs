@@ -11,6 +11,9 @@
 > - **Discussion**: [../../discussions](../../discussions)（運用していない場合は Issue でOK）
 > - **Contributing**: [./CONTRIBUTING.md](./CONTRIBUTING.md)
 
+> ⭐ **スターをお願いします**  
+> このプロジェクトに共感していただけたら、[GitHub でスター](https://github.com/atsumi-code/zerocode)をいただけると励みになります。
+
 ## 特徴
 
 - **フレームワーク非依存**: Web Componentsとして実装されているため、どのフレームワークでも使用可能
