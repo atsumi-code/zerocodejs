@@ -1,6 +1,6 @@
 {
   "name": "zerocodejs",
-  "version": "1.0.1-beta.0",
+  "version": "1.0.1-beta.1",
   "description": "ZeroCode.js - フレームワーク非依存のWeb ComponentsのCMSフロントエンドライブラリ",
   "type": "module",
   "main": "./dist/zerocode.umd.js",
