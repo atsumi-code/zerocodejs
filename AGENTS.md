@@ -950,17 +950,17 @@ const expensiveValue = computed(() => {
 
 ### 主要なソースファイル
 
-- [テンプレートプロセッサー](/Users/m.atsumi/dev-zero-code/src/core/utils/template-processor.ts) - テンプレート記法の処理
-- [コンポーネント初期化](/Users/m.atsumi/dev-zero-code/src/core/utils/component-initializer.ts) - フィールドの自動初期化
-- [ZeroCodeCMS](/Users/m.atsumi/dev-zero-code/src/components/ZeroCodeCMS.vue) - ユーザー用管理画面
-- [ZeroCodeEditor](/Users/m.atsumi/dev-zero-code/src/components/ZeroCodeEditor.vue) - エンジニア用管理画面
-- [データ管理](/Users/m.atsumi/dev-zero-code/src/core/composables/useZeroCodeData.ts) - データの読み込み・取得・設定
+- [テンプレートプロセッサー](./src/core/utils/template-processor.ts) - テンプレート記法の処理
+- [コンポーネント初期化](./src/core/utils/component-initializer.ts) - フィールドの自動初期化
+- [ZeroCodeCMS](./src/components/ZeroCodeCMS.vue) - ユーザー用管理画面
+- [ZeroCodeEditor](./src/components/ZeroCodeEditor.vue) - エンジニア用管理画面
+- [データ管理](./src/core/composables/useZeroCodeData.ts) - データの読み込み・取得・設定
 
 ### ドキュメント
 
-- [TODO.md](/Users/m.atsumi/dev-zero-code/TODO.md) - 実装タスク一覧
-- [技術仕様書](/Users/m.atsumi/dev-zero-code/TECHNICAL_SPECIFICATION.md) - 外部向け技術仕様
-- [ドキュメント](/Users/m.atsumi/dev-zero-code/docs.html) - ユーザー向けドキュメント
+- [TODO.md](./TODO.md) - 実装タスク一覧
+- [技術仕様書](./TECHNICAL_SPECIFICATION.md) - 外部向け技術仕様
+- [ドキュメント](./docs.html) - ユーザー向けドキュメント
 
 ---
 

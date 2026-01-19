@@ -541,11 +541,11 @@
 
 ## 参考リンク
 
-- [プロジェクトルート](/Users/m.atsumi/dev-zero-code)
-- [テンプレートプロセッサー](/Users/m.atsumi/dev-zero-code/src/core/utils/template-processor.ts)
-- [ZeroCodeCMS](/Users/m.atsumi/dev-zero-code/src/components/ZeroCodeCMS.vue)
-- [ZeroCodeEditor](/Users/m.atsumi/dev-zero-code/src/components/ZeroCodeEditor.vue)
-- [共通JS](/Users/m.atsumi/dev-zero-code/public/js/common.js)
+- [プロジェクトルート](.)
+- [テンプレートプロセッサー](./src/core/utils/template-processor.ts)
+- [ZeroCodeCMS](./src/components/ZeroCodeCMS.vue)
+- [ZeroCodeEditor](./src/components/ZeroCodeEditor.vue)
+- [共通JS](./public/js/common.js)
 
 ---
 
