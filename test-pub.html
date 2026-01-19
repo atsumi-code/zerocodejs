@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode Pub - Test</title>
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/page.css" />
+    <!-- サンプルデータ用CSS -->
+    <link rel="stylesheet" href="./css/sample.css" />
+  </head>
+  <body>
+    <div class="l-header l-header--pub">
+      <h1>ZeroCode Pub - 公開用テスト（SSR）</h1>
+      <p>renderToHtml()を使用したサーバーサイドレンダリング</p>
+    </div>
+
+    <div class="l-container">
+      <div id="cms-content"></div>
+    </div>
+
+    <div class="l-footer l-footer--pub">
+      <h1>ZeroCode Pub - 公開用テスト（SSR）</h1>
+      <p>renderToHtml()を使用したサーバーサイドレンダリング</p>
+    </div>
+
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <!-- 共通JavaScript -->
+    <script src="./js/common.js"></script>
+    <!-- アコーディオン機能 -->
+    <script src="./js/accordion.js"></script>
+    <!-- メインスクリプト -->
+    <script type="module" src="/src/index.ts"></script>
+
+    <script type="module">
+      import { renderToHtml } from '/src/index.ts';
+
+      function init() {
+        const rawData = ZeroCodeCommon.StorageManager.loadData('test-cms');
+
+        if (rawData.page.length === 0) {
+          ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
+          const updatedData = ZeroCodeCommon.StorageManager.loadData('test-cms');
+          Object.assign(rawData, updatedData);
+        }
+
+        const sampleData = {
+          page: rawData.page,
+          css: {
+            common: rawData.cssCommon || '',
+            individual: rawData.cssIndividual || '',
+            special: rawData.cssSpecial || ''
+          },
+          parts: {
+            common: rawData.typesCommon || [],
+            individual: rawData.typesIndividual || [],
+            special: rawData.typesSpecial || []
+          },
+          images: {
+            common: rawData.imagesCommon || [],
+            individual: rawData.imagesIndividual || [],
+            special: rawData.imagesSpecial || []
+          }
+        };
+
+        try {
+          const html = renderToHtml(sampleData, {
+            enableEditorAttributes: false
+          });
+          
+          // CSSを<style>タグとして追加（共通 → 個別 → 特別の順）
+          let styleTags = '';
+          if (sampleData.css.common) {
+            styleTags += `<style id="zcode-css-style-common" data-zcode-css-category="common">${sampleData.css.common}</style>`;
+          }
+          if (sampleData.css.individual) {
+            styleTags += `<style id="zcode-css-style-individual" data-zcode-css-category="individual">${sampleData.css.individual}</style>`;
+          }
+          if (sampleData.css.special) {
+            styleTags += `<style id="zcode-css-style-special" data-zcode-css-category="special">${sampleData.css.special}</style>`;
+          }
+          
+          document.getElementById('cms-content').innerHTML = styleTags + html;
+
+          const event = new CustomEvent('cms-content-updated');
+          window.dispatchEvent(event);
+          if (typeof jQuery !== 'undefined') {
+            jQuery(document).trigger('cms-content-updated');
+          }
+        } catch (error) {
+          console.error('Rendering error:', error);
+          document.getElementById('cms-content').innerHTML =
+            `<div style="color: red; padding: 20px;">エラー: ${error.message}</div>`;
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+src/
+tests/
+.github/
+.vscode/
+*.spec.ts
+*.test.ts
+vitest.config.ts
+.eslintrc.cjs
+.prettierrc
+.editorconfig
+.env.example
+index.html
+coverage/
+node_modules/
+

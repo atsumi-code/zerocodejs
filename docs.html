@@ -1,0 +1,2295 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js - ドキュメント</title>
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- サイト共通CSS（ヘッダー・フッター） -->
+    <link rel="stylesheet" href="./css/site-common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/docs.css" />
+  </head>
+  <body>
+    <!-- ヘッダー（共通） -->
+    <div id="header-placeholder"></div>
+
+    <div class="docs-container">
+      <!-- サイドバー -->
+      <aside class="docs-sidebar">
+        <!-- 検索ボックス -->
+        <div class="docs-search-section">
+          <input
+            type="text"
+            id="docs-search-input"
+            class="docs-search-input"
+            placeholder="🔍 検索..."
+            autocomplete="off"
+          />
+          <div id="docs-search-results" class="docs-search-results"></div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">フロントエンド</div>
+          <div class="docs-nav-links">
+            <a href="#quickstart" class="docs-nav-link">クイックスタート</a>
+            <div class="docs-nav-sub">
+              <a href="#installation" class="docs-nav-link-sub">インストール</a>
+              <a href="#basic-usage" class="docs-nav-link-sub">基本的な使用例</a>
+            </div>
+            <a href="#multiple-instances" class="docs-nav-link">複数インスタンス対応</a>
+            <a href="#shadow-dom" class="docs-nav-link">Shadow DOM</a>
+            <a href="#template-syntax" class="docs-nav-link">テンプレート記法</a>
+            <div class="docs-nav-sub">
+              <a href="#field-syntax" class="docs-nav-link-sub">フィールド記法</a>
+              <div class="docs-nav-sub-sub">
+                <a href="#text-field" class="docs-nav-link-sub-sub">テキストフィールド</a>
+                <a href="#textarea-field" class="docs-nav-link-sub-sub">テキストエリア</a>
+                <a href="#rich-text-field" class="docs-nav-link-sub-sub">リッチテキスト</a>
+                <a href="#image-field" class="docs-nav-link-sub-sub">画像フィールド</a>
+                <a href="#grouped-fields" class="docs-nav-link-sub-sub">グループ化</a>
+                <a href="#optional-fields" class="docs-nav-link-sub-sub">オプショナル</a>
+                <a href="#validation-syntax" class="docs-nav-link-sub-sub">バリデーション</a>
+              </div>
+              <a href="#backend-data" class="docs-nav-link-sub">バックエンドデータ</a>
+              <a href="#z-for-loop" class="docs-nav-link-sub">z-for ループ</a>
+              <a href="#choice-syntax" class="docs-nav-link-sub">選択肢記法</a>
+              <a href="#conditional-syntax" class="docs-nav-link-sub">条件分岐</a>
+              <div class="docs-nav-sub-sub">
+                <a href="#z-tag-syntax" class="docs-nav-link-sub-sub">z-tag 属性</a>
+                <a href="#z-empty-syntax" class="docs-nav-link-sub-sub">z-empty 属性</a>
+              </div>
+              <a href="#slot-syntax" class="docs-nav-link-sub">スロット</a>
+            </div>
+            <a href="#editing-modes" class="docs-nav-link">編集モード</a>
+            <a href="#parts-management" class="docs-nav-link">パーツ管理</a>
+            <div class="docs-nav-sub">
+              <a href="#types-and-parts" class="docs-nav-link-sub">タイプとパーツ</a>
+              <a href="#common-and-individual-parts" class="docs-nav-link-sub">共通パーツと個別パーツ</a>
+              <a href="#parts-management-features" class="docs-nav-link-sub">パーツ管理機能</a>
+              <a href="#part-template-structure" class="docs-nav-link-sub">パーツテンプレートの構造</a>
+              <a href="#template-field-initialization" class="docs-nav-link-sub">テンプレート記法の後から追加</a>
+            </div>
+            <a href="#images-management" class="docs-nav-link">画像管理</a>
+            <a href="#configuration" class="docs-nav-link">設定オプション</a>
+            <a href="#api-reference" class="docs-nav-link">APIリファレンス</a>
+            <a href="#events" class="docs-nav-link">イベント</a>
+            <a href="#methods" class="docs-nav-link">メソッド</a>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">バックエンド</div>
+          <div class="docs-nav-links">
+            <a href="#data-structure" class="docs-nav-link">データ構造</a>
+            <a href="#database-design" class="docs-nav-link">データベース構成</a>
+            <a href="#save-request" class="docs-nav-link">保存リクエスト</a>
+            <div class="docs-nav-sub">
+              <a href="#save-request-handler" class="docs-nav-link-sub">イベントの受け取り方</a>
+              <a href="#save-request-image-upload" class="docs-nav-link-sub">画像のアップロード</a>
+              <a href="#save-request-validation" class="docs-nav-link-sub">バリデーションエラー</a>
+            </div>
+            <a href="#security" class="docs-nav-link">セキュリティ</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- メインコンテンツ -->
+      <main class="docs-content">
+        <!-- パンくずリスト -->
+        <nav class="docs-breadcrumb" id="docs-breadcrumb">
+          <a href="#quickstart">ホーム</a>
+          <span class="docs-breadcrumb-separator">></span>
+          <span id="docs-breadcrumb-current">はじめに</span>
+        </nav>
+
+        <h1>はじめに</h1>
+        <p>
+          ZeroCode.jsは、フレームワーク非依存のWeb
+          ComponentsベースのCMSエディターライブラリです。Vue.jsで実装されており、カスタムHTMLテンプレート構文を使用して動的なコンテンツ管理を提供します。
+        </p>
+
+        <h2 id="quickstart">クイックスタート</h2>
+        <p>ZeroCode.jsをすぐに使い始めるための基本的な手順です。</p>
+
+        <h3 id="installation">インストール</h3>
+        <pre><code>npm install zerocodejs</code></pre>
+        <p>
+          ZeroCode.jsは内部でVue 3を使用しています。npm 7以降では、peer dependenciesが自動的にインストールされるため、<code>npm install zerocodejs</code>だけでVueも一緒にインストールされます。
+        </p>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            npm 6以前を使用している場合は、明示的に<code>npm install zerocodejs vue</code>を実行してください。
+          </p>
+        </div>
+
+        <h3 id="basic-usage">基本的な使用例</h3>
+        <p>HTMLでの基本的な使用例：</p>
+        <pre><code>&lt;zcode-cms id="cms"&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+  &lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;
+&lt;/zcode-cms&gt;
+
+&lt;script type="module"&gt;
+  import 'zerocodejs';
+  const cms = document.getElementById('cms');
+  cms.setAttribute('page', JSON.stringify([]));
+  cms.setAttribute('parts-common', JSON.stringify([]));
+  cms.setAttribute('parts-individual', JSON.stringify([]));
+  cms.setAttribute('parts-special', JSON.stringify([]));
+  cms.setAttribute('images-common', JSON.stringify([]));
+  cms.setAttribute('images-individual', JSON.stringify([]));
+  cms.setAttribute('images-special', JSON.stringify([]));
+&lt;/script&gt;</code></pre>
+
+        <p>エンジニア用管理画面（ZeroCodeEditor）の使用例：</p>
+        <pre><code>&lt;zcode-editor id="editor"&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+  &lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;
+&lt;/zcode-editor&gt;</code></pre>
+
+        <h3 id="multiple-instances">複数インスタンス対応</h3>
+        <p>
+          ZeroCode.jsは、同じページに複数の<code>zcode-cms</code>や<code>zcode-editor</code>インスタンスを配置することができます。各インスタンスは独立したデータを管理し、互いに影響を与えません。
+        </p>
+        <pre><code>&lt;!-- インスタンス1 --&gt;
+&lt;zcode-cms id="cms-1"&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+&lt;/zcode-cms&gt;
+
+&lt;!-- インスタンス2 --&gt;
+&lt;zcode-cms id="cms-2"&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+&lt;/zcode-cms&gt;
+
+&lt;script type="module"&gt;
+  import 'zerocodejs';
+
+  // 各インスタンスに独立したデータを設定
+  const cms1 = document.getElementById('cms-1');
+  cms1.setAttribute('page', JSON.stringify([...]));
+  cms1.setAttribute('parts-common', JSON.stringify([...]));
+
+  const cms2 = document.getElementById('cms-2');
+  cms2.setAttribute('page', JSON.stringify([...]));
+  cms2.setAttribute('parts-common', JSON.stringify([...]));
+&lt;/script&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>独立したデータ管理</strong>:
+            各インスタンスは<code>id</code>属性で識別され、独立したデータを管理します
+          </li>
+          <li>
+            <strong>セッションストレージの分離</strong>:
+            セッションストレージはインスタンスIDごとに分離され、データが混在することはありません
+          </li>
+          <li>
+            <strong>イベントリスナーの分離</strong>:
+            各インスタンスのイベントリスナーは独立して動作します
+          </li>
+          <li>
+            <strong>IDの自動生成</strong>:
+            <code>id</code>属性が指定されていない場合、自動的に一意のIDが生成されます
+          </li>
+        </ul>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            複数インスタンスを使用する場合は、各インスタンスに一意の<code>id</code>属性を指定することを推奨します。これにより、データの管理が明確になり、デバッグも容易になります。
+          </p>
+        </div>
+
+        <h3 id="cdn-usage">CDN経由で使用する場合</h3>
+        <p>CDN経由で使用する場合は、Vueを先に読み込む必要があります。</p>
+        <pre><code>&lt;!-- Vueを先に読み込む --&gt;
+&lt;script src="https://unpkg.com/vue@3/dist/vue.global.js"&gt;&lt;/script&gt;
+&lt;!-- ZeroCode.jsを読み込む --&gt;
+&lt;script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/style.css"&gt;
+
+&lt;zcode-cms id="cms"&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+&lt;/zcode-cms&gt;
+
+&lt;script&gt;
+  const cms = document.getElementById('cms');
+  cms.setAttribute('page', JSON.stringify([]));
+  cms.setAttribute('parts-common', JSON.stringify([]));
+  cms.setAttribute('parts-individual', JSON.stringify([]));
+  cms.setAttribute('parts-special', JSON.stringify([]));
+  cms.setAttribute('images-common', JSON.stringify([]));
+  cms.setAttribute('images-individual', JSON.stringify([]));
+  cms.setAttribute('images-special', JSON.stringify([]));
+&lt;/script&gt;</code></pre>
+
+        <h2 id="shadow-dom">Shadow DOM</h2>
+        <p>
+          ZeroCode.jsは、デフォルトでShadow
+          DOMを使用してCSS/JSを完全に分離します。これにより、呼び出し側のCSSやJavaScriptとの競合を防ぎ、副作用のない安全な統合を実現します。
+        </p>
+
+        <h3 id="shadow-dom-benefits">Shadow DOMの利点</h3>
+        <ul>
+          <li>
+            <strong>CSS分離</strong>: ZeroCode.jsのスタイルが呼び出し側のCSSに影響を与えません
+          </li>
+          <li>
+            <strong>JavaScript分離</strong>: Shadow
+            DOM内のスクリプトが外部のJavaScriptと競合しません
+          </li>
+          <li><strong>セキュリティ</strong>: 外部からのスタイルやスクリプトの干渉を防ぎます</li>
+        </ul>
+
+        <h3 id="shadow-dom-disable">Shadow DOMの無効化</h3>
+        <p>
+          <code>use-shadow-dom="false"</code>属性を指定することで、Shadow DOMを無効化できます（Light
+          DOMモード）。
+        </p>
+        <pre><code>&lt;zcode-cms id="cms" use-shadow-dom="false"&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+&lt;/zcode-cms&gt;</code></pre>
+
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong> Shadow
+            DOMを無効化すると、CSSやJavaScriptの競合が発生する可能性があります。通常はShadow
+            DOMを使用することを推奨します。
+          </p>
+        </div>
+
+        <h3 id="shadow-dom-jquery">Shadow DOM内でのjQuery使用</h3>
+        <p>
+          ZeroCode.jsは、Shadow
+          DOM内でjQueryを使用する場合に自動的に拡張を行います。これにより、Shadow
+          DOM内の要素に対してjQueryのセレクターやイベントハンドラーが正常に動作します。
+        </p>
+
+        <h2 id="template-syntax">テンプレート記法</h2>
+        <p>ZeroCode.jsでは、カスタムHTMLテンプレート構文を使用して動的なコンテンツを定義します。</p>
+
+        <h3 id="field-syntax">フィールド記法</h3>
+
+        <h4 id="text-field">テキストフィールド</h4>
+        <pre><code>{$fieldName:defaultValue}</code></pre>
+        <p>単一行のテキスト入力フィールドとして表示されます。</p>
+        <pre><code>&lt;h1&gt;{$title:タイトル}&lt;/h1&gt;</code></pre>
+
+        <h4 id="textarea-field">テキストエリアフィールド</h4>
+        <pre><code>{$fieldName:defaultValue:textarea}</code></pre>
+        <p>複数行のテキスト入力フィールドとして表示されます。</p>
+        <pre><code>&lt;p&gt;{$description:説明文:textarea}&lt;/p&gt;</code></pre>
+
+        <h4 id="rich-text-field">リッチテキストフィールド</h4>
+        <pre><code>{$fieldName:defaultValue:rich}</code></pre>
+        <p>
+          リッチテキストエディター（TipTap）として表示されます。HTMLタグを含むテキストを編集できます。
+        </p>
+        <pre><code>&lt;div&gt;{$content:本文:rich}&lt;/div&gt;</code></pre>
+
+        <h4 id="image-field">画像フィールド</h4>
+        <pre><code>{$fieldName:defaultValue:image}</code></pre>
+        <p>画像選択フィールドとして表示されます。画像管理から画像を選択できます。</p>
+        <pre><code>&lt;img src="{$image:default.jpg:image}" alt="画像" /&gt;</code></pre>
+
+        <h4 id="grouped-fields">グループ化されたフィールド</h4>
+        <p>フィールド名にドット（<code>.</code>）を使用して、フィールドをグループ化できます。</p>
+        <pre><code>{$fieldName.groupName:defaultValue}</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div&gt;
+  &lt;h2&gt;{$hero.title:ヒーロータイトル}&lt;/h2&gt;
+  &lt;p&gt;{$hero.description:ヒーロー説明}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p>
+          グループ化されたフィールドは、編集パネルでグループとして表示され、整理された編集が可能です。
+        </p>
+
+        <h4 id="optional-fields">オプショナルフィールド（空入力制御）</h4>
+        <p>
+          フィールド名の後に<code>?</code>を追加することで、オプショナルフィールドとして定義できます。ユーザーが何も入力しなかった場合、フィールドの値は<code>undefined</code>になります。
+        </p>
+        <pre><code>{$fieldName?:defaultValue}
+{$fieldName?:defaultValue:rich}
+{$fieldName?:defaultValue:image}
+{$fieldName.groupName?:defaultValue}</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div class="section"&gt;
+  &lt;div class="section__title"&gt;{$title:タイトル（必須）}&lt;/div&gt;
+  &lt;div class="section__subtitle"&gt;{$subtitle?:サブタイトル（オプション）}&lt;/div&gt;
+  &lt;img src="{$optional_image?:default.jpg:image}" alt="{$optional_alt?:画像の説明}" /&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            ユーザーが何も入力しなかった場合、フィールドの値は<code>undefined</code>になります（デフォルト値は使用されません）
+          </li>
+          <li>編集パネルでは、オプショナルフィールドは空欄として表示されます</li>
+          <li>
+            属性値がオプショナルフィールドのみで構成されていて、値が<code>undefined</code>（または空）の場合、その属性自体がHTMLから削除されます
+          </li>
+          <li>
+            基本動作では、オプショナルフィールドが空の場合でも親要素（タグ）は残ります（例: <code>&lt;p&gt;&lt;/p&gt;</code>）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください（詳細は「条件分岐」セクションの「z-empty 属性」を参照）
+          </li>
+        </ul>
+        <p>例：</p>
+        <pre><code>&lt;!-- テンプレート --&gt;
+&lt;img src="{$optional_image?:default.jpg:image}" alt="{$optional_alt?:画像の説明}" /&gt;
+
+&lt;!-- optional_imageとoptional_altが両方undefinedの場合 --&gt;
+&lt;img /&gt;
+
+&lt;!-- optional_imageに値がある場合 --&gt;
+&lt;img src="image.jpg" alt="画像の説明" /&gt;</code></pre>
+        <p><strong>親要素を削除したい場合：</strong></p>
+        <p>
+          オプショナルフィールドが空の場合、基本動作では親要素（タグ）が残ります（例: <code>&lt;p&gt;&lt;/p&gt;</code>）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください。
+        </p>
+        <pre><code>&lt;!-- 基本動作：空タグが残る --&gt;
+&lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;p&gt;&lt;/p&gt;が残る --&gt;
+
+&lt;!-- z-emptyを使用：親要素を削除 --&gt;
+&lt;div z-empty="$subtitle"&gt;
+  &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;/div&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;div&gt;要素ごと削除される --&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            属性値全体がオプショナルフィールドのみで構成されている場合のみ属性が削除されます。他のテキストが含まれている場合は削除されません。
+          </p>
+        </div>
+        <div class="docs-info">
+          <p>
+            <strong>補足:</strong>
+            <code>z-empty</code>属性の詳細については、「条件分岐」セクションの「z-empty 属性」を参照してください。
+          </p>
+        </div>
+
+        <h4 id="validation-syntax">バリデーション記法</h4>
+        <p>
+          フィールドにバリデーションルールを追加できます。フロントエンドでの同期バリデーションと、バックエンドでの非同期バリデーションの両方をサポートしています。
+        </p>
+        <pre><code>{$fieldName:defaultValue:required}
+{$fieldName:defaultValue:max=100}
+{$fieldName:defaultValue:required:max=50}
+{$fieldName:defaultValue:readonly}
+{$fieldName:defaultValue:disabled}</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div class="form"&gt;
+  &lt;input type="text" name="title" value="{$title:タイトル:required:max=100}" /&gt;
+  &lt;input type="email" name="email" value="{$email:メールアドレス:required}" /&gt;
+  &lt;textarea name="description"&gt;{$description:説明:max=500}&lt;/textarea&gt;
+  &lt;input type="text" name="readonly_field" value="{$readonly_field:読み取り専用:readonly}" /&gt;
+  &lt;input type="text" name="disabled_field" value="{$disabled_field:無効化:disabled}" /&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>バリデーションルール：</strong></p>
+        <ul>
+          <li>
+            <code>:required</code> - 必須フィールド。空の場合はエラーメッセージが表示されます。
+          </li>
+          <li>
+            <code>:max=N</code> -
+            最大文字数制限（Nは数値）。指定した文字数を超えるとエラーメッセージが表示されます。
+          </li>
+          <li>
+            <code>:readonly</code> - 読み取り専用フィールド。編集できませんが、値は送信されます。
+          </li>
+          <li><code>:disabled</code> - 無効化フィールド。編集できず、値も送信されません。</li>
+        </ul>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>フロントエンドバリデーション（同期）:</strong>
+            <code>required</code
+            >と<code>max</code>は、ユーザーが入力中にリアルタイムでチェックされます。エラーがある場合は、フィールドの下にエラーメッセージが表示されます。
+          </li>
+          <li>
+            <strong>バックエンドバリデーション（非同期）:</strong>
+            保存ボタンをクリックすると、<code>save-request</code>イベントが発火します。バックエンドでバリデーションを行い、エラーがある場合は<code>save-result</code>イベントでエラーを返してください。詳細は「保存リクエスト」セクションを参照してください。
+          </li>
+          <li>
+            バリデーションエラーは、編集パネルが開いている場合は該当フィールドに表示され、編集パネルが閉じている場合は画面上部にエラーバナーが表示されます。
+          </li>
+        </ul>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            複雑なバリデーション（メール形式チェック、重複チェックなど）は、バックエンドで実施することを推奨します。フロントエンドでは、<code>required</code>と<code>max</code>のみをサポートしています。
+          </p>
+        </div>
+
+        <h4 id="backend-data">バックエンドデータの参照</h4>
+        <p>
+          バックエンドから渡されたデータをテンプレート内で参照できます。動的URLや共通で使用するデータ（店舗ID、ユーザー情報など）を表示する際に便利です。
+        </p>
+        <pre><code>{@fieldName}
+{@items[0].name}
+{@items.length}
+/shop/{shop_id}/products</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div class="shop-header"&gt;
+  &lt;h1&gt;{@title}&lt;/h1&gt;
+  &lt;a href="{@url}"&gt;店舗詳細&lt;/a&gt;
+  &lt;p&gt;アイテム数: {@items.length}&lt;/p&gt;
+  &lt;p&gt;最初のアイテム: {@items[0].name}&lt;/p&gt;
+  &lt;a href="/shop/{shop_id}/products"&gt;商品一覧&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>基本的なデータ参照: <code>{@fieldName}</code> でバックエンドデータを参照</li>
+          <li>ネストされたオブジェクト: <code>{@user.name}</code> のようにドット記法で参照</li>
+          <li>配列の参照: <code>{@items[0]}</code> で配列の要素を参照</li>
+          <li>配列のlength: <code>{@items.length}</code> で配列の長さを取得</li>
+          <li>URL内プレースホルダー: <code>/shop/{shop_id}/</code> のようにURL内に直接記述可能</li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>&lt;!-- Web Componentにバックエンドデータを渡す --&gt;
+&lt;zcode-cms
+  backend-data='{"title":"A店舗","url":"/shop/123/","shop_id":"123","items":[{"name":"商品1"}]}'
+&gt;
+  &lt;!-- テンプレート内で {@title}, {@url}, {@items[0].name} などが使用可能 --&gt;
+&lt;/zcode-cms&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            バックエンドデータは信頼できるソースからのみ使用してください。存在しないパスを参照した場合は空文字列が返されます。
+          </p>
+        </div>
+
+        <h4 id="z-for-loop">z-for ループ記法</h4>
+        <p>
+          バックエンドデータの配列をループ表示するには、<code>z-for</code>属性を使用します。現在はバックエンドデータの配列のみをサポートしています。
+        </p>
+        <pre><code>&lt;div z-for="item in {@items}"&gt;
+  &lt;!-- ループ内のコンテンツ --&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>構文：</strong></p>
+        <pre><code>z-for="変数名 in {@配列パス}"</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;!-- 店舗一覧をループ表示 --&gt;
+&lt;div class="shop-list"&gt;
+  &lt;div z-for="shop in {@shops}" class="shop-item"&gt;
+    &lt;h2&gt;{shop.name}&lt;/h2&gt;
+    &lt;p&gt;{shop.description}&lt;/p&gt;
+    &lt;a href="{shop.url}"&gt;詳細を見る&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 商品一覧をループ表示 --&gt;
+&lt;div class="product-list"&gt;
+  &lt;div z-for="product in {@products}" class="product-item"&gt;
+    &lt;h3&gt;{product.name}&lt;/h3&gt;
+    &lt;p&gt;価格: {product.price}円&lt;/p&gt;
+    &lt;p&gt;カテゴリ: {product.category}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>ループ変数の参照：</strong></p>
+        <ul>
+          <li>
+            <code>{変数名.プロパティ名}</code>: ループ変数のプロパティを参照（例: <code>{shop.name}</code>）
+          </li>
+          <li>
+            <code>{変数名.ネストされた.プロパティ}</code>: ネストされたプロパティを参照（例: <code>{shop.address.city}</code>）
+          </li>
+          <li>
+            <code>{変数名}</code>: ループ変数自体を参照（オブジェクトの場合はJSON文字列として表示）
+          </li>
+        </ul>
+        <p><strong>ループ内での他のテンプレート構文：</strong></p>
+        <p>
+          ループ内では、通常のテンプレート構文（<code>{$field}</code>、<code>{@data}</code>など）も使用できます。
+        </p>
+        <pre><code>&lt;div z-for="shop in {@shops}" class="shop-item"&gt;
+  &lt;h2&gt;{shop.name}&lt;/h2&gt;
+  &lt;p&gt;{$description:説明文}&lt;/p&gt;
+  &lt;a href="/shop/{@shop_id}/{shop.id}/"&gt;詳細&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>制限事項：</strong></p>
+        <ul>
+          <li>現在はバックエンドデータの配列のみをサポート（コンポーネントデータの配列は非対応）</li>
+          <li>ネストループは非対応</li>
+          <li>インデックス変数は非対応（<code>z-for="(item, index) in {@items}"</code>のような構文は使用不可）</li>
+          <li>空の配列の場合は、ループ要素全体が削除されます</li>
+        </ul>
+        <p><strong>完全な例：</strong></p>
+        <pre><code>&lt;!-- HTML --&gt;
+&lt;zcode-cms id="cms" backend-data='{"shops": [{"id": "1", "name": "A店舗", "url": "/shop/1/"}, {"id": "2", "name": "B店舗", "url": "/shop/2/"}]}'&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+&lt;/zcode-cms&gt;
+
+&lt;!-- パーツテンプレート --&gt;
+&lt;div class="section"&gt;
+  &lt;div class="section__head"&gt;
+    &lt;div class="section__title"&gt;{$title:店舗一覧}&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="section__contents"&gt;
+    &lt;div class="section__items"&gt;
+      &lt;div z-for="shop in {@shops}" class="shop-item"&gt;
+        &lt;h2&gt;{shop.name}&lt;/h2&gt;
+        &lt;a href="{shop.url}"&gt;詳細を見る&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            z-forループ記法は、バックエンドデータの配列を表示するためのシンプルな実装です。将来的には、コンポーネントデータの配列やネストループなどの機能が追加される予定です。
+          </p>
+        </div>
+
+        <h3 id="choice-syntax">選択肢記法</h3>
+
+        <h4 id="radio-button">ラジオボタン（単一選択）</h4>
+        <pre><code>($fieldName:option1|option2|option3)</code></pre>
+        <p>パイプ（<code>|</code>）で区切られたオプションから1つを選択します。</p>
+        <pre><code>&lt;div&gt;($color:red|blue|green)&lt;/div&gt;</code></pre>
+
+        <h4 id="checkbox-multiple">チェックボックス（複数選択）</h4>
+        <pre><code>($fieldName:option1,option2,option3)</code></pre>
+        <p>カンマ（<code>,</code>）で区切られたオプションから複数を選択できます。</p>
+        <pre><code>&lt;div&gt;($tags:tag1,tag2,tag3)&lt;/div&gt;</code></pre>
+
+        <h4 id="select-single">セレクトボックス（単一選択）</h4>
+        <pre><code>($fieldName@:option1|option2|option3)</code></pre>
+        <p>
+          アットマーク（<code>@</code>）とパイプ（<code>|</code>）で区切られたオプションから1つを選択します。
+        </p>
+        <pre><code>&lt;div&gt;($size@:S|M|L)&lt;/div&gt;</code></pre>
+
+        <h4 id="select-multiple">セレクトボックス（複数選択）</h4>
+        <pre><code>($fieldName@:option1,option2,option3)</code></pre>
+        <p>
+          アットマーク（<code>@</code>）とカンマ（<code>,</code>）で区切られたオプションから複数を選択できます。
+        </p>
+        <pre><code>&lt;div&gt;($categories@:cat1,cat2,cat3)&lt;/div&gt;</code></pre>
+
+        <h3 id="conditional-syntax">条件分岐</h3>
+        <p>
+          <strong>z-if</strong> は表示するかしないかを決めます。fieldName に紐づく形ではありません（fieldName に紐づくのは <strong>z-empty</strong>）。属性値に指定したキーの真偽で、要素を表示または削除します。
+        </p>
+        <pre><code>&lt;element z-if="showContent"&gt;
+  &lt;!-- 条件が真の場合に表示 --&gt;
+&lt;/element&gt;</code></pre>
+        <pre><code>&lt;div z-if="showContent"&gt;
+  &lt;p&gt;コンテンツが表示されます&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>指定キーの値が真（<code>true</code>、非空文字列など）の場合、要素を表示</li>
+          <li>
+            指定キーの値が偽（<code>false</code>、<code>null</code>、空文字列、<code>0</code>）の場合は要素を削除
+          </li>
+          <li>指定キーが存在しない（<code>undefined</code>）場合は表示として扱う</li>
+        </ul>
+
+        <h4 id="z-tag-syntax">z-tag 属性（タグ名の動的変更）</h4>
+        <pre><code>&lt;element z-tag="$tagName:h1|h2|h3"&gt;
+  &lt;!-- タグ名を動的に変更 --&gt;
+&lt;/element&gt;</code></pre>
+        <p>
+          HTMLタグ名を動的に変更できます。テンプレートで書いたタグ名がデフォルト値として使用されます。
+        </p>
+        <pre><code>&lt;!-- 見出しタグを動的に変更（h2をデフォルト） --&gt;
+&lt;h2 z-tag="$headingTag:h1|h2|h3" class="title"&gt;{$title:タイトル}&lt;/h2&gt;
+&lt;!-- headingTagが"h1"の場合 → &lt;h1 class="title"&gt;タイトル&lt;/h1&gt; --&gt;
+&lt;!-- headingTagが"h2"の場合 → &lt;h2 class="title"&gt;タイトル&lt;/h2&gt; --&gt;
+
+&lt;!-- 選択肢を指定しない場合（全量表示） --&gt;
+&lt;div z-tag="$containerTag" class="container"&gt;
+  {$content:コンテンツ}
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>デフォルト値</strong>:
+            テンプレートで書いたタグ名（例: <code>&lt;h2&gt;</code>）がデフォルト値として使用されます
+          </li>
+          <li>
+            <strong>選択肢の指定</strong>:
+            <code>z-tag="$tagName:h1|h2|h3"</code> のように、パイプ（<code>|</code>）で区切って選択肢を指定できます
+          </li>
+          <li>
+            <strong>全量表示</strong>:
+            選択肢を指定しない場合、すべての有効なタグが選択肢として表示されます
+          </li>
+          <li>
+            <strong>属性の保持</strong>:
+            タグ名が変更されても、<code>class</code>、<code>id</code>などの属性は保持されます
+          </li>
+          <li>
+            <strong>子要素の保持</strong>:
+            タグ名が変更されても、子要素は保持されます
+          </li>
+        </ul>
+        <p><strong>対応タグ：</strong></p>
+        <ul>
+          <li>見出し: <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code>, <code>h5</code>, <code>h6</code></li>
+          <li>コンテナ: <code>div</code>, <code>p</code>, <code>span</code></li>
+          <li>リスト: <code>li</code>, <code>ul</code>, <code>ol</code></li>
+          <li>セマンティック: <code>section</code>, <code>article</code>, <code>aside</code>, <code>nav</code>, <code>header</code>, <code>footer</code>, <code>main</code></li>
+          <li>その他: <code>figure</code>, <code>figcaption</code>, <code>blockquote</code>, <code>pre</code>, <code>code</code></li>
+          <li>テーブル: <code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>, <code>th</code>, <code>td</code></li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>&lt;!-- 見出しタグを動的に変更 --&gt;
+&lt;h2 z-tag="$headingTag:h1|h2|h3" class="title"&gt;{$title:タイトル}&lt;/h2&gt;
+
+&lt;!-- リストアイテムのタグを変更 --&gt;
+&lt;li z-tag="$itemTag:li|div|span" class="list-item"&gt;{$item:項目}&lt;/li&gt;
+
+&lt;!-- コンテナタグを変更 --&gt;
+&lt;div z-tag="$containerTag:div|section|article" class="container"&gt;
+  {$content:コンテンツ}
+&lt;/div&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            テンプレートで書いたタグ名が選択肢に含まれていない場合、開発環境では警告が表示され、選択肢の最初の値がデフォルト値として使用されます。
+          </p>
+        </div>
+
+        <h4 id="z-empty-syntax">z-empty 属性（fieldName に紐づく・空なら親要素削除）</h4>
+        <pre><code>&lt;element z-empty="$fieldName"&gt;
+  &lt;!-- フィールドが空の場合、要素ごと削除 --&gt;
+&lt;/element&gt;</code></pre>
+        <p>
+          <strong>z-empty</strong> は <code>$fieldName</code> で指定したフィールドに紐づきます。そのフィールドが空（<code>undefined</code>、<code>null</code>、空文字列、または実質的に空のrichテキスト）の場合、親要素を削除します。基本動作では空タグが残るため、親ごと消したいときだけ <code>z-empty</code> を使ってください。
+        </p>
+        <pre><code>&lt;!-- 基本動作：空タグが残る --&gt;
+&lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;p&gt;&lt;/p&gt;が残る --&gt;
+
+&lt;!-- z-empty：親要素を削除 --&gt;
+&lt;div z-empty="$subtitle"&gt;
+  &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;/div&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;div&gt;要素ごと削除される --&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            フィールドが<code>undefined</code>、<code>null</code>、空文字列の場合、要素を削除
+          </li>
+          <li>
+            richテキストが実質的に空（<code>&lt;p&gt;&lt;/p&gt;</code>、<code>&lt;p&gt; &lt;/p&gt;</code>など）の場合も要素を削除
+          </li>
+          <li>フィールドに値がある場合は、要素を表示</li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>&lt;!-- オプショナルフィールドで親要素を削除したい場合 --&gt;
+&lt;div z-empty="$subtitle"&gt;
+  &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- richテキストが空の場合も削除 --&gt;
+&lt;div z-empty="$content"&gt;
+  &lt;div&gt;{$content?:デフォルトコンテンツ:rich}&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- textareaフィールドでも使用可能 --&gt;
+&lt;div z-empty="$description"&gt;
+  &lt;div&gt;{$description?:説明文:textarea}&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            fieldName に紐づくのは <code>z-empty</code> です。<code>z-if</code> は表示 on/off のみで、field には紐づきません。
+          </p>
+        </div>
+
+        <h3 id="slot-syntax">スロット（ネスト構造）</h3>
+        <pre><code>&lt;element z-slot="slotName"&gt;
+  &lt;!-- スロットコンテンツ --&gt;
+&lt;/element&gt;</code></pre>
+        <p>スロットを使用して、パーツ内に他のパーツをネストできます。</p>
+        <pre><code>&lt;div class="features"&gt;
+  &lt;div z-slot="items"&gt;
+    &lt;!-- ここに子パーツが追加されます --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <h4 id="slot-restrictions">スロットの制限</h4>
+        <p>
+          <code>PartData</code
+          >の<code>slots</code>プロパティで<code>allowedParts</code>を指定することで、スロットに追加可能なパーツを制限できます。
+        </p>
+        <pre><code>{
+  "id": "feature-list",
+  "title": "機能一覧",
+  "body": "&lt;div z-slot=\"items\"&gt;&lt;/div&gt;",
+  "slots": {
+    "items": {
+      "allowedParts": ["feature-item-1", "feature-item-2"]
+    }
+  }
+}</code></pre>
+
+        <div class="docs-warning">
+          <p>
+            <strong>セキュリティ注意:</strong>
+            テンプレート構文で属性値にユーザー入力を設定する場合、基本的なエスケープ処理とURL検証が適用されますが、<strong
+              >サーバー側での検証を必ず実装してください。</strong
+            >
+          </p>
+        </div>
+
+        <h2 id="editing-modes">編集モード</h2>
+        <p>ZeroCode.jsでは、4つの編集モードが利用できます。</p>
+
+        <h3 id="edit-mode">edit（編集モード）</h3>
+        <p>既存のコンポーネントを編集するモードです。</p>
+        <ul>
+          <li>コンポーネントのフィールドを編集</li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+          <li>同じパーツをクリックした場合はパネルを閉じる</li>
+        </ul>
+
+        <h3 id="add-mode">add（追加モード）</h3>
+        <p>新しいコンポーネントを追加するモードです。</p>
+        <ul>
+          <li>パーツタイプを選択して追加</li>
+          <li>既存コンポーネントをコピーして追加（表示側で選択したパーツをコピー）</li>
+          <li>追加位置の選択（前に追加/後に追加）</li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+          <li>パーツ追加を続けるオプション</li>
+        </ul>
+
+        <h3 id="delete-mode">delete（削除モード）</h3>
+        <p>コンポーネントを削除するモードです。</p>
+        <ul>
+          <li>削除確認</li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+        </ul>
+
+        <h3 id="reorder-mode">reorder（並べ替えモード）</h3>
+        <p>コンポーネントの順序を変更するモードです。</p>
+        <ul>
+          <li>移動元を選択</li>
+          <li>移動先をクリックして並べ替え</li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+        </ul>
+
+        <h3 id="parent-selection">親要素選択</h3>
+        <p>各編集モードで使用可能な親要素選択機能です。</p>
+        <ul>
+          <li>「親要素を選択」ボタンで親要素に移動</li>
+          <li>親要素がない場合はボタンが非表示になる</li>
+          <li>移動時に自動的にスクロールして移動先を表示</li>
+        </ul>
+
+        <h2 id="parts-management">パーツ管理</h2>
+        <p>パーツ管理は、<code>zcode-editor</code>でのみ利用可能な機能です。</p>
+
+        <h3 id="types-and-parts">タイプとパーツ</h3>
+        <ul>
+          <li><strong>タイプ（Type）</strong>: パーツのグループ。複数のパーツを含む</li>
+          <li><strong>パーツ（Part）</strong>: 実際のコンポーネントテンプレート</li>
+        </ul>
+
+        <h3 id="common-and-individual-parts">共通パーツ、個別パーツ、特別パーツ</h3>
+        <ul>
+          <li><strong>共通パーツ</strong>: すべてのページで使用可能なパーツ</li>
+          <li><strong>個別パーツ</strong>: 特定のページでのみ使用可能なパーツ</li>
+          <li><strong>特別パーツ</strong>: 動的ページ（ルートモデルバインディングなど）で使用可能なパーツ</li>
+        </ul>
+
+        <h3 id="parts-management-features">パーツ管理機能</h3>
+        <ul>
+          <li>タイプの作成・編集・削除</li>
+          <li>パーツの作成・編集・削除</li>
+          <li>タイプ間の並べ替え</li>
+          <li>パーツのプレビュー表示</li>
+          <li>Monaco Editorによるコード編集</li>
+          <li>テンプレート記法の予測変換（オプション）</li>
+        </ul>
+
+        <h3 id="part-template-structure">パーツテンプレートの構造</h3>
+        <pre><code>{
+  "id": "part-id",
+  "title": "パーツタイトル",
+  "description": "パーツの説明",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;",
+  "slots": {
+    "slotName": {
+      "allowedParts": ["part-id-1", "part-id-2"]
+    }
+  },
+  "slotOnly": false
+}</code></pre>
+
+        <h3 id="template-field-initialization">テンプレート記法の後から追加と自動初期化</h3>
+        <p>
+          パーツ管理で既存のパーツにテンプレート記法（フィールド）を後から追加した場合、既存のページデータ（<code>page</code>）にそのパーツを使用しているコンポーネントがあると、自動的に不足しているフィールドが初期化されます。
+        </p>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>データ読み込み時の自動初期化</strong>:
+            ページデータが読み込まれる際に、すべてのコンポーネント（スロット内も含む）に対して自動的に初期化処理が実行されます
+          </li>
+          <li>
+            <strong>通常フィールドの初期化</strong>:
+            テンプレートに定義されている通常フィールド（<code>{$field:default}</code>）で、コンポーネントデータに存在しない（<code>undefined</code>）場合、デフォルト値で初期化されます
+          </li>
+          <li>
+            <strong>オプショナルフィールドの扱い</strong>:
+            オプショナルフィールド（<code>{$field?:default}</code>）は初期化されず、<code>undefined</code>のまま残ります
+          </li>
+          <li>
+            <strong>再帰的な処理</strong>:
+            スロット内の子コンポーネントも再帰的に処理され、すべての階層で初期化が行われます
+          </li>
+        </ul>
+        <p><strong>初期化されるデフォルト値：</strong></p>
+        <ul>
+          <li>
+            <strong>テキストフィールド</strong>（<code>{$field:default:text}</code>）:
+            テンプレートで指定されたデフォルト値、または空文字列
+          </li>
+          <li>
+            <strong>テキストエリア</strong>（<code>{$field:default:textarea}</code>）:
+            テンプレートで指定されたデフォルト値、または空文字列
+          </li>
+          <li>
+            <strong>リッチテキスト</strong>（<code>{$field:default:rich}</code>）:
+            デフォルト値がある場合は<code>&lt;p&gt;デフォルト値&lt;/p&gt;</code>、ない場合は<code>&lt;p&gt;&lt;/p&gt;</code>
+          </li>
+          <li>
+            <strong>画像フィールド</strong>（<code>{$field:default:image}</code>）:
+            テンプレートで指定されたデフォルト値、または空文字列
+          </li>
+          <li>
+            <strong>ラジオボタン</strong>（<code>($field:option1|option2)</code>）:
+            最初の選択肢
+          </li>
+          <li>
+            <strong>セレクトボックス</strong>（<code>($field@:option1|option2)</code>）:
+            最初の選択肢
+          </li>
+          <li>
+            <strong>チェックボックス</strong>（<code>($field:option1,option2)</code>）:
+            空配列<code>[]</code>
+          </li>
+          <li>
+            <strong>複数選択セレクト</strong>（<code>($field@:option1,option2)</code>）:
+            空配列<code>[]</code>
+          </li>
+          <li>
+            <strong>ブール値</strong>（<code>z-if</code>で使用される場合など）:
+            <code>true</code>
+          </li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>// 既存のパーツテンプレート
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;"
+}
+
+// 後からテンプレート記法を追加
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;&lt;div&gt;{$subtitle:サブタイトル}&lt;/div&gt;"
+}
+
+// 既存のページデータ（初期化前）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル"
+  // subtitleフィールドが存在しない
+}
+
+// データ読み込み後の自動初期化（初期化後）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル",
+  "subtitle": "サブタイトル"  // 自動的に追加・初期化される
+}</code></pre>
+        <p><strong>オプショナルフィールドの例：</strong></p>
+        <pre><code>// パーツテンプレートにオプショナルフィールドを追加
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;&lt;div&gt;{$subtitle?:サブタイトル}&lt;/div&gt;"
+}
+
+// 既存のページデータ（初期化後）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル"
+  // subtitleはundefinedのまま（初期化されない）
+}</code></pre>
+        <p><strong>オプショナルフィールドで親要素を削除したい場合：</strong></p>
+        <p>
+          オプショナルフィールドが空の場合、基本動作では親要素（タグ）が残ります。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください。
+        </p>
+        <pre><code>// パーツテンプレート（z-emptyを使用）
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;&lt;div z-empty=\"$subtitle\"&gt;&lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;&lt;/div&gt;"
+}
+
+// 既存のページデータ（subtitleがundefinedの場合）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル"
+  // subtitleはundefinedのまま
+}
+
+// レンダリング結果：subtitleがundefinedの場合、&lt;div z-empty="$subtitle"&gt;要素ごと削除される
+&lt;div&gt;既存のタイトル&lt;/div&gt;
+&lt;!-- subtitleのdiv要素は表示されない --&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            この初期化処理は、データ読み込み時（<code>page</code>属性が設定された時点）に自動的に実行されます。パーツテンプレートを編集した後、ページデータを再読み込みすると、新しいフィールドが自動的に初期化されます。
+          </p>
+        </div>
+        <div class="docs-info">
+          <p>
+            <strong>補足:</strong>
+            テンプレート記法を削除した場合、ページデータにはフィールドが残りますが、パーツテンプレートには存在しないため、表示上は非表示になります。不要になったフィールドは、手動でページデータから削除するか、バックエンドで一括削除する処理を実装してください。
+          </p>
+        </div>
+
+        <h2 id="images-management">画像管理</h2>
+        <p>画像管理は、<code>zcode-editor</code>でのみ利用可能な機能です。</p>
+
+        <h3 id="images-management-features">画像管理機能</h3>
+        <ul>
+          <li>画像のアップロード</li>
+          <li>画像の編集（ID、名前、URL）</li>
+          <li>画像の削除</li>
+          <li>共通画像と個別画像の管理</li>
+        </ul>
+
+        <h3 id="image-data-structure">画像データ構造</h3>
+        <pre><code>interface ImageData {
+  id: string;
+  name: string;
+  url: string;
+  mimeType?: string;
+  needsUpload?: boolean;
+}</code></pre>
+
+        <h4>mimeType</h4>
+        <p>
+          画像のMIMEタイプ（例: <code>image/jpeg</code>,
+          <code>image/png</code>）。base64画像の場合に設定されます。
+        </p>
+
+        <h4>needsUpload</h4>
+        <p>
+          <code>true</code
+          >の場合、バックエンドで画像のアップロード処理が必要です。通常、base64画像は<code
+            >needsUpload: true</code
+          >として保存されます。
+        </p>
+
+        <h3 id="image-selection-modal">画像選択モーダル</h3>
+        <p>編集パネルから画像を選択する際に表示されるモーダルです。</p>
+        <ul>
+          <li>共通画像と個別画像の切り替え</li>
+          <li>画像のプレビュー表示</li>
+          <li>画像の追加・削除</li>
+        </ul>
+
+        <h2 id="configuration">設定オプション</h2>
+        <p>ZeroCode.jsでは、<code>config</code>属性で初期設定を指定できます。</p>
+
+        <h3 id="config-structure">設定の構造</h3>
+        <p>
+          設定は<code>cms</code>、<code>dev</code>、および共通設定の3つのカテゴリに分離されています。
+        </p>
+        <pre><code>{
+  "cms": {
+    "allowDynamicContentInteraction": false,
+    "devRightPadding": false,
+    "enableContextMenu": false
+  },
+  "dev": {
+    "showDataViewer": false,
+    "enableTemplateSuggestions": false
+  },
+  "categoryOrder": "common"
+}</code></pre>
+
+        <h3 id="config-priority">設定の優先順位</h3>
+        <ol>
+          <li><strong>localStorage</strong>: ユーザーが変更した設定（最優先）</li>
+          <li><strong>config属性</strong>: 初期設定として指定された値</li>
+          <li><strong>デフォルト値</strong>: 全て<code>false</code></li>
+        </ol>
+
+        <h3 id="cms-settings">CMS設定（cms）</h3>
+        <p><code>zcode-cms</code>と<code>zcode-editor</code>の両方で共有される設定です。</p>
+
+        <h4>allowDynamicContentInteraction</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>アコーディオン、タブ、モーダル、リンクなどの動的コンテンツの動作を有効/無効にします。</p>
+        <p>設定パネルでは「ページの動作を有効にする」として表示されます。</p>
+
+        <h4>devRightPadding</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>編集パネル表示時にコンテンツの右余白を追加します。</p>
+        <p>設定パネルでは「編集パネル分の余白をつける」として表示されます。</p>
+
+        <h4>enableContextMenu</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>右クリックメニューを有効にします。</p>
+        <p>設定パネルでは「右クリックメニューを有効にする」として表示されます。</p>
+
+        <h3 id="dev-settings">Dev設定（dev）</h3>
+        <p><code>zcode-editor</code>専用の設定です。</p>
+
+        <h4>showDataViewer</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>データビューアを表示します。</p>
+        <p>設定パネルでは「データビューアを表示」として表示されます。</p>
+
+        <h4>enableTemplateSuggestions</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>テンプレート記法の予測変換を有効にします。</p>
+        <p>パーツ管理パネルのエディタで使用されます。</p>
+
+        <h3 id="common-settings">共通設定</h3>
+        <p><code>zcode-cms</code>と<code>zcode-editor</code>の両方で使用される設定です。</p>
+
+        <h4>categoryOrder</h4>
+        <p>デフォルト: <code>"common"</code></p>
+        <p>
+          パーツ管理、画像管理、データビューア、追加パネルにおける「共通」「個別」「特別」タブの表示順序と初期選択を制御します。
+        </p>
+        <p>設定可能な値:</p>
+        <ul>
+          <li>
+            <code>"common"</code>: 共通タブを先に表示し、初期状態で共通タブを選択（デフォルト）
+          </li>
+          <li><code>"individual"</code>: 個別タブを先に表示し、初期状態で個別タブを選択</li>
+          <li><code>"special"</code>: 特別タブを先に表示し、初期状態で特別タブを選択（特別データが存在する場合のみ表示）</li>
+        </ul>
+        <p>この設定は以下の画面に適用されます:</p>
+        <ul>
+          <li>パーツ管理タブ（<code>zcode-editor</code>のみ）</li>
+          <li>画像管理タブ（<code>zcode-editor</code>のみ）</li>
+          <li>データビューアタブ（<code>zcode-editor</code>のみ、パーツ/画像表示時）</li>
+          <li>追加パネル（<code>zcode-cms</code>と<code>zcode-editor</code>の両方）</li>
+        </ul>
+
+        <h3 id="config-examples">設定の使用例</h3>
+        <pre><code>&lt;zcode-cms
+  config='{"cms": {"allowDynamicContentInteraction": true, "devRightPadding": true, "enableContextMenu": true}, "categoryOrder": "individual"}'
+&gt;&lt;/zcode-cms&gt;
+
+&lt;zcode-editor
+  config='{"cms": {"allowDynamicContentInteraction": true}, "dev": {"showDataViewer": true}, "categoryOrder": "individual"}'
+&gt;&lt;/zcode-editor&gt;</code></pre>
+
+        <p>または、JavaScript変数で指定することもできます：</p>
+        <pre><code>const cmsConfig = {
+  cms: {
+    allowDynamicContentInteraction: true,
+    devRightPadding: true,
+    enableContextMenu: true
+  },
+  categoryOrder: 'individual'
+};
+
+const cmsElement = document.getElementById('cms');
+cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
+
+        <h2 id="api-reference">APIリファレンス</h2>
+
+        <h3>zcode-cms</h3>
+        <p>ユーザー向け管理画面のWebコンポーネント。</p>
+
+        <h4>属性</h4>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>属性名</th>
+              <th>型</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>page</code></td>
+              <td>string</td>
+              <td>ページデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>parts-common</code></td>
+              <td>string</td>
+              <td>共通パーツデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>parts-individual</code></td>
+              <td>string</td>
+              <td>個別パーツデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>parts-special</code></td>
+              <td>string</td>
+              <td>特別パーツデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>images-common</code></td>
+              <td>string</td>
+              <td>共通画像データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>images-individual</code></td>
+              <td>string</td>
+              <td>個別画像データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>images-special</code></td>
+              <td>string</td>
+              <td>特別画像データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>config</code></td>
+              <td>string</td>
+              <td>初期設定データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>use-shadow-dom</code></td>
+              <td>string</td>
+              <td>Shadow DOMを使用するか（'true' | 'false'、デフォルト: 'true'）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>スロット</h4>
+        <ul>
+          <li><code>css</code>: CSSファイルを指定</li>
+          <li><code>script</code>: JavaScriptファイルを指定</li>
+        </ul>
+
+        <h3>zcode-editor</h3>
+        <p>エンジニア・デザイナー向け管理画面のWebコンポーネント。</p>
+        <p>ZeroCodeCMSの機能に加えて、パーツ管理・画像管理・データビューアが利用できます。</p>
+
+        <h4>属性</h4>
+        <p><code>zcode-cms</code>の属性に加えて、以下の属性が利用できます：</p>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>属性名</th>
+              <th>型</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>enable-parts-manager</code></td>
+              <td>string</td>
+              <td>パーツ管理を有効にするか（デフォルト: 'true'）</td>
+            </tr>
+            <tr>
+              <td><code>enable-images-manager</code></td>
+              <td>string</td>
+              <td>画像管理を有効にするか（デフォルト: 'true'）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>renderToHtml()</h3>
+        <p>サーバーサイドレンダリング用のHTML文字列生成関数。</p>
+        <pre><code>import { renderToHtml } from 'zerocodejs';
+
+const html = renderToHtml(data, {
+  enableEditorAttributes: false
+});</code></pre>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li><code>data</code>: ZeroCodeData形式のデータ</li>
+          <li>
+            <code>options.enableEditorAttributes</code>: 編集用属性を有効にするか（デフォルト:
+            <code>false</code>）
+          </li>
+        </ul>
+
+        <h4>戻り値</h4>
+        <p>生成されたHTML文字列</p>
+
+        <h2 id="events">イベント</h2>
+
+        <h3>save-request</h3>
+        <p>保存ボタンクリック時に発火します。<code>event.detail</code> に <code>data</code> は含まれません。保存対象のデータは <code>cms.getData()</code> で取得してください。</p>
+        <pre><code>cms.addEventListener('save-request', (event) => {
+  const { requestId, source, targets, timestamp } = event.detail;
+  const data = cms.getData();
+  for (const target of targets) {
+    // target ごとに data から必要な部分を切り出してサーバーへ送る
+  }
+});</code></pre>
+
+        <h4>event.detail</h4>
+        <ul>
+          <li><code>requestId</code>: リクエストID（<code>save-result</code> で対応付けに使用）</li>
+          <li><code>source</code>: 送信元（<code>'cms'</code> または <code>'editor'</code>）</li>
+          <li><code>targets</code>: 保存対象の配列（<code>'page'</code>, <code>'parts-common'</code>, <code>'parts-individual'</code>, <code>'parts-special'</code>, <code>'images-common'</code>, <code>'images-individual'</code>, <code>'images-special'</code>, <code>'parts-common-css'</code>, <code>'parts-individual-css'</code>, <code>'parts-special-css'</code> のいずれか）</li>
+          <li><code>timestamp</code>: タイムスタンプ</li>
+        </ul>
+        <p><strong>含まれないもの</strong>: <code>target</code>（単数）・<code>data</code>。データは <code>cms.getData()</code> で取得する。</p>
+
+        <h3>zcode-dom-updated</h3>
+        <p>DOMが更新されたときに発火します。動的コンテンツの初期化などに使用できます。</p>
+        <pre><code>window.addEventListener('zcode-dom-updated', () => {
+  // DOM更新後の処理
+  initializeAccordion();
+});</code></pre>
+
+        <h2 id="methods">メソッド</h2>
+
+        <h3>getData(path?: string)</h3>
+        <p>データを取得します。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+// 全体のデータを取得
+const allData = cms.getData();
+
+// 特定のパスのデータを取得
+const pageData = cms.getData('page');
+const firstComponent = cms.getData('page.0');
+const title = cms.getData('page.0.title');</code></pre>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li>
+            <code>path</code>（オプション）: データのパス（例: <code>'page'</code>,
+            <code>'page.0'</code>, <code>'page.0.title'</code>）
+          </li>
+        </ul>
+
+        <h4>戻り値</h4>
+        <p>指定したパスのデータ。パスが指定されていない場合は全体のデータを返します。</p>
+
+        <h3>setData(path: string | object, value?: any)</h3>
+        <p>データを設定します。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+// パスを指定して値を設定
+cms.setData('page.0.title', '新しいタイトル');
+
+// オブジェクト全体を設定
+cms.setData({
+  page: [...],
+  parts: {
+    common: [...],
+    individual: [...]
+  }
+});</code></pre>
+
+        <div class="docs-warning">
+          <p>
+            <strong>セキュリティ注意:</strong>
+            このメソッドはクライアント側から任意のデータを設定できます。開発者ツールからも呼び出し可能です。<strong
+              >サーバー側での検証を必ず実装してください。</strong
+            >
+          </p>
+        </div>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li>
+            <code>path</code>:
+            データのパス（文字列の場合）またはデータオブジェクト全体（オブジェクトの場合）
+          </li>
+          <li><code>value</code>（オプション）: 設定する値（<code>path</code>が文字列の場合）</li>
+        </ul>
+
+        <h3>allowDynamicContentInteraction（プロパティ）</h3>
+        <p>動的コンテンツの動作を有効/無効にします（getter/setter）。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+// 値を取得
+const isEnabled = cms.allowDynamicContentInteraction;
+
+// 値を設定
+cms.allowDynamicContentInteraction = true;</code></pre>
+
+        <h2 id="data-structure">データ構造</h2>
+        <p>ZeroCode.jsで使用するデータ構造の説明です。</p>
+
+        <h3>ZeroCodeData</h3>
+        <pre><code>interface ZeroCodeData {
+  page: ComponentData[];
+  parts: {
+    common: TypeData[];
+    individual: TypeData[];
+    special: TypeData[];
+  };
+  images: {
+    common: ImageData[];
+    individual: ImageData[];
+    special: ImageData[];
+  };
+}</code></pre>
+
+        <h3>ComponentData</h3>
+        <pre><code>interface ComponentData {
+  id: string;
+  part_id: string;
+  [key: string]: any;
+  slots?: Record&lt;string, ComponentData[] | SlotConfig&gt;;
+}</code></pre>
+        <ul>
+          <li><code>id</code>: コンポーネントの一意のID</li>
+          <li><code>part_id</code>: パーツID（タイトル変更時も紐付けが維持される）</li>
+          <li>
+            <code>[key: string]: any</code>:
+            フィールドの値（テンプレート記法で定義されたフィールド）
+          </li>
+          <li><code>slots</code>: スロットの子コンポーネント</li>
+        </ul>
+
+        <h3>SlotConfig</h3>
+        <pre><code>interface SlotConfig {
+  allowedParts?: string[];
+  children?: ComponentData[];
+}</code></pre>
+        <ul>
+          <li><code>allowedParts</code>: 許可されるパーツIDの配列</li>
+          <li>
+            <code>children</code>:
+            子コンポーネントの配列（<code>ComponentData[]</code>としても使用可能）
+          </li>
+        </ul>
+
+        <h3>TypeData</h3>
+        <pre><code>interface TypeData {
+  id: string;
+  type: string;
+  description: string;
+  parts: PartData[];
+}</code></pre>
+        <ul>
+          <li><code>id</code>: タイプID（タイプ変更時も紐付けが維持される）</li>
+          <li><code>type</code>: タイプ名</li>
+          <li><code>description</code>: タイプの説明</li>
+          <li><code>parts</code>: パーツの配列</li>
+        </ul>
+
+        <h3>PartData</h3>
+        <pre><code>interface PartData {
+  id: string;
+  title: string;
+  description: string;
+  body: string;
+  slots?: Record&lt;string, { allowedParts?: string[] }&gt;;
+  slotOnly?: boolean;
+}</code></pre>
+        <ul>
+          <li><code>id</code>: パーツID（タイトル変更時も紐付けが維持される）</li>
+          <li><code>title</code>: パーツタイトル</li>
+          <li><code>description</code>: パーツの説明</li>
+          <li><code>body</code>: パーツのテンプレート（HTML文字列）</li>
+          <li><code>slots</code>: スロットの設定</li>
+          <li><code>slotOnly</code>: スロット専用パーツかどうか</li>
+        </ul>
+
+        <h3>ImageData</h3>
+        <pre><code>interface ImageData {
+  id: string;
+  name: string;
+  url: string;
+  mimeType?: string;
+  needsUpload?: boolean;
+}</code></pre>
+        <ul>
+          <li><code>id</code>: 画像の一意のID</li>
+          <li><code>name</code>: 画像名</li>
+          <li>
+            <code>url</code>: 画像のURL（base64データの場合は<code>data:image/...</code>形式）
+          </li>
+          <li>
+            <code>mimeType</code>: MIMEタイプ（例: <code>image/jpeg</code>, <code>image/png</code>）
+          </li>
+          <li>
+            <code>needsUpload</code>:
+            アップロードが必要かどうか（<code>true</code>の場合、バックエンドでアップロード処理が必要）
+          </li>
+        </ul>
+
+        <h2 id="database-design">データベース構成</h2>
+        <p>ZeroCode.jsのデータをRDBで管理する場合の推奨データベース設計です。</p>
+
+        <h3>テーブル構成</h3>
+        <p>以下の3つのテーブルで構成されます：</p>
+        <ul>
+          <li><strong>zcode_common_parts</strong>: 共通パーツ管理（店舗に依存しない）</li>
+          <li><strong>zcode_common_images</strong>: 共通画像管理（店舗に依存しない）</li>
+          <li><strong>zcode_individual</strong>: 店舗ごとのページ・個別パーツ・個別画像</li>
+        </ul>
+
+        <h3>zcode_common_parts（共通パーツ）</h3>
+        <p>すべての店舗で共有される共通パーツを管理します。</p>
+        <pre><code>CREATE TABLE zcode_common_parts (
+  id VARCHAR(50) PRIMARY KEY,
+  type VARCHAR(50) NOT NULL,
+  description TEXT,
+  parts JSON NOT NULL,
+  version INT NOT NULL DEFAULT 1,
+  is_published BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);</code></pre>
+
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>カラム名</th>
+              <th>型</th>
+              <th>NULL</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>パーツタイプID（PK）</td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>パーツタイプ（例: <code>hero</code>, <code>features</code>）</td>
+            </tr>
+            <tr>
+              <td><code>description</code></td>
+              <td>TEXT</td>
+              <td>YES</td>
+              <td>タイプの説明</td>
+            </tr>
+            <tr>
+              <td><code>parts</code></td>
+              <td>JSON</td>
+              <td>NO</td>
+              <td>パーツ配列（<code>PartData[]</code>形式）</td>
+            </tr>
+            <tr>
+              <td><code>version</code></td>
+              <td>INT</td>
+              <td>NO</td>
+              <td>バージョン番号（楽観的ロック用）</td>
+            </tr>
+            <tr>
+              <td><code>is_published</code></td>
+              <td>BOOLEAN</td>
+              <td>NO</td>
+              <td>公開フラグ</td>
+            </tr>
+            <tr>
+              <td><code>created_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>作成日時</td>
+            </tr>
+            <tr>
+              <td><code>updated_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>更新日時</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>zcode_common_images（共通画像）</h3>
+        <p>すべての店舗で共有される共通画像を管理します。</p>
+        <pre><code>CREATE TABLE zcode_common_images (
+  id VARCHAR(50) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  url TEXT NOT NULL,
+  mime_type VARCHAR(50) NOT NULL,
+  needs_upload BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);</code></pre>
+
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>カラム名</th>
+              <th>型</th>
+              <th>NULL</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>画像ID（PK）</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>VARCHAR(255)</td>
+              <td>NO</td>
+              <td>画像名</td>
+            </tr>
+            <tr>
+              <td><code>url</code></td>
+              <td>TEXT</td>
+              <td>NO</td>
+              <td>画像URL（base64の場合は<code>data:image/...</code>形式）</td>
+            </tr>
+            <tr>
+              <td><code>mime_type</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>MIMEタイプ（例: <code>image/jpeg</code>, <code>image/png</code>）</td>
+            </tr>
+            <tr>
+              <td><code>needs_upload</code></td>
+              <td>BOOLEAN</td>
+              <td>NO</td>
+              <td>
+                アップロード要否（<code>true</code>の場合、バックエンドでアップロード処理が必要）
+              </td>
+            </tr>
+            <tr>
+              <td><code>created_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>作成日時</td>
+            </tr>
+            <tr>
+              <td><code>updated_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>更新日時</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>zcode_individual（店舗ごとの個別データ）</h3>
+        <p>店舗ごとのページ、個別パーツ、個別画像を管理します。</p>
+        <pre><code>CREATE TABLE zcode_individual (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  data_type ENUM('page', 'parts', 'images') NOT NULL,
+  content JSON NOT NULL,
+  version INT NOT NULL DEFAULT 1,
+  status ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'draft',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_type_status (user_id, data_type, status)
+);</code></pre>
+
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>カラム名</th>
+              <th>型</th>
+              <th>NULL</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>BIGINT</td>
+              <td>NO</td>
+              <td>レコードID（PK, AUTO_INCREMENT）</td>
+            </tr>
+            <tr>
+              <td><code>user_id</code></td>
+              <td>BIGINT</td>
+              <td>NO</td>
+              <td>店舗ID（外部キー）</td>
+            </tr>
+            <tr>
+              <td><code>data_type</code></td>
+              <td>ENUM</td>
+              <td>NO</td>
+              <td>データ種別（<code>page</code>, <code>parts</code>, <code>images</code>）</td>
+            </tr>
+            <tr>
+              <td><code>content</code></td>
+              <td>JSON</td>
+              <td>NO</td>
+              <td>
+                データ内容（<code>ComponentData[]</code>, <code>TypeData[]</code>,
+                <code>ImageData[]</code>形式）
+              </td>
+            </tr>
+            <tr>
+              <td><code>version</code></td>
+              <td>INT</td>
+              <td>NO</td>
+              <td>バージョン番号（楽観的ロック用）</td>
+            </tr>
+            <tr>
+              <td><code>status</code></td>
+              <td>ENUM</td>
+              <td>NO</td>
+              <td>
+                ステータス（<code>draft</code>: 下書き, <code>published</code>: 公開,
+                <code>archived</code>: アーカイブ）
+              </td>
+            </tr>
+            <tr>
+              <td><code>created_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>作成日時</td>
+            </tr>
+            <tr>
+              <td><code>updated_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>更新日時</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>データ例</h3>
+        <h4>zcode_individual のデータ例</h4>
+        <pre><code>-- 店舗1（user_id=1）のページデータ（下書き）
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'page',
+  '[{"id": "hero-1", "part_id": "zcode-part-1", "title": "店舗1のタイトル", ...}]',
+  'draft'
+);
+
+-- 店舗1（user_id=1）のページデータ（公開版）
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'page',
+  '[{"id": "hero-1", "part_id": "zcode-part-1", "title": "店舗1のタイトル", ...}]',
+  'published'
+);
+
+-- 店舗1（user_id=1）の個別パーツデータ
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'parts',
+  '[{"id": "zcode-part-12", "type": "cta", "description": "店舗専用のCTA", ...}]',
+  'published'
+);
+
+-- 店舗1（user_id=1）の個別画像データ
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'images',
+  '[{"id": "img-ind-1", "name": "店舗専用画像", "url": "/images/store1-hero.jpg", ...}]',
+  'published'
+);</code></pre>
+
+        <h3>クエリ例</h3>
+        <h4>店舗の公開ページデータを取得</h4>
+        <pre><code>SELECT content
+FROM zcode_individual
+WHERE user_id = 1
+  AND data_type = 'page'
+  AND status = 'published'
+LIMIT 1;</code></pre>
+
+        <h4>店舗の下書きページデータを取得</h4>
+        <pre><code>SELECT content
+FROM zcode_individual
+WHERE user_id = 1
+  AND data_type = 'page'
+  AND status = 'draft'
+LIMIT 1;</code></pre>
+
+        <h4>共通パーツを取得</h4>
+        <pre><code>SELECT parts
+FROM zcode_common_parts
+WHERE is_published = TRUE;</code></pre>
+
+        <h3>設計の特徴</h3>
+        <ul>
+          <li>
+            <strong>共通データの一元管理</strong>:
+            共通パーツと共通画像は1箇所で管理され、すべての店舗で共有されます
+          </li>
+          <li>
+            <strong>個別データの統合管理</strong>:
+            店舗ごとのページ、個別パーツ、個別画像を1つのテーブルで管理します
+          </li>
+          <li>
+            <strong>ステータス管理</strong>:
+            下書き・公開・アーカイブを1テーブルで管理できます（1店舗あたり最大9レコード: 3種別 ×
+            3ステータス）
+          </li>
+          <li>
+            <strong>楽観的ロック</strong>:
+            <code>version</code>カラムを使用して同時更新の競合を防ぎます
+          </li>
+          <li>
+            <strong>スケーラビリティ</strong>:
+            200店舗規模でも問題なく動作します（インデックス<code>idx_user_type_status</code>が有効）
+          </li>
+        </ul>
+
+        <h3>注意事項</h3>
+        <ul>
+          <li>
+            <code>content</code
+            >カラムは<code>JSON</code>型または<code>LONGTEXT</code>型を使用してください（データ量が多い場合）
+          </li>
+          <li>
+            MySQLの場合、<code>JSON</code>型は最大1GBですが、実用的には数MB程度を目安にしてください
+          </li>
+          <li>PostgreSQLの場合、<code>JSONB</code>型を使用すると検索パフォーマンスが向上します</li>
+          <li>更新時は<code>version</code>カラムをチェックして楽観的ロックを実装してください</li>
+        </ul>
+
+        <h2 id="save-request">保存リクエスト</h2>
+        <p>保存ボタンをクリックすると、<code>save-request</code>イベントが発火します。</p>
+
+        <h3 id="save-request-handler">イベントの受け取り方</h3>
+        <p><code>event.detail</code> に <code>data</code> は含まれません。<code>cms.getData()</code> で取得してください。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+cms.addEventListener('save-request', (event) => {
+  const { requestId, source, targets, timestamp } = event.detail;
+  const data = cms.getData();
+
+  for (const target of targets) {
+    fetch('/api/zero-code/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target, source, data, requestId, timestamp })
+    });
+  }
+});</code></pre>
+
+        <h3 id="save-request-targets">保存ターゲットの仕様</h3>
+        <p>
+          <code>save-request</code>イベントの<code>targets</code>配列には、現在のタブやモードに応じて複数のターゲットが含まれる場合があります。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>タブ/モード</th>
+              <th>含まれるターゲット</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ページ管理（編集モード）</td>
+              <td><code>['page', 'images-common', 'images-individual']</code></td>
+              <td>ページデータと画像データを保存。ページCSSは含まれない（パーツ管理でのみ編集可能）</td>
+            </tr>
+            <tr>
+              <td>パーツ管理</td>
+              <td><code>['parts-common', 'parts-common-css']</code>、<code>['parts-individual', 'parts-individual-css']</code>、または<code>['parts-special', 'parts-special-css']</code></td>
+              <td>パーツデータとページCSSを保存（パーツ編集時にページCSSも編集可能なため）</td>
+            </tr>
+            <tr>
+              <td>画像管理</td>
+              <td><code>['images-common']</code>、<code>['images-individual']</code>、または<code>['images-special']</code></td>
+              <td>画像データのみを保存</td>
+            </tr>
+            <tr>
+              <td>データビューアー</td>
+              <td>選択中のタブとカテゴリに応じて決定</td>
+              <td>現在表示中のデータに対応するターゲット</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="save-request-image-upload">画像のアップロード</h3>
+        <p>
+          <code>targets</code>配列に<code>images-common</code>、<code>images-individual</code>、または<code>images-special</code>が含まれる場合、<code
+            >needsUpload: true</code
+          >の画像をアップロード処理してください。<code>data</code> はハンドラ先頭で <code>cms.getData()</code> したもの。
+        </p>
+        <pre><code>for (const target of targets) {
+  if (target.startsWith('images-')) {
+    const images = target === 'images-common'
+      ? data.images?.common || []
+      : target === 'images-individual'
+      ? data.images?.individual || []
+      : data.images?.special || [];
+
+    const imagesToUpload = images.filter(img => img.needsUpload === true);
+
+    for (const image of imagesToUpload) {
+      // base64データをデコード
+      const base64Data = image.url.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      // S3などにアップロード
+      // アップロード後、image.urlを更新し、needsUploadをfalseに設定
+    }
+  }
+}</code></pre>
+
+        <h3 id="save-request-validation">バリデーションエラーの返却</h3>
+        <p>
+          バックエンドでバリデーションを行い、エラーがある場合は<code>save-result</code>イベントでエラーを返してください。フロントエンドでは、<code>required</code>と<code>max</code>のみをチェックします。複雑なバリデーション（メール形式チェック、重複チェックなど）はバックエンドで実施してください。
+        </p>
+        <p><strong>イベント形式：</strong></p>
+        <pre><code>// 成功時
+cms.dispatchEvent(
+  new CustomEvent('save-result', {
+    detail: {
+      requestId: 'req-1234567890-abc', // save-request の requestId
+      target: 'page', // この回の保存対象（targets の要素のいずれか）
+      ok: true,
+      errors: []
+    },
+    bubbles: true,
+    composed: true
+  })
+);
+
+// エラー時
+cms.dispatchEvent(
+  new CustomEvent('save-result', {
+    detail: {
+      requestId: 'req-1234567890-abc', // save-request の requestId
+      target: 'page', // この回の保存対象（targets の要素のいずれか）
+      ok: false,
+      errors: [
+        {
+          path: 'page.0', // コンポーネントのパス（オプション、指定しない場合はすべてのコンポーネントに適用）
+          field: 'email', // フィールド名
+          message: 'メールアドレスの形式が正しくありません', // エラーメッセージ
+          code: 'FORMAT' // エラーコード（オプション）
+        }
+      ]
+    },
+    bubbles: true,
+    composed: true
+  })
+);</code></pre>
+        <p><strong>実装例（Node.js/Express）：</strong></p>
+        <pre><code>cms.addEventListener('save-request', async (event) =&gt; {
+  const { requestId, source, targets, timestamp } = event.detail;
+  const data = cms.getData();
+
+  for (const target of targets) {
+    try {
+      // バリデーション
+      const errors = [];
+
+        if (target === 'page') {
+          // ページデータのバリデーション
+          const pageData = data.page || [];
+          for (let i = 0; i &lt; pageData.length; i++) {
+            const component = pageData[i];
+
+            // メール形式チェック（例）
+            if (component.email &amp;&amp; !component.email.includes('@')) {
+              errors.push({
+                path: `page.${i}`,
+                field: 'email',
+                message: 'メールアドレスの形式が正しくありません',
+                code: 'FORMAT'
+              });
+            }
+
+            // 重複チェック（例）
+            if (component.title &amp;&amp; await isTitleDuplicate(component.title)) {
+              errors.push({
+                path: `page.${i}`,
+                field: 'title',
+                message: 'このタイトルは既に使用されています',
+                code: 'DUPLICATE'
+              });
+            }
+          }
+        } else if (target === 'parts-common-css' || target === 'parts-individual-css' || target === 'parts-special-css') {
+          // CSSのバリデーション（例）
+          const css = target === 'parts-common-css' ? data.css?.common :
+                      target === 'parts-individual-css' ? data.css?.individual :
+                      data.css?.special || '';
+          if (css.length &gt; 10000) {
+            errors.push({
+              field: target,
+              message: 'CSSのサイズが大きすぎます',
+              code: 'SIZE_LIMIT'
+            });
+          }
+        } else if (target.startsWith('images-')) {
+          // 画像データのアップロード処理
+          const images = target === 'images-common'
+            ? data.images?.common || []
+            : target === 'images-individual'
+            ? data.images?.individual || []
+            : data.images?.special || [];
+
+          for (const image of images) {
+            if (image.needsUpload) {
+              // 画像をアップロード
+              const uploadedUrl = await uploadImage(image);
+              image.url = uploadedUrl;
+              image.needsUpload = false;
+            }
+          }
+        }
+
+        if (errors.length &gt; 0) {
+          // エラーがある場合
+          cms.dispatchEvent(
+            new CustomEvent('save-result', {
+              detail: {
+                requestId,
+                target,
+                ok: false,
+                errors
+              },
+              bubbles: true,
+              composed: true
+            })
+          );
+          continue; // 次のターゲットへ
+        }
+
+        // データベースに保存
+        await saveToDatabase(target, data);
+
+        // 成功時
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: true,
+              errors: []
+            },
+            bubbles: true,
+            composed: true
+          })
+        );
+      } catch (error) {
+        // エラー時
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: false,
+              errors: [
+                {
+                  field: 'general',
+                  message: '保存に失敗しました',
+                  code: 'SAVE_FAILED'
+                }
+              ]
+            },
+            bubbles: true,
+            composed: true
+          })
+        );
+      }
+    }
+  }
+});</code></pre>
+        <p><strong>エラーの表示：</strong></p>
+        <ul>
+          <li>
+            <strong>編集パネルが開いている場合:</strong>
+            エラーは該当フィールドの下に表示されます。<code>path</code>が指定されている場合、そのパスのコンポーネントのフィールドにのみ表示されます。
+          </li>
+          <li>
+            <strong>編集パネルが閉じている場合:</strong>
+            エラーは画面上部にエラーバナーとして表示されます。編集パネルを開くと、該当フィールドに詳細エラーが表示されます。
+          </li>
+        </ul>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            <code>requestId</code
+            >は<code>save-request</code>イベントの<code>requestId</code>と同じ値を使用してください。これにより、複数の保存リクエストが同時に発火した場合でも、正しいレスポンスとリクエストを関連付けることができます。
+          </p>
+        </div>
+
+        <h2 id="security">セキュリティ</h2>
+        <div class="docs-warning">
+          <p>
+            <strong>重要:</strong>
+            ZeroCode.jsはフロントエンドライブラリのため、クライアント側での完全なセキュリティ保証はできません。サーバー側での検証を必ず実装してください。
+          </p>
+        </div>
+
+        <h3>必須実装事項</h3>
+
+        <h4>1. サーバー側でのデータ検証（必須）</h4>
+        <ul>
+          <li>すべてのデータをサーバー側で検証してください</li>
+          <li>
+            パーツテンプレート（<code>part.body</code>）が信頼できるソースからのみ来ることを確認してください
+          </li>
+          <li>
+            <code>save-request</code
+            >イベントの<code>source</code>フィールドを確認し、CMSからのパーツデータ保存を拒否してください
+          </li>
+        </ul>
+
+        <h4>2. 認証・認可</h4>
+        <ul>
+          <li>パーツデータの変更は認証されたユーザーのみ許可してください</li>
+          <li>ロールベースアクセス制御を実装してください</li>
+          <li>CMS（<code>source: 'cms'</code>）からのパーツデータ保存を拒否してください</li>
+        </ul>
+
+        <h4>3. 属性値のセキュリティ</h4>
+        <ul>
+          <li>
+            URL属性（<code>href</code>, <code>src</code>,
+            <code>action</code>）の検証を実装してください
+          </li>
+          <li>
+            <code>style</code>属性にユーザー入力を直接設定する場合は、サーバー側での検証を推奨します
+          </li>
+          <li>基本的なエスケープ処理が適用されますが、サーバー側での追加検証を推奨します</li>
+        </ul>
+
+        <h4>4. パーツテンプレートの管理</h4>
+        <ul>
+          <li>パーツテンプレートは信頼できるソースからのみ受け入れてください</li>
+          <li>サーバー側でテンプレートの妥当性を検証してください</li>
+        </ul>
+
+        <h3>実装例</h3>
+        <p>※ クライアントは save-request ハンドラで <code>cms.getData()</code> し、<code>targets</code> をループして各 <code>target</code> と <code>data</code> を <code>req.body</code> に含めて送る。</p>
+        <pre><code>// Node.js/Express の例（サーバー側）
+app.post('/api/zero-code/save', authenticate, (req, res) => {
+  const { target, source, data } = req.body;
+
+  if (source === 'cms' && target.startsWith('parts-')) {
+    return res.status(403).json({
+      error: 'CMSからのパーツ保存は拒否されました'
+    });
+  }
+
+  // データ構造の検証
+  if (!validateDataStructure(data)) {
+    return res.status(400).json({
+      error: '無効なデータです'
+    });
+  }
+
+  // パーツテンプレートの検証
+  if (target.startsWith('parts-')) {
+    if (!validatePartTemplate(data)) {
+      return res.status(400).json({
+        error: '無効なテンプレートです'
+      });
+    }
+  }
+
+  // 画像アップロード処理
+  if (target.startsWith('images-')) {
+    const imagesToUpload = data.filter(img => img.needsUpload === true);
+    for (const image of imagesToUpload) {
+      // アップロード処理
+    }
+  }
+
+  // 保存処理
+  // ...
+
+  res.json({ success: true });
+});</code></pre>
+
+        <h3>画像アップロードのセキュリティ</h3>
+        <ul>
+          <li><code>needsUpload: true</code>の画像のみアップロード処理を行ってください</li>
+          <li>MIMEタイプ（<code>mimeType</code>）の検証を実装してください</li>
+          <li>ファイルサイズの制限を設定してください</li>
+          <li>ファイル名のサニタイズを実装してください</li>
+        </ul>
+      </main>
+    </div>
+
+    <script>
+      // 検索機能
+      document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('docs-search-input');
+        const searchResults = document.getElementById('docs-search-results');
+        const allSections = document.querySelectorAll('h2[id], h3[id], h4[id]');
+        const allLinks = document.querySelectorAll(
+          '.docs-nav-link, .docs-nav-link-sub, .docs-nav-link-sub-sub'
+        );
+
+        // 検索インデックスを作成
+        const searchIndex = Array.from(allSections).map((section) => {
+          const id = section.getAttribute('id');
+          const text = section.textContent.trim();
+          const tagName = section.tagName.toLowerCase();
+          const parent = section.closest('h2, h3');
+          const parentText = parent ? parent.textContent.trim() : '';
+          return { id, text, tagName, parentText };
+        });
+
+        function highlightText(text, query) {
+          if (!query) return text;
+          const regex = new RegExp(`(${query})`, 'gi');
+          return text.replace(regex, '<span class="result-highlight">$1</span>');
+        }
+
+        function performSearch(query) {
+          if (!query || query.length < 2) {
+            searchResults.classList.remove('has-results');
+            searchResults.innerHTML = '';
+            return;
+          }
+
+          const lowerQuery = query.toLowerCase();
+          const results = searchIndex
+            .filter((item) => {
+              return (
+                item.text.toLowerCase().includes(lowerQuery) ||
+                item.parentText.toLowerCase().includes(lowerQuery)
+              );
+            })
+            .slice(0, 10);
+
+          if (results.length === 0) {
+            searchResults.classList.remove('has-results');
+            searchResults.innerHTML = '<div class="docs-search-result-item">検索結果が見つかりません</div>';
+            return;
+          }
+
+          searchResults.classList.add('has-results');
+          searchResults.innerHTML = results
+            .map((result) => {
+              const path = result.parentText ? `${result.parentText} > ${result.text}` : result.text;
+              return `
+                <div class="docs-search-result-item" data-id="${result.id}">
+                  <div class="result-title">${highlightText(result.text, query)}</div>
+                  <div class="result-path">${highlightText(path, query)}</div>
+                </div>
+              `;
+            })
+            .join('');
+
+          // 検索結果をクリックしたときの処理
+          searchResults.querySelectorAll('.docs-search-result-item').forEach((item) => {
+            item.addEventListener('click', function () {
+              const id = this.getAttribute('data-id');
+              if (id) {
+                const target = document.getElementById(id);
+                if (target) {
+                  const offset = 80;
+                  const targetPosition = target.offsetTop - offset;
+                  window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                  });
+                  searchInput.value = '';
+                  searchResults.classList.remove('has-results');
+                  searchResults.innerHTML = '';
+                }
+              }
+            });
+          });
+        }
+
+        searchInput.addEventListener('input', function () {
+          performSearch(this.value);
+        });
+
+        searchInput.addEventListener('blur', function () {
+          setTimeout(() => {
+            searchResults.classList.remove('has-results');
+            searchResults.innerHTML = '';
+          }, 200);
+        });
+
+        // サイドバーのアクティブリンクを更新
+        const sections = document.querySelectorAll('h2[id], h3[id], h4[id]');
+
+        function updateActiveLink() {
+          let current = '';
+          sections.forEach((section) => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 100) {
+              current = section.getAttribute('id');
+            }
+          });
+
+          allLinks.forEach((link) => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href');
+            if (href === '#' + current) {
+              link.classList.add('active');
+            }
+          });
+        }
+
+        window.addEventListener('scroll', updateActiveLink);
+        updateActiveLink();
+
+        // スムーススクロール
+        allLinks.forEach((link) => {
+          link.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+              e.preventDefault();
+              const target = document.querySelector(href);
+              if (target) {
+                const offset = 80;
+                const targetPosition = target.offsetTop - offset;
+                window.scrollTo({
+                  top: targetPosition,
+                  behavior: 'smooth'
+                });
+              }
+            }
+          });
+        });
+
+        // パンくずリストを更新
+        function updateBreadcrumb() {
+          const breadcrumbCurrent = document.getElementById('docs-breadcrumb-current');
+          if (!breadcrumbCurrent) return;
+
+          let currentSection = null;
+          sections.forEach((section) => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 100) {
+              currentSection = section;
+            }
+          });
+
+          if (currentSection) {
+            const parent = currentSection.closest('h2');
+            if (parent && parent.id) {
+              const parentLink = document.querySelector(`a[href="#${parent.id}"]`);
+              const parentText = parentLink ? parentLink.textContent.trim() : parent.textContent.trim();
+              breadcrumbCurrent.textContent = `${parentText} > ${currentSection.textContent.trim()}`;
+            } else {
+              breadcrumbCurrent.textContent = currentSection.textContent.trim();
+            }
+          }
+        }
+
+        window.addEventListener('scroll', updateBreadcrumb);
+        updateBreadcrumb();
+      });
+    </script>
+
+    <!-- フッター（共通） -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 共通ヘッダー・フッター読み込み -->
+    <script type="module" src="./common-header-footer.js"></script>
+  </body>
+</html>

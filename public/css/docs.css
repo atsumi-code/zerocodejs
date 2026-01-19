@@ -1,0 +1,396 @@
+/* ZeroCode.js - docs.html 専用CSS */
+
+/* ドキュメントページ専用のスタイル */
+.header-content {
+  max-width: 1400px;
+}
+
+/* ドキュメントコンテナ */
+.docs-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+}
+
+/* サイドバー */
+.docs-sidebar {
+  width: 280px;
+  padding: 24px 0;
+  border-right: 1px solid #e0e0e0;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+/* 検索ボックス */
+.docs-search-section {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.docs-search-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s;
+}
+
+.docs-search-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.docs-search-results {
+  margin-top: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+}
+
+.docs-search-results.has-results {
+  display: block;
+}
+
+.docs-search-result-item {
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+}
+
+.docs-search-result-item:hover {
+  background: #f0f0f0;
+  border-color: #3498db;
+}
+
+.docs-search-result-item .result-title {
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 2px;
+}
+
+.docs-search-result-item .result-path {
+  font-size: 11px;
+  color: #7f8c8d;
+}
+
+.docs-search-result-item .result-highlight {
+  background: #fff3cd;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.docs-nav-section {
+  margin-bottom: 32px;
+  padding: 0 20px;
+}
+
+.docs-nav-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #7f8c8d;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.docs-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.docs-nav-link {
+  display: block;
+  padding: 6px 12px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.docs-nav-link:hover {
+  background: #f0f0f0;
+  color: #3498db;
+}
+
+.docs-nav-link.active {
+  background: #e3f2fd;
+  color: #3498db;
+  font-weight: 500;
+}
+
+/* 階層目次 */
+.docs-nav-sub {
+  margin-left: 12px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.docs-nav-link-sub {
+  display: block;
+  padding: 4px 12px;
+  color: #555;
+  text-decoration: none;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.docs-nav-link-sub:hover {
+  background: #f0f0f0;
+  color: #3498db;
+}
+
+.docs-nav-link-sub.active {
+  background: #e3f2fd;
+  color: #3498db;
+  font-weight: 500;
+}
+
+.docs-nav-sub-sub {
+  margin-left: 12px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.docs-nav-link-sub-sub {
+  display: block;
+  padding: 3px 12px;
+  color: #777;
+  text-decoration: none;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.docs-nav-link-sub-sub:hover {
+  background: #f0f0f0;
+  color: #3498db;
+}
+
+.docs-nav-link-sub-sub.active {
+  background: #e3f2fd;
+  color: #3498db;
+  font-weight: 500;
+}
+
+/* パンくずリスト */
+.docs-breadcrumb {
+  margin-bottom: 24px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.docs-breadcrumb a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.docs-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.docs-breadcrumb-separator {
+  margin: 0 8px;
+  color: #7f8c8d;
+}
+
+.docs-breadcrumb-current {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* メインコンテンツ */
+.docs-content {
+  flex: 1;
+  padding: 40px 60px;
+  max-width: 900px;
+}
+
+.docs-content h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #2c3e50;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.docs-content h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  color: #2c3e50;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.docs-content h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  color: #2c3e50;
+}
+
+.docs-content h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.docs-content p {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+  color: #2c3e50;
+}
+
+.docs-content ul,
+.docs-content ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.docs-content li {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.docs-content code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #e83e8c;
+}
+
+.docs-content pre {
+  background: #1e1e1e;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.docs-content pre code {
+  background: transparent;
+  padding: 0;
+  color: #d4d4d4;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.docs-content blockquote {
+  border-left: 4px solid #3498db;
+  padding-left: 16px;
+  margin: 20px 0;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.docs-warning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.docs-warning strong {
+  color: #856404;
+}
+
+.docs-warning p {
+  margin: 0;
+  color: #856404;
+}
+
+.docs-info {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.docs-info strong {
+  color: #0c5460;
+}
+
+.docs-info p {
+  margin: 0;
+  color: #0c5460;
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.docs-table th,
+.docs-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.docs-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.docs-table td {
+  color: #2c3e50;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .docs-container {
+    flex-direction: column;
+  }
+
+  .docs-sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .docs-content {
+    padding: 24px 20px;
+  }
+
+  .docs-content h1 {
+    font-size: 28px;
+  }
+
+  .docs-content h2 {
+    font-size: 24px;
+  }
+}
+

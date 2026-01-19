@@ -1,0 +1,26 @@
+.test-header {
+  background: #3498db;
+}
+
+.zcode-callsite-controls {
+  position: fixed;
+  left: 16px;
+  bottom: 76px;
+  z-index: 999999;
+  display: grid;
+  gap: 8px;
+}
+
+.zcode-callsite-btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  background: #fff;
+  color: #0b1220;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.zcode-callsite-btn:hover {
+  background: rgba(15, 23, 42, 0.03);
+}

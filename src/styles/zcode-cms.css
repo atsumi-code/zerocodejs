@@ -1,0 +1,4547 @@
+/* ========================================
+   ZeroCode.js - CMS スタイルシート
+   ========================================
+   すべてのクラスに zcode- プレフィックスを使用してスコープを確保
+   ======================================== */
+
+/* ========================================
+   1. CSS変数定義
+   ======================================== */
+
+:root {
+  /* モード別のメインカラー */
+  --zcode-color-edit: #3b82f6; /* 青 */
+  --zcode-color-add: #10b981; /* 緑 */
+  --zcode-color-reorder: #f59e0b; /* オレンジ */
+  --zcode-color-delete: #ef4444; /* 赤 */
+
+  /* 編集モードの色 */
+  --zcode-color-edit-hover: #2563eb;
+  --zcode-color-edit-bg: #eff6ff;
+  --zcode-color-edit-bg-active: #dbeafe;
+  --zcode-color-edit-border-hover: #93c5fd;
+
+  /* 追加モードの色 */
+  --zcode-color-add-hover: #059669;
+  --zcode-color-add-bg: #ecfdf5;
+  --zcode-color-add-bg-active: #d1fae5;
+  --zcode-color-add-border-hover: #6ee7b7;
+
+  /* 並べ替えモードの色 */
+  --zcode-color-reorder-bg: #fffbeb;
+  --zcode-color-reorder-bg-active: #fef3c7;
+  --zcode-color-reorder-border-hover: #fcd34d;
+
+  /* 削除モードの色 */
+  --zcode-color-delete-hover: #dc2626;
+  --zcode-color-delete-bg: #fef2f2;
+  --zcode-color-delete-bg-active: #fee2e2;
+  --zcode-color-delete-border-hover: #fca5a5;
+}
+
+[class*='zcode-'] {
+  box-sizing: border-box;
+}
+
+[class*='zcode-']::before,
+[class*='zcode-']::after {
+  box-sizing: border-box;
+}
+
+/* ========================================
+   2. 基本コンポーネント
+   ======================================== */
+
+.zcode-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.zcode-empty-state-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.zcode-empty-state-btn:hover {
+  background: #359268;
+}
+
+/* ========================================
+   3. 共通パネルスタイル
+   ======================================== */
+
+.zcode-edit-panel,
+.zcode-add-panel,
+.zcode-reorder-panel,
+.zcode-delete-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 375px;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1002;
+}
+
+/* 共通パネルヘッダースタイル */
+.zcode-edit-panel-header,
+.zcode-add-panel-header,
+.zcode-reorder-panel-header,
+.zcode-delete-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.zcode-panel-header-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.zcode-edit-panel-header .zcode-panel-header-title {
+  color: var(--zcode-color-edit);
+}
+
+.zcode-add-panel-header .zcode-panel-header-title {
+  color: var(--zcode-color-add);
+}
+
+.zcode-reorder-panel-header .zcode-panel-header-title {
+  color: var(--zcode-color-reorder);
+}
+
+.zcode-delete-panel-header .zcode-panel-header-title {
+  color: var(--zcode-color-delete);
+}
+
+.zcode-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px 8px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zcode-close-btn:hover {
+  color: #1f2937;
+}
+
+.zcode-edit-fields {
+  padding: 16px;
+  font-size: 14px;
+  color: #6b7280;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.zcode-add-panel-content {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.zcode-edit-fields-text {
+  margin: 8px 0;
+}
+
+.zcode-component-developer {
+  border: 1px dashed #ccc;
+  padding: 10px;
+}
+
+.zcode-error-message {
+  padding: 20px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.zcode-for-item {
+  margin-bottom: 10px;
+}
+
+/* ========================================
+   4. フィールド編集UI
+   ======================================== */
+
+.zcode-field-editor {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.zcode-field-item-title {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.zcode-field-editor-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* テキスト編集 */
+.zcode-text-editor {
+  margin-bottom: 20px;
+}
+
+.zcode-text-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.zcode-text-input:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.zcode-field-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.zcode-field-error-message {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ef4444;
+  line-height: 1.4;
+}
+
+.zcode-field-counter {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: right;
+}
+
+.zcode-text-input:disabled,
+.zcode-textarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.zcode-text-input[readonly],
+.zcode-textarea[readonly] {
+  background-color: #f3f4f6;
+  cursor: default;
+}
+
+/* ラジオボタン */
+.zcode-radio-editor {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.zcode-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zcode-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-bottom: 0;
+  font-weight: normal;
+  color: inherit;
+}
+
+.zcode-radio-item input[type='radio'] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.zcode-radio-item input[type='radio']:focus {
+  outline: 2px solid var(--zcode-color-edit);
+  outline-offset: 2px;
+}
+
+.zcode-radio-item-label {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* チェックボックス */
+.zcode-checkbox-editor {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.zcode-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zcode-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-bottom: 0;
+  font-weight: normal;
+  color: inherit;
+}
+
+.zcode-checkbox-item input[type='checkbox'] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.zcode-checkbox-item input[type='checkbox']:focus {
+  outline: 2px solid var(--zcode-color-edit);
+  outline-offset: 2px;
+}
+
+.zcode-checkbox-item-label {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+/* 編集アクションボタン */
+.zcode-edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.zcode-save-btn {
+  flex: 1;
+  background: var(--zcode-color-edit);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.zcode-save-btn:hover {
+  background: var(--zcode-color-edit-hover);
+}
+
+.zcode-cancel-btn {
+  flex: 1;
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.zcode-cancel-btn:hover {
+  background: #e9ecef;
+}
+
+/* 編集可能要素のホバー効果 */
+[data-zcode-id] {
+  transition: outline 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+/* スロット要素もアウトライン対象にする（空スロットの視認性向上） */
+[data-zcode-slot-path] {
+  transition: outline 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+/* アクティブ時のアウトラインアニメーション */
+[data-zcode-id].zcode-outline-active-edit,
+[data-zcode-id].zcode-outline-active-add,
+[data-zcode-id].zcode-outline-active-reorder,
+[data-zcode-id].zcode-outline-active-delete,
+[data-zcode-slot-path].zcode-outline-active-edit,
+[data-zcode-slot-path].zcode-outline-active-add,
+[data-zcode-slot-path].zcode-outline-active-reorder,
+[data-zcode-slot-path].zcode-outline-active-delete {
+  outline-style: solid;
+  animation: zcode-outline-pulse-edit 1.5s ease-in-out infinite;
+}
+
+[data-zcode-id].zcode-outline-active-edit {
+  animation-name: zcode-outline-pulse-edit;
+}
+
+[data-zcode-id].zcode-outline-active-add {
+  animation-name: zcode-outline-pulse-add;
+}
+
+[data-zcode-id].zcode-outline-active-reorder {
+  animation-name: zcode-outline-pulse-reorder;
+}
+
+[data-zcode-id].zcode-outline-active-delete {
+  animation-name: zcode-outline-pulse-delete;
+}
+
+[data-zcode-slot-path].zcode-outline-active-edit {
+  animation-name: zcode-outline-pulse-edit;
+}
+
+[data-zcode-slot-path].zcode-outline-active-add {
+  animation-name: zcode-outline-pulse-add;
+}
+
+[data-zcode-slot-path].zcode-outline-active-reorder {
+  animation-name: zcode-outline-pulse-reorder;
+}
+
+[data-zcode-slot-path].zcode-outline-active-delete {
+  animation-name: zcode-outline-pulse-delete;
+}
+
+@keyframes zcode-outline-pulse-edit {
+  0% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(190, 91%, 60%);
+  }
+  25% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(217, 91%, 60%);
+  }
+  50% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(244, 91%, 60%);
+  }
+  75% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(217, 91%, 60%);
+  }
+  100% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(190, 91%, 60%);
+  }
+}
+
+@keyframes zcode-outline-pulse-add {
+  0% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(130, 85%, 39%);
+  }
+  25% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(160, 85%, 39%);
+  }
+  50% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(190, 85%, 39%);
+  }
+  75% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(160, 85%, 39%);
+  }
+  100% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(130, 85%, 39%);
+  }
+}
+
+@keyframes zcode-outline-pulse-reorder {
+  0% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(30, 92%, 50%);
+  }
+  25% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(38, 92%, 50%);
+  }
+  50% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(46, 92%, 50%);
+  }
+  75% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(38, 92%, 50%);
+  }
+  100% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(30, 92%, 50%);
+  }
+}
+
+@keyframes zcode-outline-pulse-delete {
+  0% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(340, 84%, 60%);
+  }
+  25% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(0, 84%, 60%);
+  }
+  50% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(20, 84%, 60%);
+  }
+  75% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(0, 84%, 60%);
+  }
+  100% {
+    outline-width: 4px;
+    outline-offset: 2px;
+    outline-color: hsl(340, 84%, 60%);
+  }
+}
+
+/* ========================================
+   5. ツールバー・モード切り替え
+   ======================================== */
+
+.zcode-view-mode-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.zcode-view-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.zcode-view-mode-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.zcode-view-mode-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.zcode-view-mode-btn.active:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+/* ZeroCodeDev用ヘッダー */
+.zcode-dev-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.zcode-toolbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+
+.zcode-save-banner {
+  position: sticky;
+  top: 54px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(720px, calc(100% - 32px));
+  margin: 0 0 10px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  z-index: 1001;
+  backdrop-filter: blur(6px);
+}
+
+.zcode-save-banner--error {
+  border-color: #fecaca;
+  background: rgba(254, 242, 242, 0.9);
+  color: #991b1b;
+}
+
+.zcode-save-banner-text {
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.zcode-save-banner-close {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  color: inherit;
+  cursor: pointer;
+}
+
+.zcode-save-banner-close:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.zcode-toolbar-separator {
+  width: 1px;
+  height: 24px;
+  background-color: #e5e7eb;
+  margin: 0 4px;
+}
+
+.zcode-dynamic-content-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  user-select: none;
+}
+
+.zcode-dynamic-content-toggle-label:hover {
+  background-color: #f3f4f6;
+}
+
+.zcode-dynamic-content-toggle-checkbox {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ZeroCodeDev内ではZeroCodeCMSのツールバーを非表示（ZeroCodeDevのツールバーを使用するため） */
+.zcode-dev-container .zcode-cms-container .zcode-toolbar {
+  display: none;
+}
+
+/* パーツテンプレート編集内のHTML/CSS切り替え */
+.zcode-template-tabs {
+  display: inline-flex;
+  gap: 6px;
+  margin-right: 8px;
+}
+
+.zcode-template-tab {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 12px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.zcode-template-tab.active {
+  background: #111827;
+  border-color: #111827;
+  color: white;
+  font-weight: 600;
+}
+
+.zcode-css-inline-note {
+  flex-shrink: 0;
+  margin: 0 0 12px 0;
+  padding: 10px 12px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.zcode-part-editor-preview-tab {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  padding: 16px;
+  min-height: 240px;
+  cursor: pointer;
+}
+
+.zcode-part-editor-preview-hint {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.zcode-part-editor-pane {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  flex: 1;
+}
+
+.zcode-part-editor-pane-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.zcode-part-editor-pane-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.zcode-css-warning-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+.zcode-css-warning-compact-icon {
+  flex-shrink: 0;
+  color: #f59e0b;
+}
+
+.zcode-css-warning-compact-text {
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.zcode-part-editor-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-part-editor-slots-toggle {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.zcode-part-editor-slots-toggle:hover {
+  background: #f3f4f6;
+}
+
+.zcode-part-editor-slots-toggle-icon {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.zcode-part-editor-slots-toggle-icon.open {
+  transform: rotate(45deg);
+}
+
+.zcode-part-editor-slots-body {
+  margin-top: 10px;
+}
+
+.zcode-part-editor-topbar {
+  margin-bottom: 16px;
+}
+
+.zcode-part-editor-topfields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.zcode-part-editor-slots-top {
+  margin-top: 12px;
+}
+
+.zcode-part-editor-slots-bottom {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* 保存ボタン（左下固定） */
+.zcode-save-controls-fixed {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.zcode-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--zcode-color-edit);
+  border-radius: 6px;
+  background: var(--zcode-color-edit);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zcode-save-btn:hover {
+  background: var(--zcode-color-edit-hover);
+  border-color: var(--zcode-color-edit-hover);
+}
+
+.zcode-mode-btn {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zcode-mode-btn:hover {
+  background: #f3f4f6;
+}
+
+.zcode-mode-edit:hover {
+  color: var(--zcode-color-edit);
+  background: var(--zcode-color-edit-bg);
+  border-color: var(--zcode-color-edit-border-hover);
+}
+
+.zcode-mode-reorder:hover {
+  color: var(--zcode-color-reorder);
+  background: var(--zcode-color-reorder-bg);
+  border-color: var(--zcode-color-reorder-border-hover);
+}
+
+.zcode-mode-add:hover {
+  color: var(--zcode-color-add);
+  background: var(--zcode-color-add-bg);
+  border-color: var(--zcode-color-add-border-hover);
+}
+
+.zcode-mode-delete:hover {
+  color: var(--zcode-color-delete);
+  background: var(--zcode-color-delete-bg);
+  border-color: var(--zcode-color-delete-border-hover);
+}
+
+.zcode-mode-btn.active {
+  border-color: currentColor;
+  font-weight: 600;
+}
+
+.zcode-mode-edit.active {
+  color: var(--zcode-color-edit);
+  background: var(--zcode-color-edit-bg-active);
+  border-color: var(--zcode-color-edit);
+}
+
+.zcode-mode-reorder.active {
+  color: var(--zcode-color-reorder);
+  background: var(--zcode-color-reorder-bg-active);
+  border-color: var(--zcode-color-reorder);
+}
+
+.zcode-mode-add.active {
+  color: var(--zcode-color-add);
+  background: var(--zcode-color-add-bg-active);
+  border-color: var(--zcode-color-add);
+}
+
+.zcode-mode-delete.active {
+  color: var(--zcode-color-delete);
+  background: var(--zcode-color-delete-bg-active);
+  border-color: var(--zcode-color-delete);
+}
+
+/* 表示ボタン */
+.zcode-view-mode-btn {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zcode-view-mode-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.zcode-view-mode-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.zcode-view-mode-btn.active:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+/* 設定ボタン */
+.zcode-settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zcode-settings-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+/* 設定パネル */
+.zcode-settings-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.zcode-settings-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.zcode-settings-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  gap: 12px;
+}
+
+.zcode-settings-panel-header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  flex: 1;
+}
+
+.zcode-settings-panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zcode-language-select {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.zcode-language-select:hover {
+  border-color: #9ca3af;
+}
+
+.zcode-language-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.zcode-settings-panel-content {
+  padding: 20px;
+}
+
+.zcode-setting-item {
+  margin-bottom: 24px;
+}
+
+.zcode-setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.zcode-setting-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+.zcode-setting-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.zcode-info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.zcode-info-btn:hover {
+  color: #374151;
+}
+
+.zcode-setting-description {
+  margin: 8px 0 0 26px;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.zcode-setting-info {
+  margin: 0;
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* 削除パネル */
+.zcode-delete-panel-content {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zcode-delete-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--zcode-color-delete-bg);
+  border: 1px solid var(--zcode-color-delete-border-hover);
+  border-radius: 6px;
+  color: var(--zcode-color-delete);
+}
+
+.zcode-delete-warning svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.zcode-delete-warning p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.zcode-delete-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.zcode-btn-danger {
+  flex: 1;
+  padding: 10px;
+  background: var(--zcode-color-delete);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-btn-danger:hover {
+  background: var(--zcode-color-delete-hover);
+}
+
+.zcode-btn-cancel {
+  flex: 1;
+  padding: 10px;
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-btn-cancel:hover {
+  background: #d1d5db;
+}
+
+/* 親要素選択 */
+.zcode-parent-selector {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-parent-select-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--zcode-color-edit);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-parent-select-btn:hover {
+  background: var(--zcode-color-edit-hover);
+}
+
+.zcode-reorder-panel-content {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.zcode-reorder-panel-content-text {
+  margin: 8px 0;
+  color: #374151;
+}
+
+.zcode-reorder-source {
+  font-family: monospace;
+  font-size: 12px;
+  color: #1f2937;
+}
+
+/* フィールド編集項目 */
+.zcode-field-item {
+  margin-bottom: 20px;
+}
+
+.zcode-field-item-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 600;
+}
+
+/* グループタブ */
+.zcode-group-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-wrap: nowrap; /* 1行に並べる */
+  overflow-x: auto; /* 横スクロールを許可 */
+  overflow-y: hidden;
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.zcode-group-tab {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.zcode-group-tab:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.zcode-group-tab.active {
+  background: var(--zcode-color-edit);
+  border-color: var(--zcode-color-edit);
+  color: white;
+}
+
+.zcode-group-tab.active:hover {
+  background: var(--zcode-color-edit-hover);
+  border-color: var(--zcode-color-edit-hover);
+}
+
+/* レスポンシブ対応（共通パネル） */
+@media (max-width: 768px) {
+  .zcode-edit-panel,
+  .zcode-add-panel,
+  .zcode-reorder-panel,
+  .zcode-delete-panel {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    right: 0;
+    left: 0;
+    border-radius: 12px 12px 0 0;
+    max-height: 60vh;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1002;
+    animation: zcode-slide-in-up 0.3s ease-out;
+  }
+
+  @keyframes zcode-slide-in-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .zcode-insert-position {
+    width: 100%;
+    right: 0;
+  }
+
+  .zcode-edit-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .zcode-edit-actions-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .zcode-toolbar {
+    top: 0;
+    left: 10px;
+    right: 10px;
+    flex-wrap: nowrap;
+    padding: 6px 8px;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .zcode-toolbar-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+
+  .zcode-toolbar-btn-text {
+    display: none;
+  }
+
+  .zcode-view-mode-btn,
+  .zcode-mode-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .zcode-view-mode-btn span,
+  .zcode-mode-btn span {
+    display: none;
+  }
+
+  .zcode-settings-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .zcode-delete-dialog-content {
+    width: 95%;
+    padding: 16px;
+  }
+
+  /* 保存ボタンの位置調整（モバイルで右下FABスタイル） */
+  .zcode-save-controls-fixed {
+    bottom: 20px;
+    left: 20px;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .zcode-save-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .zcode-save-btn span {
+    display: none;
+  }
+
+  .zcode-save-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .zcode-edit-panel-header,
+  .zcode-add-panel-header,
+  .zcode-reorder-panel-header,
+  .zcode-delete-panel-header {
+    padding: 10px 12px;
+  }
+
+  .zcode-edit-fields {
+    padding: 12px;
+  }
+
+  .zcode-field-item {
+    margin-bottom: 20px;
+  }
+
+  .zcode-text-input,
+  .zcode-textarea {
+    padding: 8px 12px;
+  }
+
+  .zcode-textarea {
+    min-height: 100px;
+  }
+
+  .zcode-btn,
+  .zcode-btn-primary,
+  .zcode-btn-danger,
+  .zcode-btn-cancel {
+    padding: 10px;
+  }
+
+  .zcode-group-tab {
+    padding: 8px 12px;
+  }
+
+  .zcode-image-select-btn,
+  .zcode-image-clear-btn,
+  .zcode-parent-select-btn {
+    padding: 8px 12px;
+  }
+}
+
+/* ========================================
+   6. 追加モード
+   ======================================== */
+
+/* 共通/個別タブ */
+.zcode-part-category-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.zcode-category-tab {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.zcode-category-tab:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zcode-category-tab.active {
+  background: var(--zcode-color-add);
+  color: white;
+  border-color: var(--zcode-color-add);
+}
+
+/* Typeタブ */
+.zcode-type-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-wrap: nowrap; /* 1行に並べる */
+  overflow-x: auto; /* 横スクロールを許可 */
+  overflow-y: hidden;
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.zcode-type-tab {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.zcode-type-tab:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zcode-type-tab.active {
+  background: var(--zcode-color-add);
+  color: white;
+  border-color: var(--zcode-color-add);
+}
+
+/* パーツ一覧 */
+.zcode-part-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* typeセクション */
+.zcode-part-type-section {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.zcode-part-type-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.zcode-type-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px 0;
+}
+
+.zcode-type-section-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.zcode-module-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.zcode-empty-parts {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+}
+
+.zcode-empty-parts-text {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* モジュールプレビュー */
+.zcode-module-preview {
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-module-preview:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.zcode-module-preview.active {
+  border-color: var(--zcode-color-add);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.zcode-module-preview-label {
+  padding: 6px 10px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+}
+
+.zcode-module-preview.active .zcode-module-preview-label {
+  background: var(--zcode-color-add);
+  color: white;
+}
+
+.zcode-module-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.zcode-module-preview-header .zcode-module-preview-label {
+  flex: 1;
+  padding: 4px 8px;
+  background: transparent;
+  border-bottom: none;
+  text-align: left;
+}
+
+.zcode-module-preview-icon-btn {
+  border: none;
+  background: transparent;
+  padding: 0 6px 0 0;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zcode-module-preview-icon-btn:hover {
+  color: #111827;
+}
+
+.zcode-module-preview.active .zcode-module-preview-header {
+  background: var(--zcode-color-add);
+}
+
+.zcode-module-preview.active .zcode-module-preview-header .zcode-module-preview-label {
+  color: white;
+}
+
+.zcode-module-preview.active .zcode-module-preview-icon-btn {
+  color: #ecfeff;
+}
+
+.zcode-module-preview-content {
+  padding: 0;
+  flex: 1;
+  overflow: hidden;
+  overflow-y: hidden;
+}
+
+.zcode-module-preview-content * {
+  max-width: 100%;
+}
+
+/* 追加位置選択 */
+.zcode-copy-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.zcode-copy-notice-icon {
+  flex-shrink: 0;
+  color: #0ea5e9;
+}
+
+.zcode-copy-notice-text {
+  margin: 0;
+  font-size: 13px;
+  color: #075985;
+}
+
+.zcode-insert-position {
+  padding: 12px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+}
+
+.zcode-insert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.zcode-insert-position-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.zcode-keep-adding-label-position {
+  margin-top: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.zcode-keep-adding-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.zcode-keep-adding-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.zcode-insert-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.zcode-insert-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.zcode-insert-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zcode-insert-before {
+  border-color: var(--zcode-color-add);
+  color: var(--zcode-color-add);
+}
+
+.zcode-insert-before:hover {
+  background: var(--zcode-color-add-bg);
+  border-color: var(--zcode-color-add-hover);
+}
+
+.zcode-insert-after {
+  border-color: var(--zcode-color-add);
+  color: var(--zcode-color-add);
+}
+
+.zcode-insert-after:hover {
+  background: var(--zcode-color-add-bg);
+  border-color: var(--zcode-color-add-hover);
+}
+
+/* 空のスロット */
+.zcode-empty-slot {
+  padding: 20px;
+  text-align: center;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.zcode-add-slot-btn {
+  padding: 8px 16px;
+  background: var(--zcode-color-add);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.zcode-add-slot-btn:hover {
+  background: var(--zcode-color-add-hover);
+}
+
+.zcode-add-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: var(--zcode-color-add);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.zcode-add-btn:hover {
+  background: var(--zcode-color-add-hover);
+}
+
+/* レスポンシブ対応（追加モード） */
+@media (max-width: 768px) {
+  .zcode-part-category-tabs,
+  .zcode-type-tabs {
+    padding: 8px 12px;
+  }
+
+  .zcode-part-list {
+    padding: 12px;
+  }
+
+  .zcode-part-item {
+    padding: 12px;
+  }
+}
+
+/* ========================================
+   7. リッチテキストエディタ（Tiptap）
+   ======================================== */
+
+.zcode-rich-text-editor {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+.zcode-rich-text-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid #d1d5db;
+  background: #f9fafb;
+  flex-wrap: wrap;
+}
+
+.zcode-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.zcode-toolbar-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zcode-toolbar-btn.is-active {
+  background: var(--zcode-color-edit);
+  color: white;
+  border-color: var(--zcode-color-edit);
+}
+
+.zcode-toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #d1d5db;
+  margin: 0 4px;
+}
+
+.zcode-rich-text-editor-content {
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.zcode-tiptap-editor {
+  outline: none;
+  white-space: pre-wrap;
+}
+
+.zcode-tiptap-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+.zcode-tiptap-editor p {
+  margin: 0.5em 0;
+}
+
+.zcode-tiptap-editor ul,
+.zcode-tiptap-editor ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.zcode-tiptap-editor ul {
+  list-style-type: disc;
+}
+
+.zcode-tiptap-editor ol {
+  list-style-type: decimal;
+}
+
+.zcode-rich-text-editor-content ul {
+  list-style-type: disc;
+}
+
+.zcode-rich-text-editor-content ol {
+  list-style-type: decimal;
+}
+
+.zcode-rich-text-editor-content ul,
+.zcode-rich-text-editor-content ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.zcode-tiptap-editor a.zcode-link {
+  color: var(--zcode-color-edit);
+  text-decoration: underline;
+}
+
+.zcode-tiptap-editor strong {
+  font-weight: 600;
+}
+
+.zcode-tiptap-editor em {
+  font-style: italic;
+}
+
+.zcode-tiptap-editor s {
+  text-decoration: line-through;
+}
+
+/* ========================================
+   8. 画像エディタ
+   ======================================== */
+
+.zcode-image-editor {
+  margin-bottom: 16px;
+}
+
+.zcode-image-editor-input {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.zcode-image-editor-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.zcode-image-select-btn {
+  flex: 1;
+  padding: 8px 16px;
+  background: var(--zcode-color-edit);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-image-select-btn:hover {
+  background: var(--zcode-color-edit-hover);
+}
+
+.zcode-image-clear-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-image-clear-btn:hover {
+  background: #dc2626;
+}
+
+.zcode-image-preview {
+  margin-top: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px;
+  background: #f9fafb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.zcode-image-preview-img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* ========================================
+   9. 画像選択モーダル
+   ======================================== */
+
+.zcode-image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.zcode-image-modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zcode-image-modal-content[data-edit-mode] {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.zcode-image-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.zcode-image-modal-header-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.zcode-image-current {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-image-current-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.zcode-image-current-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zcode-image-current-item-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+.zcode-image-current-name {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.zcode-image-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 24px;
+}
+
+.zcode-image-tab {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.zcode-image-tab:hover {
+  color: #1f2937;
+  background: #f9fafb;
+}
+
+.zcode-image-tab.active {
+  color: var(--zcode-color-edit);
+  border-bottom-color: var(--zcode-color-edit);
+}
+
+.zcode-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.zcode-image-name {
+  padding: 8px;
+  font-size: 12px;
+  color: #374151;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.zcode-image-add {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-image-add-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--zcode-color-edit);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.zcode-image-add-btn:hover {
+  background: var(--zcode-color-edit-hover);
+}
+
+.zcode-image-modal-actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+}
+
+.zcode-image-modal-actions-btn {
+  flex: 1;
+}
+
+/* ========================================
+   10. ZeroCodeDev タブUI
+   ======================================== */
+
+.zcode-dev-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 編集パネル分の余白（設定モーダルから切り替え） */
+.zcode-cms-container.zcode-dev-padding {
+  padding-right: 375px;
+}
+
+@media (max-width: 768px) {
+  .zcode-cms-container.zcode-dev-padding {
+    padding-right: 0;
+    padding-bottom: 60vh;
+  }
+
+  .zcode-dev-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    gap: 8px;
+    background: none;
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  .zcode-dev-tab {
+    border-bottom: 1px solid #e5e7eb;
+  }
+}
+
+/* ZeroCodeCMSを編集タブ以外では非表示 */
+.zcode-dev-container > zcode-cms {
+  display: block;
+}
+
+.zcode-loading-message {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.zcode-loading-message-text {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.zcode-dev-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  background: #f9fafb;
+  justify-content: space-between;
+}
+
+.zcode-dev-tab {
+  padding: 10px 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  flex: 1 1 0;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Devタブの設定ボタンは少し小さめに */
+.zcode-dev-settings-btn {
+  flex: 0 0 auto;
+  padding: 6px;
+  min-width: 32px;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.zcode-dev-tab:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.zcode-dev-tab.active {
+  background: var(--zcode-color-edit);
+  color: #ffffff;
+  border-color: var(--zcode-color-edit);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+@media (max-width: 768px) {
+  .zcode-dev-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    background: transparent;
+  }
+
+  .zcode-dev-tab {
+    width: auto;
+    flex: none;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .zcode-dev-tab.zcode-dev-settings-btn {
+    display: none;
+  }
+}
+
+/* PC時は設定ボタン（固定）を非表示 */
+.zcode-dev-settings-btn-fixed {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .zcode-dev-settings-btn-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    background: white;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    transition: all 0.2s ease;
+  }
+
+  .zcode-dev-settings-btn-fixed:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+  }
+
+  .zcode-dev-settings-btn-fixed svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ========================================
+   11. パーツ管理パネル
+   ======================================== */
+
+.zcode-parts-manager {
+  width: 100%;
+  background: white;
+}
+
+.zcode-parts-manager-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zcode-parts-manager-header-title {
+  margin: 0;
+  font-size: 18px;
+  color: #1f2937;
+}
+
+.zcode-parts-category-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-images-category-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-parts-category-tab-group,
+.zcode-images-category-tab-group {
+  display: flex;
+  gap: 4px;
+}
+
+.zcode-parts-manager-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-parts-list-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+}
+
+.zcode-parts-list-header-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.zcode-parts-items {
+  padding: 16px;
+}
+
+.zcode-part-item {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ホバー効果 */
+.zcode-part-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 並べ替え: 移動元の強調表示 */
+.zcode-part-item.zcode-reorder-source {
+  border-color: var(--zcode-color-reorder);
+  background: rgba(245, 158, 11, 0.02);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+/* 移動元インジケーター */
+.zcode-reorder-source-indicator {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background: var(--zcode-color-reorder);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.zcode-part-item-add {
+  border: 2px dashed #d1d5db;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  cursor: pointer;
+}
+
+.zcode-part-item-add:hover {
+  border-color: var(--zcode-color-add);
+  background: var(--zcode-color-add-bg);
+  transform: translateY(-2px);
+}
+
+.zcode-part-item-add-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.zcode-part-item-add:hover .zcode-part-item-add-content {
+  color: var(--zcode-color-add);
+}
+
+.zcode-part-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.zcode-part-item-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* アクションボタン（並べ替え、削除など） */
+.zcode-action-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zcode-action-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.zcode-action-btn.active {
+  background: var(--zcode-color-reorder);
+  color: white;
+}
+
+.zcode-action-btn.zcode-delete-btn:hover {
+  background: var(--zcode-color-delete-bg);
+  color: var(--zcode-color-delete);
+}
+
+.zcode-part-duplicate-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zcode-part-duplicate-btn:hover {
+  background: var(--zcode-color-add-bg);
+  color: var(--zcode-color-add);
+}
+
+.zcode-part-type {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.zcode-part-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.zcode-part-edit-btn,
+.zcode-part-delete-btn,
+.zcode-module-delete-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zcode-part-edit-btn:hover {
+  background: var(--zcode-color-edit-bg);
+  color: var(--zcode-color-edit);
+}
+
+.zcode-part-delete-btn:hover,
+.zcode-module-delete-btn:hover {
+  background: var(--zcode-color-delete-bg);
+  color: var(--zcode-color-delete);
+}
+
+.zcode-part-description {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+/* 説明が空の場合のスタイル */
+.zcode-description-empty {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.zcode-part-modules {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* パーツ管理 - タイプ別グループ化 */
+.zcode-part-type-group {
+  margin-bottom: 24px;
+}
+
+.zcode-part-type-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.zcode-part-type-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.zcode-part-type-edit-btn {
+  padding: 4px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.zcode-part-type-edit-btn:hover {
+  background: var(--zcode-color-edit-bg);
+  border-color: var(--zcode-color-edit-border-hover);
+  color: var(--zcode-color-edit);
+}
+
+.zcode-part-type-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* パーツプレビュー */
+.zcode-part-preview {
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  max-height: 150px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.zcode-part-preview-content {
+  font-size: 11px;
+  line-height: 1.4;
+  pointer-events: none;
+  transform: scale(0.75);
+  transform-origin: top left;
+  width: 133.33%;
+}
+
+/* 必須マーク */
+.zcode-required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* モジュールヘッダー（削除ボタンなし） */
+.zcode-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.zcode-module-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* パーツ編集モーダル */
+.zcode-part-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.zcode-part-modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 95vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zcode-part-editor {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.zcode-part-editor-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.zcode-part-editor-header-title {
+  margin: 0;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.zcode-part-editor-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  padding-bottom: 80px;
+}
+
+.zcode-part-editor-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.zcode-part-editor-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zcode-part-editor-preview {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f9fafb;
+  position: sticky;
+  top: 0;
+  max-height: calc(90vh - 200px);
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-part-editor-preview-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.zcode-preview-module-selector {
+  margin-bottom: 12px;
+}
+
+.zcode-select-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.zcode-select-input:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+}
+
+.zcode-editing-preview-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  min-height: 200px;
+  transform: scale(0.9);
+  transform-origin: top left;
+  width: 111.11%;
+}
+
+.zcode-preview-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* 拡大プレビューモーダル */
+.zcode-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.zcode-preview-modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zcode-preview-modal-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.zcode-preview-modal-header-title {
+  margin: 0;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.zcode-preview-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ヘルプモーダル */
+.zcode-help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.zcode-help-modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.zcode-help-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.zcode-help-modal-header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zcode-css-warning-modal-title-icon {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.zcode-help-modal-body {
+  padding: 24px;
+}
+
+.zcode-help-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.zcode-help-table-cell {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.zcode-help-table-cell:last-child {
+  border-right: none;
+}
+
+.zcode-help-table-header {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.zcode-help-table-data {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.zcode-help-table-data:first-child {
+  width: 35%;
+}
+
+.zcode-help-table-data:nth-child(2) {
+  width: 30%;
+}
+
+.zcode-help-table-data:nth-child(3) {
+  width: 35%;
+}
+
+.zcode-help-table-code {
+  background: #f3f4f6;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #dc2626;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: nowrap;
+  border: 1px solid #e5e7eb;
+}
+
+.zcode-help-table-row:hover {
+  background: #fafafa;
+}
+
+.zcode-help-section {
+  background: #f9fafb;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.zcode-help-section:last-child {
+  margin-bottom: 0;
+}
+
+.zcode-help-section-title {
+  margin: 0 0 8px 0;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.zcode-help-section-list {
+  margin: 0;
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+.zcode-help-section-item {
+  margin-bottom: 6px;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.zcode-help-section-item:last-child {
+  margin-bottom: 0;
+}
+
+.zcode-help-section-code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #dc2626;
+  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid #e5e7eb;
+}
+
+/* スロット設定 */
+.zcode-slots-config {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.zcode-slot-config-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px;
+  background: #f9fafb;
+}
+
+.zcode-slot-config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.zcode-slot-config-header-title {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.zcode-slot-config-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zcode-slot-config-body-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.zcode-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zcode-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.zcode-checkbox-item:hover {
+  background-color: transparent;
+}
+
+.zcode-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--zcode-color-edit);
+  flex-shrink: 0;
+}
+
+.zcode-checkbox-item span {
+  font-size: 13px;
+  color: #374151;
+  user-select: none;
+}
+
+.zcode-module-slots-config {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.zcode-slot-add-section {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.zcode-slot-add-section-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.zcode-slot-add-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.zcode-select-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.zcode-select-input:hover {
+  border-color: #9ca3af;
+}
+
+.zcode-select-input:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* セレクトボックス（EditPanel用） */
+.zcode-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #1f2937;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.zcode-select:hover {
+  border-color: #9ca3af;
+}
+
+.zcode-select:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.zcode-select[multiple] {
+  padding: 4px;
+  cursor: default;
+}
+
+.zcode-select-option {
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.zcode-select-option:checked {
+  background: var(--zcode-color-edit-bg);
+  color: var(--zcode-color-edit);
+}
+
+/* タグ選択エディタ */
+.zcode-tag-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zcode-tag-preview {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 4px 8px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.zcode-tag-preview code {
+  background-color: transparent;
+  padding: 0;
+  color: #374151;
+  font-weight: 600;
+}
+
+.zcode-slot-add-empty {
+  margin-top: 16px;
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.zcode-module-slots-config-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.zcode-form-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.zcode-btn-small {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+
+.zcode-btn-small:hover {
+  background: var(--zcode-color-delete-bg);
+  color: var(--zcode-color-delete);
+}
+
+.zcode-module-item.active {
+  border-color: var(--zcode-color-edit);
+  background: var(--zcode-color-edit-bg);
+}
+
+.zcode-module-delete-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zcode-module-delete-btn:hover:not(:disabled) {
+  background: var(--zcode-color-delete-bg);
+  color: var(--zcode-color-delete);
+}
+
+.zcode-module-delete-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.zcode-module-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.zcode-module-duplicate-btn,
+.zcode-module-copy-btn {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zcode-module-duplicate-btn:hover:not(:disabled),
+.zcode-module-copy-btn:hover:not(:disabled) {
+  background: var(--zcode-color-add-bg);
+  color: var(--zcode-color-add);
+}
+
+.zcode-module-copy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.zcode-form-field {
+  margin-bottom: 16px;
+}
+
+.zcode-form-field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.zcode-form-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.zcode-form-field-header > .zcode-form-field-label:first-child {
+  margin-bottom: 0;
+}
+
+.zcode-form-field-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zcode-help-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.zcode-help-btn:hover {
+  color: #374151;
+  background: transparent;
+}
+
+.zcode-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0;
+}
+
+.zcode-checkbox-label-inline {
+  margin-bottom: 0;
+}
+
+.zcode-checkbox-input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.zcode-checkbox-label span {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.zcode-text-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.zcode-text-input:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+}
+
+.zcode-monaco-editor {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-monaco-editor .monaco-editor-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-monaco-editor .monaco-editor-container {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  flex: 1;
+  min-height: 0;
+  max-height: none !important;
+}
+
+.zcode-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: monospace;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.zcode-textarea:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+}
+
+.zcode-modules-list {
+  margin-bottom: 12px;
+}
+
+.zcode-module-item {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zcode-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.zcode-module-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.zcode-module-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zcode-module-body-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.zcode-part-editor-actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  flex-shrink: 0;
+}
+
+.zcode-part-editor-actions-btn {
+  flex: 1;
+}
+
+.zcode-part-editor-actions-btn-primary {
+  padding: 10px 20px;
+  background: var(--zcode-color-edit);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-btn-primary {
+  padding: 10px 20px;
+  background: var(--zcode-color-edit);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* パーツ管理の新規タイプボタンをコンパクトに */
+.zcode-parts-new-btn {
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+/* 画像管理の追加ボタンをコンパクトに */
+.zcode-images-add-btn {
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.zcode-btn-primary:hover {
+  background: var(--zcode-color-edit-hover);
+}
+
+.zcode-btn-secondary {
+  padding: 8px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.zcode-btn-secondary:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+/* ========================================
+   12. ページCSS編集パネル
+   ======================================== */
+
+.zcode-page-css-panel {
+  width: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.zcode-warning-banner {
+  padding: 16px;
+  background: #fff3cd;
+  border-bottom: 1px solid #ffc107;
+  display: flex;
+  gap: 12px;
+}
+
+.zcode-warning-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.zcode-warning-content {
+  flex: 1;
+}
+
+.zcode-warning-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #856404;
+}
+
+.zcode-warning-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #856404;
+  line-height: 1.6;
+}
+
+.zcode-warning-list li {
+  margin-bottom: 4px;
+}
+
+.zcode-warning-list strong {
+  font-weight: 700;
+}
+
+.zcode-warning-inline {
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.zcode-warning-inline .zcode-warning-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.zcode-warning-inline .zcode-warning-content {
+  flex: 1;
+}
+
+.zcode-warning-inline .zcode-warning-title {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #856404;
+}
+
+.zcode-warning-inline .zcode-warning-text {
+  font-size: 12px;
+  color: #856404;
+  line-height: 1.6;
+}
+
+.zcode-warning-inline .zcode-warning-text ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.zcode-warning-inline .zcode-warning-text li {
+  margin-bottom: 4px;
+}
+
+.zcode-css-warning-modal {
+  max-width: 500px;
+}
+
+.zcode-css-warning-modal-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-css-warning-modal .zcode-warning-content {
+  padding: 0;
+}
+
+.zcode-css-warning-modal .zcode-warning-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  color: #856404;
+  line-height: 1.8;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.zcode-css-warning-modal .zcode-warning-list li {
+  margin-bottom: 8px;
+  list-style-type: disc;
+}
+
+.zcode-css-warning-modal .zcode-warning-list strong {
+  font-weight: 700;
+  color: #92400e;
+}
+
+.zcode-page-css-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.zcode-page-css-parts-selector {
+  width: 280px;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.zcode-search-box {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.zcode-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+}
+
+.zcode-search-input:focus {
+  outline: none;
+  border-color: var(--zcode-color-edit);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.zcode-parts-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.zcode-parts-section {
+  margin-bottom: 24px;
+}
+
+.zcode-parts-section:last-child {
+  margin-bottom: 0;
+}
+
+.zcode-parts-section-title {
+  margin: 0 0 8px 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: white;
+  border-radius: 4px;
+}
+
+.zcode-part-item {
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  margin-bottom: 8px;
+}
+
+.zcode-part-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.zcode-part-item-selected {
+  border-color: var(--zcode-color-edit);
+  background: var(--zcode-color-edit-bg);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.zcode-part-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.zcode-part-item-id {
+  font-size: 12px;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.zcode-page-css-preview {
+  flex: 1;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.zcode-preview-container {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+}
+
+.zcode-preview-content {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.zcode-preview-content [data-zcode-highlight='true'] {
+  outline: 3px solid var(--zcode-color-edit);
+  outline-offset: 4px;
+  background: var(--zcode-color-edit-bg);
+}
+
+.zcode-page-css-editor {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: white;
+  flex: 1;
+  min-height: 0;
+}
+
+.zcode-page-css-editor .zcode-form-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.zcode-page-css-editor .zcode-form-field label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.zcode-page-css-editor .monaco-editor-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+.zcode-page-css-editor .monaco-editor-container {
+  height: 100%;
+  min-height: 320px;
+  max-height: none;
+}
+
+.zcode-page-css-actions {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.zcode-page-css-actions .zcode-btn-primary,
+.zcode-page-css-actions .zcode-btn-secondary {
+  flex: 1;
+}
+
+/* ========================================
+   13. 画像管理パネル
+   ======================================== */
+
+.zcode-images-manager {
+  width: 100%;
+  background: white;
+}
+
+.zcode-images-manager-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zcode-images-manager-header-title {
+  margin: 0;
+  font-size: 18px;
+  color: #1f2937;
+}
+
+.zcode-images-manager-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-images-grid {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.zcode-image-item {
+  position: relative;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zcode-image-item > img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ホバー効果 */
+.zcode-image-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 並べ替え: 移動元の強調表示 */
+.zcode-image-item.zcode-reorder-source {
+  border-color: var(--zcode-color-reorder);
+  background: rgba(245, 158, 11, 0.02);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+.zcode-image-item.selected {
+  border-color: var(--zcode-color-edit);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.zcode-image-item-clickable {
+  cursor: pointer;
+}
+
+.zcode-image-item-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.zcode-image-item-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.zcode-image-item-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.zcode-image-item:hover .zcode-image-item-actions {
+  opacity: 1;
+}
+
+.zcode-image-edit-btn,
+.zcode-image-delete-btn {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zcode-image-edit-btn:hover {
+  background: white;
+  color: var(--zcode-color-edit);
+}
+
+.zcode-image-delete-btn:hover {
+  background: white;
+  color: var(--zcode-color-delete);
+}
+
+.zcode-image-item-name {
+  padding: 8px;
+  font-size: 12px;
+  color: #374151;
+  text-align: center;
+  background: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* 編集パネル内の画像エディタ（編集パネル内に配置） */
+.zcode-image-editor-panel {
+  position: static;
+  width: auto;
+  height: auto;
+  background: transparent;
+  box-shadow: none;
+  display: block;
+  z-index: auto;
+}
+
+.zcode-image-editor-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.zcode-image-editor-header-title {
+  margin: 0;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.zcode-image-editor-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.zcode-image-preview-large {
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  background: #f9fafb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.zcode-image-preview-large-img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.zcode-image-editor-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.zcode-image-editor-actions-btn {
+  flex: 1;
+}
+
+/* レスポンシブ対応（ZeroCodeDev） */
+@media (max-width: 768px) {
+  .zcode-part-type-items {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .zcode-part-modal {
+    padding: 10px;
+  }
+
+  .zcode-part-modal-content {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+
+  .zcode-part-editor-main {
+    grid-template-columns: 1fr;
+  }
+
+  .zcode-part-editor-topfields {
+    grid-template-columns: 1fr;
+  }
+
+  .zcode-part-editor-preview {
+    position: relative;
+    max-height: 400px;
+  }
+
+  .zcode-images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+}
+
+/* ========================================
+   13. DataViewer（データビューア）
+   ======================================== */
+
+.zcode-data-viewer {
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.zcode-data-viewer-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.zcode-data-viewer-content-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.zcode-data-viewer-content-tab {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.zcode-data-viewer-content-tab:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zcode-data-viewer-content-tab.active {
+  background: var(--zcode-color-edit);
+  color: white;
+  border-color: var(--zcode-color-edit);
+}
+
+.zcode-data-viewer-tabs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.zcode-data-viewer-tab {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.zcode-data-viewer-tab:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zcode-data-viewer-tab.active {
+  background: var(--zcode-color-add);
+  color: #fff;
+  border-color: var(--zcode-color-add);
+}
+
+.zcode-data-viewer-error {
+  padding: 12px 16px;
+  background: #fee;
+  color: #c33;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+}
+
+.zcode-data-viewer-content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.zcode-data-viewer-display-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.zcode-data-viewer-display {
+  margin: 0;
+  padding: 16px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #f9fafb;
+  background: #111827;
+  white-space: pre;
+  overflow-x: auto;
+  border-top: 1px solid #374151;
+}
+
+.zcode-data-viewer-copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(17, 24, 39, 0.8);
+  color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.zcode-data-viewer-copy-btn:hover {
+  background: rgba(17, 24, 39, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.zcode-data-viewer-copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   14. その他（フォーム要素など）
+   ======================================== */
+
+/* readonlyフィールド */
+.zcode-input-readonly,
+.zcode-textarea-readonly {
+  display: none;
+}
+
+.zcode-dev-container .zcode-input-readonly,
+.zcode-dev-container .zcode-textarea-readonly {
+  display: block;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border-color: #d1d5db;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ========================================
+   コンテキストメニュー
+   ======================================== */
+
+.zcode-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 4px;
+  z-index: 10000;
+  min-width: 160px;
+}
+
+.zcode-context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #374151;
+  transition: background 0.2s;
+}
+
+.zcode-context-menu-item:hover {
+  background: #f3f4f6;
+}
+
+.zcode-context-menu-item.active {
+  background: var(--zcode-color-edit-bg);
+  color: var(--zcode-color-edit);
+  font-weight: 500;
+}
+
+.zcode-context-menu-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 4px 0;
+}
+
+/* ========================================
+   保存確認ダイアログ
+   ======================================== */
+
+.zcode-save-confirm-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.zcode-save-confirm-dialog {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.zcode-save-confirm-dialog-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.zcode-save-confirm-dialog-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.zcode-save-confirm-dialog-body {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.zcode-save-confirm-dialog-body p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.zcode-save-confirm-targets {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.zcode-save-confirm-targets li {
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.zcode-save-confirm-targets li:last-child {
+  margin-bottom: 0;
+}
+
+.zcode-save-confirm-dialog-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.zcode-btn-secondary {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #374151;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.zcode-btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.zcode-btn-primary {
+  padding: 8px 16px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.zcode-btn-primary:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 768px) {
+  .zcode-save-confirm-dialog {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .zcode-save-confirm-dialog-header {
+    padding: 12px 16px;
+  }
+
+  .zcode-save-confirm-dialog-body {
+    padding: 16px;
+  }
+
+  .zcode-save-confirm-dialog-footer {
+    padding: 12px 16px;
+    flex-direction: column-reverse;
+  }
+
+  .zcode-btn-secondary,
+  .zcode-btn-primary {
+    width: 100%;
+  }
+}

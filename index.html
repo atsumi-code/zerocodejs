@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js - Web ComponentsベースのCMSフロントエンドライブラリ</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- サイト共通CSS（ヘッダー・フッター） -->
+    <link rel="stylesheet" href="./css/site-common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body>
+    <!-- 背景アニメーション -->
+    <div class="bg-particles">
+      <div class="bg-particle"></div>
+      <div class="bg-particle"></div>
+      <div class="bg-particle"></div>
+      <div class="bg-particle"></div>
+      <div class="bg-particle"></div>
+      <div class="bg-particle"></div>
+    </div>
+
+    <!-- ヘッダー（共通） -->
+    <div id="header-placeholder"></div>
+
+    <!-- ヒーローセクション -->
+    <section class="hero">
+      <h1 class="hero-title">ZeroCode.js</h1>
+      <p class="hero-subtitle">
+        既存システムに統合できる、フレームワーク非依存のCMSフロントエンドライブラリ
+      </p>
+      <div class="hero-buttons">
+        <a href="#quickstart" class="btn btn-primary">Get Started</a>
+        <a href="#demo" class="btn btn-secondary">View Demo</a>
+      </div>
+      <div class="hero-image">
+        <img src="./images/zcode_top_01.png" alt="ZeroCode.js" />
+      </div>
+    </section>
+
+    <!-- 特徴セクション -->
+    <section class="section">
+      <h2 class="section-title">主な特徴</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3 class="feature-title">依存・副作用なし</h3>
+          <p class="feature-description">
+            WebコンポーネントのShadow
+            DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。依存関係や副作用がなく、Vue/React/Laravelなどどの環境でも安全に組み込めます。
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">学習コストが低い</h3>
+          <p class="feature-description">
+            Web Components標準で実装されているため、HTML/CSS/JSの基礎知識があれば理解できます。Vue
+            3を内部で使用していますが、フレームワーク非依存のAPIを提供するため、Vueの詳細な知識は不要です。独自のテンプレート記法で柔軟なコンテンツ管理ができます。
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">直感的な操作</h3>
+          <p class="feature-description">
+            クリック操作で誰でも使えるCMS。ドラッグ&ドロップ不要で、編集・追加・削除・並べ替えが簡単です。選択中の要素には視覚的なフィードバックが表示され、操作が分かりやすくなっています。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- アーキテクチャセクション -->
+    <section class="section">
+      <h2 class="section-title">アーキテクチャ</h2>
+      <p class="section-subtitle">ZeroCode.jsはフロントエンドのみを責務とします</p>
+      <div class="architecture-diagram">
+        <div class="architecture-flow">
+          <div class="arch-box backend">
+            <div class="arch-label">バックエンド</div>
+            <div class="arch-desc">データ管理・API</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-frontend-group">
+            <div class="arch-box frontend-cms">
+              <div class="arch-label">ZeroCodeCMS</div>
+              <div class="arch-desc">ユーザー向け管理画面</div>
+              <div class="arch-features">編集・追加・削除・並べ替え</div>
+            </div>
+            <div class="arch-box frontend-editor">
+              <div class="arch-label">ZeroCodeEditor</div>
+              <div class="arch-desc">エンジニア・デザイナー向け</div>
+              <div class="arch-features">パーツ管理・画像管理</div>
+            </div>
+          </div>
+          <div class="arch-arrow">←</div>
+          <div class="arch-box">
+            <div class="arch-label">保存リクエスト</div>
+            <div class="arch-desc">データを返却</div>
+          </div>
+        </div>
+        <div class="arch-note">
+          ZeroCode.jsはフロントエンドライブラリのため、バックエンドの実装は呼び出し側で行います
+        </div>
+      </div>
+    </section>
+
+    <!-- なぜ選ぶべきかセクション -->
+    <section class="section">
+      <h2 class="section-title">なぜZeroCode.jsを選ぶべきか</h2>
+      <p class="section-subtitle">
+        既存システムに統合したい、フレームワークを選びたくない、そんな場合に最適です
+      </p>
+      <div class="why-choose-grid">
+        <div class="why-choose-card">
+          <div class="why-choose-icon why-choose-icon-link"></div>
+          <h3 class="why-choose-title">既存システムに統合したい</h3>
+          <p class="why-choose-description">
+            Web ComponentsのShadow DOMにより、既存システムのCSS/JSに影響を与えず、既存システム側のCSS/JSにも影響されません。既存のLaravel管理画面やReact/Vueアプリに、Web
+            Componentsとして組み込むだけでCMS機能が使えます。既存の認証システムやデータベースをそのまま活用できます。
+          </p>
+        </div>
+        <div class="why-choose-card">
+          <div class="why-choose-icon why-choose-icon-swap"></div>
+          <h3 class="why-choose-title">フレームワークを選びたくない</h3>
+          <p class="why-choose-description">
+            Web Components標準で実装されているため、Vue/React/Laravelなどどの環境でも使用可能です。フレームワーク非依存のAPIを提供するため、既存の技術スタックをそのまま活用でき、新しいフレームワークを学習する必要がありません。HTML/CSS/JSの基礎知識があれば理解できます。
+          </p>
+        </div>
+        <div class="why-choose-card">
+          <div class="why-choose-icon why-choose-icon-lightning"></div>
+          <h3 class="why-choose-title">フロントエンド専用が欲しい</h3>
+          <p class="why-choose-description">
+            フロントエンドのみのライブラリのため、バックエンドは既存のものを活用できます。サーバー構築や運用の負担がなく、既存のバックエンドAPIと連携するだけでCMS機能を実現できます。フルスタックCMSとは異なり、軽量で導入が簡単です。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- デモセクション -->
+    <section id="demo" class="section">
+      <h2 class="section-title">デモを試す</h2>
+      <p class="section-subtitle">依存や副作用の少ないWebコンポーネントの3段階の責務分け</p>
+      <div class="demo-grid">
+        <div class="demo-card dev">
+          <span class="demo-badge">開発用</span>
+          <h3 class="demo-title">エンジニア用管理画面 (Dev)</h3>
+          <p class="demo-description">開発者・デザイナー向けの管理画面。全機能が利用できます。</p>
+          <ul class="demo-features">
+            <li>パーツ管理</li>
+            <li>画像管理</li>
+            <li>データビューア</li>
+          </ul>
+          <div class="demo-code">
+            <code>&lt;zcode-editor&gt;&lt;/zcode-editor&gt;</code>
+          </div>
+          <a href="./test-dev.html" class="demo-button" target="_blank">デモを試す（操作可能） →</a>
+          <p class="demo-hint">💡 全機能を試せます（パーツ管理・画像管理含む）</p>
+        </div>
+
+        <div class="demo-arrow">→</div>
+
+        <div class="demo-card cms">
+          <span class="demo-badge">ユーザー用</span>
+          <h3 class="demo-title">ユーザー用管理画面 (CMS)</h3>
+          <p class="demo-description">コンテンツ編集者向けの管理画面。編集機能が利用できます。</p>
+          <ul class="demo-features">
+            <li>編集・追加・削除・並べ替え</li>
+            <li>パーツ管理なし</li>
+            <li>画像管理なし</li>
+          </ul>
+          <div class="demo-code">
+            <code>&lt;zcode-cms&gt;&lt;/zcode-cms&gt;</code>
+          </div>
+          <a href="./test-cms.html" class="demo-button" target="_blank">デモを試す（操作可能） →</a>
+          <p class="demo-hint">💡 クリックで編集・追加・削除ができます</p>
+        </div>
+
+        <div class="demo-arrow">→</div>
+
+        <div class="demo-card pub">
+          <span class="demo-badge">公開サイト用</span>
+          <h3 class="demo-title">公開用 (Pub)</h3>
+          <p class="demo-description">サーバーサイドレンダリング専用。HTML文字列を生成します。</p>
+          <ul class="demo-features">
+            <li>HTML文字列生成のみ</li>
+            <li>編集機能なし</li>
+            <li>軽量で副作用なし</li>
+          </ul>
+          <div class="demo-code">
+            <code>renderToHtml(data)</code>
+          </div>
+          <a href="./test-pub.html" class="demo-button" target="_blank">デモを開く</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- クイックスタートセクション -->
+    <section id="quickstart" class="section">
+      <h2 class="section-title">クイックスタート</h2>
+      <div class="quickstart">
+        <h3 style="margin-bottom: 20px; font-size: 20px; color: #2c3e50">インストール</h3>
+        <div class="quickstart-install">npm install zerocodejs</div>
+
+        <h3 style="margin: 40px 0 20px 0; font-size: 20px; color: #2c3e50">環境別の使用例</h3>
+
+        <div class="quickstart-tabs">
+          <button class="quickstart-tab active" data-tab="html">HTML</button>
+          <button class="quickstart-tab" data-tab="nodejs">Node.js</button>
+          <button class="quickstart-tab" data-tab="laravel">PHP/Laravel</button>
+          <button class="quickstart-tab" data-tab="nuxt">Vue/Nuxt</button>
+          <button class="quickstart-tab" data-tab="nextjs">React/Next.js</button>
+        </div>
+
+        <div class="quickstart-tab-content">
+          <!-- HTML -->
+          <div class="tab-pane active" id="tab-html">
+            <div class="quickstart-code">
+              <code
+                >&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;<br />
+                &nbsp;&nbsp;&lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;<br />
+                &lt;/zcode-cms&gt;<br />
+                <br />
+                &lt;script type="module"&gt;<br />
+                &nbsp;&nbsp;import 'zerocodejs';<br />
+                &nbsp;&nbsp;const cms = document.getElementById('cms');<br />
+                &nbsp;&nbsp;cms.setAttribute('page', JSON.stringify([]));<br />
+                &nbsp;&nbsp;cms.setAttribute('parts-common', JSON.stringify([]));<br />
+                &nbsp;&nbsp;cms.setAttribute('parts-individual', JSON.stringify([]));<br />
+                &nbsp;&nbsp;cms.setAttribute('parts-special', JSON.stringify([]));<br />
+                &nbsp;&nbsp;cms.setAttribute('images-common', JSON.stringify([]));<br />
+                &nbsp;&nbsp;cms.setAttribute('images-individual', JSON.stringify([]));<br />
+                &nbsp;&nbsp;cms.setAttribute('images-special', JSON.stringify([]));<br />
+                &lt;/script&gt;</code
+              >
+            </div>
+          </div>
+
+          <!-- Node.js -->
+          <div class="tab-pane" id="tab-nodejs">
+            <div class="quickstart-code">
+              <code
+                >// Express.js など<br />
+                app.get('/', (req, res) =&gt; {<br />
+                &nbsp;&nbsp;res.send(`<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;script type="module"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import 'zerocodejs';<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const cms = document.getElementById('cms');<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('page', JSON.stringify(${JSON.stringify(pageData)}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-common', JSON.stringify(${JSON.stringify(partsCommon)}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-individual', JSON.stringify(${JSON.stringify(partsIndividual)}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-special', JSON.stringify(${JSON.stringify(partsSpecial || [])}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-common', JSON.stringify(${JSON.stringify(imagesCommon || [])}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-individual', JSON.stringify(${JSON.stringify(imagesIndividual || [])}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-special', JSON.stringify(${JSON.stringify(imagesSpecial || [])}));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/script&gt;<br />
+                &nbsp;&nbsp;`);<br />
+                });</code
+              >
+            </div>
+          </div>
+
+          <!-- PHP/Laravel -->
+          <div class="tab-pane" id="tab-laravel">
+            <div class="quickstart-code">
+              <code
+                >&lt;!-- Bladeテンプレート内 --&gt;<br />
+                &lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;@slot('css')<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;link rel="stylesheet" href="{{ asset('css/common.css')
+                }}" /&gt;<br />
+                &nbsp;&nbsp;@endslot<br />
+                &nbsp;&nbsp;@slot('script')<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;script src="{{ asset('js/accordion.js')
+                }}"&gt;&lt;/script&gt;<br />
+                &nbsp;&nbsp;@endslot<br />
+                &lt;/zcode-cms&gt;<br />
+                <br />
+                &lt;script type="module"&gt;<br />
+                &nbsp;&nbsp;import 'zerocodejs';<br />
+                &nbsp;&nbsp;const cms = document.getElementById('cms');<br />
+                &nbsp;&nbsp;cms.setAttribute('page', @json($pageData));<br />
+                &nbsp;&nbsp;cms.setAttribute('parts-common', @json($partsCommon));<br />
+                &nbsp;&nbsp;cms.setAttribute('parts-individual', @json($partsIndividual));<br />
+                &nbsp;&nbsp;cms.setAttribute('parts-special', @json($partsSpecial ?? []));<br />
+                &nbsp;&nbsp;cms.setAttribute('images-common', @json($imagesCommon ?? []));<br />
+                &nbsp;&nbsp;cms.setAttribute('images-individual', @json($imagesIndividual ?? []));<br />
+                &nbsp;&nbsp;cms.setAttribute('images-special', @json($imagesSpecial ?? []));<br />
+                &lt;/script&gt;</code
+              >
+            </div>
+          </div>
+
+          <!-- Nuxt.js -->
+          <div class="tab-pane" id="tab-nuxt">
+            <div class="quickstart-code">
+              <code
+                >&lt;!-- pages/index.vue --&gt;<br />
+                &lt;template&gt;<br />
+                &nbsp;&nbsp;&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css"
+                /&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script"
+                src="/js/accordion.js"&gt;&lt;/script&gt;<br />
+                &nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
+                &lt;/template&gt;<br />
+                <br />
+                &lt;script setup&gt;<br />
+                &nbsp;&nbsp;import 'zerocodejs';<br />
+                &nbsp;&nbsp;import { onMounted } from 'vue';<br />
+                <br />
+                &nbsp;&nbsp;onMounted(() =&gt; {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;const cms = document.getElementById('cms');<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('page',
+                JSON.stringify(pageData.value));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('parts-common',
+                JSON.stringify(partsCommon.value));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('parts-individual',
+                JSON.stringify(partsIndividual.value));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('parts-special',
+                JSON.stringify(partsSpecial.value ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('images-common',
+                JSON.stringify(imagesCommon.value ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('images-individual',
+                JSON.stringify(imagesIndividual.value ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('images-special',
+                JSON.stringify(imagesSpecial.value ?? []));<br />
+                &nbsp;&nbsp;});<br />
+                &lt;/script&gt;</code
+              >
+            </div>
+          </div>
+
+          <!-- React/Next.js -->
+          <div class="tab-pane" id="tab-nextjs">
+            <div class="quickstart-code">
+              <code
+                >&lt;!-- pages/index.js or app/page.js --&gt;<br />
+                import { useEffect } from 'react';<br />
+                import 'zerocodejs';<br />
+                <br />
+                export default function Home() {<br />
+                &nbsp;&nbsp;useEffect(() =&gt; {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;const cms = document.getElementById('cms');<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;if (cms) {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('page',
+                JSON.stringify(pageData));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-common',
+                JSON.stringify(partsCommon));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-individual',
+                JSON.stringify(partsIndividual));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-special',
+                JSON.stringify(partsSpecial ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-common',
+                JSON.stringify(imagesCommon ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-individual',
+                JSON.stringify(imagesIndividual ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-special',
+                JSON.stringify(imagesSpecial ?? []));<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+                &nbsp;&nbsp;}, []);<br />
+                <br />
+                &nbsp;&nbsp;return (<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet"
+                href="/css/common.css" /&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script"
+                src="/js/accordion.js"&gt;&lt;/script&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
+                &nbsp;&nbsp;);<br />
+                }</code
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ドキュメントセクション -->
+    <section id="docs" class="section">
+      <div class="docs-section">
+        <h2 class="section-title" style="margin-bottom: 20px">ドキュメント</h2>
+        <p class="docs-text">
+          詳細な使い方やAPIリファレンスは<br />ドキュメントページをご覧ください
+        </p>
+        <a href="./docs.html" class="btn btn-primary" style="display: inline-block"
+          >ドキュメントを見る</a
+        >
+      </div>
+    </section>
+
+    <!-- タブ切り替えスクリプト -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.quickstart-tab');
+        const panes = document.querySelectorAll('.tab-pane');
+
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', function () {
+            const targetTab = this.getAttribute('data-tab');
+
+            // すべてのタブとペインからactiveクラスを削除
+            tabs.forEach((t) => t.classList.remove('active'));
+            panes.forEach((p) => p.classList.remove('active'));
+
+            // クリックされたタブと対応するペインにactiveクラスを追加
+            this.classList.add('active');
+            const targetPane = document.getElementById('tab-' + targetTab);
+            if (targetPane) {
+              targetPane.classList.add('active');
+            }
+          });
+        });
+      });
+    </script>
+
+    <!-- フッター（共通） -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 共通ヘッダー・フッター読み込み -->
+    <script type="module" src="./common-header-footer.js"></script>
+  </body>
+</html>

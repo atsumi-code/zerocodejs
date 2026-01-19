@@ -1,0 +1,218 @@
+/* ZeroCode.js - サイト共通CSS */
+
+/* 基本リセット */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    'Inter',
+    'Noto Sans JP',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  line-height: 1.6;
+  color: #2c3e50;
+  background: #ffffff;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 背景アニメーション（画面全体） */
+.bg-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: bgFloat 25s infinite ease-in-out;
+  filter: blur(3px);
+}
+
+.bg-particle:nth-child(1) {
+  width: 500px;
+  height: 500px;
+  top: -200px;
+  left: -150px;
+  background: rgba(52, 152, 219, 0.08);
+}
+.bg-particle:nth-child(2) {
+  width: 400px;
+  height: 400px;
+  top: 25%;
+  right: -150px;
+  background: rgba(155, 89, 182, 0.06);
+  animation-delay: -5s;
+}
+.bg-particle:nth-child(3) {
+  width: 350px;
+  height: 350px;
+  bottom: 5%;
+  left: 15%;
+  background: rgba(46, 204, 113, 0.06);
+  animation-delay: -10s;
+}
+.bg-particle:nth-child(4) {
+  width: 280px;
+  height: 280px;
+  top: 45%;
+  left: 5%;
+  background: rgba(241, 196, 15, 0.05);
+  animation-delay: -15s;
+}
+.bg-particle:nth-child(5) {
+  width: 450px;
+  height: 450px;
+  bottom: -150px;
+  right: 5%;
+  background: rgba(231, 76, 60, 0.05);
+  animation-delay: -8s;
+}
+.bg-particle:nth-child(6) {
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: 35%;
+  background: rgba(52, 73, 94, 0.04);
+  animation-delay: -12s;
+}
+
+@keyframes bgFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(50px, -50px) scale(1.1);
+  }
+  50% {
+    transform: translate(-40px, 40px) scale(0.9);
+  }
+  75% {
+    transform: translate(30px, 20px) scale(1.05);
+  }
+}
+
+/* コンテンツを前面に */
+.header,
+.hero,
+.section,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ヘッダー */
+.header {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2c3e50;
+  text-decoration: none;
+  text-shadow:
+    1px 1px 0 rgba(255, 255, 255, 0.8),
+    2px 2px 4px rgba(0, 0, 0, 0.15);
+  letter-spacing: -0.5px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.header-link {
+  font-size: 15px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.header-link:hover {
+  color: #3498db;
+}
+
+/* フッター */
+.footer {
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #3498db;
+}
+
+.footer-copyright {
+  font-size: 14px;
+  color: #95a5a6;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .header-nav {
+    gap: 16px;
+  }
+
+  .header-link {
+    font-size: 14px;
+  }
+}

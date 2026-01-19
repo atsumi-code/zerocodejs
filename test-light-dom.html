@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js - Light DOM Test</title>
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/page.css" />
+    <!-- サンプルデータ用CSS -->
+    <link rel="stylesheet" href="./css/sample.css" />
+  </head>
+  <body>
+    <div class="l-header l-header--light-dom">
+      <h1>ZeroCode.js - Light DOM テスト</h1>
+      <p>Light DOMモード（外部CSS適用）</p>
+    </div>
+
+    <!--
+      Light DOMモード: use-shadow-dom="false"
+      - 外部CSSが完全に適用される
+      - グローバルスタイルの影響を受ける
+      - CSS分離が不要な場合に使用
+    -->
+    <div class="l-container">
+      <zcode-cms id="test-light-dom" locale="ja" use-shadow-dom="false">
+        <!-- 共通CSS（リセットCSS含む） -->
+        <link slot="css" rel="stylesheet" href="./css/common.css" />
+        <!-- ページ専用CSS -->
+        <link slot="css" rel="stylesheet" href="./css/page.css" />
+        <!-- サンプルデータ用CSS -->
+        <link slot="css" rel="stylesheet" href="./css/sample.css" />
+        <!-- Scriptスロット（jQueryとアコーディオン） -->
+        <script
+          slot="script"
+          src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+          crossorigin="anonymous"
+        ></script>
+        <script slot="script" src="./js/accordion.js"></script>
+      </zcode-cms>
+    </div>
+
+    <div class="l-footer l-footer--light-dom">
+      <h1>ZeroCode.js - Light DOM テスト</h1>
+      <p>Light DOMモード（外部CSS適用）</p>
+    </div>
+
+    <!-- 保存ボタンはZeroCode側で実装済み（左下固定） -->
+
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <!-- 共通JavaScript -->
+    <script src="./js/common.js"></script>
+    <!-- アコーディオン機能 -->
+    <script src="./js/accordion.js"></script>
+    <!-- メインスクリプト -->
+    <script type="module" src="/src/index.ts"></script>
+
+    <script>
+      let cms = null;
+
+      async function init() {
+        await waitForCMS();
+        setTimeout(() => {
+          cms = document.getElementById('test-light-dom');
+          if (cms) {
+            // セッションストレージからデータを読み込んで適用
+            const data = ZeroCodeCommon.StorageManager.loadData('test-light-dom');
+            if (data.page.length === 0) {
+              // データがない場合はサンプルデータを読み込む
+              ZeroCodeCommon.StorageManager.saveSampleData('test-light-dom');
+            }
+            ZeroCodeCommon.StorageManager.applyToComponent('test-light-dom');
+
+            // コンテンツ更新イベントを発火
+            const event = new CustomEvent('cms-content-updated');
+            window.dispatchEvent(event);
+            if (typeof jQuery !== 'undefined') {
+              jQuery(document).trigger('cms-content-updated');
+            }
+          }
+        }, 100);
+      }
+
+      function waitForCMS() {
+        return new Promise((resolve) => {
+          if (customElements.get('zcode-cms')) {
+            resolve();
+          } else {
+            customElements.whenDefined('zcode-cms').then(resolve);
+          }
+        });
+      }
+
+      // 保存ボタンはZeroCode側で実装済み（左下固定）
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>
