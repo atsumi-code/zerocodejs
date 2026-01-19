@@ -284,6 +284,28 @@ function unwrapRefValue(maybeRef: unknown): unknown {
   return (maybeRef as Record<string, unknown>).value;
 }
 
+function readBooleanValue(maybeRef: unknown): boolean | undefined {
+  const unwrapped = unwrapRefValue(maybeRef);
+  if (typeof unwrapped === 'boolean') return unwrapped;
+  if (typeof maybeRef === 'boolean') return maybeRef;
+  return undefined;
+}
+
+function readStringValue(maybeRef: unknown): string | undefined {
+  const unwrapped = unwrapRefValue(maybeRef);
+  if (typeof unwrapped === 'string') return unwrapped;
+  if (typeof maybeRef === 'string') return maybeRef;
+  return undefined;
+}
+
+function setBooleanValue(maybeRef: unknown, value: boolean): boolean {
+  if (isObject(maybeRef) && 'value' in maybeRef) {
+    (maybeRef as Record<string, unknown>).value = value;
+    return true;
+  }
+  return false;
+}
+
 function readExposedValue(instance: unknown, key: string): unknown {
   if (!isObject(instance)) return undefined;
   return instance[key];
@@ -356,7 +378,8 @@ const cmsData = computed<ZeroCodeData>(() => {
 
 const currentMode = computed(() => {
   const api = getCmsApi();
-  return api?.currentMode?.value ?? 'edit';
+  const fromApi = api ? readStringValue(api.currentMode) : undefined;
+  return (fromApi as EditorMode) ?? 'edit';
 });
 
 const switchMode = (mode: 'edit' | 'add' | 'reorder' | 'delete') => {
@@ -374,7 +397,9 @@ function handleTabClick(tab: 'edit' | 'parts' | 'images' | 'data') {
 
 function handleOpenSettings() {
   const api = getCmsApi();
-  if (api) api.settingsPanelOpen.value = true;
+  if (api && !setBooleanValue(api.settingsPanelOpen, true)) {
+    (api as Record<string, unknown>).settingsPanelOpen = true;
+  }
 }
 
 // 動的コンテンツの許可状態（ZeroCodeCMS側で管理、previewモードでは常にtrue）
@@ -383,7 +408,10 @@ const allowDynamicContentInteractionValue = computed(() => {
     return true;
   }
   const api = getCmsApi();
-  if (api) return api.allowDynamicContentInteraction.value;
+  if (api) {
+    const value = readBooleanValue(api.allowDynamicContentInteraction);
+    if (value !== undefined) return value;
+  }
   // ZeroCodeCMSが表示されていない場合は、localStorageから読み込む（デフォルトはfalse）
   return getCMSSetting('allowDynamicContentInteraction', false);
 });
