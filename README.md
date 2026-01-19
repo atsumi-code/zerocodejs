@@ -1,5 +1,8 @@
 # ZeroCode.js
 
+[![GitHub Pages](https://img.shields.io/website?down_message=offline&label=GitHub%20Pages&up_message=open&url=https%3A%2F%2Fatsumi-code.github.io%2Fzerocodejs%2F)](https://atsumi-code.github.io/zerocodejs/)  
+**🌐 GitHub Pages:** https://atsumi-code.github.io/zerocodejs/
+
 フレームワーク非依存のWeb ComponentsベースのCMSエディターライブラリ
 
 > **Status: Beta**
@@ -7,12 +10,13 @@
 > ZeroCode.js は現在ベータ版です。仕様・API・データ形式は予告なく変更される可能性があります（破壊的変更を含む）。
 > 不具合報告・改善提案・ユースケース共有・ドキュメントのズレの指摘を歓迎します。
 >
-> - **Issue**: [../../issues](../../issues)
-> - **Discussion**: [../../discussions](../../discussions)（運用していない場合は Issue でOK）
+> - **GitHub**: https://github.com/atsumi-code/zerocodejs
+> - **Issue**: [https://github.com/atsumi-code/zerocodejs/issues](https://github.com/atsumi-code/zerocodejs/issues)
+> - **Discussion**: [https://github.com/atsumi-code/zerocodejs/discussions](https://github.com/atsumi-code/zerocodejs/discussions)（運用していない場合は Issue でOK）
 > - **Contributing**: [./CONTRIBUTING.md](./CONTRIBUTING.md)
 
 > ⭐ **スターをお願いします**  
-> このプロジェクトに共感していただけたら、[GitHub でスター](https://github.com/atsumi-code/zerocode)をいただけると励みになります。
+> このプロジェクトに共感していただけたら、[GitHub でスター](https://github.com/atsumi-code/zerocodejs)をいただけると励みになります。
 
 ## 特徴
 
