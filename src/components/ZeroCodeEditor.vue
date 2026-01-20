@@ -64,63 +64,61 @@
       :allow-dynamic-content-interaction="allowDynamicContentInteractionValue"
     />
 
-    <template v-if="viewMode === 'manage'">
-      <ZeroCodeCMS
-        v-show="activeTab === 'edit'"
-        ref="cmsRef"
-        :locale="props.locale"
-        :page="props.page"
-        :css-common="props.cssCommon"
-        :css-individual="props.cssIndividual"
-        :css-special="props.cssSpecial"
-        :parts-common="props.partsCommon"
-        :parts-individual="props.partsIndividual"
-        :parts-special="props.partsSpecial"
-        :images-common="props.imagesCommon"
-        :images-individual="props.imagesIndividual"
-        :images-special="props.imagesSpecial"
-        :config="props.config"
-        :endpoints="props.endpoints"
-        :backend-data="props.backendData"
-      />
+    <ZeroCodeCMS
+      v-show="viewMode === 'manage' && activeTab === 'edit'"
+      ref="cmsRef"
+      :locale="props.locale"
+      :page="props.page"
+      :css-common="props.cssCommon"
+      :css-individual="props.cssIndividual"
+      :css-special="props.cssSpecial"
+      :parts-common="props.partsCommon"
+      :parts-individual="props.partsIndividual"
+      :parts-special="props.partsSpecial"
+      :images-common="props.imagesCommon"
+      :images-individual="props.imagesIndividual"
+      :images-special="props.imagesSpecial"
+      :config="props.config"
+      :endpoints="props.endpoints"
+      :backend-data="props.backendData"
+    />
 
-      <PartsManagerPanel
-        v-if="enablePartsManager && activeTab === 'parts' && cmsData"
-        ref="partsManagerRef"
-        :cms-data="cmsData"
-        :config="config"
-      />
-      <div
-        v-if="enablePartsManager && activeTab === 'parts' && !cmsData"
-        class="zcode-loading-message"
-      >
-        <div class="zcode-loading-message-text">
-          {{ $t('editor.loading') }}
-        </div>
+    <PartsManagerPanel
+      v-if="viewMode === 'manage' && enablePartsManager && activeTab === 'parts' && cmsData"
+      ref="partsManagerRef"
+      :cms-data="cmsData"
+      :config="config"
+    />
+    <div
+      v-if="viewMode === 'manage' && enablePartsManager && activeTab === 'parts' && !cmsData"
+      class="zcode-loading-message"
+    >
+      <div class="zcode-loading-message-text">
+        {{ $t('editor.loading') }}
       </div>
+    </div>
 
-      <ImagesManagerPanel
-        v-if="enableImagesManager && activeTab === 'images' && cmsData"
-        ref="imagesManagerRef"
-        :cms-data="cmsData"
-        :config="config"
-      />
-      <div
-        v-if="enableImagesManager && activeTab === 'images' && !cmsData"
-        class="zcode-loading-message"
-      >
-        <div class="zcode-loading-message-text">
-          {{ $t('editor.loading') }}
-        </div>
+    <ImagesManagerPanel
+      v-if="viewMode === 'manage' && enableImagesManager && activeTab === 'images' && cmsData"
+      ref="imagesManagerRef"
+      :cms-data="cmsData"
+      :config="config"
+    />
+    <div
+      v-if="viewMode === 'manage' && enableImagesManager && activeTab === 'images' && !cmsData"
+      class="zcode-loading-message"
+    >
+      <div class="zcode-loading-message-text">
+        {{ $t('editor.loading') }}
       </div>
+    </div>
 
-      <DataViewer
-        v-show="activeTab === 'data' && cmsData"
-        ref="dataViewerRef"
-        :cms-data="cmsData"
-        :config="config"
-      />
-    </template>
+    <DataViewer
+      v-show="viewMode === 'manage' && activeTab === 'data' && cmsData"
+      ref="dataViewerRef"
+      :cms-data="cmsData"
+      :config="config"
+    />
 
     <SettingsPanel
       v-show="devTabsSettingsPanelOpen"
@@ -371,7 +369,7 @@ const showSaveConfirm = ref(
 const { cmsData: devCmsData, loadDataFromProps: loadDevDataFromProps } = useZeroCodeData(props);
 
 const cmsData = computed<ZeroCodeData>(() => {
-  const api = viewMode.value === 'manage' ? getCmsApi() : null;
+  const api = getCmsApi();
   if (api) return api.cmsData;
   return devCmsData;
 });
