@@ -2467,6 +2467,13 @@
   background: #f9fafb;
 }
 
+.zcode-parts-add-wrapper,
+.zcode-images-add-wrapper {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .zcode-parts-category-tab-group,
 .zcode-images-category-tab-group {
   display: flex;
@@ -3614,6 +3621,8 @@
   padding: 7px 12px;
   font-size: 13px;
   border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* 画像管理の追加ボタンをコンパクトに */
@@ -3622,6 +3631,7 @@
   font-size: 13px;
   border-radius: 4px;
 }
+
 
 .zcode-btn-primary:hover {
   background: var(--zcode-color-edit-hover);

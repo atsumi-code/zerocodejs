@@ -20,13 +20,15 @@
           <HelpCircle :size="14" />
         </button>
       </div>
-      <button
-        class="zcode-btn-primary zcode-parts-new-btn"
-        @click="startCreating"
-      >
-        <Plus :size="14" />
-        <span>{{ $t('partsManager.createType') }}</span>
-      </button>
+      <div class="zcode-parts-add-wrapper">
+        <button
+          class="zcode-btn-primary zcode-parts-new-btn"
+          @click="startCreating"
+        >
+          <Plus :size="14" />
+          <span>{{ $t('partsManager.createType') }}</span>
+        </button>
+      </div>
     </div>
 
     <div class="zcode-parts-manager-content">
