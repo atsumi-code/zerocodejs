@@ -13,3 +13,8 @@ index.html
 coverage/
 node_modules/
 
+# dist内の不要ファイル
+dist/**/*.d.ts.map
+dist/__tests__/
+dist/**/*.test.d.ts
+

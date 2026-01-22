@@ -21,11 +21,10 @@ export default defineConfig({
         }
       }
     }),
-    // TypeScript型定義ファイル自動生成
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.ts', 'src/**/*.vue'],
-      exclude: ['src/**/*.spec.ts']
+      exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/__tests__/**/*']
     })
   ],
   build: {
@@ -48,9 +47,8 @@ export default defineConfig({
         }
       }
     },
-    // ソースマップ生成
-    sourcemap: true,
-    // 最小化
+    sourcemap: false,
+    copyPublicDir: false,
     minify: 'esbuild'
   },
   optimizeDeps: {
