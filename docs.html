@@ -127,29 +127,29 @@
         </div>
 
         <h3 id="basic-usage">基本的な使用例</h3>
-        <p>HTMLでの基本的な使用例：</p>
-        <pre><code>&lt;zcode-cms id="cms"&gt;
-  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
-  &lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;
-&lt;/zcode-cms&gt;
+        <p>CDNを使用した最も簡単な例（HTMLファイルをブラウザで開くだけで動作）：</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;zcode-editor&gt;&lt;/zcode-editor&gt;
+
+  &lt;script src="https://unpkg.com/vue@3/dist/vue.global.js"&gt;&lt;/script&gt;
+  &lt;script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <p>npmを使用した例：</p>
+        <pre><code>&lt;zcode-editor&gt;&lt;/zcode-editor&gt;
 
 &lt;script type="module"&gt;
   import 'zerocodejs';
-  const cms = document.getElementById('cms');
-  cms.setAttribute('page', JSON.stringify([]));
-  cms.setAttribute('parts-common', JSON.stringify([]));
-  cms.setAttribute('parts-individual', JSON.stringify([]));
-  cms.setAttribute('parts-special', JSON.stringify([]));
-  cms.setAttribute('images-common', JSON.stringify([]));
-  cms.setAttribute('images-individual', JSON.stringify([]));
-  cms.setAttribute('images-special', JSON.stringify([]));
 &lt;/script&gt;</code></pre>
 
-        <p>エンジニア用管理画面（ZeroCodeEditor）の使用例：</p>
-        <pre><code>&lt;zcode-editor id="editor"&gt;
-  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
-  &lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;
-&lt;/zcode-editor&gt;</code></pre>
+        <p><code>zcode-editor</code>はエンジニア・デザイナー向けの管理画面で、パーツ管理・画像管理・データビューアが利用できます。はじめての方におすすめです。</p>
+        <p><code>zcode-cms</code>はエンドユーザー向けの管理画面で、編集・追加・削除・並べ替えのみが利用できます。</p>
 
         <h3 id="multiple-instances">複数インスタンス対応</h3>
         <p>

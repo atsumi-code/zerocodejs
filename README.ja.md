@@ -28,91 +28,71 @@
 - **パーツ管理**: 再利用可能なパーツを作成・管理
 - **画像管理**: 画像のアップロード・管理機能
 - **柔軟なテンプレート**: カスタムHTMLテンプレート構文で動的なコンテンツを定義
-- **高速**: Vue 3とViteによる高速な開発体験
+- **軽量**: gzip後 約260KB
 
-## インストール
+## デモ
+
+**ライブデモ:** https://atsumi-code.github.io/zerocodejs/
+
+## クイックスタート
+
+### CDN（最も簡単）
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
+</head>
+<body>
+  <zcode-editor></zcode-editor>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
+</body>
+</html>
+```
+
+これだけです！ブラウザでファイルを開いて、パーツの作成を始めましょう。
+
+### npm
 
 ```bash
 npm install zerocodejs
 ```
 
-ZeroCode.jsは内部でVue 3を使用しています。npm 7以降では、peer dependenciesが自動的にインストールされるため、`npm install zerocodejs`だけでVueも一緒にインストールされます。
-
-> **注意:** npm 6以前を使用している場合は、明示的に`npm install zerocodejs vue`を実行してください。
-
-## クイックスタート
-
-### 基本的な使用例
-
 ```html
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>ZeroCode.js Example</title>
   <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css">
 </head>
 <body>
-  <zcode-cms id="cms" locale="ja">
-    <link slot="css" rel="stylesheet" href="/css/common.css" />
-    <script slot="script" src="/js/accordion.js"></script>
-  </zcode-cms>
+  <zcode-editor></zcode-editor>
 
   <script type="module">
     import 'zerocodejs';
-    
-    const cms = document.getElementById('cms');
-    cms.setAttribute('page', JSON.stringify([]));
-    cms.setAttribute('parts-common', JSON.stringify([]));
-    cms.setAttribute('parts-individual', JSON.stringify([]));
-    cms.setAttribute('parts-special', JSON.stringify([]));
-    cms.setAttribute('images-common', JSON.stringify([]));
-    cms.setAttribute('images-individual', JSON.stringify([]));
-    cms.setAttribute('images-special', JSON.stringify([]));
   </script>
 </body>
 </html>
 ```
 
-### Reactでの使用例
-
-```bash
-npm install zerocodejs
-```
+### React
 
 ```jsx
-import { useEffect } from 'react';
 import 'zerocodejs';
 import 'zerocodejs/style.css';
 
 function App() {
-  useEffect(() => {
-    const cms = document.getElementById('cms');
-    if (cms) {
-      cms.setAttribute('page', JSON.stringify([]));
-      cms.setAttribute('parts-common', JSON.stringify([]));
-      cms.setAttribute('parts-individual', JSON.stringify([]));
-      cms.setAttribute('parts-special', JSON.stringify([]));
-      cms.setAttribute('images-common', JSON.stringify([]));
-      cms.setAttribute('images-individual', JSON.stringify([]));
-      cms.setAttribute('images-special', JSON.stringify([]));
-    }
-  }, []);
-
-  return <zcode-cms id="cms" locale="ja" />;
+  return <zcode-editor />;
 }
 ```
 
-### Vueでの使用例
-
-```bash
-npm install zerocodejs
-# Vueは既にインストール済み
-```
+### Vue
 
 ```vue
 <template>
-  <zcode-cms id="cms" locale="ja" />
+  <zcode-editor />
 </template>
 
 <script setup>
@@ -121,23 +101,33 @@ import 'zerocodejs/style.css';
 </script>
 ```
 
-### エンジニア用管理画面
+## コンポーネント
+
+### `<zcode-editor>`
+
+エンジニア・デザイナー向けエディター。パーツ管理、画像管理、データビューアを含む全機能が利用可能。**はじめての方におすすめ。**
 
 ```html
-<zcode-editor id="editor" locale="ja">
-  <link slot="css" rel="stylesheet" href="/css/common.css" />
-  <script slot="script" src="/js/accordion.js"></script>
-</zcode-editor>
+<zcode-editor></zcode-editor>
 ```
 
-### CDN経由で使用する場合
+### `<zcode-cms>`
+
+エンドユーザー向けCMSエディター。編集・追加・削除・並べ替えのみ（パーツ管理・画像管理なし）。
 
 ```html
-<!-- Vueを先に読み込む -->
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<!-- ZeroCode.jsを読み込む -->
-<script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
+<zcode-cms></zcode-cms>
+```
+
+## 既存データの読み込み
+
+既存データを読み込む場合は、JavaScriptで属性を設定します：
+
+```javascript
+const editor = document.querySelector('zcode-editor');
+editor.setAttribute('page', JSON.stringify(pageData));
+editor.setAttribute('parts-common', JSON.stringify(partsData));
+// ... 必要に応じて他の属性も設定
 ```
 
 ## ドキュメント

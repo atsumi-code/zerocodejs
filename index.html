@@ -227,181 +227,78 @@
     <section id="quickstart" class="section">
       <h2 class="section-title" data-i18n="quickstart.title">Quick Start</h2>
       <div class="quickstart">
-        <h3 style="margin-bottom: 20px; font-size: 20px; color: #2c3e50" data-i18n="quickstart.install">Installation</h3>
-        <div class="quickstart-install">npm install zerocodejs</div>
-
-        <h3 style="margin: 40px 0 20px 0; font-size: 20px; color: #2c3e50" data-i18n="quickstart.examples">Usage Examples by Environment</h3>
+        <h3 style="margin-bottom: 20px; font-size: 20px; color: #2c3e50" data-i18n="quickstart.install">Get Started</h3>
 
         <div class="quickstart-tabs">
-          <button class="quickstart-tab active" data-tab="html">HTML</button>
-          <button class="quickstart-tab" data-tab="nodejs">Node.js</button>
-          <button class="quickstart-tab" data-tab="laravel">PHP/Laravel</button>
-          <button class="quickstart-tab" data-tab="nuxt">Vue/Nuxt</button>
-          <button class="quickstart-tab" data-tab="nextjs">React/Next.js</button>
+          <button class="quickstart-tab active" data-tab="cdn">CDN</button>
+          <button class="quickstart-tab" data-tab="npm">npm</button>
+          <button class="quickstart-tab" data-tab="react">React</button>
+          <button class="quickstart-tab" data-tab="vue">Vue</button>
         </div>
 
         <div class="quickstart-tab-content">
-          <!-- HTML -->
-          <div class="tab-pane active" id="tab-html">
+          <!-- CDN -->
+          <div class="tab-pane active" id="tab-cdn">
             <div class="quickstart-code">
               <code
-                >&lt;zcode-cms id="cms" locale="en"&gt;<br />
-                &nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;<br />
-                &nbsp;&nbsp;&lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;<br />
-                &lt;/zcode-cms&gt;<br />
+                >&lt;!DOCTYPE html&gt;<br />
+                &lt;html&gt;<br />
+                &lt;head&gt;<br />
+                &nbsp;&nbsp;&lt;link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css"&gt;<br />
+                &lt;/head&gt;<br />
+                &lt;body&gt;<br />
+                &nbsp;&nbsp;&lt;zcode-editor locale="en"&gt;&lt;/zcode-editor&gt;<br />
                 <br />
+                &nbsp;&nbsp;&lt;script src="https://unpkg.com/vue@3/dist/vue.global.js"&gt;&lt;/script&gt;<br />
+                &nbsp;&nbsp;&lt;script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"&gt;&lt;/script&gt;<br />
+                &lt;/body&gt;<br />
+                &lt;/html&gt;</code
+              >
+            </div>
+          </div>
+
+          <!-- npm -->
+          <div class="tab-pane" id="tab-npm">
+            <div class="quickstart-code">
+              <code
+                >npm install zerocodejs<br />
+                <br />
+                &lt;!-- index.html --&gt;<br />
+                &lt;link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css"&gt;<br />
+                &lt;zcode-editor locale="en"&gt;&lt;/zcode-editor&gt;<br />
                 &lt;script type="module"&gt;<br />
                 &nbsp;&nbsp;import 'zerocodejs';<br />
-                &nbsp;&nbsp;const cms = document.getElementById('cms');<br />
-                &nbsp;&nbsp;cms.setAttribute('page', JSON.stringify([]));<br />
-                &nbsp;&nbsp;cms.setAttribute('parts-common', JSON.stringify([]));<br />
-                &nbsp;&nbsp;cms.setAttribute('parts-individual', JSON.stringify([]));<br />
-                &nbsp;&nbsp;cms.setAttribute('parts-special', JSON.stringify([]));<br />
-                &nbsp;&nbsp;cms.setAttribute('images-common', JSON.stringify([]));<br />
-                &nbsp;&nbsp;cms.setAttribute('images-individual', JSON.stringify([]));<br />
-                &nbsp;&nbsp;cms.setAttribute('images-special', JSON.stringify([]));<br />
                 &lt;/script&gt;</code
               >
             </div>
           </div>
 
-          <!-- Node.js -->
-          <div class="tab-pane" id="tab-nodejs">
+          <!-- React -->
+          <div class="tab-pane" id="tab-react">
             <div class="quickstart-code">
               <code
-                >// Express.js etc.<br />
-                app.get('/', (req, res) =&gt; {<br />
-                &nbsp;&nbsp;res.send(`<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="en"&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;script type="module"&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import 'zerocodejs';<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const cms = document.getElementById('cms');<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('page', JSON.stringify(${JSON.stringify(pageData)}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-common', JSON.stringify(${JSON.stringify(partsCommon)}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-individual', JSON.stringify(${JSON.stringify(partsIndividual)}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-special', JSON.stringify(${JSON.stringify(partsSpecial || [])}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-common', JSON.stringify(${JSON.stringify(imagesCommon || [])}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-individual', JSON.stringify(${JSON.stringify(imagesIndividual || [])}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-special', JSON.stringify(${JSON.stringify(imagesSpecial || [])}));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/script&gt;<br />
-                &nbsp;&nbsp;`);<br />
-                });</code
-              >
-            </div>
-          </div>
-
-          <!-- PHP/Laravel -->
-          <div class="tab-pane" id="tab-laravel">
-            <div class="quickstart-code">
-              <code
-                >&lt;!-- Blade Template --&gt;<br />
-                &lt;zcode-cms id="cms" locale="en"&gt;<br />
-                &nbsp;&nbsp;@slot('css')<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;link rel="stylesheet" href="{{ asset('css/common.css')
-                }}" /&gt;<br />
-                &nbsp;&nbsp;@endslot<br />
-                &nbsp;&nbsp;@slot('script')<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;script src="{{ asset('js/accordion.js')
-                }}"&gt;&lt;/script&gt;<br />
-                &nbsp;&nbsp;@endslot<br />
-                &lt;/zcode-cms&gt;<br />
+                >import 'zerocodejs';<br />
+                import 'zerocodejs/style.css';<br />
                 <br />
-                &lt;script type="module"&gt;<br />
-                &nbsp;&nbsp;import 'zerocodejs';<br />
-                &nbsp;&nbsp;const cms = document.getElementById('cms');<br />
-                &nbsp;&nbsp;cms.setAttribute('page', @json($pageData));<br />
-                &nbsp;&nbsp;cms.setAttribute('parts-common', @json($partsCommon));<br />
-                &nbsp;&nbsp;cms.setAttribute('parts-individual', @json($partsIndividual));<br />
-                &nbsp;&nbsp;cms.setAttribute('parts-special', @json($partsSpecial ?? []));<br />
-                &nbsp;&nbsp;cms.setAttribute('images-common', @json($imagesCommon ?? []));<br />
-                &nbsp;&nbsp;cms.setAttribute('images-individual', @json($imagesIndividual ?? []));<br />
-                &nbsp;&nbsp;cms.setAttribute('images-special', @json($imagesSpecial ?? []));<br />
-                &lt;/script&gt;</code
+                function App() {<br />
+                &nbsp;&nbsp;return &lt;zcode-editor locale="en" /&gt;;<br />
+                }</code
               >
             </div>
           </div>
 
-          <!-- Nuxt.js -->
-          <div class="tab-pane" id="tab-nuxt">
+          <!-- Vue -->
+          <div class="tab-pane" id="tab-vue">
             <div class="quickstart-code">
               <code
-                >&lt;!-- pages/index.vue --&gt;<br />
-                &lt;template&gt;<br />
-                &nbsp;&nbsp;&lt;zcode-cms id="cms" locale="en"&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css"
-                /&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script"
-                src="/js/accordion.js"&gt;&lt;/script&gt;<br />
-                &nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
+                >&lt;template&gt;<br />
+                &nbsp;&nbsp;&lt;zcode-editor locale="en" /&gt;<br />
                 &lt;/template&gt;<br />
                 <br />
                 &lt;script setup&gt;<br />
-                &nbsp;&nbsp;import 'zerocodejs';<br />
-                &nbsp;&nbsp;import { onMounted } from 'vue';<br />
-                <br />
-                &nbsp;&nbsp;onMounted(() =&gt; {<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;const cms = document.getElementById('cms');<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('page',
-                JSON.stringify(pageData.value));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('parts-common',
-                JSON.stringify(partsCommon.value));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('parts-individual',
-                JSON.stringify(partsIndividual.value));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('parts-special',
-                JSON.stringify(partsSpecial.value ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('images-common',
-                JSON.stringify(imagesCommon.value ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('images-individual',
-                JSON.stringify(imagesIndividual.value ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;cms?.setAttribute('images-special',
-                JSON.stringify(imagesSpecial.value ?? []));<br />
-                &nbsp;&nbsp;});<br />
-                &lt;/script&gt;</code
-              >
-            </div>
-          </div>
-
-          <!-- React/Next.js -->
-          <div class="tab-pane" id="tab-nextjs">
-            <div class="quickstart-code">
-              <code
-                >&lt;!-- pages/index.js or app/page.js --&gt;<br />
-                import { useEffect } from 'react';<br />
                 import 'zerocodejs';<br />
-                <br />
-                export default function Home() {<br />
-                &nbsp;&nbsp;useEffect(() =&gt; {<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;const cms = document.getElementById('cms');<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;if (cms) {<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('page',
-                JSON.stringify(pageData));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-common',
-                JSON.stringify(partsCommon));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-individual',
-                JSON.stringify(partsIndividual));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('parts-special',
-                JSON.stringify(partsSpecial ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-common',
-                JSON.stringify(imagesCommon ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-individual',
-                JSON.stringify(imagesIndividual ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cms.setAttribute('images-special',
-                JSON.stringify(imagesSpecial ?? []));<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;}<br />
-                &nbsp;&nbsp;}, []);<br />
-                <br />
-                &nbsp;&nbsp;return (<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="en"&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet"
-                href="/css/common.css" /&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script"
-                src="/js/accordion.js"&gt;&lt;/script&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
-                &nbsp;&nbsp;);<br />
-                }</code
+                import 'zerocodejs/style.css';<br />
+                &lt;/script&gt;</code
               >
             </div>
           </div>
@@ -480,8 +377,7 @@
           'demo.pub.f3': 'Lightweight, No Side Effects',
           'demo.pub.button': 'Open Demo',
           'quickstart.title': 'Quick Start',
-          'quickstart.install': 'Installation',
-          'quickstart.examples': 'Usage Examples by Environment',
+          'quickstart.install': 'Get Started',
           'docs.title': 'Documentation',
           'docs.text': 'For detailed usage and API reference,<br />please see the documentation page',
           'docs.button': 'View Documentation',
@@ -543,8 +439,7 @@
           'demo.pub.f3': '軽量で副作用なし',
           'demo.pub.button': 'デモを開く',
           'quickstart.title': 'クイックスタート',
-          'quickstart.install': 'インストール',
-          'quickstart.examples': '環境別の使用例',
+          'quickstart.install': 'はじめよう',
           'docs.title': 'ドキュメント',
           'docs.text': '詳細な使い方やAPIリファレンスは<br />ドキュメントページをご覧ください',
           'docs.button': 'ドキュメントを見る',

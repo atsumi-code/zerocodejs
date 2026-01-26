@@ -27,44 +27,44 @@
 
 **Live Demo:** https://atsumi-code.github.io/zerocodejs/
 
-## Installation
+## Quick Start
+
+### CDN (Easiest)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
+</head>
+<body>
+  <zcode-editor locale="en"></zcode-editor>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
+</body>
+</html>
+```
+
+That's it! Open the file in a browser and start creating parts.
+
+### npm
 
 ```bash
 npm install zerocodejs
 ```
 
-ZeroCode.js uses Vue 3 internally. With npm 7+, peer dependencies are installed automatically.
-
-> **Note:** If using npm 6 or earlier, run `npm install zerocodejs vue` explicitly.
-
-## Quick Start
-
-### Basic Usage (Vanilla JS)
-
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>ZeroCode.js Example</title>
   <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css">
 </head>
 <body>
-  <zcode-cms id="cms" locale="en">
-    <link slot="css" rel="stylesheet" href="/css/common.css" />
-  </zcode-cms>
+  <zcode-editor locale="en"></zcode-editor>
 
   <script type="module">
     import 'zerocodejs';
-    
-    const cms = document.getElementById('cms');
-    cms.setAttribute('page', JSON.stringify([]));
-    cms.setAttribute('parts-common', JSON.stringify([]));
-    cms.setAttribute('parts-individual', JSON.stringify([]));
-    cms.setAttribute('parts-special', JSON.stringify([]));
-    cms.setAttribute('images-common', JSON.stringify([]));
-    cms.setAttribute('images-individual', JSON.stringify([]));
-    cms.setAttribute('images-special', JSON.stringify([]));
   </script>
 </body>
 </html>
@@ -73,25 +73,11 @@ ZeroCode.js uses Vue 3 internally. With npm 7+, peer dependencies are installed 
 ### React
 
 ```jsx
-import { useEffect } from 'react';
 import 'zerocodejs';
 import 'zerocodejs/style.css';
 
 function App() {
-  useEffect(() => {
-    const cms = document.getElementById('cms');
-    if (cms) {
-      cms.setAttribute('page', JSON.stringify([]));
-      cms.setAttribute('parts-common', JSON.stringify([]));
-      cms.setAttribute('parts-individual', JSON.stringify([]));
-      cms.setAttribute('parts-special', JSON.stringify([]));
-      cms.setAttribute('images-common', JSON.stringify([]));
-      cms.setAttribute('images-individual', JSON.stringify([]));
-      cms.setAttribute('images-special', JSON.stringify([]));
-    }
-  }, []);
-
-  return <zcode-cms id="cms" locale="en" />;
+  return <zcode-editor locale="en" />;
 }
 ```
 
@@ -99,7 +85,7 @@ function App() {
 
 ```vue
 <template>
-  <zcode-cms id="cms" locale="en" />
+  <zcode-editor locale="en" />
 </template>
 
 <script setup>
@@ -108,32 +94,33 @@ import 'zerocodejs/style.css';
 </script>
 ```
 
-### CDN
-
-```html
-<!-- Load Vue first -->
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<!-- Load ZeroCode.js -->
-<script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
-```
-
 ## Components
-
-### `<zcode-cms>`
-
-User-facing CMS editor for content management.
-
-```html
-<zcode-cms id="cms" locale="en" />
-```
 
 ### `<zcode-editor>`
 
-Developer-facing editor with parts management, image management, and data viewer.
+Developer-facing editor with parts management, image management, and data viewer. **Recommended for getting started.**
 
 ```html
-<zcode-editor id="editor" locale="en" />
+<zcode-editor locale="en"></zcode-editor>
+```
+
+### `<zcode-cms>`
+
+User-facing CMS editor for content management (no parts/image management).
+
+```html
+<zcode-cms locale="en"></zcode-cms>
+```
+
+## Loading Existing Data
+
+To load existing data, set attributes via JavaScript:
+
+```javascript
+const editor = document.querySelector('zcode-editor');
+editor.setAttribute('page', JSON.stringify(pageData));
+editor.setAttribute('parts-common', JSON.stringify(partsData));
+// ... other attributes as needed
 ```
 
 ## Documentation
