@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZeroCode.js - Web ComponentsベースのCMSフロントエンドライブラリ</title>
+    <title>ZeroCode.js - Web Components CMS Editor Library</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,6 +19,31 @@
     <link rel="stylesheet" href="./css/site-common.css" />
     <!-- ページ専用CSS -->
     <link rel="stylesheet" href="./css/index.css" />
+
+    <style>
+      .lang-switch {
+        display: flex;
+        gap: 8px;
+        margin-left: 20px;
+      }
+      .lang-switch button {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: inherit;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+      .lang-switch button:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .lang-switch button.active {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+    </style>
   </head>
   <body>
     <!-- 背景アニメーション -->
@@ -37,8 +62,8 @@
     <!-- ヒーローセクション -->
     <section class="hero">
       <h1 class="hero-title">ZeroCode.js</h1>
-      <p class="hero-subtitle">
-        Webデザイナー・エンジニア向け、フレームワーク非依存のCMSフロントエンドライブラリ
+      <p class="hero-subtitle" data-i18n="hero.subtitle">
+        Framework-agnostic Visual CMS Editor Library for Web Designers & Engineers
       </p>
       <div class="hero-buttons">
         <a href="#quickstart" class="btn btn-primary">Get Started</a>
@@ -51,26 +76,24 @@
 
     <!-- 特徴セクション -->
     <section class="section">
-      <h2 class="section-title">主な特徴</h2>
+      <h2 class="section-title" data-i18n="features.title">Key Features</h2>
       <div class="features-grid">
         <div class="feature-card">
-          <h3 class="feature-title">依存・副作用なし</h3>
-          <p class="feature-description">
-            WebコンポーネントのShadow
-            DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。依存関係や副作用がなく、Vue/React/Laravelなどどの環境でも安全に組み込めます。
+          <h3 class="feature-title" data-i18n="features.isolated.title">No Dependencies, No Side Effects</h3>
+          <p class="feature-description" data-i18n="features.isolated.desc">
+            Web Components with Shadow DOM completely isolate CSS/JS. No impact on your existing admin panels, and your existing CSS/JS won't affect ZeroCode.js. Safe to integrate with Vue/React/Laravel or any framework.
           </p>
         </div>
         <div class="feature-card">
-          <h3 class="feature-title">学習コストが低い</h3>
-          <p class="feature-description">
-            Web Components標準で実装されているため、HTML/CSS/JSの基礎知識があれば理解できます。Vue
-            3を内部で使用していますが、フレームワーク非依存のAPIを提供するため、Vueの詳細な知識は不要です。独自のテンプレート記法で柔軟なコンテンツ管理ができます。
+          <h3 class="feature-title" data-i18n="features.learning.title">Low Learning Curve</h3>
+          <p class="feature-description" data-i18n="features.learning.desc">
+            Built on Web Components standard - if you know HTML/CSS/JS basics, you can understand it. While Vue 3 is used internally, we provide a framework-agnostic API, so no Vue knowledge required. Flexible content management with our custom template syntax.
           </p>
         </div>
         <div class="feature-card">
-          <h3 class="feature-title">直感的な操作</h3>
-          <p class="feature-description">
-            クリック操作で誰でも使えるCMS。ドラッグ&ドロップ不要で、編集・追加・削除・並べ替えが簡単です。選択中の要素には視覚的なフィードバックが表示され、操作が分かりやすくなっています。
+          <h3 class="feature-title" data-i18n="features.intuitive.title">Intuitive Operation</h3>
+          <p class="feature-description" data-i18n="features.intuitive.desc">
+            Click-based CMS anyone can use. No drag & drop needed - edit, add, delete, and reorder with simple clicks. Visual feedback shows currently selected elements, making operations clear and easy to understand.
           </p>
         </div>
       </div>
@@ -78,66 +101,65 @@
 
     <!-- アーキテクチャセクション -->
     <section class="section">
-      <h2 class="section-title">アーキテクチャ</h2>
-      <p class="section-subtitle">ZeroCode.jsはフロントエンドのみを責務とします</p>
+      <h2 class="section-title" data-i18n="architecture.title">Architecture</h2>
+      <p class="section-subtitle" data-i18n="architecture.subtitle">ZeroCode.js handles frontend only</p>
       <div class="architecture-diagram">
         <div class="architecture-flow">
           <div class="arch-box backend">
-            <div class="arch-label">バックエンド</div>
-            <div class="arch-desc">データ管理・API</div>
+            <div class="arch-label" data-i18n="architecture.backend">Backend</div>
+            <div class="arch-desc" data-i18n="architecture.backendDesc">Data Management & API</div>
           </div>
           <div class="arch-arrow">→</div>
           <div class="arch-frontend-group">
             <div class="arch-box frontend-cms">
               <div class="arch-label">ZeroCodeCMS</div>
-              <div class="arch-desc">ユーザー向け管理画面</div>
-              <div class="arch-features">編集・追加・削除・並べ替え</div>
+              <div class="arch-desc" data-i18n="architecture.cmsDesc">User-facing Admin Panel</div>
+              <div class="arch-features" data-i18n="architecture.cmsFeatures">Edit / Add / Delete / Reorder</div>
             </div>
             <div class="arch-box frontend-editor">
               <div class="arch-label">ZeroCodeEditor</div>
-              <div class="arch-desc">エンジニア・デザイナー向け</div>
-              <div class="arch-features">パーツ管理・画像管理</div>
+              <div class="arch-desc" data-i18n="architecture.editorDesc">For Engineers & Designers</div>
+              <div class="arch-features" data-i18n="architecture.editorFeatures">Parts & Image Management</div>
             </div>
           </div>
           <div class="arch-arrow">←</div>
           <div class="arch-box">
-            <div class="arch-label">保存リクエスト</div>
-            <div class="arch-desc">データを返却</div>
+            <div class="arch-label" data-i18n="architecture.saveRequest">Save Request</div>
+            <div class="arch-desc" data-i18n="architecture.returnData">Returns Data</div>
           </div>
         </div>
-        <div class="arch-note">
-          ZeroCode.jsはフロントエンドライブラリのため、バックエンドの実装は呼び出し側で行います
+        <div class="arch-note" data-i18n="architecture.note">
+          ZeroCode.js is a frontend library - backend implementation is handled by the caller
         </div>
       </div>
     </section>
 
     <!-- なぜ選ぶべきかセクション -->
     <section class="section">
-      <h2 class="section-title">なぜZeroCode.jsを選ぶべきか</h2>
-      <p class="section-subtitle">
-        既存システムに統合したい、フレームワークを選びたくない、そんな場合に最適です
+      <h2 class="section-title" data-i18n="whyChoose.title">Why Choose ZeroCode.js?</h2>
+      <p class="section-subtitle" data-i18n="whyChoose.subtitle">
+        Perfect for integrating with existing systems without framework lock-in
       </p>
       <div class="why-choose-grid">
         <div class="why-choose-card">
           <div class="why-choose-icon why-choose-icon-link"></div>
-          <h3 class="why-choose-title">既存システムに統合したい</h3>
-          <p class="why-choose-description">
-            Web ComponentsのShadow DOMにより、既存システムのCSS/JSに影響を与えず、既存システム側のCSS/JSにも影響されません。既存のLaravel管理画面やReact/Vueアプリに、Web
-            Componentsとして組み込むだけでCMS機能が使えます。既存の認証システムやデータベースをそのまま活用できます。
+          <h3 class="why-choose-title" data-i18n="whyChoose.integrate.title">Integrate with Existing Systems</h3>
+          <p class="why-choose-description" data-i18n="whyChoose.integrate.desc">
+            Shadow DOM ensures no CSS/JS conflicts with your existing system. Simply add as a Web Component to your existing Laravel admin, React, or Vue app to get CMS functionality. Use your existing authentication and database as-is.
           </p>
         </div>
         <div class="why-choose-card">
           <div class="why-choose-icon why-choose-icon-swap"></div>
-          <h3 class="why-choose-title">フレームワークを選びたくない</h3>
-          <p class="why-choose-description">
-            Web Components標準で実装されているため、Vue/React/Laravelなどどの環境でも使用可能です。フレームワーク非依存のAPIを提供するため、既存の技術スタックをそのまま活用でき、新しいフレームワークを学習する必要がありません。HTML/CSS/JSの基礎知識があれば理解できます。
+          <h3 class="why-choose-title" data-i18n="whyChoose.framework.title">No Framework Lock-in</h3>
+          <p class="why-choose-description" data-i18n="whyChoose.framework.desc">
+            Built on Web Components standard - works with Vue/React/Laravel or any environment. Our framework-agnostic API lets you keep your existing tech stack. No need to learn a new framework - basic HTML/CSS/JS knowledge is enough.
           </p>
         </div>
         <div class="why-choose-card">
           <div class="why-choose-icon why-choose-icon-lightning"></div>
-          <h3 class="why-choose-title">フロントエンド専用が欲しい</h3>
-          <p class="why-choose-description">
-            フロントエンドのみのライブラリのため、バックエンドは既存のものを活用できます。サーバー構築や運用の負担がなく、既存のバックエンドAPIと連携するだけでCMS機能を実現できます。フルスタックCMSとは異なり、軽量で導入が簡単です。
+          <h3 class="why-choose-title" data-i18n="whyChoose.frontend.title">Frontend-Only Solution</h3>
+          <p class="why-choose-description" data-i18n="whyChoose.frontend.desc">
+            As a frontend-only library, you can leverage your existing backend. No server setup or maintenance overhead - just connect to your existing backend API for instant CMS functionality. Lighter and easier to adopt than full-stack CMSs.
           </p>
         </div>
       </div>
@@ -145,70 +167,70 @@
 
     <!-- デモセクション -->
     <section id="demo" class="section">
-      <h2 class="section-title">デモを試す</h2>
-      <p class="section-subtitle">依存や副作用の少ないWebコンポーネントの3段階の責務分け</p>
+      <h2 class="section-title" data-i18n="demo.title">Try the Demo</h2>
+      <p class="section-subtitle" data-i18n="demo.subtitle">Three-tier responsibility separation with minimal dependencies</p>
       <div class="demo-grid">
         <div class="demo-card dev">
-          <span class="demo-badge">開発用</span>
-          <h3 class="demo-title">エンジニア用管理画面 (Dev)</h3>
-          <p class="demo-description">開発者・デザイナー向けの管理画面。全機能が利用できます。</p>
+          <span class="demo-badge" data-i18n="demo.dev.badge">Development</span>
+          <h3 class="demo-title" data-i18n="demo.dev.title">Engineer Admin Panel (Dev)</h3>
+          <p class="demo-description" data-i18n="demo.dev.desc">Admin panel for developers and designers. All features available.</p>
           <ul class="demo-features">
-            <li>パーツ管理</li>
-            <li>画像管理</li>
-            <li>データビューア</li>
+            <li data-i18n="demo.dev.f1">Parts Management</li>
+            <li data-i18n="demo.dev.f2">Image Management</li>
+            <li data-i18n="demo.dev.f3">Data Viewer</li>
           </ul>
           <div class="demo-code">
             <code>&lt;zcode-editor&gt;&lt;/zcode-editor&gt;</code>
           </div>
-          <a href="./test-dev.html" class="demo-button" target="_blank">デモを試す（操作可能） →</a>
-          <p class="demo-hint">💡 全機能を試せます（パーツ管理・画像管理含む）</p>
+          <a href="./test-dev.html" class="demo-button" target="_blank" data-i18n="demo.dev.button">Try Demo (Interactive) →</a>
+          <p class="demo-hint" data-i18n="demo.dev.hint">💡 Try all features (including Parts & Image management)</p>
         </div>
 
         <div class="demo-arrow">→</div>
 
         <div class="demo-card cms">
-          <span class="demo-badge">ユーザー用</span>
-          <h3 class="demo-title">ユーザー用管理画面 (CMS)</h3>
-          <p class="demo-description">コンテンツ編集者向けの管理画面。編集機能が利用できます。</p>
+          <span class="demo-badge" data-i18n="demo.cms.badge">User-facing</span>
+          <h3 class="demo-title" data-i18n="demo.cms.title">User Admin Panel (CMS)</h3>
+          <p class="demo-description" data-i18n="demo.cms.desc">Admin panel for content editors. Editing features available.</p>
           <ul class="demo-features">
-            <li>編集・追加・削除・並べ替え</li>
-            <li>パーツ管理なし</li>
-            <li>画像管理なし</li>
+            <li data-i18n="demo.cms.f1">Edit / Add / Delete / Reorder</li>
+            <li data-i18n="demo.cms.f2">No Parts Management</li>
+            <li data-i18n="demo.cms.f3">No Image Management</li>
           </ul>
           <div class="demo-code">
             <code>&lt;zcode-cms&gt;&lt;/zcode-cms&gt;</code>
           </div>
-          <a href="./test-cms.html" class="demo-button" target="_blank">デモを試す（操作可能） →</a>
-          <p class="demo-hint">💡 クリックで編集・追加・削除ができます</p>
+          <a href="./test-cms.html" class="demo-button" target="_blank" data-i18n="demo.cms.button">Try Demo (Interactive) →</a>
+          <p class="demo-hint" data-i18n="demo.cms.hint">💡 Click to edit, add, or delete content</p>
         </div>
 
         <div class="demo-arrow">→</div>
 
         <div class="demo-card pub">
-          <span class="demo-badge">公開サイト用</span>
-          <h3 class="demo-title">公開用 (Pub)</h3>
-          <p class="demo-description">サーバーサイドレンダリング専用。HTML文字列を生成します。</p>
+          <span class="demo-badge" data-i18n="demo.pub.badge">Production</span>
+          <h3 class="demo-title" data-i18n="demo.pub.title">Public Output (Pub)</h3>
+          <p class="demo-description" data-i18n="demo.pub.desc">Server-side rendering only. Generates HTML strings.</p>
           <ul class="demo-features">
-            <li>HTML文字列生成のみ</li>
-            <li>編集機能なし</li>
-            <li>軽量で副作用なし</li>
+            <li data-i18n="demo.pub.f1">HTML String Generation Only</li>
+            <li data-i18n="demo.pub.f2">No Editing Features</li>
+            <li data-i18n="demo.pub.f3">Lightweight, No Side Effects</li>
           </ul>
           <div class="demo-code">
             <code>renderToHtml(data)</code>
           </div>
-          <a href="./test-pub.html" class="demo-button" target="_blank">デモを開く</a>
+          <a href="./test-pub.html" class="demo-button" target="_blank" data-i18n="demo.pub.button">Open Demo</a>
         </div>
       </div>
     </section>
 
     <!-- クイックスタートセクション -->
     <section id="quickstart" class="section">
-      <h2 class="section-title">クイックスタート</h2>
+      <h2 class="section-title" data-i18n="quickstart.title">Quick Start</h2>
       <div class="quickstart">
-        <h3 style="margin-bottom: 20px; font-size: 20px; color: #2c3e50">インストール</h3>
+        <h3 style="margin-bottom: 20px; font-size: 20px; color: #2c3e50" data-i18n="quickstart.install">Installation</h3>
         <div class="quickstart-install">npm install zerocodejs</div>
 
-        <h3 style="margin: 40px 0 20px 0; font-size: 20px; color: #2c3e50">環境別の使用例</h3>
+        <h3 style="margin: 40px 0 20px 0; font-size: 20px; color: #2c3e50" data-i18n="quickstart.examples">Usage Examples by Environment</h3>
 
         <div class="quickstart-tabs">
           <button class="quickstart-tab active" data-tab="html">HTML</button>
@@ -223,7 +245,7 @@
           <div class="tab-pane active" id="tab-html">
             <div class="quickstart-code">
               <code
-                >&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                >&lt;zcode-cms id="cms" locale="en"&gt;<br />
                 &nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;<br />
                 &nbsp;&nbsp;&lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;<br />
                 &lt;/zcode-cms&gt;<br />
@@ -247,10 +269,10 @@
           <div class="tab-pane" id="tab-nodejs">
             <div class="quickstart-code">
               <code
-                >// Express.js など<br />
+                >// Express.js etc.<br />
                 app.get('/', (req, res) =&gt; {<br />
                 &nbsp;&nbsp;res.send(`<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="en"&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script" src="/js/accordion.js"&gt;&lt;/script&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/zcode-cms&gt;<br />
@@ -275,8 +297,8 @@
           <div class="tab-pane" id="tab-laravel">
             <div class="quickstart-code">
               <code
-                >&lt;!-- Bladeテンプレート内 --&gt;<br />
-                &lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                >&lt;!-- Blade Template --&gt;<br />
+                &lt;zcode-cms id="cms" locale="en"&gt;<br />
                 &nbsp;&nbsp;@slot('css')<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&lt;link rel="stylesheet" href="{{ asset('css/common.css')
                 }}" /&gt;<br />
@@ -308,7 +330,7 @@
               <code
                 >&lt;!-- pages/index.vue --&gt;<br />
                 &lt;template&gt;<br />
-                &nbsp;&nbsp;&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&lt;zcode-cms id="cms" locale="en"&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet" href="/css/common.css"
                 /&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script"
@@ -372,7 +394,7 @@
                 &nbsp;&nbsp;}, []);<br />
                 <br />
                 &nbsp;&nbsp;return (<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="ja"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;zcode-cms id="cms" locale="en"&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;link slot="css" rel="stylesheet"
                 href="/css/common.css" /&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script slot="script"
@@ -390,31 +412,189 @@
     <!-- ドキュメントセクション -->
     <section id="docs" class="section">
       <div class="docs-section">
-        <h2 class="section-title" style="margin-bottom: 20px">ドキュメント</h2>
-        <p class="docs-text">
-          詳細な使い方やAPIリファレンスは<br />ドキュメントページをご覧ください
+        <h2 class="section-title" style="margin-bottom: 20px" data-i18n="docs.title">Documentation</h2>
+        <p class="docs-text" data-i18n="docs.text">
+          For detailed usage and API reference,<br />please see the documentation page
         </p>
-        <a href="./docs.html" class="btn btn-primary" style="display: inline-block"
-          >ドキュメントを見る</a
+        <a href="./docs.html" class="btn btn-primary" style="display: inline-block" data-i18n="docs.button"
+          >View Documentation</a
         >
       </div>
     </section>
 
-    <!-- タブ切り替えスクリプト -->
+    <!-- タブ切り替え & 言語切り替えスクリプト -->
     <script>
+      // 翻訳データ
+      const translations = {
+        en: {
+          'hero.subtitle': 'Framework-agnostic Visual CMS Editor Library for Web Designers & Engineers',
+          'features.title': 'Key Features',
+          'features.isolated.title': 'No Dependencies, No Side Effects',
+          'features.isolated.desc': 'Web Components with Shadow DOM completely isolate CSS/JS. No impact on your existing admin panels, and your existing CSS/JS won\'t affect ZeroCode.js. Safe to integrate with Vue/React/Laravel or any framework.',
+          'features.learning.title': 'Low Learning Curve',
+          'features.learning.desc': 'Built on Web Components standard - if you know HTML/CSS/JS basics, you can understand it. While Vue 3 is used internally, we provide a framework-agnostic API, so no Vue knowledge required. Flexible content management with our custom template syntax.',
+          'features.intuitive.title': 'Intuitive Operation',
+          'features.intuitive.desc': 'Click-based CMS anyone can use. No drag & drop needed - edit, add, delete, and reorder with simple clicks. Visual feedback shows currently selected elements, making operations clear and easy to understand.',
+          'architecture.title': 'Architecture',
+          'architecture.subtitle': 'ZeroCode.js handles frontend only',
+          'architecture.backend': 'Backend',
+          'architecture.backendDesc': 'Data Management & API',
+          'architecture.cmsDesc': 'User-facing Admin Panel',
+          'architecture.cmsFeatures': 'Edit / Add / Delete / Reorder',
+          'architecture.editorDesc': 'For Engineers & Designers',
+          'architecture.editorFeatures': 'Parts & Image Management',
+          'architecture.saveRequest': 'Save Request',
+          'architecture.returnData': 'Returns Data',
+          'architecture.note': 'ZeroCode.js is a frontend library - backend implementation is handled by the caller',
+          'whyChoose.title': 'Why Choose ZeroCode.js?',
+          'whyChoose.subtitle': 'Perfect for integrating with existing systems without framework lock-in',
+          'whyChoose.integrate.title': 'Integrate with Existing Systems',
+          'whyChoose.integrate.desc': 'Shadow DOM ensures no CSS/JS conflicts with your existing system. Simply add as a Web Component to your existing Laravel admin, React, or Vue app to get CMS functionality. Use your existing authentication and database as-is.',
+          'whyChoose.framework.title': 'No Framework Lock-in',
+          'whyChoose.framework.desc': 'Built on Web Components standard - works with Vue/React/Laravel or any environment. Our framework-agnostic API lets you keep your existing tech stack. No need to learn a new framework - basic HTML/CSS/JS knowledge is enough.',
+          'whyChoose.frontend.title': 'Frontend-Only Solution',
+          'whyChoose.frontend.desc': 'As a frontend-only library, you can leverage your existing backend. No server setup or maintenance overhead - just connect to your existing backend API for instant CMS functionality. Lighter and easier to adopt than full-stack CMSs.',
+          'demo.title': 'Try the Demo',
+          'demo.subtitle': 'Three-tier responsibility separation with minimal dependencies',
+          'demo.dev.badge': 'Development',
+          'demo.dev.title': 'Engineer Admin Panel (Dev)',
+          'demo.dev.desc': 'Admin panel for developers and designers. All features available.',
+          'demo.dev.f1': 'Parts Management',
+          'demo.dev.f2': 'Image Management',
+          'demo.dev.f3': 'Data Viewer',
+          'demo.dev.button': 'Try Demo (Interactive) →',
+          'demo.dev.hint': '💡 Try all features (including Parts & Image management)',
+          'demo.cms.badge': 'User-facing',
+          'demo.cms.title': 'User Admin Panel (CMS)',
+          'demo.cms.desc': 'Admin panel for content editors. Editing features available.',
+          'demo.cms.f1': 'Edit / Add / Delete / Reorder',
+          'demo.cms.f2': 'No Parts Management',
+          'demo.cms.f3': 'No Image Management',
+          'demo.cms.button': 'Try Demo (Interactive) →',
+          'demo.cms.hint': '💡 Click to edit, add, or delete content',
+          'demo.pub.badge': 'Production',
+          'demo.pub.title': 'Public Output (Pub)',
+          'demo.pub.desc': 'Server-side rendering only. Generates HTML strings.',
+          'demo.pub.f1': 'HTML String Generation Only',
+          'demo.pub.f2': 'No Editing Features',
+          'demo.pub.f3': 'Lightweight, No Side Effects',
+          'demo.pub.button': 'Open Demo',
+          'quickstart.title': 'Quick Start',
+          'quickstart.install': 'Installation',
+          'quickstart.examples': 'Usage Examples by Environment',
+          'docs.title': 'Documentation',
+          'docs.text': 'For detailed usage and API reference,<br />please see the documentation page',
+          'docs.button': 'View Documentation',
+          'header.demo': 'Demo',
+          'header.docs': 'Documentation',
+          'footer.license': 'License'
+        },
+        ja: {
+          'hero.subtitle': 'Webデザイナー・エンジニア向け、フレームワーク非依存のCMSフロントエンドライブラリ',
+          'features.title': '主な特徴',
+          'features.isolated.title': '依存・副作用なし',
+          'features.isolated.desc': 'WebコンポーネントのShadow DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。依存関係や副作用がなく、Vue/React/Laravelなどどの環境でも安全に組み込めます。',
+          'features.learning.title': '学習コストが低い',
+          'features.learning.desc': 'Web Components標準で実装されているため、HTML/CSS/JSの基礎知識があれば理解できます。Vue 3を内部で使用していますが、フレームワーク非依存のAPIを提供するため、Vueの詳細な知識は不要です。独自のテンプレート記法で柔軟なコンテンツ管理ができます。',
+          'features.intuitive.title': '直感的な操作',
+          'features.intuitive.desc': 'クリック操作で誰でも使えるCMS。ドラッグ&ドロップ不要で、編集・追加・削除・並べ替えが簡単です。選択中の要素には視覚的なフィードバックが表示され、操作が分かりやすくなっています。',
+          'architecture.title': 'アーキテクチャ',
+          'architecture.subtitle': 'ZeroCode.jsはフロントエンドのみを責務とします',
+          'architecture.backend': 'バックエンド',
+          'architecture.backendDesc': 'データ管理・API',
+          'architecture.cmsDesc': 'ユーザー向け管理画面',
+          'architecture.cmsFeatures': '編集・追加・削除・並べ替え',
+          'architecture.editorDesc': 'エンジニア・デザイナー向け',
+          'architecture.editorFeatures': 'パーツ管理・画像管理',
+          'architecture.saveRequest': '保存リクエスト',
+          'architecture.returnData': 'データを返却',
+          'architecture.note': 'ZeroCode.jsはフロントエンドライブラリのため、バックエンドの実装は呼び出し側で行います',
+          'whyChoose.title': 'なぜZeroCode.jsを選ぶべきか',
+          'whyChoose.subtitle': '既存システムに統合したい、フレームワークを選びたくない、そんな場合に最適です',
+          'whyChoose.integrate.title': '既存システムに統合したい',
+          'whyChoose.integrate.desc': 'Web ComponentsのShadow DOMにより、既存システムのCSS/JSに影響を与えず、既存システム側のCSS/JSにも影響されません。既存のLaravel管理画面やReact/Vueアプリに、Web Componentsとして組み込むだけでCMS機能が使えます。既存の認証システムやデータベースをそのまま活用できます。',
+          'whyChoose.framework.title': 'フレームワークを選びたくない',
+          'whyChoose.framework.desc': 'Web Components標準で実装されているため、Vue/React/Laravelなどどの環境でも使用可能です。フレームワーク非依存のAPIを提供するため、既存の技術スタックをそのまま活用でき、新しいフレームワークを学習する必要がありません。HTML/CSS/JSの基礎知識があれば理解できます。',
+          'whyChoose.frontend.title': 'フロントエンド専用が欲しい',
+          'whyChoose.frontend.desc': 'フロントエンドのみのライブラリのため、バックエンドは既存のものを活用できます。サーバー構築や運用の負担がなく、既存のバックエンドAPIと連携するだけでCMS機能を実現できます。フルスタックCMSとは異なり、軽量で導入が簡単です。',
+          'demo.title': 'デモを試す',
+          'demo.subtitle': '依存や副作用の少ないWebコンポーネントの3段階の責務分け',
+          'demo.dev.badge': '開発用',
+          'demo.dev.title': 'エンジニア用管理画面 (Dev)',
+          'demo.dev.desc': '開発者・デザイナー向けの管理画面。全機能が利用できます。',
+          'demo.dev.f1': 'パーツ管理',
+          'demo.dev.f2': '画像管理',
+          'demo.dev.f3': 'データビューア',
+          'demo.dev.button': 'デモを試す（操作可能） →',
+          'demo.dev.hint': '💡 全機能を試せます（パーツ管理・画像管理含む）',
+          'demo.cms.badge': 'ユーザー用',
+          'demo.cms.title': 'ユーザー用管理画面 (CMS)',
+          'demo.cms.desc': 'コンテンツ編集者向けの管理画面。編集機能が利用できます。',
+          'demo.cms.f1': '編集・追加・削除・並べ替え',
+          'demo.cms.f2': 'パーツ管理なし',
+          'demo.cms.f3': '画像管理なし',
+          'demo.cms.button': 'デモを試す（操作可能） →',
+          'demo.cms.hint': '💡 クリックで編集・追加・削除ができます',
+          'demo.pub.badge': '公開サイト用',
+          'demo.pub.title': '公開用 (Pub)',
+          'demo.pub.desc': 'サーバーサイドレンダリング専用。HTML文字列を生成します。',
+          'demo.pub.f1': 'HTML文字列生成のみ',
+          'demo.pub.f2': '編集機能なし',
+          'demo.pub.f3': '軽量で副作用なし',
+          'demo.pub.button': 'デモを開く',
+          'quickstart.title': 'クイックスタート',
+          'quickstart.install': 'インストール',
+          'quickstart.examples': '環境別の使用例',
+          'docs.title': 'ドキュメント',
+          'docs.text': '詳細な使い方やAPIリファレンスは<br />ドキュメントページをご覧ください',
+          'docs.button': 'ドキュメントを見る',
+          'header.demo': 'デモ',
+          'header.docs': 'ドキュメント',
+          'footer.license': 'ライセンス'
+        }
+      };
+
+      // 現在の言語を取得
+      function getCurrentLang() {
+        return localStorage.getItem('zerocode-lang') || 'en';
+      }
+
+      // 言語を設定
+      function setLang(lang) {
+        localStorage.setItem('zerocode-lang', lang);
+        applyTranslations(lang);
+        updateLangButtons(lang);
+        document.documentElement.lang = lang;
+      }
+
+      // 翻訳を適用
+      function applyTranslations(lang) {
+        const t = translations[lang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (t[key]) {
+            el.innerHTML = t[key];
+          }
+        });
+      }
+
+      // 言語ボタンの状態を更新
+      function updateLangButtons(lang) {
+        document.querySelectorAll('.lang-switch button').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+        });
+      }
+
       document.addEventListener('DOMContentLoaded', function () {
+        // タブ切り替え
         const tabs = document.querySelectorAll('.quickstart-tab');
         const panes = document.querySelectorAll('.tab-pane');
 
         tabs.forEach((tab) => {
           tab.addEventListener('click', function () {
             const targetTab = this.getAttribute('data-tab');
-
-            // すべてのタブとペインからactiveクラスを削除
             tabs.forEach((t) => t.classList.remove('active'));
             panes.forEach((p) => p.classList.remove('active'));
-
-            // クリックされたタブと対応するペインにactiveクラスを追加
             this.classList.add('active');
             const targetPane = document.getElementById('tab-' + targetTab);
             if (targetPane) {
@@ -422,6 +602,19 @@
             }
           });
         });
+
+        // 言語切り替えボタンのイベント
+        document.querySelectorAll('.lang-switch button').forEach(btn => {
+          btn.addEventListener('click', function() {
+            setLang(this.getAttribute('data-lang'));
+          });
+        });
+
+        // 初期言語を適用
+        const currentLang = getCurrentLang();
+        applyTranslations(currentLang);
+        updateLangButtons(currentLang);
+        document.documentElement.lang = currentLang;
       });
     </script>
 
