@@ -5,12 +5,11 @@ import { resolve } from 'path';
 
 export default defineConfig({
   define: {
-    // vue-i18nのDevToolsを無効化（Web Component環境でのエラーを回避）
-    // ビルド時に確実に無効化するため、すべての関連フラグを設定
     __VUE_I18N_FULL_INSTALL__: false,
     __VUE_I18N_LEGACY_API__: false,
     __INTLIFY_PROD_DEVTOOLS__: false,
-    __VUE_I18N_PROD_DEVTOOLS__: false
+    __VUE_I18N_PROD_DEVTOOLS__: false,
+    'process.env.NODE_ENV': JSON.stringify('production')
   },
   plugins: [
     vue({
