@@ -1,34 +1,37 @@
 ---
-name: "🐛 バグ報告"
-about: "不具合の報告はこちら"
+name: "Bug Report / バグ報告"
+about: "Report a bug / 不具合の報告"
 title: "[Bug] "
 labels: ["bug"]
 assignees: []
 ---
 
-## 概要
+**Language / 言語**: English / 日本語
 
-（何が起きているかを簡潔に）
+---
 
-## 再現手順
+## Summary / 概要
+
+(Brief description of the bug / 何が起きているかを簡潔に)
+
+## Steps to Reproduce / 再現手順
 
 1.
 2.
 3.
 
-## 期待する挙動
+## Expected Behavior / 期待する挙動
 
-## 実際の挙動
+## Actual Behavior / 実際の挙動
 
-## 環境
+## Environment / 環境
 
 - OS:
 - Node:
 - Browser:
 - ZeroCode.js version:
 
-## 補足（任意）
+## Additional Context / 補足（任意）
 
-- 最小のHTML / `ZeroCodeData`（機密は除外）
-- コンソールログ / エラーメッセージ
-
+- Minimal HTML / `ZeroCodeData` (remove sensitive data)
+- Console logs / error messages

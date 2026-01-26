@@ -17,4 +17,3 @@ node_modules/
 dist/**/*.d.ts.map
 dist/__tests__/
 dist/**/*.test.d.ts
-
