@@ -44,6 +44,10 @@ export default {
     previewModeInfo: 'Dynamic content (accordions, tabs, modals, links, etc.) is always enabled in preview mode.',
     noSettings: 'No settings available.'
   },
+  emptyState: {
+    message: 'Please add a part',
+    addPart: '+ Add Part'
+  },
   addPanel: {
     title: 'Add',
     selectParent: 'Select parent element',

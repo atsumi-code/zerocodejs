@@ -6,6 +6,12 @@ import { splitDefaultAndValidation } from './field-extractor';
 import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from './template-utils';
 
 
+export interface ProcessTemplateOptions {
+  translations?: {
+    addSlotButton?: string;
+  };
+}
+
 // DOMパーサーベースの変数展開・条件処理
 export function processTemplateWithDOM(
   html: string,
@@ -17,7 +23,8 @@ export function processTemplateWithDOM(
   imagesCommon: Array<{ id: string; url: string }> = [],
   imagesIndividual: Array<{ id: string; url: string }> = [],
   imagesSpecial: Array<{ id: string; url: string }> = [],
-  backendData?: Record<string, unknown>
+  backendData?: Record<string, unknown>,
+  options?: ProcessTemplateOptions
 ): string {
   const DOMParser = getDOMParser();
   const parser = new DOMParser();
@@ -1236,8 +1243,9 @@ export function processTemplateWithDOM(
             'data-zcode-slot-path',
             path ? `${path}.slots.${slotName}` : `slots.${slotName}`
           );
+          const addSlotButtonText = options?.translations?.addSlotButton ?? '+ Add Part';
           slotEl.innerHTML = `<div class="zcode-empty-slot" data-zcode-empty-slot-content>
-            <button class="zcode-add-slot-btn" data-zcode-add-slot>+ パーツを追加</button>
+            <button class="zcode-add-slot-btn" data-zcode-add-slot>${addSlotButtonText}</button>
           </div>`;
         } else {
           // 公開用の場合は空のスロットをそのまま表示（追加ボタンなし）

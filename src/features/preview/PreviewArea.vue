@@ -11,12 +11,12 @@
       v-if="cmsData.page.length === 0 && onAddClick"
       class="zcode-empty-state"
     >
-      <p>パーツを追加してください</p>
+      <p>{{ $t('emptyState.message') }}</p>
       <button
         class="zcode-add-btn"
         @click="onAddClick('page.0')"
       >
-        + パーツを追加
+        {{ $t('emptyState.addPart') }}
       </button>
     </div>
   </div>

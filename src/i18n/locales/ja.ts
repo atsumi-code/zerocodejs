@@ -44,6 +44,10 @@ export default {
     previewModeInfo: '表示モードでは動的コンテンツ（アコーディオン、タブ、モーダル、リンクなど）は常に有効です。',
     noSettings: '設定項目はありません。'
   },
+  emptyState: {
+    message: 'パーツを追加してください',
+    addPart: '+ パーツを追加'
+  },
   addPanel: {
     title: '追加',
     selectParent: '親要素を選択',

@@ -1,10 +1,12 @@
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ComponentData, PartData } from '../../types';
-import { processTemplateWithDOM } from '../utils/template-processor';
+import { processTemplateWithDOM, type ProcessTemplateOptions } from '../utils/template-processor';
 import { injectAttributesToRootElement } from '../utils/template-utils';
 import { findPartById } from '../utils/path-utils';
 
 export function useZeroCodeRenderer(cmsData: ZeroCodeData, enableEditorAttributes: boolean = true) {
+  const { t } = useI18n();
   function findPart(partId: string): PartData | null {
     return findPartById(partId, cmsData.parts);
   }
@@ -26,6 +28,12 @@ export function useZeroCodeRenderer(cmsData: ZeroCodeData, enableEditorAttribute
       return `<div class="zcode-error-message">パーツが見つかりません: ${partId}</div>`;
     }
 
+    const options: ProcessTemplateOptions | undefined = enableEditorAttributes ? {
+      translations: {
+        addSlotButton: t('emptyState.addPart')
+      }
+    } : undefined;
+
     const html = processTemplateWithDOM(
       part.body,
       component,
@@ -37,7 +45,8 @@ export function useZeroCodeRenderer(cmsData: ZeroCodeData, enableEditorAttribute
       cmsData.images.common,
       cmsData.images.individual,
       cmsData.images.special,
-      cmsData.backendData
+      cmsData.backendData,
+      options
     );
 
     if (enableEditorAttributes) {
