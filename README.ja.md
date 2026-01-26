@@ -50,7 +50,7 @@ ZeroCode.jsは内部でVue 3を使用しています。npm 7以降では、peer 
 <head>
   <meta charset="UTF-8">
   <title>ZeroCode.js Example</title>
-  <link rel="stylesheet" href="node_modules/zerocodejs/dist/style.css">
+  <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css">
 </head>
 <body>
   <zcode-cms id="cms" locale="ja">
@@ -137,7 +137,7 @@ import 'zerocodejs/style.css';
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <!-- ZeroCode.jsを読み込む -->
 <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/style.css">
+<link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
 ```
 
 ## ドキュメント

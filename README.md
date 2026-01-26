@@ -47,7 +47,7 @@ ZeroCode.js uses Vue 3 internally. With npm 7+, peer dependencies are installed 
 <head>
   <meta charset="UTF-8">
   <title>ZeroCode.js Example</title>
-  <link rel="stylesheet" href="node_modules/zerocodejs/dist/style.css">
+  <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css">
 </head>
 <body>
   <zcode-cms id="cms" locale="en">
@@ -115,7 +115,7 @@ import 'zerocodejs/style.css';
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <!-- Load ZeroCode.js -->
 <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/style.css">
+<link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
 ```
 
 ## Components

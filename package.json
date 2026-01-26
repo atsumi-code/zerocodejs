@@ -12,8 +12,8 @@
       "import": "./dist/zerocode.es.js",
       "require": "./dist/zerocode.umd.js"
     },
-    "./style.css": "./dist/style.css",
-    "./zcode-cms.css": "./dist/zcode-cms.css"
+    "./style.css": "./dist/zerocodejs.css",
+    "./zerocodejs.css": "./dist/zerocodejs.css"
   },
   "files": [
     "dist"
