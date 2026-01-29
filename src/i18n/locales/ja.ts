@@ -34,14 +34,18 @@ export default {
       en: 'English'
     },
     enableDynamicContent: 'ページの動作を有効にする',
-    enableDynamicContentDescription: 'アコーディオン、タブ、モーダル、リンクなどの動的コンテンツの動作を有効にします。',
+    enableDynamicContentDescription:
+      'アコーディオン、タブ、モーダル、リンクなどの動的コンテンツの動作を有効にします。',
     devRightPadding: '編集パネル分の余白をつける',
     devRightPaddingDescription: '編集パネル表示時にコンテンツの右側に余白を追加します。',
     enableContextMenu: '右クリックメニューを有効にする',
-    enableContextMenuDescription: 'コンテンツ上で右クリックすると、編集・追加・並べ替え・削除のモードを切り替えるメニューが表示されます。',
+    enableContextMenuDescription:
+      'コンテンツ上で右クリックすると、編集・追加・並べ替え・削除のモードを切り替えるメニューが表示されます。',
     showSaveConfirm: '保存時の確認ダイアログを表示する',
-    showSaveConfirmDescription: '保存ボタンをクリックした際に、保存対象を確認するダイアログを表示します。',
-    previewModeInfo: '表示モードでは動的コンテンツ（アコーディオン、タブ、モーダル、リンクなど）は常に有効です。',
+    showSaveConfirmDescription:
+      '保存ボタンをクリックした際に、保存対象を確認するダイアログを表示します。',
+    previewModeInfo:
+      '表示モードでは動的コンテンツ（アコーディオン、タブ、モーダル、リンクなど）は常に有効です。',
     noSettings: '設定項目はありません。'
   },
   emptyState: {
@@ -58,7 +62,8 @@ export default {
     },
     typeAll: 'all',
     activeParts: 'active parts',
-    activePartsDescription: 'プレビューエリアでクリックしたパーツを、現在のデータを含む状態で追加できます。',
+    activePartsDescription:
+      'プレビューエリアでクリックしたパーツを、現在のデータを含む状態で追加できます。',
     clickPartInPreview: 'プレビューエリアでパーツをクリックしてください',
     noPartsAvailable: '利用可能なパーツがありません',
     addBefore: '前に追加',
@@ -140,9 +145,12 @@ export default {
     templateSuggestions: '予測変換',
     preview: 'プレビュー:',
     cssEditWarning: 'CSS編集について',
-    cssEditWarningMessageCommon: 'ここで編集したCSSは、すべてのページに適用される想定です。既存のCSSファイル（common.cssなど）がある場合、それらを上書きする可能性があります。',
-    cssEditWarningMessageIndividual: 'ここで編集したCSSは、ページタイプごとに適用される想定です。既存のCSSファイル（page.cssなど）がある場合、それらを上書きする可能性があります。',
-    cssEditWarningMessageSpecial: 'ここで編集したCSSは、動的ページごとに適用される想定です。既存のCSSファイル（shop111.cssなど）がある場合、それらを上書きする可能性があります。',
+    cssEditWarningMessageCommon:
+      'ここで編集したCSSは、すべてのページに適用される想定です。既存のCSSファイル（common.cssなど）がある場合、それらを上書きする可能性があります。',
+    cssEditWarningMessageIndividual:
+      'ここで編集したCSSは、ページタイプごとに適用される想定です。既存のCSSファイル（page.cssなど）がある場合、それらを上書きする可能性があります。',
+    cssEditWarningMessageSpecial:
+      'ここで編集したCSSは、動的ページごとに適用される想定です。既存のCSSファイル（shop111.cssなど）がある場合、それらを上書きする可能性があります。',
     understood: '了解しました',
     dontShowAgain: '次回から表示しない',
     templateHelp: {
@@ -155,9 +163,11 @@ export default {
       selectSingle: 'セレクトボックス（単一選択）',
       selectMultiple: 'セレクトボックス（複数選択）',
       conditional: '条件分岐（表示/非表示）',
+      tag: 'タグ選択',
       slot: 'スロット（子要素挿入）',
       note: '補足',
-      suggestionNote: '予測変換を有効にすると、<code>$</code>、<code>(</code>、<code>z</code>を入力時に自動補完が表示されます',
+      suggestionNote:
+        '予測変換を有効にすると、<code>$</code>、<code>(</code>、<code>z</code>を入力時に自動補完が表示されます',
       fieldNameNote: 'フィールド名は英数字とアンダースコアが使用できます',
       defaultValueNote: 'デフォルト値は省略可能です（空文字になります）'
     },
@@ -167,7 +177,11 @@ export default {
     slotSettings: 'スロット設定',
     slot: 'スロット',
     templateHelpButton: 'テンプレート記法のヘルプ',
-    clickToEnlarge: 'クリックで拡大'
+    clickToEnlarge: 'クリックで拡大',
+    displayPreview: '表示プレビュー',
+    editPanelPreview: '編集パネルプレビュー',
+    editPanelPreviewNoFields: '編集可能なフィールドはありません',
+    editPanelPreviewDesc: 'ページ編集時に表示される編集パネルの項目一覧です。'
   },
   imagesManager: {
     addImage: '画像追加',
@@ -196,15 +210,18 @@ export default {
       title: 'カテゴリの役割について',
       common: {
         title: '共通',
-        description: 'サイト全体で共有されるパーツ・画像を想定しています。すべてのページで使用できる想定です。'
+        description:
+          'サイト全体で共有されるパーツ・画像を想定しています。すべてのページで使用できる想定です。'
       },
       individual: {
         title: '個別',
-        description: 'ページタイプごとに共有されるパーツ・画像を想定しています。同じページタイプのすべてのページで使用できる想定です。'
+        description:
+          'ページタイプごとに共有されるパーツ・画像を想定しています。同じページタイプのすべてのページで使用できる想定です。'
       },
       special: {
         title: '特別',
-        description: '動的ページ（例：店舗ごと、商品ごと）や特定の条件で使用されるパーツ・画像を想定しています。ルートモデルバインディングなどで動的に生成されるページで使用できる想定です。'
+        description:
+          '動的ページ（例：店舗ごと、商品ごと）や特定の条件で使用されるパーツ・画像を想定しています。ルートモデルバインディングなどで動的に生成されるページで使用できる想定です。'
       }
     }
   },

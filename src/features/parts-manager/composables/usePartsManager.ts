@@ -5,7 +5,6 @@ import { generateId } from '../../../core/utils/path-utils';
 import { useZeroCodeRenderer } from '../../../core/composables/useZeroCodeRenderer';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { processTemplateWithDOM } from '../../../core/utils/template-processor';
-
 type EditingLevel = 'type' | 'part' | null;
 
 type EditingPart = {
@@ -17,7 +16,7 @@ type EditingPart = {
 
 export function usePartsManager(cmsData: ZeroCodeData) {
   const { t } = useI18n();
-  
+
   // ========================================
   // 状態管理
   // ========================================
@@ -868,6 +867,7 @@ export function usePartsManager(cmsData: ZeroCodeData) {
     cancelEditingType,
     cancelEditingPart,
     getPartPreviewHtml,
+    createTempComponentFromType,
     validateType,
     addPartSlot,
     removePartSlot,

@@ -10,7 +10,13 @@
           class="zcode-category-tab"
           @click="activeCategory = category as 'common' | 'individual' | 'special'"
         >
-          {{ category === 'common' ? $t('dataViewer.common') : category === 'individual' ? $t('dataViewer.individual') : $t('dataViewer.special') }}
+          {{
+            category === 'common'
+              ? $t('dataViewer.common')
+              : category === 'individual'
+                ? $t('dataViewer.individual')
+                : $t('dataViewer.special')
+          }}
         </button>
         <button
           class="zcode-help-btn"
@@ -21,10 +27,7 @@
         </button>
       </div>
       <div class="zcode-parts-add-wrapper">
-        <button
-          class="zcode-btn-primary zcode-parts-new-btn"
-          @click="startCreating"
-        >
+        <button class="zcode-btn-primary zcode-parts-new-btn" @click="startCreating">
           <Plus :size="14" />
           <span>{{ $t('partsManager.createType') }}</span>
         </button>
@@ -40,11 +43,7 @@
           :key="typeGroup.type"
           class="zcode-part-type-group"
         >
-          <div
-            class="zcode-part-type-title"
-            role="heading"
-            aria-level="5"
-          >
+          <div class="zcode-part-type-title" role="heading" aria-level="5">
             {{ typeGroup.type }}
             <div class="zcode-part-type-actions">
               <button
@@ -83,8 +82,8 @@
               <div
                 v-if="
                   reorderSourcePart &&
-                    reorderSourcePart.type === type.type &&
-                    reorderSourcePart.partIndex === (type._partIndex ?? 0)
+                  reorderSourcePart.type === type.type &&
+                  reorderSourcePart.partIndex === (type._partIndex ?? 0)
                 "
                 class="zcode-reorder-source-indicator"
               >
@@ -130,16 +129,22 @@
                     'zcode-description-empty': !type._displayPart?.description && !type.description
                   }"
                 >
-                  {{ type._displayPart?.description || type.description || $t('partsManager.noDescription') }}
+                  {{
+                    type._displayPart?.description ||
+                    type.description ||
+                    $t('partsManager.noDescription')
+                  }}
                 </div>
                 <div class="zcode-part-modules">
-                  {{ $t('partsManager.partNumber', { current: (type._partIndex ?? 0) + 1, total: type.parts.length }) }}
+                  {{
+                    $t('partsManager.partNumber', {
+                      current: (type._partIndex ?? 0) + 1,
+                      total: type.parts.length
+                    })
+                  }}
                 </div>
                 <!-- プレビュー表示 -->
-                <div
-                  v-if="type._displayPart"
-                  class="zcode-part-preview"
-                >
+                <div v-if="type._displayPart" class="zcode-part-preview">
                   <div
                     class="zcode-part-preview-content"
                     v-html="getPartPreviewHtml(type, type._displayPart)"
@@ -169,16 +174,9 @@
           class="zcode-part-modal"
           @click.self="cancelEditingType"
         >
-          <div
-            class="zcode-part-modal-content"
-            @click.stop
-          >
+          <div class="zcode-part-modal-content" @click.stop>
             <div class="zcode-part-editor-header">
-              <div
-                class="zcode-part-editor-header-title"
-                role="heading"
-                aria-level="4"
-              >
+              <div class="zcode-part-editor-header-title" role="heading" aria-level="4">
                 {{ isCreatingNew ? $t('partsManager.createType') : $t('partsManager.editType') }}
               </div>
               <button
@@ -192,14 +190,16 @@
 
             <div class="zcode-part-editor-form">
               <div class="zcode-form-field">
-                <label>{{ $t('partsManager.typeName') }} <span class="zcode-required">*</span></label>
+                <label
+                  >{{ $t('partsManager.typeName') }} <span class="zcode-required">*</span></label
+                >
                 <input
                   v-model="editingType.type"
                   type="text"
                   :placeholder="$t('partsManager.typeNamePlaceholder')"
                   class="zcode-text-input"
                   required
-                >
+                />
               </div>
 
               <div class="zcode-form-field">
@@ -209,7 +209,7 @@
                   type="text"
                   :placeholder="$t('partsManager.typeDescriptionPlaceholder')"
                   class="zcode-text-input"
-                >
+                />
               </div>
             </div>
 
@@ -240,16 +240,9 @@
           class="zcode-part-modal"
           @click.self="handleCancelPart"
         >
-          <div
-            class="zcode-part-modal-content"
-            @click.stop
-          >
+          <div class="zcode-part-modal-content" @click.stop>
             <div class="zcode-part-editor-header">
-              <div
-                class="zcode-part-editor-header-title"
-                role="heading"
-                aria-level="4"
-              >
+              <div class="zcode-part-editor-header-title" role="heading" aria-level="4">
                 {{ $t('partsManager.editPart', { title: editingPart.part.title }) }}
               </div>
               <button
@@ -265,13 +258,16 @@
               <div class="zcode-part-editor-topbar">
                 <div class="zcode-part-editor-topfields">
                   <div class="zcode-form-field">
-                    <label>{{ $t('partsManager.partTitle') }} <span class="zcode-required">*</span></label>
+                    <label
+                      >{{ $t('partsManager.partTitle') }}
+                      <span class="zcode-required">*</span></label
+                    >
                     <input
                       v-model="editingPart.part.title"
                       type="text"
                       class="zcode-text-input"
                       required
-                    >
+                    />
                   </div>
                   <div class="zcode-form-field">
                     <label>{{ $t('partsManager.partDescription') }}</label>
@@ -280,7 +276,7 @@
                       type="text"
                       class="zcode-text-input"
                       :placeholder="$t('partsManager.partDescriptionPlaceholder')"
-                    >
+                    />
                   </div>
                 </div>
               </div>
@@ -313,18 +309,25 @@
                       >
                         CSS
                       </button>
+                      <button
+                        v-if="hasSlotsInTemplate"
+                        type="button"
+                        class="zcode-template-tab"
+                        :class="{ active: codeTab === 'slots' }"
+                        role="tab"
+                        :aria-selected="codeTab === 'slots'"
+                        @click="codeTab = 'slots'"
+                      >
+                        {{ $t('partsManager.slotSettings') }}
+                      </button>
                     </div>
 
                     <div class="zcode-part-editor-pane-header-actions">
-                      <div
-                        v-if="codeTab === 'css'"
-                        class="zcode-css-warning-compact"
-                      >
-                        <Info
-                          :size="14"
-                          class="zcode-css-warning-compact-icon"
-                        />
-                        <span class="zcode-css-warning-compact-text">{{ $t('partsManager.cssEditInfo') }}</span>
+                      <div v-if="codeTab === 'css'" class="zcode-css-warning-compact">
+                        <Info :size="14" class="zcode-css-warning-compact-icon" />
+                        <span class="zcode-css-warning-compact-text">{{
+                          $t('partsManager.cssEditInfo')
+                        }}</span>
                         <button
                           class="zcode-help-btn"
                           type="button"
@@ -342,7 +345,7 @@
                           v-model="enableTemplateSuggestions"
                           type="checkbox"
                           class="zcode-checkbox-input"
-                        >
+                        />
                         <span>{{ $t('partsManager.templateSuggestions') }}</span>
                       </label>
                       <button
@@ -358,8 +361,80 @@
                   </div>
 
                   <div class="zcode-part-editor-pane-body">
+                    <template v-if="codeTab === 'slots'">
+                      <div class="zcode-slots-config zcode-slots-config-in-pane">
+                        <div
+                          v-for="(_slotConfig, slotName) in editingPart.part.slots || {}"
+                          :key="`part-${editingPart.partIndex}-${slotName}`"
+                          class="zcode-slot-config-item"
+                        >
+                          <div class="zcode-slot-config-header">
+                            <div class="zcode-slot-config-title">
+                              {{ $t('partsManager.slot') }}: {{ slotName }}
+                            </div>
+                            <button
+                              class="zcode-btn-small"
+                              @click="removePartSlot(editingPart.partIndex, slotName)"
+                            >
+                              <Trash2 :size="12" />
+                            </button>
+                          </div>
+                          <div class="zcode-slot-config-body">
+                            <label>{{ $t('partsManager.allowedParts') }}</label>
+                            <div class="zcode-checkbox-group">
+                              <input
+                                v-model="slotPartFilters[slotName]"
+                                type="text"
+                                :placeholder="$t('partsManager.searchParts')"
+                                class="zcode-text-input"
+                                style="margin-bottom: 8px"
+                              />
+                              <label
+                                v-for="part in getFilteredParts(slotName)"
+                                :key="`allowed-${slotName}-${part.typeName}-${part.id}`"
+                                class="zcode-checkbox-item"
+                              >
+                                <input
+                                  type="checkbox"
+                                  :checked="getAllowedPartsForSlot(slotName).includes(part.id)"
+                                  class="zcode-checkbox"
+                                  @change="handleAllowedPartChange(slotName, part.id, $event)"
+                                />
+                                <span>{{ part.title }} ({{ part.typeName }})</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div v-if="availableSlotsForPart.length > 0" class="zcode-slot-add-section">
+                          <label>{{ $t('partsManager.addSlot') }}</label>
+                          <div class="zcode-slot-add-controls">
+                            <select v-model="selectedSlotToAdd" class="zcode-select-input">
+                              <option value="">
+                                {{ $t('partsManager.selectSlot') }}
+                              </option>
+                              <option
+                                v-for="slot in availableSlotsForPart"
+                                :key="slot"
+                                :value="slot"
+                              >
+                                {{ slot === 'default' ? $t('partsManager.defaultSlot') : slot }}
+                              </option>
+                            </select>
+                            <button
+                              :disabled="!selectedSlotToAdd"
+                              class="zcode-btn-secondary"
+                              @click="handleAddSelectedSlot"
+                            >
+                              <Plus :size="16" />
+                              <span>{{ $t('common.add') }}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
                     <MonacoEditor
-                      v-if="codeTab === 'html'"
+                      v-else-if="codeTab === 'html'"
                       v-model="editingPart.part.body"
                       language="html"
                       theme="vs-dark"
@@ -382,98 +457,71 @@
                 </div>
 
                 <div class="zcode-part-editor-pane zcode-part-editor-pane--side">
+                  <div
+                    class="zcode-part-editor-side-tabs"
+                    role="tablist"
+                    :aria-label="$t('partsManager.preview')"
+                  >
+                    <button
+                      type="button"
+                      class="zcode-part-editor-side-tab"
+                      :class="{ active: sidePaneTab === 'preview' }"
+                      role="tab"
+                      :aria-selected="sidePaneTab === 'preview'"
+                      @click="sidePaneTab = 'preview'"
+                    >
+                      {{ $t('partsManager.displayPreview') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="zcode-part-editor-side-tab"
+                      :class="{ active: sidePaneTab === 'editPanel' }"
+                      role="tab"
+                      :aria-selected="sidePaneTab === 'editPanel'"
+                      @click="sidePaneTab = 'editPanel'"
+                    >
+                      {{ $t('partsManager.editPanelPreview') }}
+                    </button>
+                  </div>
                   <div class="zcode-part-editor-pane-body">
-                    <div
-                      class="zcode-part-editor-preview-tab"
-                      @click="showPreviewModal = true"
-                      v-html="getPartPreviewHtml(editingPart.type, editingPart.part)"
-                    />
-                    <div class="zcode-part-editor-preview-hint">
-                      {{ $t('partsManager.clickToEnlarge') }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- スロット設定を一番下に移動（常に表示） -->
-              <div
-                v-if="hasSlotsInTemplate"
-                class="zcode-part-editor-slots-bottom"
-              >
-                <div class="zcode-slots-config">
-                  <div
-                    v-for="(_slotConfig, slotName) in editingPart.part.slots || {}"
-                    :key="`part-${editingPart.partIndex}-${slotName}`"
-                    class="zcode-slot-config-item"
-                  >
-                    <div class="zcode-slot-config-header">
-                      <div class="zcode-slot-config-title">
-                        {{ $t('partsManager.slot') }}: {{ slotName }}
+                    <template v-if="sidePaneTab === 'preview'">
+                      <div
+                        class="zcode-part-editor-preview-tab"
+                        @click="showPreviewModal = true"
+                        v-html="getPartPreviewHtml(editingPart.type, editingPart.part)"
+                      />
+                      <div class="zcode-part-editor-preview-hint">
+                        {{ $t('partsManager.clickToEnlarge') }}
                       </div>
-                      <button
-                        class="zcode-btn-small"
-                        @click="removePartSlot(editingPart.partIndex, slotName)"
-                      >
-                        <Trash2 :size="12" />
-                      </button>
-                    </div>
-                    <div class="zcode-slot-config-body">
-                      <label>{{ $t('partsManager.allowedParts') }}</label>
-                      <div class="zcode-checkbox-group">
-                        <input
-                          v-model="slotPartFilters[slotName]"
-                          type="text"
-                          :placeholder="$t('partsManager.searchParts')"
-                          class="zcode-text-input"
-                          style="margin-bottom: 8px"
-                        >
-                        <label
-                          v-for="part in getFilteredParts(slotName)"
-                          :key="`allowed-${slotName}-${part.typeName}-${part.id}`"
-                          class="zcode-checkbox-item"
-                        >
-                          <input
-                            type="checkbox"
-                            :checked="getAllowedPartsForSlot(slotName).includes(part.id)"
-                            class="zcode-checkbox"
-                            @change="handleAllowedPartChange(slotName, part.id, $event)"
-                          >
-                          <span>{{ part.title }} ({{ part.typeName }})</span>
-                        </label>
+                    </template>
+                    <template v-else>
+                      <div class="zcode-edit-panel-preview-heading">
+                        {{ $t('partsManager.editPanelPreview') }}
                       </div>
-                    </div>
-                  </div>
-
-                  <div
-                    v-if="availableSlotsForPart.length > 0"
-                    class="zcode-slot-add-section"
-                  >
-                    <label>{{ $t('partsManager.addSlot') }}</label>
-                    <div class="zcode-slot-add-controls">
-                      <select
-                        v-model="selectedSlotToAdd"
-                        class="zcode-select-input"
-                      >
-                        <option value="">
-                          {{ $t('partsManager.selectSlot') }}
-                        </option>
-                        <option
-                          v-for="slot in availableSlotsForPart"
-                          :key="slot"
-                          :value="slot"
-                        >
-                          {{ slot === 'default' ? $t('partsManager.defaultSlot') : slot }}
-                        </option>
-                      </select>
-                      <button
-                        :disabled="!selectedSlotToAdd"
-                        class="zcode-btn-secondary"
-                        @click="handleAddSelectedSlot"
-                      >
-                        <Plus :size="16" />
-                        <span>{{ $t('common.add') }}</span>
-                      </button>
-                    </div>
+                      <div class="zcode-edit-panel-preview-desc">
+                        {{ $t('partsManager.editPanelPreviewDesc') }}
+                      </div>
+                      <div class="zcode-edit-panel-preview-wrap">
+                        <EditPanel
+                          v-if="editPanelPreviewComponent"
+                          :editing-component="editPanelPreviewComponent"
+                          :editing-available-fields="editPanelPreviewFields"
+                          current-mode="edit"
+                          :can-select-parent="false"
+                          :images-common="cmsData.images?.common ?? []"
+                          :images-individual="cmsData.images?.individual ?? []"
+                          :images-special="cmsData.images?.special ?? []"
+                          :preview-mode="true"
+                          @save-field="handleEditPanelPreviewSaveField"
+                          @close="() => {}"
+                          @add-image="() => {}"
+                          @delete-image="() => {}"
+                        />
+                        <div v-else class="zcode-edit-panel-preview-empty">
+                          {{ $t('partsManager.editPanelPreviewNoFields') }}
+                        </div>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
@@ -506,22 +554,12 @@
           class="zcode-preview-modal"
           @click="showPreviewModal = false"
         >
-          <div
-            class="zcode-preview-modal-content"
-            @click.stop
-          >
+          <div class="zcode-preview-modal-content" @click.stop>
             <div class="zcode-preview-modal-header">
-              <div
-                class="zcode-preview-modal-header-title"
-                role="heading"
-                aria-level="4"
-              >
+              <div class="zcode-preview-modal-header-title" role="heading" aria-level="4">
                 {{ $t('partsManager.preview') }} {{ editingPart.part.title }}
               </div>
-              <button
-                class="zcode-close-btn"
-                @click="showPreviewModal = false"
-              >
+              <button class="zcode-close-btn" @click="showPreviewModal = false">
                 <X :size="18" />
               </button>
             </div>
@@ -536,24 +574,19 @@
       <!-- CSS警告モーダル（共通・個別パーツ両方） -->
       <Teleport to="body">
         <div
-          v-if="showCssWarningModal && (activeCategory === 'common' || activeCategory === 'individual' || activeCategory === 'special')"
+          v-if="
+            showCssWarningModal &&
+            (activeCategory === 'common' ||
+              activeCategory === 'individual' ||
+              activeCategory === 'special')
+          "
           class="zcode-help-modal-overlay"
           @click.self="closeCssWarningModal"
         >
-          <div
-            class="zcode-help-modal zcode-css-warning-modal"
-            @click.stop
-          >
+          <div class="zcode-help-modal zcode-css-warning-modal" @click.stop>
             <div class="zcode-help-modal-header">
-              <div
-                class="zcode-help-modal-header-title"
-                role="heading"
-                aria-level="3"
-              >
-                <AlertTriangle
-                  :size="20"
-                  class="zcode-css-warning-modal-title-icon"
-                />
+              <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
+                <AlertTriangle :size="20" class="zcode-css-warning-modal-title-icon" />
                 <span>{{ $t('partsManager.cssEditWarning') }}</span>
               </div>
               <button
@@ -586,21 +619,15 @@
             </div>
 
             <div class="zcode-css-warning-modal-footer">
-              <label
-                class="zcode-checkbox-label"
-                style="margin-bottom: 12px;"
-              >
+              <label class="zcode-checkbox-label" style="margin-bottom: 12px">
                 <input
                   v-model="dontShowCssWarningAgainParts"
                   type="checkbox"
                   class="zcode-checkbox-input"
-                >
+                />
                 <span>{{ $t('partsManager.dontShowAgain') }}</span>
               </label>
-              <button
-                class="zcode-btn-primary"
-                @click="closeCssWarningModal"
-              >
+              <button class="zcode-btn-primary" @click="closeCssWarningModal">
                 {{ $t('partsManager.understood') }}
               </button>
             </div>
@@ -615,20 +642,10 @@
           class="zcode-help-modal-overlay"
           @click.self="showCategoryInfoModal = false"
         >
-          <div
-            class="zcode-help-modal"
-            @click.stop
-          >
+          <div class="zcode-help-modal" @click.stop>
             <div class="zcode-help-modal-header">
-              <div
-                class="zcode-help-modal-header-title"
-                role="heading"
-                aria-level="3"
-              >
-                <Info
-                  :size="20"
-                  class="zcode-css-warning-modal-title-icon"
-                />
+              <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
+                <Info :size="20" class="zcode-css-warning-modal-title-icon" />
                 <span>{{ $t('dataViewer.categoryInfo.title') }}</span>
               </div>
               <button
@@ -641,11 +658,7 @@
             </div>
             <div class="zcode-help-modal-body">
               <div class="zcode-help-section">
-                <div
-                  class="zcode-help-section-title"
-                  role="heading"
-                  aria-level="4"
-                >
+                <div class="zcode-help-section-title" role="heading" aria-level="4">
                   {{ $t('dataViewer.categoryInfo.common.title') }}
                 </div>
                 <div class="zcode-help-section-item">
@@ -653,11 +666,7 @@
                 </div>
               </div>
               <div class="zcode-help-section">
-                <div
-                  class="zcode-help-section-title"
-                  role="heading"
-                  aria-level="4"
-                >
+                <div class="zcode-help-section-title" role="heading" aria-level="4">
                   {{ $t('dataViewer.categoryInfo.individual.title') }}
                 </div>
                 <div class="zcode-help-section-item">
@@ -665,11 +674,7 @@
                 </div>
               </div>
               <div class="zcode-help-section">
-                <div
-                  class="zcode-help-section-title"
-                  role="heading"
-                  aria-level="4"
-                >
+                <div class="zcode-help-section-title" role="heading" aria-level="4">
                   {{ $t('dataViewer.categoryInfo.special.title') }}
                 </div>
                 <div class="zcode-help-section-item">
@@ -683,21 +688,10 @@
 
       <!-- テンプレート記法ヘルプモーダル -->
       <Teleport to="body">
-        <div
-          v-if="showTemplateHelp"
-          class="zcode-help-modal-overlay"
-          @click="closeTemplateHelp"
-        >
-          <div
-            class="zcode-help-modal"
-            @click.stop
-          >
+        <div v-if="showTemplateHelp" class="zcode-help-modal-overlay" @click="closeTemplateHelp">
+          <div class="zcode-help-modal" @click.stop>
             <div class="zcode-help-modal-header">
-              <div
-                class="zcode-help-modal-header-title"
-                role="heading"
-                aria-level="3"
-              >
+              <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
                 {{ $t('partsManager.templateHelpTitle') }}
               </div>
               <button
@@ -773,32 +767,19 @@
               </table>
 
               <div class="zcode-help-section">
-                <div
-                  class="zcode-help-section-title"
-                  role="heading"
-                  aria-level="4"
-                >
+                <div class="zcode-help-section-title" role="heading" aria-level="4">
                   {{ $t('partsManager.templateHelp.note') }}
                 </div>
-                <div
-                  role="list"
-                  class="zcode-help-section-list"
-                >
+                <div role="list" class="zcode-help-section-list">
                   <div
                     role="listitem"
                     class="zcode-help-section-item"
                     v-html="$t('partsManager.templateHelp.suggestionNote')"
                   />
-                  <div
-                    role="listitem"
-                    class="zcode-help-section-item"
-                  >
+                  <div role="listitem" class="zcode-help-section-item">
                     {{ $t('partsManager.templateHelp.fieldNameNote') }}
                   </div>
-                  <div
-                    role="listitem"
-                    class="zcode-help-section-item"
-                  >
+                  <div role="listitem" class="zcode-help-section-item">
                     {{ $t('partsManager.templateHelp.defaultValueNote') }}
                   </div>
                 </div>
@@ -812,13 +793,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onBeforeUnmount, nextTick } from 'vue';
+import { ref, reactive, watch, computed, onBeforeUnmount, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { ZeroCodeData, TypeData, CMSConfig } from '../../../types';
+import type { ZeroCodeData, TypeData, CMSConfig, ComponentData } from '../../../types';
 import { usePartsManager } from '../composables/usePartsManager';
-import { Plus, Edit, Trash2, X, Check, ArrowUpDown, HelpCircle, Info, AlertTriangle } from 'lucide-vue-next';
+import { getAvailableFieldsFromPart } from '../../../core/utils/edit-panel-fields';
+import EditPanel from '../../editor/components/EditPanel.vue';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  X,
+  Check,
+  ArrowUpDown,
+  HelpCircle,
+  Info,
+  AlertTriangle
+} from 'lucide-vue-next';
 import MonacoEditor from './MonacoEditor.vue';
-import { getDevSetting, saveDevSettings, getCssWarningPartsSetting, setCssWarningPartsSetting } from '../../../core/utils/storage';
+import {
+  getDevSetting,
+  saveDevSettings,
+  getCssWarningPartsSetting,
+  setCssWarningPartsSetting
+} from '../../../core/utils/storage';
 
 const { t } = useI18n();
 
@@ -832,10 +830,9 @@ const enableTemplateSuggestions = ref(getDevSetting('enableTemplateSuggestions',
 const showTemplateHelp = ref(false);
 const showCssWarningModal = ref(false);
 const showCategoryInfoModal = ref(false);
-const dontShowCssWarningAgainParts = ref(
-  getCssWarningPartsSetting()
-);
-const codeTab = ref<'html' | 'css'>('html');
+const dontShowCssWarningAgainParts = ref(getCssWarningPartsSetting());
+const codeTab = ref<'html' | 'css' | 'slots'>('html');
+const sidePaneTab = ref<'preview' | 'editPanel'>('preview');
 const cssDraft = ref('');
 const cssDraftInitial = ref('');
 
@@ -853,7 +850,11 @@ const currentCSS = computed(() => {
   return props.cmsData.css?.special ?? '';
 });
 
-function applyModalPreviewPageCSS(cssMap: { common?: string; individual?: string; special?: string }) {
+function applyModalPreviewPageCSS(cssMap: {
+  common?: string;
+  individual?: string;
+  special?: string;
+}) {
   // 順序: common → individual → special
   const order = ['common', 'individual', 'special'] as const;
   order.forEach((category) => {
@@ -900,7 +901,11 @@ function closeTemplateHelp() {
 }
 
 function openCssWarningModal() {
-  if (activeCategory.value === 'common' || activeCategory.value === 'individual' || activeCategory.value === 'special') {
+  if (
+    activeCategory.value === 'common' ||
+    activeCategory.value === 'individual' ||
+    activeCategory.value === 'special'
+  ) {
     showCssWarningModal.value = true;
   }
 }
@@ -916,14 +921,12 @@ watch(enableTemplateSuggestions, (value) => {
 });
 
 // タブの順序を制御
-const categoryOrder = computed(() => 
-  props.config?.categoryOrder || 'common'
-);
+const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
 const categoryTabs = computed(() => {
   const tabs: Array<'common' | 'individual' | 'special'> = [];
   const hasSpecial = props.cmsData.parts.special.length > 0;
-  
+
   if (categoryOrder.value === 'individual') {
     tabs.push('individual', 'common');
     if (hasSpecial) tabs.push('special');
@@ -934,7 +937,7 @@ const categoryTabs = computed(() => {
     tabs.push('common', 'individual');
     if (hasSpecial) tabs.push('special');
   }
-  
+
   return tabs as readonly ('common' | 'individual' | 'special')[];
 });
 
@@ -961,6 +964,7 @@ const {
   cancelEditingType,
   cancelEditingPart,
   getPartPreviewHtml,
+  createTempComponentFromType,
   addPartSlot,
   removePartSlot,
   updatePartSlotAllowedParts,
@@ -970,6 +974,38 @@ const {
   startReorderType,
   deletePartType
 } = usePartsManager(props.cmsData);
+
+const editPanelPreviewComponent = ref<ComponentData | null>(null);
+
+watch(
+  () => editingPart.value,
+  (part) => {
+    if (!part) {
+      editPanelPreviewComponent.value = null;
+      return;
+    }
+    const temp = createTempComponentFromType(part.type, part.part);
+    editPanelPreviewComponent.value = reactive({
+      ...temp,
+      type: part.type.type
+    }) as ComponentData;
+  },
+  { deep: true }
+);
+
+const editPanelPreviewFields = computed(() => {
+  const part = editingPart.value;
+  const comp = editPanelPreviewComponent.value;
+  if (!part || !comp) return [];
+  return getAvailableFieldsFromPart(part.part, comp);
+});
+
+function handleEditPanelPreviewSaveField(field: { fieldName: string; currentValue: unknown }) {
+  const comp = editPanelPreviewComponent.value;
+  if (comp) {
+    comp[field.fieldName] = field.currentValue;
+  }
+}
 
 // categoryOrderに基づいて初期値を設定
 if (props.config?.categoryOrder === 'individual') {
@@ -1080,7 +1116,9 @@ watch(
     if (
       newTab === 'css' &&
       isPartEditModalOpen.value &&
-      (activeCategory.value === 'common' || activeCategory.value === 'individual' || activeCategory.value === 'special') &&
+      (activeCategory.value === 'common' ||
+        activeCategory.value === 'individual' ||
+        activeCategory.value === 'special') &&
       !dontShowCssWarningAgainParts.value
     ) {
       nextTick(() => {
@@ -1113,9 +1151,16 @@ const hasSlotsInTemplate = computed(() => {
 
   const template = editingPart.value.part.body;
   const hasSlotsInBody = template ? extractSlotsFromTemplate(template).length > 0 : false;
-  const hasConfiguredSlots = editingPart.value.part.slots && Object.keys(editingPart.value.part.slots).length > 0;
-  
+  const hasConfiguredSlots =
+    editingPart.value.part.slots && Object.keys(editingPart.value.part.slots).length > 0;
+
   return hasSlotsInBody || hasConfiguredSlots;
+});
+
+watch([() => hasSlotsInTemplate.value, () => codeTab.value], ([hasSlots, tab]) => {
+  if (!hasSlots && tab === 'slots') {
+    codeTab.value = 'html';
+  }
 });
 
 const selectedSlotToAdd = ref('');
@@ -1235,7 +1280,14 @@ function handleDelete(typeWithIndex: TypeData & { _partIndex?: number }) {
     // タイプ全体を削除
     const usages = checkTypeUsage(typeWithIndex.type);
     if (usages.length > 0) {
-      if (!confirm(t('partsManager.deleteTypeWithUsagesConfirm', { type: typeWithIndex.type, count: usages.length }))) {
+      if (
+        !confirm(
+          t('partsManager.deleteTypeWithUsagesConfirm', {
+            type: typeWithIndex.type,
+            count: usages.length
+          })
+        )
+      ) {
         return;
       }
     } else {
