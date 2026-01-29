@@ -170,6 +170,53 @@ body {
   color: #3498db;
 }
 
+.header-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.header-hamburger:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.header-hamburger:focus-visible {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+.hamburger-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #2c3e50;
+  border-radius: 1px;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
+}
+
+.header-overlay {
+  display: none;
+}
+
+.header-drawer-top {
+  display: none;
+}
+
+.header-drawer-close {
+  display: none;
+}
+
 /* フッター */
 .footer {
   background: #2c3e50;
@@ -208,11 +255,154 @@ body {
 
 /* レスポンシブ */
 @media (max-width: 768px) {
-  .header-nav {
-    gap: 16px;
+  .header-hamburger {
+    display: flex;
   }
 
-  .header-link {
-    font-size: 14px;
+  .header-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 98;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
   }
+
+  .header.is-menu-open .header-overlay {
+    opacity: 1;
+    pointer-events: auto;
+    touch-action: none;
+  }
+
+  .header.is-menu-open .header-content {
+    position: relative;
+    z-index: 100;
+  }
+
+  .header-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    max-height: 100vh;
+    max-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0 24px 24px;
+    background: #ffffff;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12);
+    z-index: 99;
+    transform: translateX(100%);
+    transition: transform 0.25s ease-out;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .header.is-menu-open .header-nav {
+    transform: translateX(0);
+  }
+
+  .header-drawer-top {
+    display: flex;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 56px;
+    padding: 0 0 8px;
+    margin-bottom: 8px;
+    background: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .header-drawer-close {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    line-height: 1;
+    color: #2c3e50;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .header-drawer-close:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .header-drawer-close:focus-visible {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+  }
+
+  .header-nav .header-link {
+    flex-shrink: 0;
+    display: block;
+    font-size: 16px;
+    padding: 12px 0;
+    color: #2c3e50;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .header-nav .lang-switch {
+    flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    margin-left: 0;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .header-nav .lang-switch button {
+    padding: 8px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: transparent;
+    color: #2c3e50;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .header-nav .lang-switch button:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .header-nav .lang-switch button.active {
+    background: rgba(52, 152, 219, 0.1);
+    border-color: #3498db;
+    color: #3498db;
+  }
+
+  .header.is-menu-open .header-hamburger .hamburger-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .header.is-menu-open .header-hamburger .hamburger-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .header.is-menu-open .header-hamburger .hamburger-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+html.header-menu-open,
+body.header-menu-open {
+  overflow: hidden;
+  height: 100%;
 }

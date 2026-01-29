@@ -1,7 +1,21 @@
 <header class="header">
   <div class="header-content">
     <a href="./" class="header-logo">ZeroCode.js</a>
-    <nav class="header-nav">
+    <button
+      type="button"
+      class="header-hamburger"
+      aria-label="メニューを開く"
+      aria-expanded="false"
+      aria-controls="header-nav"
+    >
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </button>
+    <nav id="header-nav" class="header-nav" aria-label="メイン">
+      <div class="header-drawer-top">
+        <button type="button" class="header-drawer-close" aria-label="メニューを閉じる">×</button>
+      </div>
       <a href="./#demo" class="header-link" data-i18n="header.demo">Demo</a>
       <a href="./docs.html" class="header-link" data-i18n="header.docs">Documentation</a>
       <div class="lang-switch">
@@ -10,4 +24,5 @@
       </div>
     </nav>
   </div>
+  <div class="header-overlay" id="header-overlay" aria-hidden="true"></div>
 </header>
