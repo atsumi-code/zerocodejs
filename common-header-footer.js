@@ -61,8 +61,6 @@ function setupLangSwitchButtons() {
 
       if (typeof window.applyTranslations === 'function') {
         window.applyTranslations(lang);
-      } else if (typeof applyTranslations === 'function') {
-        applyTranslations(lang);
       }
 
       window.dispatchEvent(new CustomEvent('lang-changed', { detail: { lang } }));
