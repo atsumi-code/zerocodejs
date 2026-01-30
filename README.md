@@ -34,15 +34,15 @@
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
-</head>
-<body>
-  <zcode-editor locale="en"></zcode-editor>
+  <head>
+    <link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css" />
+  </head>
+  <body>
+    <zcode-editor locale="en"></zcode-editor>
 
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
-</body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
+  </body>
 </html>
 ```
 
@@ -57,16 +57,16 @@ npm install zerocodejs
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css">
-</head>
-<body>
-  <zcode-editor locale="en"></zcode-editor>
+  <head>
+    <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css" />
+  </head>
+  <body>
+    <zcode-editor locale="en"></zcode-editor>
 
-  <script type="module">
-    import 'zerocodejs';
-  </script>
-</body>
+    <script type="module">
+      import 'zerocodejs';
+    </script>
+  </body>
 </html>
 ```
 
@@ -130,13 +130,13 @@ editor.setAttribute('parts-common', JSON.stringify(partsData));
 
 ## Why ZeroCode.js?
 
-| Feature | ZeroCode.js | GrapesJS | Builder.io | Craft.js |
-|---------|-------------|----------|------------|----------|
-| Framework Agnostic | Yes | Yes | No | No (React) |
-| Web Components | Yes | No | No | No |
-| Free & Open Source | Yes | Yes | Partial | Yes |
-| Japanese Support | Yes | No | No | No |
-| Bundle Size | ~260KB | ~500KB | - | ~150KB |
+| Feature            | ZeroCode.js | GrapesJS | Builder.io | Craft.js   |
+| ------------------ | ----------- | -------- | ---------- | ---------- |
+| Framework Agnostic | Yes         | Yes      | No         | No (React) |
+| Web Components     | Yes         | No       | No         | No         |
+| Free & Open Source | Yes         | Yes      | Partial    | Yes        |
+| Japanese Support   | Yes         | No       | No         | No         |
+| Bundle Size        | ~260KB      | ~500KB   | -          | ~150KB     |
 
 ## Contributing
 
@@ -163,4 +163,4 @@ MIT License
 
 ---
 
-**Last Updated**: January 2025
+**Last Updated**: January 2026

@@ -41,15 +41,15 @@
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css">
-</head>
-<body>
-  <zcode-editor></zcode-editor>
+  <head>
+    <link rel="stylesheet" href="https://unpkg.com/zerocodejs/dist/zerocodejs.css" />
+  </head>
+  <body>
+    <zcode-editor></zcode-editor>
 
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
-</body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/zerocodejs/dist/zerocode.umd.js"></script>
+  </body>
 </html>
 ```
 
@@ -64,16 +64,16 @@ npm install zerocodejs
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css">
-</head>
-<body>
-  <zcode-editor></zcode-editor>
+  <head>
+    <link rel="stylesheet" href="node_modules/zerocodejs/dist/zerocodejs.css" />
+  </head>
+  <body>
+    <zcode-editor></zcode-editor>
 
-  <script type="module">
-    import 'zerocodejs';
-  </script>
-</body>
+    <script type="module">
+      import 'zerocodejs';
+    </script>
+  </body>
 </html>
 ```
 
@@ -161,4 +161,4 @@ MIT License
 
 ---
 
-**最終更新日**: 2025年1月
+**最終更新日**: 2026年1月
