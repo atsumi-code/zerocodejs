@@ -67,10 +67,16 @@
             <a href="#parts-management" class="docs-nav-link">パーツ管理</a>
             <div class="docs-nav-sub">
               <a href="#types-and-parts" class="docs-nav-link-sub">タイプとパーツ</a>
-              <a href="#common-and-individual-parts" class="docs-nav-link-sub">共通パーツと個別パーツ</a>
+              <a href="#common-and-individual-parts" class="docs-nav-link-sub"
+                >共通パーツと個別パーツ</a
+              >
               <a href="#parts-management-features" class="docs-nav-link-sub">パーツ管理機能</a>
-              <a href="#part-template-structure" class="docs-nav-link-sub">パーツテンプレートの構造</a>
-              <a href="#template-field-initialization" class="docs-nav-link-sub">テンプレート記法の後から追加</a>
+              <a href="#part-template-structure" class="docs-nav-link-sub"
+                >パーツテンプレートの構造</a
+              >
+              <a href="#template-field-initialization" class="docs-nav-link-sub"
+                >テンプレート記法の後から追加</a
+              >
             </div>
             <a href="#images-management" class="docs-nav-link">画像管理</a>
             <a href="#configuration" class="docs-nav-link">設定オプション</a>
@@ -117,12 +123,15 @@
         <h3 id="installation">インストール</h3>
         <pre><code>npm install zerocodejs</code></pre>
         <p>
-          ZeroCode.jsは内部でVue 3を使用しています。npm 7以降では、peer dependenciesが自動的にインストールされるため、<code>npm install zerocodejs</code>だけでVueも一緒にインストールされます。
+          ZeroCode.jsは内部でVue 3を使用しています。npm 7以降では、peer
+          dependenciesが自動的にインストールされるため、<code>npm install zerocodejs</code
+          >だけでVueも一緒にインストールされます。
         </p>
         <div class="docs-info">
           <p>
             <strong>注意:</strong>
-            npm 6以前を使用している場合は、明示的に<code>npm install zerocodejs vue</code>を実行してください。
+            npm 6以前を使用している場合は、明示的に<code>npm install zerocodejs vue</code
+            >を実行してください。
           </p>
         </div>
 
@@ -148,8 +157,14 @@
   import 'zerocodejs';
 &lt;/script&gt;</code></pre>
 
-        <p><code>zcode-editor</code>はエンジニア・デザイナー向けの管理画面で、パーツ管理・画像管理・データビューアが利用できます。はじめての方におすすめです。</p>
-        <p><code>zcode-cms</code>はエンドユーザー向けの管理画面で、編集・追加・削除・並べ替えのみが利用できます。</p>
+        <p>
+          <code>zcode-editor</code
+          >はエンジニア・デザイナー向けの管理画面で、パーツ管理・画像管理・データビューアが利用できます。はじめての方におすすめです。
+        </p>
+        <p>
+          <code>zcode-cms</code
+          >はエンドユーザー向けの管理画面で、編集・追加・削除・並べ替えのみが利用できます。
+        </p>
 
         <h3 id="multiple-instances">複数インスタンス対応</h3>
         <p>
@@ -331,7 +346,10 @@
             属性値がオプショナルフィールドのみで構成されていて、値が<code>undefined</code>（または空）の場合、その属性自体がHTMLから削除されます
           </li>
           <li>
-            基本動作では、オプショナルフィールドが空の場合でも親要素（タグ）は残ります（例: <code>&lt;p&gt;&lt;/p&gt;</code>）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください（詳細は「条件分岐」セクションの「z-empty 属性」を参照）
+            基本動作では、オプショナルフィールドが空の場合でも親要素（タグ）は残ります（例:
+            <code>&lt;p&gt;&lt;/p&gt;</code
+            >）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください（詳細は「条件分岐」セクションの「z-empty
+            属性」を参照）
           </li>
         </ul>
         <p>例：</p>
@@ -345,7 +363,9 @@
 &lt;img src="image.jpg" alt="画像の説明" /&gt;</code></pre>
         <p><strong>親要素を削除したい場合：</strong></p>
         <p>
-          オプショナルフィールドが空の場合、基本動作では親要素（タグ）が残ります（例: <code>&lt;p&gt;&lt;/p&gt;</code>）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください。
+          オプショナルフィールドが空の場合、基本動作では親要素（タグ）が残ります（例:
+          <code>&lt;p&gt;&lt;/p&gt;</code
+          >）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください。
         </p>
         <pre><code>&lt;!-- 基本動作：空タグが残る --&gt;
 &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
@@ -365,7 +385,8 @@
         <div class="docs-info">
           <p>
             <strong>補足:</strong>
-            <code>z-empty</code>属性の詳細については、「条件分岐」セクションの「z-empty 属性」を参照してください。
+            <code>z-empty</code>属性の詳細については、「条件分岐」セクションの「z-empty
+            属性」を参照してください。
           </p>
         </div>
 
@@ -490,10 +511,12 @@
         <p><strong>ループ変数の参照：</strong></p>
         <ul>
           <li>
-            <code>{変数名.プロパティ名}</code>: ループ変数のプロパティを参照（例: <code>{shop.name}</code>）
+            <code>{変数名.プロパティ名}</code>: ループ変数のプロパティを参照（例:
+            <code>{shop.name}</code>）
           </li>
           <li>
-            <code>{変数名.ネストされた.プロパティ}</code>: ネストされたプロパティを参照（例: <code>{shop.address.city}</code>）
+            <code>{変数名.ネストされた.プロパティ}</code>: ネストされたプロパティを参照（例:
+            <code>{shop.address.city}</code>）
           </li>
           <li>
             <code>{変数名}</code>: ループ変数自体を参照（オブジェクトの場合はJSON文字列として表示）
@@ -510,9 +533,14 @@
 &lt;/div&gt;</code></pre>
         <p><strong>制限事項：</strong></p>
         <ul>
-          <li>現在はバックエンドデータの配列のみをサポート（コンポーネントデータの配列は非対応）</li>
+          <li>
+            現在はバックエンドデータの配列のみをサポート（コンポーネントデータの配列は非対応）
+          </li>
           <li>ネストループは非対応</li>
-          <li>インデックス変数は非対応（<code>z-for="(item, index) in {@items}"</code>のような構文は使用不可）</li>
+          <li>
+            インデックス変数は非対応（<code>z-for="(item, index) in {@items}"</code
+            >のような構文は使用不可）
+          </li>
           <li>空の配列の場合は、ループ要素全体が削除されます</li>
         </ul>
         <p><strong>完全な例：</strong></p>
@@ -570,7 +598,9 @@
 
         <h3 id="conditional-syntax">条件分岐</h3>
         <p>
-          <strong>z-if</strong> は表示するかしないかを決めます。fieldName に紐づく形ではありません（fieldName に紐づくのは <strong>z-empty</strong>）。属性値に指定したキーの真偽で、要素を表示または削除します。
+          <strong>z-if</strong> は表示するかしないかを決めます。fieldName
+          に紐づく形ではありません（fieldName に紐づくのは
+          <strong>z-empty</strong>）。属性値に指定したキーの真偽で、要素を表示または削除します。
         </p>
         <pre><code>&lt;element z-if="showContent"&gt;
   &lt;!-- 条件が真の場合に表示 --&gt;
@@ -606,12 +636,13 @@
         <p><strong>動作：</strong></p>
         <ul>
           <li>
-            <strong>デフォルト値</strong>:
-            テンプレートで書いたタグ名（例: <code>&lt;h2&gt;</code>）がデフォルト値として使用されます
+            <strong>デフォルト値</strong>: テンプレートで書いたタグ名（例:
+            <code>&lt;h2&gt;</code>）がデフォルト値として使用されます
           </li>
           <li>
             <strong>選択肢の指定</strong>:
-            <code>z-tag="$tagName:h1|h2|h3"</code> のように、パイプ（<code>|</code>）で区切って選択肢を指定できます
+            <code>z-tag="$tagName:h1|h2|h3"</code>
+            のように、パイプ（<code>|</code>）で区切って選択肢を指定できます
           </li>
           <li>
             <strong>全量表示</strong>:
@@ -621,19 +652,28 @@
             <strong>属性の保持</strong>:
             タグ名が変更されても、<code>class</code>、<code>id</code>などの属性は保持されます
           </li>
-          <li>
-            <strong>子要素の保持</strong>:
-            タグ名が変更されても、子要素は保持されます
-          </li>
+          <li><strong>子要素の保持</strong>: タグ名が変更されても、子要素は保持されます</li>
         </ul>
         <p><strong>対応タグ：</strong></p>
         <ul>
-          <li>見出し: <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code>, <code>h5</code>, <code>h6</code></li>
+          <li>
+            見出し: <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code>,
+            <code>h5</code>, <code>h6</code>
+          </li>
           <li>コンテナ: <code>div</code>, <code>p</code>, <code>span</code></li>
           <li>リスト: <code>li</code>, <code>ul</code>, <code>ol</code></li>
-          <li>セマンティック: <code>section</code>, <code>article</code>, <code>aside</code>, <code>nav</code>, <code>header</code>, <code>footer</code>, <code>main</code></li>
-          <li>その他: <code>figure</code>, <code>figcaption</code>, <code>blockquote</code>, <code>pre</code>, <code>code</code></li>
-          <li>テーブル: <code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>, <code>th</code>, <code>td</code></li>
+          <li>
+            セマンティック: <code>section</code>, <code>article</code>, <code>aside</code>,
+            <code>nav</code>, <code>header</code>, <code>footer</code>, <code>main</code>
+          </li>
+          <li>
+            その他: <code>figure</code>, <code>figcaption</code>, <code>blockquote</code>,
+            <code>pre</code>, <code>code</code>
+          </li>
+          <li>
+            テーブル: <code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>,
+            <code>th</code>, <code>td</code>
+          </li>
         </ul>
         <p><strong>使用例：</strong></p>
         <pre><code>&lt;!-- 見出しタグを動的に変更 --&gt;
@@ -658,7 +698,10 @@
   &lt;!-- フィールドが空の場合、要素ごと削除 --&gt;
 &lt;/element&gt;</code></pre>
         <p>
-          <strong>z-empty</strong> は <code>$fieldName</code> で指定したフィールドに紐づきます。そのフィールドが空（<code>undefined</code>、<code>null</code>、空文字列、または実質的に空のrichテキスト）の場合、親要素を削除します。基本動作では空タグが残るため、親ごと消したいときだけ <code>z-empty</code> を使ってください。
+          <strong>z-empty</strong> は
+          <code>$fieldName</code>
+          で指定したフィールドに紐づきます。そのフィールドが空（<code>undefined</code>、<code>null</code>、空文字列、または実質的に空のrichテキスト）の場合、親要素を削除します。基本動作では空タグが残るため、親ごと消したいときだけ
+          <code>z-empty</code> を使ってください。
         </p>
         <pre><code>&lt;!-- 基本動作：空タグが残る --&gt;
 &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
@@ -671,11 +714,11 @@
 &lt;!-- subtitleがundefinedの場合、&lt;div&gt;要素ごと削除される --&gt;</code></pre>
         <p><strong>動作：</strong></p>
         <ul>
+          <li>フィールドが<code>undefined</code>、<code>null</code>、空文字列の場合、要素を削除</li>
           <li>
-            フィールドが<code>undefined</code>、<code>null</code>、空文字列の場合、要素を削除
-          </li>
-          <li>
-            richテキストが実質的に空（<code>&lt;p&gt;&lt;/p&gt;</code>、<code>&lt;p&gt; &lt;/p&gt;</code>など）の場合も要素を削除
+            richテキストが実質的に空（<code>&lt;p&gt;&lt;/p&gt;</code>、<code
+              >&lt;p&gt; &lt;/p&gt;</code
+            >など）の場合も要素を削除
           </li>
           <li>フィールドに値がある場合は、要素を表示</li>
         </ul>
@@ -697,7 +740,8 @@
         <div class="docs-info">
           <p>
             <strong>注意:</strong>
-            fieldName に紐づくのは <code>z-empty</code> です。<code>z-if</code> は表示 on/off のみで、field には紐づきません。
+            fieldName に紐づくのは <code>z-empty</code> です。<code>z-if</code> は表示 on/off
+            のみで、field には紐づきません。
           </p>
         </div>
 
@@ -794,7 +838,10 @@
         <ul>
           <li><strong>共通パーツ</strong>: すべてのページで使用可能なパーツ</li>
           <li><strong>個別パーツ</strong>: 特定のページでのみ使用可能なパーツ</li>
-          <li><strong>特別パーツ</strong>: 動的ページ（ルートモデルバインディングなど）で使用可能なパーツ</li>
+          <li>
+            <strong>特別パーツ</strong>:
+            動的ページ（動的ルートやURLパラメータに応じて生成されるページ）で使用可能なパーツ
+          </li>
         </ul>
 
         <h3 id="parts-management-features">パーツ管理機能</h3>
@@ -856,27 +903,30 @@
           </li>
           <li>
             <strong>リッチテキスト</strong>（<code>{$field:default:rich}</code>）:
-            デフォルト値がある場合は<code>&lt;p&gt;デフォルト値&lt;/p&gt;</code>、ない場合は<code>&lt;p&gt;&lt;/p&gt;</code>
+            デフォルト値がある場合は<code>&lt;p&gt;デフォルト値&lt;/p&gt;</code>、ない場合は<code
+              >&lt;p&gt;&lt;/p&gt;</code
+            >
           </li>
           <li>
             <strong>画像フィールド</strong>（<code>{$field:default:image}</code>）:
             テンプレートで指定されたデフォルト値、または空文字列
           </li>
           <li>
-            <strong>ラジオボタン</strong>（<code>($field:option1|option2)</code>）:
-            最初の選択肢
+            <strong>ラジオボタン</strong>（<code>($field:option1|option2)</code>）: 最初の選択肢
           </li>
           <li>
             <strong>セレクトボックス</strong>（<code>($field@:option1|option2)</code>）:
             最初の選択肢
           </li>
           <li>
-            <strong>チェックボックス</strong>（<code>($field:option1,option2)</code>）:
-            空配列<code>[]</code>
+            <strong>チェックボックス</strong>（<code>($field:option1,option2)</code>）: 空配列<code
+              >[]</code
+            >
           </li>
           <li>
-            <strong>複数選択セレクト</strong>（<code>($field@:option1,option2)</code>）:
-            空配列<code>[]</code>
+            <strong>複数選択セレクト</strong>（<code>($field@:option1,option2)</code>）: 空配列<code
+              >[]</code
+            >
           </li>
           <li>
             <strong>ブール値</strong>（<code>z-if</code>で使用される場合など）:
@@ -1077,7 +1127,10 @@
             <code>"common"</code>: 共通タブを先に表示し、初期状態で共通タブを選択（デフォルト）
           </li>
           <li><code>"individual"</code>: 個別タブを先に表示し、初期状態で個別タブを選択</li>
-          <li><code>"special"</code>: 特別タブを先に表示し、初期状態で特別タブを選択（特別データが存在する場合のみ表示）</li>
+          <li>
+            <code>"special"</code>:
+            特別タブを先に表示し、初期状態で特別タブを選択（特別データが存在する場合のみ表示）
+          </li>
         </ul>
         <p>この設定は以下の画面に適用されます:</p>
         <ul>
@@ -1229,7 +1282,11 @@ const html = renderToHtml(data, {
         <h2 id="events">イベント</h2>
 
         <h3>save-request</h3>
-        <p>保存ボタンクリック時に発火します。<code>event.detail</code> に <code>data</code> は含まれません。保存対象のデータは <code>cms.getData()</code> で取得してください。</p>
+        <p>
+          保存ボタンクリック時に発火します。<code>event.detail</code> に
+          <code>data</code> は含まれません。保存対象のデータは
+          <code>cms.getData()</code> で取得してください。
+        </p>
         <pre><code>cms.addEventListener('save-request', (event) => {
   const { requestId, source, targets, timestamp } = event.detail;
   const data = cms.getData();
@@ -1242,10 +1299,19 @@ const html = renderToHtml(data, {
         <ul>
           <li><code>requestId</code>: リクエストID（<code>save-result</code> で対応付けに使用）</li>
           <li><code>source</code>: 送信元（<code>'cms'</code> または <code>'editor'</code>）</li>
-          <li><code>targets</code>: 保存対象の配列（<code>'page'</code>, <code>'parts-common'</code>, <code>'parts-individual'</code>, <code>'parts-special'</code>, <code>'images-common'</code>, <code>'images-individual'</code>, <code>'images-special'</code>, <code>'parts-common-css'</code>, <code>'parts-individual-css'</code>, <code>'parts-special-css'</code> のいずれか）</li>
+          <li>
+            <code>targets</code>: 保存対象の配列（<code>'page'</code>, <code>'parts-common'</code>,
+            <code>'parts-individual'</code>, <code>'parts-special'</code>,
+            <code>'images-common'</code>, <code>'images-individual'</code>,
+            <code>'images-special'</code>, <code>'parts-common-css'</code>,
+            <code>'parts-individual-css'</code>, <code>'parts-special-css'</code> のいずれか）
+          </li>
           <li><code>timestamp</code>: タイムスタンプ</li>
         </ul>
-        <p><strong>含まれないもの</strong>: <code>target</code>（単数）・<code>data</code>。データは <code>cms.getData()</code> で取得する。</p>
+        <p>
+          <strong>含まれないもの</strong>: <code>target</code>（単数）・<code>data</code>。データは
+          <code>cms.getData()</code> で取得する。
+        </p>
 
         <h3>zcode-dom-updated</h3>
         <p>DOMが更新されたときに発火します。動的コンテンツの初期化などに使用できます。</p>
@@ -1759,7 +1825,10 @@ WHERE is_published = TRUE;</code></pre>
         <p>保存ボタンをクリックすると、<code>save-request</code>イベントが発火します。</p>
 
         <h3 id="save-request-handler">イベントの受け取り方</h3>
-        <p><code>event.detail</code> に <code>data</code> は含まれません。<code>cms.getData()</code> で取得してください。</p>
+        <p>
+          <code>event.detail</code> に <code>data</code> は含まれません。<code>cms.getData()</code>
+          で取得してください。
+        </p>
         <pre><code>const cms = document.getElementById('cms');
 
 cms.addEventListener('save-request', (event) => {
@@ -1777,7 +1846,8 @@ cms.addEventListener('save-request', (event) => {
 
         <h3 id="save-request-targets">保存ターゲットの仕様</h3>
         <p>
-          <code>save-request</code>イベントの<code>targets</code>配列には、現在のタブやモードに応じて複数のターゲットが含まれる場合があります。
+          <code>save-request</code
+          >イベントの<code>targets</code>配列には、現在のタブやモードに応じて複数のターゲットが含まれる場合があります。
         </p>
         <table>
           <thead>
@@ -1791,16 +1861,26 @@ cms.addEventListener('save-request', (event) => {
             <tr>
               <td>ページ管理（編集モード）</td>
               <td><code>['page', 'images-common', 'images-individual']</code></td>
-              <td>ページデータと画像データを保存。ページCSSは含まれない（パーツ管理でのみ編集可能）</td>
+              <td>
+                ページデータと画像データを保存。ページCSSは含まれない（パーツ管理でのみ編集可能）
+              </td>
             </tr>
             <tr>
               <td>パーツ管理</td>
-              <td><code>['parts-common', 'parts-common-css']</code>、<code>['parts-individual', 'parts-individual-css']</code>、または<code>['parts-special', 'parts-special-css']</code></td>
+              <td>
+                <code>['parts-common', 'parts-common-css']</code>、<code
+                  >['parts-individual', 'parts-individual-css']</code
+                >、または<code>['parts-special', 'parts-special-css']</code>
+              </td>
               <td>パーツデータとページCSSを保存（パーツ編集時にページCSSも編集可能なため）</td>
             </tr>
             <tr>
               <td>画像管理</td>
-              <td><code>['images-common']</code>、<code>['images-individual']</code>、または<code>['images-special']</code></td>
+              <td>
+                <code>['images-common']</code>、<code>['images-individual']</code>、または<code
+                  >['images-special']</code
+                >
+              </td>
               <td>画像データのみを保存</td>
             </tr>
             <tr>
@@ -1813,9 +1893,11 @@ cms.addEventListener('save-request', (event) => {
 
         <h3 id="save-request-image-upload">画像のアップロード</h3>
         <p>
-          <code>targets</code>配列に<code>images-common</code>、<code>images-individual</code>、または<code>images-special</code>が含まれる場合、<code
+          <code>targets</code
+          >配列に<code>images-common</code>、<code>images-individual</code>、または<code>images-special</code>が含まれる場合、<code
             >needsUpload: true</code
-          >の画像をアップロード処理してください。<code>data</code> はハンドラ先頭で <code>cms.getData()</code> したもの。
+          >の画像をアップロード処理してください。<code>data</code> はハンドラ先頭で
+          <code>cms.getData()</code> したもの。
         </p>
         <pre><code>for (const target of targets) {
   if (target.startsWith('images-')) {
@@ -2067,7 +2149,13 @@ cms.dispatchEvent(
         </ul>
 
         <h3>実装例</h3>
-        <p>※ クライアントは save-request ハンドラで <code>cms.getData()</code> し、<code>targets</code> をループして各 <code>target</code> と <code>data</code> を <code>req.body</code> に含めて送る。</p>
+        <p>
+          ※ クライアントは save-request ハンドラで <code>cms.getData()</code> し、<code
+            >targets</code
+          >
+          をループして各 <code>target</code> と <code>data</code> を
+          <code>req.body</code> に含めて送る。
+        </p>
         <pre><code>// Node.js/Express の例（サーバー側）
 app.post('/api/zero-code/save', authenticate, (req, res) => {
   const { target, source, data } = req.body;
@@ -2163,14 +2251,17 @@ app.post('/api/zero-code/save', authenticate, (req, res) => {
 
           if (results.length === 0) {
             searchResults.classList.remove('has-results');
-            searchResults.innerHTML = '<div class="docs-search-result-item">検索結果が見つかりません</div>';
+            searchResults.innerHTML =
+              '<div class="docs-search-result-item">検索結果が見つかりません</div>';
             return;
           }
 
           searchResults.classList.add('has-results');
           searchResults.innerHTML = results
             .map((result) => {
-              const path = result.parentText ? `${result.parentText} > ${result.text}` : result.text;
+              const path = result.parentText
+                ? `${result.parentText} > ${result.text}`
+                : result.text;
               return `
                 <div class="docs-search-result-item" data-id="${result.id}">
                   <div class="result-title">${highlightText(result.text, query)}</div>
@@ -2273,7 +2364,9 @@ app.post('/api/zero-code/save', authenticate, (req, res) => {
             const parent = currentSection.closest('h2');
             if (parent && parent.id) {
               const parentLink = document.querySelector(`a[href="#${parent.id}"]`);
-              const parentText = parentLink ? parentLink.textContent.trim() : parent.textContent.trim();
+              const parentText = parentLink
+                ? parentLink.textContent.trim()
+                : parent.textContent.trim();
               breadcrumbCurrent.textContent = `${parentText} > ${currentSection.textContent.trim()}`;
             } else {
               breadcrumbCurrent.textContent = currentSection.textContent.trim();

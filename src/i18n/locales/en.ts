@@ -227,7 +227,7 @@ export default {
       special: {
         title: 'Special',
         description:
-          'Intended for parts and images used for dynamic pages (e.g., per store, per product) or under specific conditions. Assumed to be usable on pages dynamically generated with route model binding, etc.'
+          'Intended for parts and images used for dynamic pages (e.g., per store, per product) or under specific conditions. Assumed to be usable on pages generated according to dynamic routes or URL parameters.'
       }
     }
   },
