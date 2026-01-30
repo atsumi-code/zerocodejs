@@ -1,13 +1,7 @@
 <template>
   <div class="monaco-editor-wrapper">
-    <div
-      ref="editorContainer"
-      class="monaco-editor-container"
-    />
-    <div
-      v-if="error"
-      class="monaco-editor-error"
-    >
+    <div ref="editorContainer" class="monaco-editor-container" />
+    <div v-if="error" class="monaco-editor-error">
       {{ error }}
     </div>
   </div>
@@ -37,6 +31,7 @@ const editorContainer = ref<HTMLElement | null>(null);
 const error = ref<string | null>(null);
 let editor: any = null;
 let monacoInstance: any = null;
+let completionProviderDisposable: { dispose(): void } | null = null;
 let isUpdatingFromExternal = false;
 let injectedShadowStyles: HTMLElement[] = [];
 
@@ -48,7 +43,9 @@ function syncMonacoStylesToShadowRoot() {
   if (!(rootNode instanceof ShadowRoot)) return;
 
   const shadowRoot = rootNode;
-  const headNodes = Array.from(document.head.querySelectorAll('style, link[rel="stylesheet"]')) as HTMLElement[];
+  const headNodes = Array.from(
+    document.head.querySelectorAll('style, link[rel="stylesheet"]')
+  ) as HTMLElement[];
 
   const candidates = headNodes.filter((node) => {
     if (node.tagName === 'LINK') {
@@ -115,7 +112,7 @@ onMounted(async () => {
     monacoInstance = await loader.init();
     syncMonacoStylesToShadowRoot();
 
-    monacoInstance.languages.registerCompletionItemProvider('html', {
+    completionProviderDisposable = monacoInstance.languages.registerCompletionItemProvider('html', {
       provideCompletionItems: (model: any, position: any) => {
         const word = model.getWordUntilPosition(position);
         const range = {
@@ -525,6 +522,9 @@ watch(
 );
 
 onUnmounted(() => {
+  completionProviderDisposable?.dispose();
+  completionProviderDisposable = null;
+
   if (editor) {
     editor.dispose();
     editor = null;
