@@ -6,7 +6,7 @@
 
 🇯🇵 [日本語ドキュメント](./README.ja.md)
 
-**Framework-agnostic Visual CMS Editor Library built with Web Components**
+**Simple editing UI. Framework-agnostic CMS frontend library.**
 
 > **Status: Beta**
 >
