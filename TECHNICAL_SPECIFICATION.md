@@ -321,10 +321,22 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));
 ### 設定の型定義
 
 ```typescript
+interface ImageModalActionsCategory {
+  add?: boolean;
+  delete?: boolean;
+}
+
+interface ImageModalActionsConfig {
+  common?: ImageModalActionsCategory;
+  individual?: ImageModalActionsCategory;
+  special?: ImageModalActionsCategory;
+}
+
 interface CMSSettings {
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
+  imageModalActions?: ImageModalActionsConfig; // 画像選択モーダルで共通/個別/特別ごとに追加・削除ボタンを表示するか（未指定時は非表示）
 }
 
 interface DevSettings {
@@ -830,14 +842,16 @@ cms.addEventListener('save-request', async (event) => {
   for (const target of targets) {
     try {
       if (source === 'cms' && target.startsWith('parts-')) {
-        cms.dispatchEvent(new CustomEvent('save-result', {
-          detail: {
-            requestId,
-            target,
-            ok: false,
-            errors: [{ message: '権限がありません', code: 'FORBIDDEN' }]
-          }
-        }));
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: false,
+              errors: [{ message: '権限がありません', code: 'FORBIDDEN' }]
+            }
+          })
+        );
         continue;
       }
 
@@ -879,27 +893,31 @@ cms.addEventListener('save-request', async (event) => {
 
       // データの検証
       if (!validateDataStructure(dataToSave)) {
-        cms.dispatchEvent(new CustomEvent('save-result', {
-          detail: {
-            requestId,
-            target,
-            ok: false,
-            errors: [{ message: '無効なデータです', code: 'INVALID_DATA' }]
-          }
-        }));
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: false,
+              errors: [{ message: '無効なデータです', code: 'INVALID_DATA' }]
+            }
+          })
+        );
         continue;
       }
 
       // パーツテンプレートの検証
       if (target.startsWith('parts-') && !validatePartTemplate(dataToSave)) {
-        cms.dispatchEvent(new CustomEvent('save-result', {
-          detail: {
-            requestId,
-            target,
-            ok: false,
-            errors: [{ message: '無効なテンプレートです', code: 'INVALID_TEMPLATE' }]
-          }
-        }));
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: false,
+              errors: [{ message: '無効なテンプレートです', code: 'INVALID_TEMPLATE' }]
+            }
+          })
+        );
         continue;
       }
 
@@ -907,24 +925,28 @@ cms.addEventListener('save-request', async (event) => {
       await saveToDatabase(target, dataToSave);
 
       // 成功時
-      cms.dispatchEvent(new CustomEvent('save-result', {
-        detail: {
-          requestId,
-          target,
-          ok: true,
-          errors: []
-        }
-      }));
+      cms.dispatchEvent(
+        new CustomEvent('save-result', {
+          detail: {
+            requestId,
+            target,
+            ok: true,
+            errors: []
+          }
+        })
+      );
     } catch (error) {
       // エラー時
-      cms.dispatchEvent(new CustomEvent('save-result', {
-        detail: {
-          requestId,
-          target,
-          ok: false,
-          errors: [{ message: error.message, code: 'SAVE_FAILED' }]
-        }
-      }));
+      cms.dispatchEvent(
+        new CustomEvent('save-result', {
+          detail: {
+            requestId,
+            target,
+            ok: false,
+            errors: [{ message: error.message, code: 'SAVE_FAILED' }]
+          }
+        })
+      );
     }
   }
 });

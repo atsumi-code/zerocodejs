@@ -19,7 +19,11 @@
     </div>
 
     <div class="l-container">
-      <zcode-cms id="test-cms" locale="ja">
+      <zcode-cms
+        id="test-cms"
+        locale="ja"
+        config='{"cms":{"imageModalActions":{"special":{"add":true,"delete":true}}}}'
+      >
         <!-- 共通CSS（リセットCSS含む） -->
         <link slot="css" rel="stylesheet" href="./css/common.css" />
         <!-- ページ専用CSS -->

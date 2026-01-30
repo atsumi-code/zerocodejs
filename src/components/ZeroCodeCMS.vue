@@ -32,14 +32,8 @@
     </div>
 
     <!-- 保存ボタン（左下固定、管理モードの時のみ表示） -->
-    <div
-      v-if="viewMode === 'manage'"
-      class="zcode-save-controls-fixed"
-    >
-      <button
-        class="zcode-save-btn"
-        @click="handleSave"
-      >
+    <div v-if="viewMode === 'manage'" class="zcode-save-controls-fixed">
+      <button class="zcode-save-btn" @click="handleSave">
         <Save :size="16" />
         <span>{{ $t('common.save') }}</span>
       </button>
@@ -73,6 +67,7 @@
         :images-common="cmsData.images.common"
         :images-individual="cmsData.images.individual"
         :images-special="cmsData.images.special"
+        :image-modal-actions="imageModalActions"
         @close="closeEditPanel"
         @select-parent="selectParentElement"
         @save-field="handleSaveFieldEdit"
@@ -166,16 +161,10 @@
           <p>{{ $t('saveConfirm.simpleMessage') }}</p>
         </div>
         <div class="zcode-save-confirm-dialog-footer">
-          <button
-            class="zcode-btn-secondary"
-            @click="cancelSave"
-          >
+          <button class="zcode-btn-secondary" @click="cancelSave">
             {{ $t('common.cancel') }}
           </button>
-          <button
-            class="zcode-btn-primary"
-            @click="confirmSave"
-          >
+          <button class="zcode-btn-primary" @click="confirmSave">
             {{ $t('saveConfirm.saveButton') }}
           </button>
         </div>
@@ -247,6 +236,21 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 };
 
 const config = parseConfig(props.config);
+
+const imageModalActions = computed(() => {
+  const def = {
+    common: { add: false, delete: false },
+    individual: { add: false, delete: false },
+    special: { add: false, delete: false }
+  };
+  const c = config.cms?.imageModalActions;
+  if (!c) return def;
+  return {
+    common: { ...def.common, ...c.common },
+    individual: { ...def.individual, ...c.individual },
+    special: { ...def.special, ...c.special }
+  };
+});
 
 // 初期値の読み込みロジック（優先順位: localStorage > config.cms > デフォルト値）
 const getInitialCMSValue = <K extends keyof CMSSettings>(
@@ -335,7 +339,7 @@ watch(viewMode, (newMode, oldMode) => {
       updateShadowDOMAllowDynamicContentInteraction();
     });
   }
-  
+
   // 表示モード変更イベントを発火
   dispatchEvent('view-mode-changed', {
     mode: newMode,
@@ -663,6 +667,11 @@ const handleDeleteImage = (imageId: string) => {
   if (individualIndex !== -1) {
     cmsData.images.individual.splice(individualIndex, 1);
   }
+
+  const specialIndex = cmsData.images.special.findIndex((img: ImageData) => img.id === imageId);
+  if (specialIndex !== -1) {
+    cmsData.images.special.splice(specialIndex, 1);
+  }
 };
 
 function handleSaveResult(e: Event) {
@@ -691,8 +700,7 @@ function handleSaveResult(e: Event) {
     typeof errors[0]?.message === 'string' && errors[0].message ? errors[0].message : null;
 
   saveErrorBanner.value.visible = true;
-  saveErrorBanner.value.requestId =
-    typeof d.requestId === 'string' ? d.requestId : undefined;
+  saveErrorBanner.value.requestId = typeof d.requestId === 'string' ? d.requestId : undefined;
   saveErrorBanner.value.target = typeof d.target === 'string' ? d.target : undefined;
   saveErrorBanner.value.message = firstMessage
     ? t('editor.saveFailedWithMessage', { count, message: firstMessage })

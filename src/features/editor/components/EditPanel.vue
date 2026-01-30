@@ -4,45 +4,25 @@
     :class="previewMode ? 'zcode-edit-panel-preview' : 'zcode-edit-panel'"
     @click.stop
   >
-    <div
-      v-if="!previewMode"
-      class="zcode-edit-panel-header"
-    >
-      <div
-        class="zcode-panel-header-title"
-        role="heading"
-        aria-level="3"
-      >
+    <div v-if="!previewMode" class="zcode-edit-panel-header">
+      <div class="zcode-panel-header-title" role="heading" aria-level="3">
         {{ $t('editPanel.editing', { type: editingComponent.type }) }}
       </div>
-      <button
-        class="zcode-close-btn"
-        :aria-label="$t('common.close')"
-        @click="$emit('close')"
-      >
+      <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('close')">
         <X :size="18" />
       </button>
     </div>
 
     <!-- 親要素選択ボタン -->
-    <div
-      v-if="!previewMode && canSelectParent"
-      class="zcode-parent-selector"
-    >
-      <button
-        class="zcode-parent-select-btn"
-        @click="$emit('select-parent')"
-      >
+    <div v-if="!previewMode && canSelectParent" class="zcode-parent-selector">
+      <button class="zcode-parent-select-btn" @click="$emit('select-parent')">
         <ChevronUp :size="16" />
         <span>{{ $t('addPanel.selectParent') }}</span>
       </button>
     </div>
 
     <!-- グループタブ（複数グループがある場合のみ表示） -->
-    <div
-      v-if="hasMultipleGroups"
-      class="zcode-group-tabs"
-    >
+    <div v-if="hasMultipleGroups" class="zcode-group-tabs">
       <button
         :class="{ active: activeGroup === 'all' }"
         class="zcode-group-tab"
@@ -64,24 +44,13 @@
     <!-- 方法2: パーツの全フィールドを表示して編集 -->
     <template v-if="filteredFields.length > 0">
       <div class="zcode-field-editor">
-        <div
-          v-for="field in filteredFields"
-          :key="field.fieldName"
-          class="zcode-field-item"
-        >
-          <div
-            class="zcode-field-item-title"
-            role="heading"
-            aria-level="4"
-          >
+        <div v-for="field in filteredFields" :key="field.fieldName" class="zcode-field-item">
+          <div class="zcode-field-item-title" role="heading" aria-level="4">
             {{ field.label }}
           </div>
 
           <!-- テキストフィールド（単一行） -->
-          <div
-            v-if="field.type === 'text'"
-            class="zcode-text-editor"
-          >
+          <div v-if="field.type === 'text'" class="zcode-text-editor">
             <input
               type="text"
               :value="field.currentValue ?? ''"
@@ -92,26 +61,17 @@
               :class="{ 'zcode-field-error': getFieldError(field.fieldName) }"
               class="zcode-text-input"
               @input="handleTextInput(field, $event)"
-            >
-            <div
-              v-if="getFieldError(field.fieldName)"
-              class="zcode-field-error-message"
-            >
+            />
+            <div v-if="getFieldError(field.fieldName)" class="zcode-field-error-message">
               {{ getFieldError(field.fieldName) }}
             </div>
-            <div
-              v-if="field.maxLength"
-              class="zcode-field-counter"
-            >
+            <div v-if="field.maxLength" class="zcode-field-counter">
               {{ String(field.currentValue ?? '').length }} / {{ field.maxLength }}
             </div>
           </div>
 
           <!-- テキストエリアフィールド（複数行） -->
-          <div
-            v-if="field.type === 'textarea'"
-            class="zcode-text-editor"
-          >
+          <div v-if="field.type === 'textarea'" class="zcode-text-editor">
             <textarea
               :value="field.currentValue ?? ''"
               :placeholder="field.defaultValue"
@@ -123,108 +83,72 @@
               rows="4"
               @input="handleTextInput(field, $event)"
             />
-            <div
-              v-if="getFieldError(field.fieldName)"
-              class="zcode-field-error-message"
-            >
+            <div v-if="getFieldError(field.fieldName)" class="zcode-field-error-message">
               {{ getFieldError(field.fieldName) }}
             </div>
-            <div
-              v-if="field.maxLength"
-              class="zcode-field-counter"
-            >
+            <div v-if="field.maxLength" class="zcode-field-counter">
               {{ String(field.currentValue ?? '').length }} / {{ field.maxLength }}
             </div>
           </div>
 
           <!-- リッチテキストエディタ -->
-          <div
-            v-if="field.type === 'rich'"
-            class="zcode-rich-text-editor-wrapper"
-          >
+          <div v-if="field.type === 'rich'" class="zcode-rich-text-editor-wrapper">
             <RichTextEditor
               :model-value="field.currentValue ?? ''"
               :placeholder="field.defaultValue"
               @update:model-value="handleRichTextUpdate(field, $event)"
             />
-            <div
-              v-if="getFieldError(field.fieldName)"
-              class="zcode-field-error-message"
-            >
+            <div v-if="getFieldError(field.fieldName)" class="zcode-field-error-message">
               {{ getFieldError(field.fieldName) }}
             </div>
           </div>
 
           <!-- ラジオボタン -->
-          <div
-            v-if="field.type === 'radio'"
-            class="zcode-radio-editor"
-          >
+          <div v-if="field.type === 'radio'" class="zcode-radio-editor">
             <div class="zcode-radio-group">
-              <label
-                v-for="option in field.options"
-                :key="option"
-                class="zcode-radio-item"
-              >
+              <label v-for="option in field.options" :key="option" class="zcode-radio-item">
                 <input
                   v-model="field.currentValue"
                   type="radio"
                   :name="field.fieldName"
                   :value="option"
                   @change="$emit('save-field', field)"
-                >
+                />
                 <span class="zcode-radio-item-label">{{ option }}</span>
               </label>
             </div>
           </div>
 
           <!-- チェックボックス -->
-          <div
-            v-if="field.type === 'checkbox'"
-            class="zcode-checkbox-editor"
-          >
+          <div v-if="field.type === 'checkbox'" class="zcode-checkbox-editor">
             <div class="zcode-checkbox-group">
-              <label
-                v-for="option in field.options"
-                :key="option"
-                class="zcode-checkbox-item"
-              >
+              <label v-for="option in field.options" :key="option" class="zcode-checkbox-item">
                 <input
                   v-model="field.currentValue"
                   type="checkbox"
                   :value="option"
                   @change="$emit('save-field', field)"
-                >
+                />
                 <span class="zcode-checkbox-item-label">{{ option }}</span>
               </label>
             </div>
           </div>
 
           <!-- セレクトボックス（単一選択） -->
-          <div
-            v-if="field.type === 'select'"
-            class="zcode-select-editor"
-          >
+          <div v-if="field.type === 'select'" class="zcode-select-editor">
             <select
               v-model="field.currentValue"
               class="zcode-select"
               @change="$emit('save-field', field)"
             >
-              <option
-                v-for="option in field.options"
-                :key="option"
-                :value="option"
-              >
+              <option v-for="option in field.options" :key="option" :value="option">
                 {{ option }}
               </option>
             </select>
           </div>
 
           <!-- セレクトボックス（複数選択） -->
-          <div
-            v-if="field.type === 'select-multiple'"
-            class="zcode-select-editor"
-          >
+          <div v-if="field.type === 'select-multiple'" class="zcode-select-editor">
             <select
               v-model="field.currentValue"
               class="zcode-select"
@@ -232,31 +156,20 @@
               :size="Math.min(field.options?.length || 3, 5)"
               @change="$emit('save-field', field)"
             >
-              <option
-                v-for="option in field.options"
-                :key="option"
-                :value="option"
-              >
+              <option v-for="option in field.options" :key="option" :value="option">
                 {{ option }}
               </option>
             </select>
           </div>
 
           <!-- タグ選択フィールド -->
-          <div
-            v-if="field.type === 'tag'"
-            class="zcode-tag-editor"
-          >
+          <div v-if="field.type === 'tag'" class="zcode-tag-editor">
             <select
               v-model="field.currentValue"
               class="zcode-select"
               @change="$emit('save-field', field)"
             >
-              <option
-                v-for="tag in field.options"
-                :key="tag"
-                :value="tag"
-              >
+              <option v-for="tag in field.options" :key="tag" :value="tag">
                 {{ tag }}
               </option>
             </select>
@@ -266,30 +179,21 @@
           </div>
 
           <!-- ブール値（z-if用の単一チェックボックス） -->
-          <div
-            v-if="field.type === 'boolean'"
-            class="zcode-boolean-editor"
-          >
+          <div v-if="field.type === 'boolean'" class="zcode-boolean-editor">
             <label class="zcode-checkbox-item">
               <input
                 v-model="field.currentValue"
                 type="checkbox"
                 @change="$emit('save-field', field)"
-              >
+              />
               <span class="zcode-checkbox-item-label">{{ field.label }}を表示</span>
             </label>
           </div>
 
           <!-- 画像フィールド -->
-          <div
-            v-if="field.type === 'image'"
-            class="zcode-image-editor"
-          >
+          <div v-if="field.type === 'image'" class="zcode-image-editor">
             <div class="zcode-image-editor-buttons">
-              <button
-                class="zcode-image-select-btn"
-                @click="openImageModal(field)"
-              >
+              <button class="zcode-image-select-btn" @click="openImageModal(field)">
                 <Image :size="16" />
                 <span>{{
                   field.currentValue ? $t('editPanel.replaceImage') : $t('editPanel.selectImage')
@@ -306,15 +210,12 @@
               </button>
             </div>
             <!-- プレビュー -->
-            <div
-              v-if="getImageUrl(field.currentValue)"
-              class="zcode-image-preview"
-            >
+            <div v-if="getImageUrl(field.currentValue)" class="zcode-image-preview">
               <img
                 :src="getImageUrl(field.currentValue) || ''"
                 :alt="field.label"
                 class="zcode-image-preview-img"
-              >
+              />
             </div>
           </div>
         </div>
@@ -322,16 +223,11 @@
     </template>
 
     <!-- 編集可能なフィールドが無い場合の情報表示 -->
-    <div
-      v-else-if="!hasMultipleGroups || filteredFields.length === 0"
-      class="zcode-edit-fields"
-    >
+    <div v-else-if="!hasMultipleGroups || filteredFields.length === 0" class="zcode-edit-fields">
       <div class="zcode-edit-fields-text">
         {{ $t('editPanel.id', { id: editingComponent.id }) }}
       </div>
-      <div class="zcode-edit-fields-text">
-        Type: {{ editingComponent.type }}
-      </div>
+      <div class="zcode-edit-fields-text">Type: {{ editingComponent.type }}</div>
     </div>
 
     <!-- 画像選択モーダル -->
@@ -341,6 +237,7 @@
       :images-individual="imagesIndividual"
       :images-special="imagesSpecial"
       :current-value="currentImageField?.currentValue || undefined"
+      :image-modal-actions="imageModalActions"
       @update:model-value="handleImageSelect"
       @add-image="handleAddImage"
       @delete-image="handleDeleteImage"
@@ -389,6 +286,11 @@ const props = defineProps<{
   imagesIndividual: ImageData[];
   imagesSpecial: ImageData[];
   previewMode?: boolean;
+  imageModalActions?: {
+    common?: { add?: boolean; delete?: boolean };
+    individual?: { add?: boolean; delete?: boolean };
+    special?: { add?: boolean; delete?: boolean };
+  };
 }>();
 
 const activeGroup = ref<string | 'all' | undefined>('all');

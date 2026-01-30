@@ -545,6 +545,11 @@ interface ImageData {
 14. ✅ **データ永続化の改善**（2025年1月）
     - `sessionStorage`から`localStorage`に変更（別窓でのデータ連動のため）
     - 呼び出し側でリセットボタンを実装（本番環境では不要のため、ZeroCode側には実装しない）
+15. ✅ **画像モーダルの追加・削除の任意設定**（2025年1月）
+    - `config.cms.imageModalActions` で共通/個別/特別ごとに追加・削除ボタンの表示を制御
+    - 未指定時は追加・削除とも非表示（基本は画像管理パネルで操作）
+16. ✅ **特別画像の削除処理**（2025年1月）
+    - `handleDeleteImage` で `cmsData.images.special` からも削除するように修正
 
 ### 保留・スキップ機能
 

@@ -1149,12 +1149,19 @@
   config='{"cms": {"allowDynamicContentInteraction": true}, "dev": {"showDataViewer": true}, "categoryOrder": "individual"}'
 &gt;&lt;/zcode-editor&gt;</code></pre>
 
+        <p>
+          画像選択モーダルで追加・削除ボタンを表示するカテゴリを指定するには
+          <code>imageModalActions</code> を使用します（未指定時は追加・削除とも非表示）。
+        </p>
+        <pre><code>config='{"cms":{"imageModalActions":{"special":{"add":true,"delete":true}}}}'</code></pre>
+
         <p>または、JavaScript変数で指定することもできます：</p>
         <pre><code>const cmsConfig = {
   cms: {
     allowDynamicContentInteraction: true,
     devRightPadding: true,
-    enableContextMenu: true
+    enableContextMenu: true,
+    imageModalActions: { special: { add: true, delete: true } }
   },
   categoryOrder: 'individual'
 };

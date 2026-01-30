@@ -55,11 +55,23 @@ export interface ImageData {
   needsUpload?: boolean;
 }
 
+export interface ImageModalActionsCategory {
+  add?: boolean;
+  delete?: boolean;
+}
+
+export interface ImageModalActionsConfig {
+  common?: ImageModalActionsCategory;
+  individual?: ImageModalActionsCategory;
+  special?: ImageModalActionsCategory;
+}
+
 export interface CMSSettings {
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
   showSaveConfirm?: boolean; // 保存時の確認ダイアログを表示する（デフォルト: true）
+  imageModalActions?: ImageModalActionsConfig;
 }
 
 export interface DevSettings {
