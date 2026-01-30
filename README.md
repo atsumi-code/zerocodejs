@@ -130,13 +130,10 @@ editor.setAttribute('parts-common', JSON.stringify(partsData));
 
 ## Why ZeroCode.js?
 
-| Feature            | ZeroCode.js | GrapesJS | Builder.io | Craft.js   |
-| ------------------ | ----------- | -------- | ---------- | ---------- |
-| Framework Agnostic | Yes         | Yes      | No         | No (React) |
-| Web Components     | Yes         | No       | No         | No         |
-| Free & Open Source | Yes         | Yes      | Partial    | Yes        |
-| Japanese Support   | Yes         | No       | No         | No         |
-| Bundle Size        | ~260KB      | ~500KB   | -          | ~150KB     |
+- **For those who want to turn "this part should be editable" into a real CMS easily** — Define what should be editable, and you get a simple CMS for just those parts
+- **For those who want to stick to HTML, CSS, and JavaScript** — No extra frameworks, just the basics
+- **For people tired of the ever-changing frontend** — When keeping up with new tech feels like too much
+- **For the AI era** — Simple template + data is easy for both humans and AI to work with
 
 ## Contributing
 
