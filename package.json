@@ -1,7 +1,7 @@
 {
   "name": "zerocodejs",
   "version": "1.0.1-beta.10",
-  "description": "ZeroCode.js - フレームワーク非依存のWeb ComponentsのCMSフロントエンドライブラリ",
+  "description": "Simple editing UI. Framework-agnostic CMS frontend library.",
   "type": "module",
   "main": "./dist/zerocode.umd.js",
   "module": "./dist/zerocode.es.js",
