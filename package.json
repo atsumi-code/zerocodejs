@@ -1,6 +1,6 @@
 {
   "name": "zerocodejs",
-  "version": "1.0.1-beta.10",
+  "version": "1.0.1-beta.11",
   "description": "Simple editing UI. Framework-agnostic CMS frontend library.",
   "type": "module",
   "main": "./dist/zerocode.umd.js",
