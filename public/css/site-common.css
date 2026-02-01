@@ -401,8 +401,3 @@ body {
   }
 }
 
-html.header-menu-open,
-body.header-menu-open {
-  overflow: hidden;
-  height: 100%;
-}

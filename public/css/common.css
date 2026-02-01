@@ -20,7 +20,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
 }
 
@@ -44,7 +44,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   container-type: inline-size;
   container-name: viewport;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
 }
 
