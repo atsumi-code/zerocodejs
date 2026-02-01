@@ -312,16 +312,13 @@ const categoryOrder = computed(() =>
 
 const categoryTabs = computed(() => {
   const tabs: Array<'common' | 'individual' | 'special'> = [];
-  
+
   if (categoryOrder.value === 'individual') {
-    tabs.push('individual', 'common');
-    if (props.hasSpecialParts) tabs.push('special');
+    tabs.push('individual', 'common', 'special');
   } else if (categoryOrder.value === 'special') {
-    if (props.hasSpecialParts) tabs.push('special');
-    tabs.push('common', 'individual');
+    tabs.push('special', 'common', 'individual');
   } else {
-    tabs.push('common', 'individual');
-    if (props.hasSpecialParts) tabs.push('special');
+    tabs.push('common', 'individual', 'special');
   }
   return tabs as readonly ('common' | 'individual' | 'special')[];
 });

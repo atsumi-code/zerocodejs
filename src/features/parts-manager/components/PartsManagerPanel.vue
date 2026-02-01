@@ -1032,17 +1032,13 @@ const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
 const categoryTabs = computed(() => {
   const tabs: Array<'common' | 'individual' | 'special'> = [];
-  const hasSpecial = props.cmsData.parts.special.length > 0;
 
   if (categoryOrder.value === 'individual') {
-    tabs.push('individual', 'common');
-    if (hasSpecial) tabs.push('special');
+    tabs.push('individual', 'common', 'special');
   } else if (categoryOrder.value === 'special') {
-    if (hasSpecial) tabs.push('special');
-    tabs.push('common', 'individual');
+    tabs.push('special', 'common', 'individual');
   } else {
-    tabs.push('common', 'individual');
-    if (hasSpecial) tabs.push('special');
+    tabs.push('common', 'individual', 'special');
   }
 
   return tabs as readonly ('common' | 'individual' | 'special')[];
