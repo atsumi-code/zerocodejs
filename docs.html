@@ -1152,6 +1152,7 @@
         <p>
           画像選択モーダルで追加・削除ボタンを表示するカテゴリを指定するには
           <code>imageModalActions</code> を使用します（未指定時は追加・削除とも非表示）。
+          保存対象（targets）も同様に、add または delete が true のカテゴリのみに限定されます。
         </p>
         <pre><code>config='{"cms":{"imageModalActions":{"special":{"add":true,"delete":true}}}}'</code></pre>
 
@@ -1867,7 +1868,9 @@ cms.addEventListener('save-request', (event) => {
           <tbody>
             <tr>
               <td>ページ管理（編集モード）</td>
-              <td><code>['page', 'images-common', 'images-individual']</code></td>
+              <td>
+                <code>imageModalActions</code> から算出。<code>page</code> + (add または delete が true の画像カテゴリ)。未指定時は <code>['page']</code> のみ
+              </td>
               <td>
                 ページデータと画像データを保存。ページCSSは含まれない（パーツ管理でのみ編集可能）
               </td>

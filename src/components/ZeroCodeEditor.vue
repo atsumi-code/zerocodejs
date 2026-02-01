@@ -251,6 +251,21 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 
 const config = parseConfig(props.config);
 
+function getImageModalActions() {
+  const def = {
+    common: { add: false, delete: false },
+    individual: { add: false, delete: false },
+    special: { add: false, delete: false }
+  };
+  const c = config.cms?.imageModalActions;
+  if (!c) return def;
+  return {
+    common: { ...def.common, ...c.common },
+    individual: { ...def.individual, ...c.individual },
+    special: { ...def.special, ...c.special }
+  };
+}
+
 type EditorMode = 'edit' | 'add' | 'reorder' | 'delete';
 type Category = 'common' | 'individual' | 'special';
 type DataViewerTab = 'page' | 'parts' | 'images';
@@ -617,7 +632,17 @@ function calculateSaveTargets(): string[] {
 
   let targets: string[];
   if (primaryTarget === 'page') {
-    targets = ['page', 'images-common', 'images-individual'];
+    targets = ['page'];
+    const actions = getImageModalActions();
+    if (actions.common?.add || actions.common?.delete) {
+      targets.push('images-common');
+    }
+    if (actions.individual?.add || actions.individual?.delete) {
+      targets.push('images-individual');
+    }
+    if (actions.special?.add || actions.special?.delete) {
+      targets.push('images-special');
+    }
   } else if (primaryTarget === 'parts-common') {
     targets = [primaryTarget, 'parts-common-css'];
   } else if (primaryTarget === 'parts-individual') {

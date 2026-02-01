@@ -433,8 +433,8 @@ interface ImageData {
 
 **targets配列の仕様:**
 
-- **zcode-cms の編集モード**: `['page', 'images-common', 'images-individual']`（`images-special` は含まれない）
-- **zcode-editor のページ管理タブ**: `['page', 'images-common', 'images-individual', 'images-special']` など、タブ・カテゴリに応じて `images-special` が加わる場合がある
+- **zcode-cms の編集モード**: `imageModalActions` から算出。`page` + (add または delete が true の画像カテゴリ)。何も指定しない場合は `['page']` のみ
+- **zcode-editor のページ管理タブ**: 同上
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -550,6 +550,9 @@ interface ImageData {
     - 未指定時は追加・削除とも非表示（基本は画像管理パネルで操作）
 16. ✅ **特別画像の削除処理**（2025年1月）
     - `handleDeleteImage` で `cmsData.images.special` からも削除するように修正
+17. ✅ **imageModalActions に基づく targets 算出**（2025年1月）
+    - ページ編集の targets を `imageModalActions` から算出（add または delete が true のカテゴリのみ）
+    - 何も指定しない場合は `['page']` のみ
 
 ### 保留・スキップ機能
 
@@ -599,7 +602,7 @@ interface ImageData {
 - **保存は`save-request`イベントのみ**: `change`イベントは削除済み
 - **保存ボタンクリック時のみ発火**: 自動保存は行わない
 - **画像追加時の自動保存は行わない**: 保存ボタンで一括保存
-- **編集モードでの保存対象**: `page`、`images-common`、`images-individual`、`images-special`（CSSは除外）
+- **編集モードでの保存対象**: `imageModalActions` から算出。`page` + (add または delete が true の画像カテゴリ)。何も指定しない場合は `['page']` のみ（CSSは除外）
 - **パーツ管理での保存対象**: `parts-common`/`parts-individual`/`parts-special`、対応する`parts-common-css`/`parts-individual-css`/`parts-special-css`
 
 ### テンプレート記法の実装

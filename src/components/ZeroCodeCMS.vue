@@ -252,6 +252,21 @@ const imageModalActions = computed(() => {
   };
 });
 
+const saveTargets = computed(() => {
+  const targets: string[] = ['page'];
+  const actions = imageModalActions.value;
+  if (actions.common?.add || actions.common?.delete) {
+    targets.push('images-common');
+  }
+  if (actions.individual?.add || actions.individual?.delete) {
+    targets.push('images-individual');
+  }
+  if (actions.special?.add || actions.special?.delete) {
+    targets.push('images-special');
+  }
+  return targets;
+});
+
 // 初期値の読み込みロジック（優先順位: localStorage > config.cms > デフォルト値）
 const getInitialCMSValue = <K extends keyof CMSSettings>(
   key: K,
@@ -849,7 +864,7 @@ function executeSave() {
   dispatchEvent('save-request', {
     requestId,
     source: 'cms',
-    targets: ['page', 'images-common', 'images-individual'],
+    targets: saveTargets.value,
     timestamp: Date.now()
   });
 }
