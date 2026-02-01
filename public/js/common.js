@@ -1049,7 +1049,12 @@ function setupSaveResetListeners() {
         }
 
         // 保存結果を通知（呼び出し側のバックエンド検証でも同じイベント形式を推奨）
-        console.debug('[ZeroCodeCommon] dispatching save-result:', { requestId, target, ok, errors });
+        console.debug('[ZeroCodeCommon] dispatching save-result:', {
+          requestId,
+          target,
+          ok,
+          errors
+        });
         const resultEvent = new CustomEvent('save-result', {
           detail: {
             requestId,
