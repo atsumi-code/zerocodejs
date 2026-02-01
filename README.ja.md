@@ -14,8 +14,8 @@
 > 不具合報告・改善提案・ユースケース共有・ドキュメントのズレの指摘を歓迎します。
 >
 > - **GitHub**: https://github.com/atsumi-code/zerocodejs
-> - **Issue**: [https://github.com/atsumi-code/zerocodejs/issues](https://github.com/atsumi-code/zerocodejs/issues)
-> - **Discussion**: [https://github.com/atsumi-code/zerocodejs/discussions](https://github.com/atsumi-code/zerocodejs/discussions)（運用していない場合は Issue でOK）
+> - **Issues（バグ・要望）**: [https://github.com/atsumi-code/zerocodejs/issues](https://github.com/atsumi-code/zerocodejs/issues)
+> - **Discussions（質問・意見）**: [https://github.com/atsumi-code/zerocodejs/discussions](https://github.com/atsumi-code/zerocodejs/discussions)
 > - **Contributing**: [./CONTRIBUTING.md](./CONTRIBUTING.md)
 
 > ⭐ **スターをお願いします**  

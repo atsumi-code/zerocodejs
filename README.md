@@ -11,7 +11,7 @@
 > **Status: Beta**
 >
 > ZeroCode.js is currently in beta. APIs, specifications, and data formats may change without notice (including breaking changes).
-> Bug reports, feature requests, use case sharing, and documentation feedback are welcome.
+> Bug reports and feature requests: [Issues](https://github.com/atsumi-code/zerocodejs/issues). Questions and feedback: [Discussions](https://github.com/atsumi-code/zerocodejs/discussions).
 
 ## Features
 

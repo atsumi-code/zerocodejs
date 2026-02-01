@@ -14,14 +14,18 @@ const headerFooterTranslations = {
     'header.docs': 'Documentation',
     'header.menuOpen': 'Open menu',
     'header.menuClose': 'Close menu',
-    'footer.license': 'License'
+    'footer.license': 'License',
+    'footer.issues': 'Issues',
+    'footer.discussions': 'Discussions'
   },
   ja: {
     'header.demo': 'デモ',
     'header.docs': 'ドキュメント',
     'header.menuOpen': 'メニューを開く',
     'header.menuClose': 'メニューを閉じる',
-    'footer.license': 'ライセンス'
+    'footer.license': 'ライセンス',
+    'footer.issues': 'Issues（バグ・要望）',
+    'footer.discussions': 'Discussions（質問・意見）'
   }
 };
 
