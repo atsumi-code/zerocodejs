@@ -160,27 +160,15 @@ const textWithGroupRegex = new RegExp(...);
 
 ## HTMLタグの使用方針
 
-ZeroCodeのCSSが呼び出し側のCSS（リセットCSSやデフォルトCSS）に影響を与えないよう、以下の方針に従ってください。
+**適用範囲**: この方針は **ZeroCodeのUIコンポーネント**（パネル、ツールバー、編集画面など `src/` 配下のVueコンポーネント）にのみ適用します。ユーザーが記述する**パーツのテンプレート**には適用しません。パーツでは `z-tag` により見出し・段落などのタグを選択可能にできます。
 
-### 基本方針
+ZeroCodeのUIが呼び出し側のCSS（リセットCSSやデフォルトCSS）の影響を受けないよう、**UI部分では**`div`や`span`を用い、適切なクラス名と必要に応じて`role`を付与してください。
 
-- **セマンティックなHTMLタグ（h1-h6, p, ul, ol, li, strong, em, s, code, table, th, td, tr, tbodyなど）は極力使用しない**
-- **代わりに`div`や`span`を使用し、適切なクラス名を付与する**
-- **アクセシビリティのため、見出しとして意味がある箇所には`role="heading"`と`aria-level`を設定する**
+### ZeroCodeのUIでの書き方
 
-### 具体的な変更ルール
+#### 1. 見出しとして意味がある箇所
 
-#### 1. 見出しタグ（h1-h6）→ div
-
-見出しとして意味がある箇所のみ`role="heading"`と`aria-level`を設定します。
-
-**変更前:**
-
-```vue
-<h3 class="zcode-panel-header-title">編集中: {{ editingComponent.type }}</h3>
-```
-
-**変更後:**
+`role="heading"`と`aria-level`を設定します。
 
 ```vue
 <div class="zcode-panel-header-title" role="heading" aria-level="3">
@@ -188,36 +176,17 @@ ZeroCodeのCSSが呼び出し側のCSS（リセットCSSやデフォルトCSS）
 </div>
 ```
 
-#### 2. 段落タグ（p）→ div
+#### 2. 段落・テキスト表示
 
 `role`属性は不要です。
-
-**変更前:**
-
-```vue
-<p class="zcode-edit-fields-text">ID: {{ editingComponent.id }}</p>
-```
-
-**変更後:**
 
 ```vue
 <div class="zcode-edit-fields-text">ID: {{ editingComponent.id }}</div>
 ```
 
-#### 3. リストタグ（ul, ol, li）→ div構造
+#### 3. リストとして意味がある箇所
 
 `role="list"`と`role="listitem"`を設定します。
-
-**変更前:**
-
-```vue
-<ul>
-  <li>項目1</li>
-  <li>項目2</li>
-</ul>
-```
-
-**変更後:**
 
 ```vue
 <div role="list" class="zcode-help-section-list">
@@ -228,20 +197,9 @@ ZeroCodeのCSSが呼び出し側のCSS（リセットCSSやデフォルトCSS）
 
 ### アクセシビリティについて
 
-- **見出しとして意味がある箇所のみ**`role="heading"`と`aria-level`を設定
+- 見出しとして意味がある箇所のみ`role="heading"`と`aria-level`を設定
 - 単なるテキスト表示の場合は`role`属性は不要
 - タブ操作程度でCMSとしての機能ができれば十分（スクリーンリーダー対応は必須ではない）
-
-### 対象となるタグ
-
-以下のタグは原則として使用を避け、`div`や`span`に置き換えます：
-
-- `h1`, `h2`, `h3`, `h4`, `h5`, `h6` → `div`（見出しとして意味がある場合のみ`role="heading"`と`aria-level`を設定）
-- `p` → `div`
-- `ul`, `ol`, `li` → `div`構造（`role="list"`と`role="listitem"`を設定）
-- `strong`, `em`, `s` → `span`（必要に応じて）
-- `code` → `span`（必要に応じて）
-- `table`, `th`, `td`, `tr`, `tbody` → `div`構造（必要に応じて）
 
 ### 例外
 
