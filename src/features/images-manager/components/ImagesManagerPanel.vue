@@ -123,6 +123,24 @@
               >
             </div>
 
+            <div class="zcode-image-editor-replace">
+              <input
+                ref="replaceFileInputRef"
+                type="file"
+                accept="image/*"
+                class="zcode-image-replace-input"
+                @change="handleReplaceFile"
+              >
+              <button
+                type="button"
+                class="zcode-image-select-btn"
+                @click="replaceFileInputRef?.click()"
+              >
+                <Image :size="16" />
+                <span>{{ $t('imagesManager.replaceImage') }}</span>
+              </button>
+            </div>
+
             <div class="zcode-form-field">
               <label>{{ $t('imagesManager.imageId') }}</label>
               <input
@@ -243,7 +261,7 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ImageData, CMSConfig } from '../../../types';
 import { useImagesManager } from '../composables/useImagesManager';
-import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Info } from 'lucide-vue-next';
+import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Info, Image } from 'lucide-vue-next';
 
 const { t } = useI18n();
 
@@ -254,6 +272,7 @@ const props = defineProps<{
 
 
 const fileInput = ref<HTMLInputElement | null>(null);
+const replaceFileInputRef = ref<HTMLInputElement | null>(null);
 const showCategoryInfoModal = ref(false);
 
 // タブの順序を制御
@@ -318,6 +337,25 @@ async function handleFileSelect(event: Event) {
   } catch (error) {
     console.error('画像追加エラー:', error);
     alert(t('imagesManager.addImageFailed'));
+  }
+}
+
+function handleReplaceFile(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file || !editingImage.value) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const base64 = e.target?.result as string;
+    if (!base64 || !editingImage.value) return;
+    editingImage.value.url = base64;
+    editingImage.value.mimeType = file.type;
+    editingImage.value.needsUpload = true;
+  };
+  reader.readAsDataURL(file);
+  if (input) {
+    input.value = '';
   }
 }
 

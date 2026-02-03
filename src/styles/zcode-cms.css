@@ -4273,6 +4273,18 @@
   border-radius: 4px;
 }
 
+.zcode-image-editor-replace {
+  margin-bottom: 16px;
+}
+
+.zcode-image-editor-replace .zcode-image-select-btn {
+  width: 100%;
+}
+
+.zcode-image-replace-input {
+  display: none;
+}
+
 .zcode-image-editor-actions {
   display: flex;
   gap: 8px;

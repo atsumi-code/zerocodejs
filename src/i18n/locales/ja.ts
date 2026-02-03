@@ -193,6 +193,7 @@ export default {
     deleteImageWithUsagesConfirm: 'この画像は{count}箇所で使用されています。削除しますか？',
     deleteImageFromModalConfirm: 'この画像を削除しますか？',
     addImageFailed: '画像の追加に失敗しました',
+    replaceImage: '差し替え',
     selectImage: '画像を選択',
     currentlySelected: '現在選択中',
     select: '選択'
