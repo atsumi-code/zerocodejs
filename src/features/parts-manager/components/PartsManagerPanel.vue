@@ -520,7 +520,7 @@
                       <div
                         class="zcode-part-editor-preview-tab"
                         @click="showPreviewModal = true"
-                        v-html="getPartPreviewHtml(editingPart.type, editingPart.part)"
+                        v-html="displayPreviewHtml"
                       />
                       <div class="zcode-part-editor-preview-hint">
                         {{ $t('partsManager.clickToEnlarge') }}
@@ -610,7 +610,7 @@
             </div>
             <div
               class="zcode-preview-modal-body"
-              v-html="getPartPreviewHtml(editingPart.type, editingPart.part)"
+              v-html="displayPreviewHtml"
             />
           </div>
         </div>
@@ -905,6 +905,7 @@ import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, TypeData, CMSConfig, ComponentData } from '../../../types';
 import { usePartsManager } from '../composables/usePartsManager';
 import { getAvailableFieldsFromPart } from '../../../core/utils/edit-panel-fields';
+import { findFirstComponentWithPartId } from '../../../core/utils/path-utils';
 import EditPanel from '../../editor/components/EditPanel.vue';
 import {
   Plus,
@@ -1067,6 +1068,7 @@ const {
   cancelEditingType,
   cancelEditingPart,
   getPartPreviewHtml,
+  getPartPreviewHtmlWithComponent,
   createTempComponentFromType,
   addPartSlot,
   removePartSlot,
@@ -1103,10 +1105,27 @@ const editPanelPreviewFields = computed(() => {
   return getAvailableFieldsFromPart(part.part, comp);
 });
 
+const displayPreviewHtml = computed(() => {
+  const part = editingPart.value;
+  if (!part) return '';
+  const comp = editPanelPreviewComponent.value;
+  if (comp) {
+    return getPartPreviewHtmlWithComponent(part.part, comp);
+  }
+  return getPartPreviewHtml(part.type, part.part);
+});
+
 function handleEditPanelPreviewSaveField(field: { fieldName: string; currentValue: unknown }) {
   const comp = editPanelPreviewComponent.value;
   if (comp) {
     comp[field.fieldName] = field.currentValue;
+  }
+  const partId = editingPart.value?.part.id;
+  if (partId && props.cmsData?.page?.length) {
+    const pageComp = findFirstComponentWithPartId(props.cmsData.page, partId);
+    if (pageComp) {
+      pageComp[field.fieldName] = field.currentValue;
+    }
   }
 }
 

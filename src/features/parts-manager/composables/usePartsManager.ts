@@ -531,30 +531,31 @@ export function usePartsManager(cmsData: ZeroCodeData) {
     return component;
   }
 
+  function findPartForPreview(partId: string): PartData | null {
+    const parts = cmsData.parts;
+    const allTypes = [...parts.common, ...parts.individual, ...parts.special];
+    for (const t of allTypes) {
+      const foundPart = t.parts.find((p) => p.id === partId);
+      if (foundPart) return foundPart;
+    }
+    return null;
+  }
+
   function getPartPreviewHtml(type: TypeData, part: PartData): string {
     if (!part) return '';
-
     const tempComponent = createTempComponentFromType(type, part);
+    return getPartPreviewHtmlWithComponent(part, tempComponent);
+  }
 
+  function getPartPreviewHtmlWithComponent(part: PartData, component: ComponentData): string {
+    if (!part) return '';
     return processTemplateWithDOM(
       part.body,
-      tempComponent,
+      component,
       '',
-      (partId: string) => {
-        // すべてのタイプから、指定されたパーツIDを含むパーツを探す
-        const parts = cmsData.parts;
-        const allTypes = [...parts.common, ...parts.individual, ...parts.special];
-        for (const t of allTypes) {
-          const foundPart = t.parts.find((p) => p.id === partId);
-          if (foundPart) {
-            return foundPart;
-          }
-        }
-        return null;
-      },
-      (component: ComponentData, path: string) => {
-        return renderComponentToHtml(component, path);
-      },
+      findPartForPreview,
+      (childComponent: ComponentData, path: string) =>
+        renderComponentToHtml(childComponent, path),
       false,
       cmsData.images.common,
       cmsData.images.individual,
@@ -867,6 +868,7 @@ export function usePartsManager(cmsData: ZeroCodeData) {
     cancelEditingType,
     cancelEditingPart,
     getPartPreviewHtml,
+    getPartPreviewHtmlWithComponent,
     createTempComponentFromType,
     validateType,
     addPartSlot,

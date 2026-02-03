@@ -511,6 +511,10 @@ interface ImageData {
 17. ✅ **imageModalActions に基づく targets 算出**（2025年1月）
     - ページ編集の targets を `imageModalActions` から算出（add または delete が true のカテゴリのみ）
     - 何も指定しない場合は `['page']` のみ
+18. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
+    - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
+    - 同じ part_id のページ上コンポーネント（先頭1件）にも値を同期し、表示モード切り替え時に反映
+    - `getPartPreviewHtmlWithComponent`（usePartsManager）、`findFirstComponentWithPartId`（path-utils）を追加
 
 ### 保留・スキップ機能
 

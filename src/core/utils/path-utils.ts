@@ -1,4 +1,4 @@
-import type { ComponentData, PartData, TypeData, ZeroCodeData } from '../../types';
+import type { ComponentData, PartData, SlotConfig, TypeData, ZeroCodeData } from '../../types';
 
 // パスからコンポーネントを取得するヘルパー関数
 export function getComponentByPath(path: string, cmsData: ZeroCodeData): ComponentData | null {
@@ -93,6 +93,32 @@ export function findPartById(
     const part = type.parts.find((p) => p.id === partId);
     if (part) {
       return part;
+    }
+  }
+  return null;
+}
+
+/**
+ * page（またはスロット内の子配列）から、指定した part_id を持つ最初のコンポーネントを再帰的に検索する
+ */
+export function findFirstComponentWithPartId(
+  components: ComponentData[],
+  partId: string
+): ComponentData | null {
+  for (const comp of components) {
+    if (comp.part_id === partId) return comp;
+    const slots = comp.slots;
+    if (slots) {
+      for (const key of Object.keys(slots)) {
+        const slotValue = slots[key];
+        const children: ComponentData[] | undefined = Array.isArray(slotValue)
+          ? slotValue
+          : (slotValue as SlotConfig).children;
+        if (children?.length) {
+          const found = findFirstComponentWithPartId(children, partId);
+          if (found) return found;
+        }
+      }
     }
   }
   return null;
