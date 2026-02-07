@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/zerocodejs)](https://www.npmjs.com/package/zerocodejs)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/atsumi-code/zerocodejs/actions/workflows/ci.yml/badge.svg)](https://github.com/atsumi-code/zerocodejs/actions/workflows/ci.yml)
 [![GitHub Pages](https://img.shields.io/website?down_message=offline&label=Demo&up_message=online&url=https%3A%2F%2Fatsumi-code.github.io%2Fzerocodejs%2F)](https://atsumi-code.github.io/zerocodejs/)
 
 🌐 [English](./README.md)
