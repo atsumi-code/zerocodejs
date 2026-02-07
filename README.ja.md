@@ -34,6 +34,8 @@
 
 **ライブデモ:** https://atsumi-code.github.io/zerocodejs/
 
+![ZeroCode.js](public/images/hero-animation.gif)
+
 ## クイックスタート
 
 ### CDN（最も簡単）

@@ -714,8 +714,8 @@ const SAMPLE_DATA = {
     {
       id: 'img-sample-1',
       name: 'Sample 1',
-      url: './images/kv_image.jpg',
-      mimeType: 'image/jpeg',
+      url: './images/hero-animation.gif',
+      mimeType: 'image/gif',
       needsUpload: false
     }
   ],
@@ -723,8 +723,8 @@ const SAMPLE_DATA = {
     {
       id: 'img-special-banner',
       name: 'Special Banner',
-      url: './images/zcode_top_01.png',
-      mimeType: 'image/png',
+      url: './images/hero-animation.gif',
+      mimeType: 'image/gif',
       needsUpload: false
     }
   ]
