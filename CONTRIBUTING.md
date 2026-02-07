@@ -17,6 +17,13 @@ ZeroCode.js is in beta. APIs, specifications, and data formats may change (inclu
 - Feel free to open an Issue for questions
 - Discussions about "how should this work?" are also welcome
 
+### Ways to Contribute Without Coding
+
+- **Documentation**: Fix typos, improve wording, or suggest clearer explanations (Issue or PR)
+- **Feedback**: Report what was confusing or where you got stuck when using ZeroCode.js (Issue or Discussions)
+- **Translation / Wording**: Suggest better phrasing in English or Japanese for README, docs, or UI
+- **Spread the word**: Share the project (blog, SNS, sample sites). We appreciate it!
+
 ### Bug Reports (Issue)
 
 Please include:
@@ -67,6 +74,13 @@ ZeroCode.js はベータ版です。仕様・API・データ形式は変更さ�
 
 - まずは Issue でOKです（質問でも可）
 - 「仕様としてどうあるべきか」の相談も歓迎します
+
+### コードを書かずに貢献する方法
+
+- **ドキュメント**: 誤字修正、表現の改善、わかりやすい説明の提案（Issue または PR）
+- **フィードバック**: 使っていて分かりづらかった点・困った点の報告（Issue または Discussions）
+- **翻訳・表現**: README やドキュメント・UI の英語・日本語の言い回し提案
+- **紹介**: ブログや SNS での紹介、サンプルサイトの共有。歓迎します
 
 ### バグ報告（Issue）
 
