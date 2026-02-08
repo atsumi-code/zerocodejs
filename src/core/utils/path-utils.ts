@@ -25,8 +25,7 @@ export function generateId(): string {
   return `zcode-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// フィールドラベルの生成
-export function humanize(fieldName: string): string {
+function humanize(fieldName: string): string {
   return fieldName
     .replace(/_/g, ' ')
     .replace(/([a-z])([A-Z])/g, '$1 $2')

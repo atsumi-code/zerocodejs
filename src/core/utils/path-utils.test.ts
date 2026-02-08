@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
   getComponentByPath,
   generateId,
-  humanize,
   getFieldLabel,
   getParentPath,
   findPartById
@@ -75,35 +74,29 @@ describe('generateId', () => {
   });
 });
 
-describe('humanize', () => {
-  it('should convert snake_case to space separated', () => {
-    expect(humanize('field_name')).toBe('Field name');
-  });
-
-  it('should convert camelCase to space separated', () => {
-    expect(humanize('fieldName')).toBe('Field Name');
-  });
-
-  it('should capitalize first letter', () => {
-    expect(humanize('title')).toBe('Title');
-  });
-
-  it('should handle mixed case', () => {
-    expect(humanize('fieldName_test')).toBe('Field Name test');
-  });
-
-  it('should handle already capitalized', () => {
-    expect(humanize('Title')).toBe('Title');
-  });
-});
-
 describe('getFieldLabel', () => {
   it('should return humanized field name', () => {
     expect(getFieldLabel('fieldName')).toBe('Field Name');
   });
 
-  it('should handle snake_case', () => {
+  it('should convert snake_case to space separated', () => {
     expect(getFieldLabel('field_name')).toBe('Field name');
+  });
+
+  it('should convert camelCase to space separated', () => {
+    expect(getFieldLabel('fieldName')).toBe('Field Name');
+  });
+
+  it('should capitalize first letter', () => {
+    expect(getFieldLabel('title')).toBe('Title');
+  });
+
+  it('should handle mixed case', () => {
+    expect(getFieldLabel('fieldName_test')).toBe('Field Name test');
+  });
+
+  it('should handle already capitalized', () => {
+    expect(getFieldLabel('Title')).toBe('Title');
   });
 });
 
