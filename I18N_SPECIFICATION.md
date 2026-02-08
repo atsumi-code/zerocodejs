@@ -137,11 +137,11 @@ function handleLocaleChange(event: Event) {
 Web Component（`zcode-cms.ts`、`zcode-editor.ts`）で初期化時にローカルストレージから言語を読み込む：
 
 ```typescript
-import { getUserSetting } from '../core/utils/storage';
+import { getUserLocale } from '../core/utils/storage';
 import { createZeroCodeI18n, type SupportedLocale } from '../i18n';
 
 const attrLocale = this.getAttribute('locale');
-const savedLocale = getUserSetting('locale', 'ja' as SupportedLocale) as SupportedLocale;
+const savedLocale = getUserLocale('ja');
 const locale = (attrLocale || savedLocale || 'ja') as SupportedLocale;
 const i18n = createZeroCodeI18n(locale);
 

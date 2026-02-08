@@ -32,14 +32,6 @@ export function saveUserSettings(settings: Partial<UserSettings>): void {
   }
 }
 
-export function getUserSetting<K extends keyof UserSettings>(
-  key: K,
-  defaultValue: NonNullable<UserSettings[K]>
-): NonNullable<UserSettings[K]> {
-  const settings = loadUserSettings();
-  return (settings[key] ?? defaultValue) as NonNullable<UserSettings[K]>;
-}
-
 // locale専用の関数（nullを許可）
 export function getUserLocale(defaultValue: SupportedLocale | null = null): SupportedLocale | null {
   const settings = loadUserSettings();

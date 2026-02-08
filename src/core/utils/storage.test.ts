@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   loadUserSettings,
   saveUserSettings,
-  getUserSetting,
   getUserLocale,
   loadCMSSettings,
   saveCMSSettings,
@@ -110,19 +109,6 @@ describe('storage', () => {
       const parsed = JSON.parse(stored!);
       expect(parsed.cms.allowDynamicContentInteraction).toBe(true);
       expect(parsed.cms.devRightPadding).toBe(true);
-    });
-  });
-
-  describe('getUserSetting', () => {
-    it('should return default value when setting not found', () => {
-      const value = getUserSetting('locale', 'ja');
-      expect(value).toBe('ja');
-    });
-
-    it('should return stored value', () => {
-      localStorageMock.setItem('zcode-user-settings', JSON.stringify({ locale: 'en' }));
-      const value = getUserSetting('locale', 'ja');
-      expect(value).toBe('en');
     });
   });
 
