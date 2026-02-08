@@ -819,6 +819,85 @@
   padding: 0 4px;
 }
 
+/* 画像ID参照パネル */
+.zcode-image-id-reference {
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.zcode-image-id-reference-header {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.zcode-image-id-reference-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zcode-image-id-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.zcode-image-id-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.zcode-image-id-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zcode-image-id-code {
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.zcode-image-id-name {
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zcode-image-id-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.zcode-image-id-empty {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px dashed #e5e7eb;
+}
+
 .zcode-part-editor-pane {
   border: 1px solid #e5e7eb;
   border-radius: 8px;

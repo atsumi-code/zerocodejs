@@ -183,6 +183,11 @@ export default {
     editPanelPreview: 'Edit panel preview',
     editPanelPreviewNoFields: 'No editable fields',
     editPanelPreviewDesc: 'List of fields shown in the edit panel when editing a page.',
+    imageIdReference: 'Image ID reference',
+    imageIdReferenceDesc:
+      "Specify the image ID for the default value in '{'$field:default:image'}'.",
+    insert: 'Insert',
+    noImagesRegistered: 'No images registered. Add images in Image Manager.',
     understood: 'Understood',
     syntax: 'Syntax',
     description: 'Description',

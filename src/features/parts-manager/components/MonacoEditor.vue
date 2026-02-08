@@ -540,6 +540,21 @@ onUnmounted(() => {
   injectedShadowStyles.forEach((node) => node.remove());
   injectedShadowStyles = [];
 });
+
+defineExpose({
+  insertTextAtCursor(text: string) {
+    if (!editor) return;
+    const selection = editor.getSelection();
+    if (!selection) return;
+    editor.executeEdits('insert-image-id', [
+      {
+        range: selection,
+        text,
+        forceMoveMarkers: true
+      }
+    ]);
+  }
+});
 </script>
 
 <style>

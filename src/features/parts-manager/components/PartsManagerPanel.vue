@@ -467,6 +467,7 @@
                     </template>
                     <MonacoEditor
                       v-else-if="codeTab === 'html'"
+                      ref="monacoEditorRef"
                       v-model="editingPart.part.body"
                       language="html"
                       theme="vs-dark"
@@ -514,6 +515,17 @@
                     >
                       {{ $t('partsManager.editPanelPreview') }}
                     </button>
+                    <button
+                      v-if="codeTab === 'html'"
+                      type="button"
+                      class="zcode-part-editor-side-tab"
+                      :class="{ active: sidePaneTab === 'imageRef' }"
+                      role="tab"
+                      :aria-selected="sidePaneTab === 'imageRef'"
+                      @click="sidePaneTab = 'imageRef'"
+                    >
+                      {{ $t('partsManager.imageIdReference') }}
+                    </button>
                   </div>
                   <div class="zcode-part-editor-pane-body">
                     <template v-if="sidePaneTab === 'preview'">
@@ -524,6 +536,55 @@
                       />
                       <div class="zcode-part-editor-preview-hint">
                         {{ $t('partsManager.clickToEnlarge') }}
+                      </div>
+                    </template>
+                    <template v-else-if="sidePaneTab === 'imageRef'">
+                      <div class="zcode-image-id-reference">
+                        <div class="zcode-image-id-reference-header">
+                          {{ $t('partsManager.imageIdReferenceDesc') }}
+                        </div>
+                        <div
+                          v-if="allImagesForRef.length > 0"
+                          class="zcode-image-id-reference-list"
+                        >
+                          <div
+                            v-for="img in allImagesForRef"
+                            :key="img.id"
+                            class="zcode-image-id-item"
+                          >
+                            <img
+                              :src="img.url"
+                              :alt="img.name"
+                              class="zcode-image-id-thumb"
+                            >
+                            <div class="zcode-image-id-info">
+                              <code class="zcode-image-id-code">{{ img.id }}</code>
+                              <span class="zcode-image-id-name">{{ img.name }}</span>
+                            </div>
+                            <div class="zcode-image-id-actions">
+                              <button
+                                type="button"
+                                class="zcode-btn-small"
+                                @click="copyImageId(img.id)"
+                              >
+                                {{ $t('common.copy') }}
+                              </button>
+                              <button
+                                type="button"
+                                class="zcode-btn-small"
+                                @click="insertImageIdAtCursor(img.id)"
+                              >
+                                {{ $t('partsManager.insert') }}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          v-else
+                          class="zcode-image-id-empty"
+                        >
+                          {{ $t('partsManager.noImagesRegistered') }}
+                        </div>
                       </div>
                     </template>
                     <template v-else>
@@ -940,7 +1001,8 @@ const showCssWarningModal = ref(false);
 const showCategoryInfoModal = ref(false);
 const dontShowCssWarningAgainParts = ref(getCssWarningPartsSetting());
 const codeTab = ref<'html' | 'css' | 'slots'>('html');
-const sidePaneTab = ref<'preview' | 'editPanel'>('preview');
+const sidePaneTab = ref<'preview' | 'editPanel' | 'imageRef'>('preview');
+const monacoEditorRef = ref<InstanceType<typeof MonacoEditor> | null>(null);
 const cssDraft = ref('');
 const cssDraftInitial = ref('');
 
@@ -1008,6 +1070,33 @@ function closeTemplateHelp() {
   showTemplateHelp.value = false;
 }
 
+const allImagesForRef = computed(() => {
+  const common = props.cmsData.images?.common ?? [];
+  const individual = props.cmsData.images?.individual ?? [];
+  const special = props.cmsData.images?.special ?? [];
+  return [...common, ...individual, ...special];
+});
+
+async function copyImageId(id: string) {
+  try {
+    await navigator.clipboard.writeText(id);
+  } catch {
+    // フォールバック: テキストエリア経由でコピー
+    const textarea = document.createElement('textarea');
+    textarea.value = id;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  }
+}
+
+function insertImageIdAtCursor(id: string) {
+  monacoEditorRef.value?.insertTextAtCursor(id);
+}
+
 function openCssWarningModal() {
   if (
     activeCategory.value === 'common' ||
@@ -1022,6 +1111,13 @@ function closeCssWarningModal() {
   showCssWarningModal.value = false;
   setCssWarningPartsSetting(dontShowCssWarningAgainParts.value);
 }
+
+// codeTabがhtml以外に切り替わったとき、imageRefタブを表示中ならpreviewに戻す
+watch(codeTab, (newTab) => {
+  if (newTab !== 'html' && sidePaneTab.value === 'imageRef') {
+    sidePaneTab.value = 'preview';
+  }
+});
 
 // 設定変更時にローカルストレージに保存
 watch(enableTemplateSuggestions, (value) => {
@@ -1105,15 +1201,36 @@ const editPanelPreviewFields = computed(() => {
   return getAvailableFieldsFromPart(part.part, comp);
 });
 
-const displayPreviewHtml = computed(() => {
+const displayPreviewHtml = ref('');
+let previewDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+function updateDisplayPreviewHtml() {
   const part = editingPart.value;
-  if (!part) return '';
+  if (!part) {
+    displayPreviewHtml.value = '';
+    return;
+  }
   const comp = editPanelPreviewComponent.value;
   if (comp) {
-    return getPartPreviewHtmlWithComponent(part.part, comp);
+    displayPreviewHtml.value = getPartPreviewHtmlWithComponent(part.part, comp);
+  } else {
+    displayPreviewHtml.value = getPartPreviewHtml(part.type, part.part);
   }
-  return getPartPreviewHtml(part.type, part.part);
-});
+}
+
+watch(
+  () => [editingPart.value?.part.body, editingPart.value?.part.id, editPanelPreviewComponent.value] as const,
+  () => {
+    if (previewDebounceTimer) {
+      clearTimeout(previewDebounceTimer);
+    }
+    previewDebounceTimer = setTimeout(() => {
+      updateDisplayPreviewHtml();
+      previewDebounceTimer = null;
+    }, 300);
+  },
+  { immediate: true }
+);
 
 function handleEditPanelPreviewSaveField(field: { fieldName: string; currentValue: unknown }) {
   const comp = editPanelPreviewComponent.value;
@@ -1127,6 +1244,7 @@ function handleEditPanelPreviewSaveField(field: { fieldName: string; currentValu
       pageComp[field.fieldName] = field.currentValue;
     }
   }
+  updateDisplayPreviewHtml();
 }
 
 // categoryOrderに基づいて初期値を設定
@@ -1220,6 +1338,10 @@ function handleCancelPart() {
 }
 
 onBeforeUnmount(() => {
+  if (previewDebounceTimer) {
+    clearTimeout(previewDebounceTimer);
+    previewDebounceTimer = null;
+  }
   cleanupModalPreviewPageCSS();
 });
 
