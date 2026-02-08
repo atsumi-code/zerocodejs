@@ -3,6 +3,7 @@ import { ref, computed, nextTick, type Ref } from 'vue';
 import type { ZeroCodeData, ComponentData, TypeData, PartData, SlotConfig, CMSConfig } from '../../../types';
 import { getComponentByPath, generateId } from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
+import { logger } from '../../../core/utils/logger';
 import { setActiveOutline, removeActiveOutline } from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
@@ -531,7 +532,7 @@ export function useAddMode(
 
   function confirmAddPart(position: 'before' | 'after') {
     if (!addSelectedType.value || !addSelectedPart.value || !addTargetPath.value) {
-      console.error('Missing required values:', {
+      logger.error('Missing required values:', {
         addSelectedType: addSelectedType.value,
         addSelectedPart: addSelectedPart.value,
         addTargetPath: addTargetPath.value
@@ -606,7 +607,7 @@ export function useAddMode(
       }
 
       if (lastSlotIndex === -1 || lastSlotIndex >= slotPathParts.length - 1) {
-        console.error('Invalid slot path:', slotPath);
+        logger.error('Invalid slot path:', slotPath);
         return;
       }
 
@@ -618,7 +619,7 @@ export function useAddMode(
 
       const parent = getComponentByPath(parentPath, cmsData);
       if (!parent) {
-        console.error('Parent component not found:', parentPath);
+        logger.error('Parent component not found:', parentPath);
         return;
       }
 

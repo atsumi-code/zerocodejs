@@ -1,7 +1,13 @@
 <template>
   <div class="monaco-editor-wrapper">
-    <div ref="editorContainer" class="monaco-editor-container" />
-    <div v-if="error" class="monaco-editor-error">
+    <div
+      ref="editorContainer"
+      class="monaco-editor-container"
+    />
+    <div
+      v-if="error"
+      class="monaco-editor-error"
+    >
       {{ error }}
     </div>
   </div>
@@ -10,6 +16,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import loader from '@monaco-editor/loader';
+import { logger } from '../../../core/utils/logger';
 
 const props = defineProps<{
   modelValue: string;
@@ -480,7 +487,7 @@ onMounted(async () => {
     updateEditorHeight();
   } catch (e) {
     error.value = `Monaco Editorの読み込みに失敗しました: ${e}`;
-    console.error('Monaco Editor error:', e);
+    logger.error('Monaco Editor error:', e);
   }
 });
 

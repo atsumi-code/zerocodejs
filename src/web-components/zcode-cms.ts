@@ -3,6 +3,7 @@ import ZeroCodeCMS from '../components/ZeroCodeCMS.vue';
 import cssText from '../styles/zcode-cms.css?inline';
 import { injectShadowDOMExtension } from '../core/utils/dom-utils';
 import { setupI18nErrorHandler, determineLocale, setupI18n } from '../core/utils/i18n-setup';
+import { logger } from '../core/utils/logger';
 
 // vue-i18nのDevToolsエラーを抑制（Web Component環境でのエラーを回避）
 setupI18nErrorHandler();
@@ -193,7 +194,7 @@ class ZeroCodeCMSElement extends HTMLElement {
       const script = slot as HTMLScriptElement;
 
       if (!script.src) {
-        console.warn(
+        logger.warn(
           'Inline scripts are not allowed. Only external script files with src attribute are supported.'
         );
         return;
@@ -229,7 +230,7 @@ class ZeroCodeCMSElement extends HTMLElement {
       if (script.crossOrigin) newScript.crossOrigin = script.crossOrigin;
 
       newScript.onerror = (error) => {
-        console.error(`Failed to load script: ${script.src}`, error);
+        logger.error(`Failed to load script: ${script.src}`, error);
       };
 
       return newScript;
@@ -299,7 +300,7 @@ class ZeroCodeCMSElement extends HTMLElement {
       const script = slot as HTMLScriptElement;
 
       if (!script.src) {
-        console.warn(
+        logger.warn(
           'Inline scripts are not allowed. Only external script files with src attribute are supported.'
         );
         return;
@@ -323,7 +324,7 @@ class ZeroCodeCMSElement extends HTMLElement {
       if (script.crossOrigin) newScript.crossOrigin = script.crossOrigin;
 
       newScript.onerror = (error) => {
-        console.error(`Failed to load script: ${script.src}`, error);
+        logger.error(`Failed to load script: ${script.src}`, error);
       };
 
       return newScript;

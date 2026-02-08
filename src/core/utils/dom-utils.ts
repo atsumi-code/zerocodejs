@@ -3,6 +3,8 @@
  * 環境に応じて適切なDOMParserを返す
  */
 
+import { logger } from './logger';
+
 export function getDOMParser(): typeof DOMParser {
   if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
     return DOMParser;
@@ -471,7 +473,7 @@ export function getToolbarHeight(): number {
     const rect = toolbar.getBoundingClientRect();
     return rect.height > 0 ? rect.height : 20; // 高さが0の場合はデフォルト値
   } catch (error) {
-    console.warn('Failed to get toolbar height:', error);
+    logger.warn('Failed to get toolbar height:', error);
     return 20; // エラー時はデフォルトオフセット
   }
 }
@@ -493,7 +495,7 @@ export function scrollToElement(element: HTMLElement, offset: number = 0): void 
     const targetY = rect.top + scrollTop - toolbarHeight - offset;
     window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
   } catch (error) {
-    console.warn('Failed to scroll to element:', error);
+    logger.warn('Failed to scroll to element:', error);
     // フォールバック: 元の方法でスクロール
     try {
       const rect = element.getBoundingClientRect();
@@ -501,7 +503,7 @@ export function scrollToElement(element: HTMLElement, offset: number = 0): void 
       const targetY = rect.top + scrollTop - 20;
       window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
     } catch (fallbackError) {
-      console.error('Scroll fallback also failed:', fallbackError);
+      logger.error('Scroll fallback also failed:', fallbackError);
     }
   }
 }

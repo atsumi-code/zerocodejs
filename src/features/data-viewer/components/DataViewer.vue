@@ -88,6 +88,7 @@ import { ref, computed, watch } from 'vue';
 import { Copy, Check } from 'lucide-vue-next';
 import type { ZeroCodeData, CMSConfig } from '../../../types';
 import { useZeroCodeRenderer } from '../../../core/composables/useZeroCodeRenderer';
+import { logger } from '../../../core/utils/logger';
 
 const props = defineProps<{
   cmsData: ZeroCodeData;
@@ -310,7 +311,7 @@ const handleCopy = async () => {
       isCopied.value = false;
     }, 2000);
   } catch (err) {
-    console.error('コピーに失敗しました:', err);
+    logger.error('コピーに失敗しました:', err);
     // フォールバック: 古い方法でコピー
     const textArea = document.createElement('textarea');
     textArea.value = textToCopy;
@@ -325,7 +326,7 @@ const handleCopy = async () => {
         isCopied.value = false;
       }, 2000);
     } catch (e) {
-      console.error('コピーに失敗しました:', e);
+      logger.error('コピーに失敗しました:', e);
     }
     document.body.removeChild(textArea);
   }

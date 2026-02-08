@@ -3,6 +3,8 @@
  * カテゴリごとのCSSを注入・管理する
  */
 
+import { logger } from './logger';
+
 export class PageCSSManager {
   private styleElements: Map<string, HTMLStyleElement> = new Map();
   private container: ShadowRoot | HTMLElement | null = null;
@@ -22,7 +24,7 @@ export class PageCSSManager {
    */
   applyCSS(css: string): void {
     if (!this.container) {
-      console.warn('[PageCSSManager] Container not set');
+      logger.warn('PageCSSManager: Container not set');
       return;
     }
 
@@ -39,7 +41,7 @@ export class PageCSSManager {
    */
   applyMultipleCSS(cssMap: { common?: string; individual?: string; special?: string }): void {
     if (!this.container) {
-      console.warn('[PageCSSManager] Container not set');
+      logger.warn('PageCSSManager: Container not set');
       return;
     }
 

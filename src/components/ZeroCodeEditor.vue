@@ -200,6 +200,7 @@ import { Edit, Package, Image, Settings, Save, Database } from 'lucide-vue-next'
 import type { ZeroCodeData } from '../types';
 import { useZeroCodeData } from '../core/composables/useZeroCodeData';
 import { saveDevSettings, loadDevSettings, getCMSSetting } from '../core/utils/storage';
+import { logger } from '../core/utils/logger';
 import type { CMSConfig, DevSettings } from '../types';
 
 const { t } = useI18n();
@@ -244,7 +245,7 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
   try {
     return JSON.parse(configString);
   } catch (e) {
-    console.warn('[ZeroCodeEditor] Failed to parse config:', e);
+    logger.warn('ZeroCodeEditor: Failed to parse config:', e);
     return {};
   }
 };
@@ -534,16 +535,16 @@ function calculateSaveTargets(): string[] {
   } else if (activeTab.value === 'parts') {
     // PartsManagerPanelからactiveCategoryを取得
     if (!partsManagerRef.value) {
-      console.warn(
-        '[ZeroCode] partsManagerRefが設定されていません。デフォルトで"common"を使用します。'
+      logger.warn(
+        'partsManagerRefが設定されていません。デフォルトで"common"を使用します。'
       );
       primaryTarget = 'parts-common';
     } else {
       const activeCategory = readCategoryFromInstance(partsManagerRef.value as unknown);
 
       if (activeCategory === undefined || activeCategory === null) {
-        console.warn(
-          '[ZeroCode] parts activeCategoryが取得できません。デフォルトで"common"を使用します。'
+        logger.warn(
+          'parts activeCategoryが取得できません。デフォルトで"common"を使用します。'
         );
         primaryTarget = 'parts-common';
       } else if (activeCategory === 'common') {
@@ -557,16 +558,16 @@ function calculateSaveTargets(): string[] {
   } else if (activeTab.value === 'images') {
     // ImagesManagerPanelからactiveCategoryを取得
     if (!imagesManagerRef.value) {
-      console.warn(
-        '[ZeroCode] imagesManagerRefが設定されていません。デフォルトで"common"を使用します。'
-      );
+logger.warn(
+          'imagesManagerRefが設定されていません。デフォルトで"common"を使用します。'
+        );
       primaryTarget = 'images-common';
     } else {
       const activeCategory = readCategoryFromInstance(imagesManagerRef.value as unknown);
 
       if (activeCategory === undefined || activeCategory === null) {
-        console.warn(
-          '[ZeroCode] images activeCategoryが取得できません。デフォルトで"common"を使用します。'
+        logger.warn(
+          'images activeCategoryが取得できません。デフォルトで"common"を使用します。'
         );
         primaryTarget = 'images-common';
       } else if (activeCategory === 'common') {
@@ -580,25 +581,25 @@ function calculateSaveTargets(): string[] {
   } else if (activeTab.value === 'data') {
     // DataViewerからinternalActiveTabとactiveCategoryを取得
     if (!dataViewerRef.value) {
-      console.warn(
-        '[ZeroCode] dataViewerRefが設定されていません。デフォルトで"page"を使用します。'
-      );
+logger.warn(
+          'dataViewerRefが設定されていません。デフォルトで"page"を使用します。'
+        );
       primaryTarget = 'page';
     } else {
       const internalActiveTab = readDataViewerTabFromInstance(dataViewerRef.value as unknown);
       const activeCategory = readCategoryFromInstance(dataViewerRef.value as unknown);
 
       if (internalActiveTab === undefined || internalActiveTab === null) {
-        console.warn(
-          '[ZeroCode] dataViewer internalActiveTabが取得できません。デフォルトで"page"を使用します。'
+        logger.warn(
+          'dataViewer internalActiveTabが取得できません。デフォルトで"page"を使用します。'
         );
         primaryTarget = 'page';
       } else if (internalActiveTab === 'page') {
         primaryTarget = 'page';
       } else if (internalActiveTab === 'parts') {
         if (activeCategory === undefined || activeCategory === null) {
-          console.warn(
-            '[ZeroCode] dataViewer parts activeCategoryが取得できません。デフォルトで"common"を使用します。'
+          logger.warn(
+            'dataViewer parts activeCategoryが取得できません。デフォルトで"common"を使用します。'
           );
           primaryTarget = 'parts-common';
         } else if (activeCategory === 'common') {
@@ -610,8 +611,8 @@ function calculateSaveTargets(): string[] {
         }
       } else if (internalActiveTab === 'images') {
         if (activeCategory === undefined || activeCategory === null) {
-          console.warn(
-            '[ZeroCode] dataViewer images activeCategoryが取得できません。デフォルトで"common"を使用します。'
+          logger.warn(
+            'dataViewer images activeCategoryが取得できません。デフォルトで"common"を使用します。'
           );
           primaryTarget = 'images-common';
         } else if (activeCategory === 'common') {
@@ -622,7 +623,7 @@ function calculateSaveTargets(): string[] {
           primaryTarget = 'images-special';
         }
       } else {
-        console.warn(`[ZeroCode] dataViewer 不明なinternalActiveTab: ${internalActiveTab}`);
+        logger.warn(`dataViewer 不明なinternalActiveTab: ${internalActiveTab}`);
         return [];
       }
     }
@@ -668,7 +669,7 @@ function handleSaveClick() {
   // 保存対象を計算
   const targets = calculateSaveTargets();
   if (targets.length === 0) {
-    console.warn(`[ZeroCode] ${t('editor.noSaveTargets')}`);
+    logger.warn(String(t('editor.noSaveTargets')));
     return;
   }
 
@@ -680,7 +681,7 @@ function handleSaveClick() {
 function executeSave() {
   const targets = calculateSaveTargets();
   if (targets.length === 0) {
-    console.warn(`[ZeroCode] ${t('editor.noSaveTargets')}`);
+    logger.warn(String(t('editor.noSaveTargets')));
     return;
   }
 

@@ -4,6 +4,7 @@ import { sanitizeRichText, escapeAttributeValue, sanitizeUrl } from './sanitize'
 import { TEMPLATE_REGEX } from './template-regex';
 import { splitDefaultAndValidation } from './field-extractor';
 import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from './template-utils';
+import { logger } from './logger';
 
 
 export interface ProcessTemplateOptions {
@@ -32,7 +33,7 @@ export function processTemplateWithDOM(
   const template = doc.querySelector('template');
 
   if (!template || !template.content) {
-    console.error('Failed to parse template HTML');
+    logger.error('Failed to parse template HTML');
     return html;
   }
 
@@ -997,7 +998,7 @@ export function processTemplateWithDOM(
       // ループ式をパース: "item in {@items}"
       const match = zForValue.match(/^(\w+)\s+in\s+(.+)$/);
       if (!match) {
-        console.warn(`[ZeroCode] Invalid z-for syntax: ${zForValue}`);
+        logger.warn(`Invalid z-for syntax: ${zForValue}`);
         loopEl.removeAttribute('z-for');
         return;
       }
@@ -1007,7 +1008,7 @@ export function processTemplateWithDOM(
 
       // バックエンドデータのみ対応
       if (!dataSourceExpr.startsWith('{@') || !dataSourceExpr.endsWith('}')) {
-        console.warn(`[ZeroCode] z-for only supports backend data: ${dataSourceExpr}`);
+        logger.warn(`z-for only supports backend data: ${dataSourceExpr}`);
         loopEl.removeAttribute('z-for');
         return;
       }
@@ -1038,7 +1039,7 @@ export function processTemplateWithDOM(
 
         dataSource = current;
       } catch (error) {
-        console.warn(`[ZeroCode] Failed to resolve data source: ${dataPath}`, error);
+        logger.warn(`Failed to resolve data source: ${dataPath}`, error);
         loopEl.remove();
         return;
       }

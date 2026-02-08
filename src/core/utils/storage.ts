@@ -1,5 +1,6 @@
 import type { UserSettings, CMSSettings, DevSettings } from '../../types';
 import type { SupportedLocale } from '../../i18n';
+import { logger } from './logger';
 
 const STORAGE_KEY = 'zcode-user-settings';
 
@@ -12,7 +13,7 @@ export function loadUserSettings(): UserSettings {
     }
     return {};
   } catch (e) {
-    console.warn('[ZeroCode] Failed to load user settings:', e);
+    logger.warn('Failed to load user settings:', e);
     return {};
   }
 }
@@ -27,7 +28,7 @@ export function saveUserSettings(settings: Partial<UserSettings>): void {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
   } catch (e) {
-    console.warn('[ZeroCode] Failed to save user settings:', e);
+    logger.warn('Failed to save user settings:', e);
   }
 }
 
@@ -92,7 +93,7 @@ export function clearUserSettings(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (e) {
-    console.warn('[ZeroCode] Failed to clear user settings:', e);
+    logger.warn('Failed to clear user settings:', e);
   }
 }
 
@@ -111,7 +112,7 @@ export function setCssWarningPartsSetting(value: boolean): void {
   try {
     sessionStorage.setItem(CSS_WARNING_SESSION_KEY, String(value));
   } catch (e) {
-    console.warn('[ZeroCode] Failed to save CSS warning setting:', e);
+    logger.warn('Failed to save CSS warning setting:', e);
   }
 }
 

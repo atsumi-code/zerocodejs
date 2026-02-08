@@ -261,6 +261,7 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ImageData, CMSConfig } from '../../../types';
 import { useImagesManager } from '../composables/useImagesManager';
+import { logger } from '../../../core/utils/logger';
 import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Info, Image } from 'lucide-vue-next';
 
 const { t } = useI18n();
@@ -335,7 +336,7 @@ async function handleFileSelect(event: Event) {
       input.value = '';
     }
   } catch (error) {
-    console.error('画像追加エラー:', error);
+    logger.error('画像追加エラー:', error);
     alert(t('imagesManager.addImageFailed'));
   }
 }

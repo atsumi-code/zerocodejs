@@ -1,6 +1,7 @@
 import { reactive } from 'vue';
 import type { ZeroCodeData, ZeroCodeDataProps } from '../../types';
 import { initializeAllComponentFields } from '../utils/component-initializer';
+import { logger } from '../utils/logger';
 
 export function useZeroCodeData(props: ZeroCodeDataProps) {
   const cmsData = reactive<ZeroCodeData>({
@@ -50,7 +51,7 @@ export function useZeroCodeData(props: ZeroCodeDataProps) {
       // データ読み込み後に、不足しているフィールドを初期化
       initializeAllComponentFields(cmsData);
     } catch (e) {
-      console.error('Failed to parse props:', e);
+      logger.error('Failed to parse props:', e);
     }
   }
 

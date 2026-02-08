@@ -2,6 +2,7 @@ import { ref, type Ref } from 'vue';
 import type { ZeroCodeData, ComponentData, TypeData, PartData } from '../../../types';
 import { getComponentByPath, generateId } from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
+import { logger } from '../../../core/utils/logger';
 import { setActiveOutline, removeActiveOutline } from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
@@ -80,7 +81,7 @@ export function useDeleteMode(
     else if (pathParts.length > 2 && pathParts[0] === 'page') {
       const topIndex = parseInt(pathParts[1]);
       if (isNaN(topIndex) || topIndex < 0 || topIndex >= cmsData.page.length) {
-        console.error('Invalid top-level index:', topIndex);
+        logger.error('Invalid top-level index:', topIndex);
         cancelDelete();
         return;
       }
@@ -99,7 +100,7 @@ export function useDeleteMode(
       // 最後の一つ手前まで辿る
       for (let i = 0; i < fieldPath.length - 1; i++) {
         if (!current || typeof current !== 'object') {
-          console.error('Invalid path:', path);
+          logger.error('Invalid path:', path);
           cancelDelete();
           return;
         }
@@ -115,16 +116,16 @@ export function useDeleteMode(
           if (!isNaN(index) && index >= 0 && index < current.length) {
             current.splice(index, 1);
           } else {
-            console.error('Invalid array index:', lastField);
+            logger.error('Invalid array index:', lastField);
           }
         } else if (lastField in current) {
           // オブジェクトの場合はdeleteで削除
           delete current[lastField];
         } else {
-          console.error('Field not found:', path);
+          logger.error('Field not found:', path);
         }
       } else {
-        console.error('Invalid current object:', path);
+        logger.error('Invalid current object:', path);
       }
     }
 

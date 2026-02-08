@@ -1,5 +1,6 @@
 import { getDOMParser } from './dom-utils';
 import { TEMPLATE_REGEX, type FieldInfo } from './template-regex';
+import { logger } from './logger';
 
 export function parseValidationFromTokens(tokens: string[]) {
   const parsed: Pick<FieldInfo, 'required' | 'maxLength' | 'readonly' | 'disabled'> = {};
@@ -535,8 +536,8 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
             if (options && !options.includes(currentTagName)) {
               // 含まれていない場合は警告を出して、最初の選択肢を使用
               if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
-                console.warn(
-                  `[ZeroCode] z-tag="${zTagValue}": 現在のタグ名 "${currentTagName}" が選択肢に含まれていません。` +
+                logger.warn(
+                  `z-tag="${zTagValue}": 現在のタグ名 "${currentTagName}" が選択肢に含まれていません。` +
                     `デフォルト値として "${options[0]}" を使用します。`
                 );
               }

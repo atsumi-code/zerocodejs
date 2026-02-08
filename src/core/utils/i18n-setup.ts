@@ -2,6 +2,7 @@ import type { App } from 'vue';
 import type { SupportedLocale } from '../../i18n';
 import { createZeroCodeI18n } from '../../i18n';
 import { getUserLocale } from '../utils/storage';
+import { logger } from './logger';
 
 /**
  * vue-i18nのDevToolsエラーメッセージのパターン
@@ -105,6 +106,6 @@ export function setupI18n(app: App, locale: SupportedLocale): void {
   try {
     app.use(i18n);
   } catch (e) {
-    console.warn('[ZeroCode] Failed to setup i18n:', e);
+    logger.warn('Failed to setup i18n:', e);
   }
 }

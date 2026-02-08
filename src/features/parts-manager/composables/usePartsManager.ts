@@ -4,6 +4,7 @@ import type { ZeroCodeData, TypeData, PartData, ComponentData } from '../../../t
 import { generateId } from '../../../core/utils/path-utils';
 import { useZeroCodeRenderer } from '../../../core/composables/useZeroCodeRenderer';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
+import { logger } from '../../../core/utils/logger';
 import { processTemplateWithDOM } from '../../../core/utils/template-processor';
 type EditingLevel = 'type' | 'part' | null;
 
@@ -582,7 +583,7 @@ export function usePartsManager(cmsData: ZeroCodeData) {
         }
       });
     } catch (error) {
-      console.error('Failed to parse template:', error);
+      logger.error('Failed to parse template:', error);
     }
     return slots;
   }
@@ -638,7 +639,7 @@ export function usePartsManager(cmsData: ZeroCodeData) {
     });
 
     if (!success) {
-      console.warn(`Failed to update allowed parts for slot ${slotName}`);
+      logger.warn(`Failed to update allowed parts for slot ${slotName}`);
     }
   }
 

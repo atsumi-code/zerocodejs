@@ -1,4 +1,5 @@
 import { getDOMParser } from './dom-utils';
+import { logger } from './logger';
 
 export function injectAttributesToRootElement(html: string, attrs: Record<string, string>): string {
   const DOMParser = getDOMParser();
@@ -7,7 +8,7 @@ export function injectAttributesToRootElement(html: string, attrs: Record<string
   const template = doc.querySelector('template');
 
   if (!template || !template.content.firstElementChild) {
-    console.warn('Failed to parse HTML:', html);
+    logger.warn('Failed to parse HTML:', html);
     return html;
   }
 
@@ -40,12 +41,12 @@ export function processImageField(
   if (defaultValue) {
     const defaultImage = allImages.find((img) => img.id === defaultValue);
     if (defaultImage) {
-      console.warn(`Image not found: ${value}, using default: ${defaultValue}`);
+      logger.warn(`Image not found: ${value}, using default: ${defaultValue}`);
       return defaultImage.url;
     }
   }
 
-  console.warn(`Image not found: ${value}, default: ${defaultValue}`);
+  logger.warn(`Image not found: ${value}, default: ${defaultValue}`);
   return '';
 }
 
@@ -113,7 +114,7 @@ export function resolveBackendDataPath(backendData: Record<string, unknown>, pat
 
     return String(current);
   } catch (error) {
-    console.warn(`[ZeroCode] Failed to resolve backend data path: ${path}`, error);
+    logger.warn(`Failed to resolve backend data path: ${path}`, error);
     return '';
   }
 }

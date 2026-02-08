@@ -32,8 +32,14 @@
     </div>
 
     <!-- 保存ボタン（左下固定、管理モードの時のみ表示） -->
-    <div v-if="viewMode === 'manage'" class="zcode-save-controls-fixed">
-      <button class="zcode-save-btn" @click="handleSave">
+    <div
+      v-if="viewMode === 'manage'"
+      class="zcode-save-controls-fixed"
+    >
+      <button
+        class="zcode-save-btn"
+        @click="handleSave"
+      >
         <Save :size="16" />
         <span>{{ $t('common.save') }}</span>
       </button>
@@ -161,10 +167,16 @@
           <p>{{ $t('saveConfirm.simpleMessage') }}</p>
         </div>
         <div class="zcode-save-confirm-dialog-footer">
-          <button class="zcode-btn-secondary" @click="cancelSave">
+          <button
+            class="zcode-btn-secondary"
+            @click="cancelSave"
+          >
             {{ $t('common.cancel') }}
           </button>
-          <button class="zcode-btn-primary" @click="confirmSave">
+          <button
+            class="zcode-btn-primary"
+            @click="confirmSave"
+          >
             {{ $t('saveConfirm.saveButton') }}
           </button>
         </div>
@@ -199,6 +211,7 @@ import { useContextMenu } from '../features/editor/composables/useContextMenu';
 import { validateData as validateDataUtil } from '../core/utils/validation';
 import { findImageReferences } from '../core/utils/image-utils';
 import { saveCMSSettings, loadCMSSettings } from '../core/utils/storage';
+import { logger } from '../core/utils/logger';
 import { useI18n } from 'vue-i18n';
 import type { ImageData, CMSConfig, CMSSettings } from '../types';
 
@@ -230,7 +243,7 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
   try {
     return JSON.parse(configString);
   } catch (e) {
-    console.warn('[ZeroCodeCMS] Failed to parse config:', e);
+    logger.warn('ZeroCodeCMS: Failed to parse config:', e);
     return {};
   }
 };
