@@ -1,5 +1,5 @@
 import type { ZeroCodeData, ComponentData, PartData } from '../../types';
-import { processTemplateWithDOM } from '../utils/template-processor';
+import { processTemplateWithDOM, type ProcessTemplateOptions } from '../utils/template-processor';
 import { injectAttributesToRootElement } from '../utils/template-utils';
 import { findPartById } from '../utils/path-utils';
 
@@ -15,6 +15,62 @@ export class RenderError extends Error {
     super(message);
     this.name = 'RenderError';
   }
+}
+
+export interface RenderComponentCoreContext {
+  findPart: (partId: string) => PartData | null;
+  enableEditorAttributes: boolean;
+  imagesCommon: Array<{ id: string; url: string }>;
+  imagesIndividual: Array<{ id: string; url: string }>;
+  imagesSpecial: Array<{ id: string; url: string }>;
+  backendData?: Record<string, unknown>;
+  options?: ProcessTemplateOptions;
+}
+
+/**
+ * コンポーネントをHTMLにレンダリングする共通処理
+ * 循環参照・パーツ未検出時は RenderError を throw
+ */
+export function renderComponentCore(
+  component: ComponentData,
+  path: string,
+  processedPaths: Set<string>,
+  context: RenderComponentCoreContext,
+  renderChild: (childComponent: ComponentData, childPath: string) => string
+): string {
+  if (processedPaths.has(path)) {
+    throw new RenderError('CIRCULAR_REFERENCE', path, `循環参照が検出されました: ${path}`);
+  }
+  processedPaths.add(path);
+
+  const partId = component.part_id;
+  const part = context.findPart(partId);
+  if (!part) {
+    throw new RenderError('PART_NOT_FOUND', path, `パーツが見つかりません: ${partId}`);
+  }
+
+  const html = processTemplateWithDOM(
+    part.body,
+    component,
+    path,
+    context.findPart,
+    renderChild,
+    context.enableEditorAttributes,
+    context.imagesCommon,
+    context.imagesIndividual,
+    context.imagesSpecial,
+    context.backendData,
+    context.options
+  );
+
+  if (context.enableEditorAttributes) {
+    return injectAttributesToRootElement(html, {
+      'data-zcode-id': component.id,
+      'data-zcode-path': path,
+      'data-zcode-part': partId
+    });
+  }
+  return html;
 }
 
 /**
@@ -33,12 +89,10 @@ export function renderToHtml(
   const { enableEditorAttributes = false } = options;
   const backendData = data.backendData;
 
-  // データ構造の検証と正規化
   if (!data) {
     throw new RenderError('PARSE_ERROR', '', 'データが提供されていません');
   }
 
-  // partsとimagesが正しい構造であることを確認
   const parts = data.parts || { common: [], individual: [], special: [] };
   const images = data.images || { common: [], individual: [], special: [] };
   const page = data.page || [];
@@ -47,56 +101,36 @@ export function renderToHtml(
     return findPartById(partId, parts);
   }
 
+  const context: RenderComponentCoreContext = {
+    findPart,
+    enableEditorAttributes,
+    imagesCommon: images.common,
+    imagesIndividual: images.individual,
+    imagesSpecial: images.special,
+    backendData
+  };
+
   function renderComponent(
     component: ComponentData,
-    path: string = '',
-    processedPaths: Set<string> = new Set()
+    path: string,
+    processedPaths: Set<string>
   ): string {
-    // 循環参照を防ぐ
-    if (processedPaths.has(path)) {
-      throw new RenderError('CIRCULAR_REFERENCE', path, `循環参照が検出されました: ${path}`);
-    }
-    processedPaths.add(path);
-
-    const partId = component.part_id;
-    const part = findPart(partId);
-    if (!part) {
-      throw new RenderError('PART_NOT_FOUND', path, `パーツが見つかりません: ${partId}`);
-    }
-
-    // テンプレート処理（環境に応じて適切なDOMParserを使用）
-    const html = processTemplateWithDOM(
-      part.body,
+    return renderComponentCore(
       component,
       path,
-      findPart,
-      (childComponent: ComponentData, childPath: string) =>
-        renderComponent(childComponent, childPath, processedPaths),
-      enableEditorAttributes,
-      images.common,
-      images.individual,
-      images.special,
-      backendData
+      processedPaths,
+      context,
+      (childComponent, childPath) =>
+        renderComponent(childComponent, childPath, processedPaths)
     );
-
-    // 属性注入（編集用属性が有効な場合のみ）
-    if (enableEditorAttributes) {
-      return injectAttributesToRootElement(html, {
-        'data-zcode-id': component.id,
-        'data-zcode-path': path,
-        'data-zcode-part': partId
-      });
-    }
-    return html;
   }
 
   return page
     .map((component, index) => {
       try {
-        return renderComponent(component, `page.${index}`);
+        return renderComponent(component, `page.${index}`, new Set());
       } catch (error) {
         if (error instanceof RenderError) {
-          // エラーをHTMLに埋め込む
           return `<div class="zcode-error-message" data-error-code="${error.code}">${error.message}</div>`;
         }
         throw error;
