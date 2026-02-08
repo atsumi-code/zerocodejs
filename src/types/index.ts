@@ -93,12 +93,6 @@ export interface CMSConfig {
   categoryOrder?: 'common' | 'individual' | 'special';
 }
 
-export interface CMSEndpoints {
-  save?: string;
-  upload?: string;
-  preview?: string;
-}
-
 // ZeroCodeDataのprops型定義
 export interface ZeroCodeDataProps {
   locale?: string;

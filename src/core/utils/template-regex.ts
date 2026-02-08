@@ -22,10 +22,8 @@ export const TEMPLATE_REGEX = {
   SELECT_FIELD: /\(\$(\w+)@:([^)]+)\)/g,
   // グループ付きラジオボタン/チェックボックス: ($field.group:option1|option2) または ($field.group:option1,option2)
   RADIO_CHECKBOX_FIELD_WITH_GROUP: /\(\$(\w+)\.(\w+):([^)]+)\)/g,
-  // ラジオボタン: ($field:option1|option2)
+  // ラジオボタン: ($field:option1|option2) / チェックボックス: ($field:option1,option2)
   RADIO_FIELD: /\(\$(\w+):([^)]+)\)/g,
-  // チェックボックス: ($field:option1,option2)
-  CHECKBOX_FIELD: /\(\$(\w+):([^)]+)\)/g,
   // バックエンドデータ参照: {@fieldName}, {@items[0]}, {@items[0].name}
   BACKEND_DATA: /\{@([\w.[\]]+)\}/g
 } as const;
