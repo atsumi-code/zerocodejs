@@ -5,6 +5,7 @@ import { TEMPLATE_REGEX } from './template-regex';
 import { splitDefaultAndValidation } from './field-extractor';
 import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from './template-utils';
 import { logger } from './logger';
+import { processZIf, processZTag, processZEmpty } from './directive-processors';
 
 
 export interface ProcessTemplateOptions {
@@ -845,144 +846,9 @@ export function processTemplateWithDOM(
 
   processSelectionSyntax(template.content);
 
-  // 3. z-if 条件分岐処理
-  const conditionalElements = template.content.querySelectorAll('[z-if]');
-  conditionalElements.forEach((el) => {
-    const condition = el.getAttribute('z-if');
-    if (condition) {
-      // 値が存在しない場合はtrue（表示）として扱う（デフォルトは表示）
-      const conditionValue = component[condition] !== undefined ? component[condition] : true;
-      if (!conditionValue) {
-        el.remove();
-      } else {
-        el.removeAttribute('z-if');
-      }
-    } else {
-      el.removeAttribute('z-if');
-    }
-  });
-
-  // 3.3. z-tag タグ名の動的変更処理
-  // タグ名を動的に変更する
-  // 使用例: <h2 z-tag="$headingTag:h1|h2|h3">{$title:タイトル}</h2>
-  const tagElements = template.content.querySelectorAll('[z-tag]');
-  tagElements.forEach((el) => {
-    const zTagValue = el.getAttribute('z-tag');
-    if (zTagValue) {
-      // $tagName:h1|h2|h3 の形式から fieldName を抽出（選択肢は無視）
-      const tagMatch = zTagValue.match(/^\$(\w+)(?::(.+))?$/);
-      if (tagMatch) {
-        const fieldName = tagMatch[1];
-        const tagValue = component[fieldName];
-        const tagName = typeof tagValue === 'string' ? tagValue : el.tagName.toLowerCase();
-
-        // 有効なタグ名かチェック（セキュリティ対策）
-        const validTags = [
-          'h1',
-          'h2',
-          'h3',
-          'h4',
-          'h5',
-          'h6',
-          'div',
-          'p',
-          'span',
-          'li',
-          'ul',
-          'ol',
-          'section',
-          'article',
-          'aside',
-          'nav',
-          'header',
-          'footer',
-          'main',
-          'figure',
-          'figcaption',
-          'blockquote',
-          'pre',
-          'code',
-          'table',
-          'thead',
-          'tbody',
-          'tr',
-          'th',
-          'td'
-        ];
-
-        const normalizedTagName = typeof tagName === 'string' ? tagName.toLowerCase() : tagName;
-        if (typeof normalizedTagName === 'string' && validTags.includes(normalizedTagName)) {
-          // 新しいタグ名で要素を作成
-          const newElement = doc.createElement(normalizedTagName);
-
-          // 既存の属性をコピー（z-tag以外）
-          Array.from(el.attributes).forEach((attr) => {
-            if (attr.name !== 'z-tag') {
-              newElement.setAttribute(attr.name, attr.value);
-            }
-          });
-
-          // 子ノードをコピー
-          Array.from(el.childNodes).forEach((child) => {
-            newElement.appendChild(child.cloneNode(true));
-          });
-
-          // 古い要素を新しい要素に置き換え
-          el.parentNode?.replaceChild(newElement, el);
-        }
-      }
-    }
-  });
-
-  // 3.5. z-empty 条件分岐処理
-  // オプショナルフィールドが空（undefined/null/空文字列/実質的に空のrichテキスト）の場合、要素を削除
-  // 使用例: <div z-empty="$subtitle"><p>{$subtitle?:サブタイトル}</p></div>
-  const emptyFieldElements = template.content.querySelectorAll('[z-empty]');
-  emptyFieldElements.forEach((el) => {
-    const condition = el.getAttribute('z-empty');
-    if (condition) {
-      // $fieldName の形式から fieldName を抽出
-      const fieldNameMatch = condition.match(/^\$(\w+)$/);
-      if (fieldNameMatch) {
-        const fieldName = fieldNameMatch[1];
-        const fieldValue = component[fieldName];
-
-        // 空かどうかを判定する関数
-        const isEmpty = (value: unknown): boolean => {
-          if (value === undefined || value === null || value === '') {
-            return true;
-          }
-          // richテキストが実質的に空の場合（<p></p>、<p> </p>など）
-          if (typeof value === 'string') {
-            const trimmed = value.trim();
-            // <p></p>、<p> </p>、<p><br></p>などのパターンをチェック
-            if (
-              trimmed === '' ||
-              trimmed === '<p></p>' ||
-              trimmed === '<p> </p>' ||
-              /^<p>\s*<\/p>$/i.test(trimmed) ||
-              /^<p>\s*<br\s*\/?>\s*<\/p>$/i.test(trimmed)
-            ) {
-              return true;
-            }
-          }
-          return false;
-        };
-
-        // 空の場合は要素を削除
-        if (isEmpty(fieldValue)) {
-          el.remove();
-        } else {
-          el.removeAttribute('z-empty');
-        }
-      } else {
-        // 形式が正しくない場合は属性を削除
-        el.removeAttribute('z-empty');
-      }
-    } else {
-      el.removeAttribute('z-empty');
-    }
-  });
+  processZIf(template.content, component);
+  processZTag(template.content, component, doc);
+  processZEmpty(template.content, component);
 
   // 4. z-for ループ処理（シンプル版: バックエンドデータのみ）
   const processLoops = () => {
