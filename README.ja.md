@@ -130,7 +130,10 @@ import 'zerocodejs/style.css';
 const editor = document.querySelector('zcode-editor');
 editor.setAttribute('page', JSON.stringify(pageData));
 editor.setAttribute('parts-common', JSON.stringify(partsData));
-// ... 必要に応じて他の属性も設定
+editor.setAttribute('parts-individual', JSON.stringify(partsIndividualData));
+editor.setAttribute('parts-special', JSON.stringify(partsSpecialData));
+editor.setAttribute('images-common', JSON.stringify(imagesData));
+// ... 必要に応じて他の属性も設定（images-individual, images-special など）
 ```
 
 ## ドキュメント
@@ -171,4 +174,4 @@ MIT License
 
 ---
 
-**最終更新日**: 2026年1月
+**最終更新日**: 2026年2月

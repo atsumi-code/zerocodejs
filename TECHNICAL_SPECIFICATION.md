@@ -522,10 +522,12 @@ watch(enableContextMenu, (newValue) => {
 {$fieldName:defaultValue:image}
 ```
 
+`defaultValue` には画像管理で登録した画像ID（例: `img-1`）を指定します。パーツ編集時は「画像ID参照」タブでIDを確認・挿入できます。
+
 **例**:
 
 ```html
-<img src="{$image:default.jpg:image}" alt="画像" />
+<img src="{$image:img-1:image}" alt="画像" />
 ```
 
 #### ラジオボタン
@@ -966,6 +968,7 @@ cms.addEventListener('save-request', async (event) => {
 ### パーツ管理機能
 
 - タイプの作成・編集・削除
+- HTMLタブ編集時のサイドパネル「画像ID参照」: 画像一覧を表示し、テンプレートの `{$field:default:image}` に画像IDをコピー・挿入可能
 - パーツの作成・編集・削除
 - タイプ間の並べ替え
 - パーツのプレビュー表示
@@ -1118,4 +1121,4 @@ MIT License
 
 ---
 
-**最終更新日**: 2025年1月
+**最終更新日**: 2026年2月

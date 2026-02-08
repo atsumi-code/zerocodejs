@@ -123,7 +123,10 @@ To load existing data, set attributes via JavaScript:
 const editor = document.querySelector('zcode-editor');
 editor.setAttribute('page', JSON.stringify(pageData));
 editor.setAttribute('parts-common', JSON.stringify(partsData));
-// ... other attributes as needed
+editor.setAttribute('parts-individual', JSON.stringify(partsIndividualData));
+editor.setAttribute('parts-special', JSON.stringify(partsSpecialData));
+editor.setAttribute('images-common', JSON.stringify(imagesData));
+// ... other attributes as needed (images-individual, images-special, etc.)
 ```
 
 ## Documentation
@@ -163,4 +166,4 @@ MIT License
 
 ---
 
-**Last Updated**: January 2026
+**Last Updated**: February 2026

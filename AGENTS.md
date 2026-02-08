@@ -515,6 +515,13 @@ interface ImageData {
     - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
     - 同じ part_id のページ上コンポーネント（先頭1件）にも値を同期し、表示モード切り替え時に反映
     - `getPartPreviewHtmlWithComponent`（usePartsManager）、`findFirstComponentWithPartId`（path-utils）を追加
+19. ✅ **パーツ管理の画像ID参照パネル**（2025年2月）
+    - HTMLタブ編集時にサイドパネルに「画像ID参照」タブを追加
+    - 画像一覧（サムネイル・ID・名前）を表示、コピー・挿入ボタンでテンプレートに画像IDを挿入可能
+    - `{$field:default:image}` の default に指定する画像IDを参照しやすくする
+20. ✅ **パーツ編集プレビューの debounce**（2025年2月）
+    - テンプレート編集時のプレビュー更新を 300ms debounce
+    - 入力のたびに発生していた「Image not found」警告の連発を抑制
 
 ### 保留・スキップ機能
 
@@ -934,4 +941,4 @@ const expensiveValue = computed(() => {
 
 ---
 
-**最終更新日**: 2025年1月
+**最終更新日**: 2026年2月
