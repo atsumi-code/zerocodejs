@@ -97,6 +97,37 @@ export function findPartById(
   return null;
 }
 
+function getSlotChildren(slotValue: ComponentData[] | SlotConfig): ComponentData[] {
+  if (Array.isArray(slotValue)) return slotValue;
+  return (slotValue as SlotConfig).children ?? [];
+}
+
+export function traverseComponents<T>(
+  components: ComponentData[],
+  basePath: string,
+  visitor: (component: ComponentData, path: string) => T | undefined
+): T | undefined {
+  for (let i = 0; i < components.length; i++) {
+    const component = components[i];
+    const path = basePath ? `${basePath}.${i}` : String(i);
+
+    const result = visitor(component, path);
+    if (result !== undefined) return result;
+
+    if (component.slots) {
+      for (const [slotName, slotData] of Object.entries(component.slots)) {
+        const children = getSlotChildren(slotData as ComponentData[] | SlotConfig);
+        if (children.length > 0) {
+          const childBasePath = `${path}.slots.${slotName}`;
+          const found = traverseComponents(children, childBasePath, visitor);
+          if (found !== undefined) return found;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
 /**
  * page（またはスロット内の子配列）から、指定した part_id を持つ最初のコンポーネントを再帰的に検索する
  */
@@ -104,21 +135,9 @@ export function findFirstComponentWithPartId(
   components: ComponentData[],
   partId: string
 ): ComponentData | null {
-  for (const comp of components) {
-    if (comp.part_id === partId) return comp;
-    const slots = comp.slots;
-    if (slots) {
-      for (const key of Object.keys(slots)) {
-        const slotValue = slots[key];
-        const children: ComponentData[] | undefined = Array.isArray(slotValue)
-          ? slotValue
-          : (slotValue as SlotConfig).children;
-        if (children?.length) {
-          const found = findFirstComponentWithPartId(children, partId);
-          if (found) return found;
-        }
-      }
-    }
-  }
-  return null;
+  const result = traverseComponents(components, 'page', (component) => {
+    if (component.part_id === partId) return component;
+    return undefined;
+  });
+  return result ?? null;
 }
