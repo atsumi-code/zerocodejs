@@ -3059,8 +3059,8 @@
 .zcode-help-modal {
   background: white;
   border-radius: 8px;
-  width: 90%;
-  max-width: 800px;
+  width: 100%;
+  max-width: 960px;
   max-height: 80vh;
   overflow: auto;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
