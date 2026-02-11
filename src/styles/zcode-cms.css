@@ -3706,6 +3706,16 @@
   max-height: none !important;
 }
 
+@media (max-width: 768px) {
+  .zcode-monaco-editor .monaco-editor-wrapper {
+    min-height: 200px;
+  }
+
+  .zcode-monaco-editor .monaco-editor-container {
+    min-height: 200px;
+  }
+}
+
 .zcode-textarea {
   width: 100%;
   padding: 8px 12px;
