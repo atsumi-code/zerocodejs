@@ -1,6 +1,6 @@
-import { ref, type Ref } from 'vue';
+import { ref, type Ref, nextTick } from 'vue';
 import type { ZeroCodeData, ComponentData, SlotConfig } from '../../../types';
-import { getComponentByPath, getParentPath } from '../../../core/utils/path-utils';
+import { getComponentByPath, getParentPath, traverseComponents } from '../../../core/utils/path-utils';
 import {
   setActiveOutline,
   removeActiveOutline,
@@ -11,6 +11,8 @@ import { scrollToElement } from '../../../core/utils/dom-utils';
 export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLElement | null>) {
   // 状態管理
   const reorderSourcePath = ref<string>('');
+  const reorderSourceComponentId = ref<string | null>(null);
+  let initialScrollTop: number | null = null;
 
   // 並べ替え可能かどうかを判定する関数
   function canReorderWith(sourcePath: string, targetPath: string): boolean {
@@ -92,6 +94,9 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
 
     // 1回目のクリック: 移動元を選択
     if (!reorderSourcePath.value) {
+      if (typeof window !== 'undefined') {
+        initialScrollTop = window.scrollY;
+      }
       // 親要素のホバーアウトラインを削除
       const parentPath = getParentPath(path);
       if (parentPath && previewArea.value) {
@@ -104,6 +109,8 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
       }
 
       reorderSourcePath.value = path;
+      const component = getComponentByPath(path, cmsData);
+      reorderSourceComponentId.value = component?.id ?? null;
 
       // 選択した要素に太いアウトラインを表示
       if (previewArea.value) {
@@ -135,21 +142,53 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
     if (!success) {
       alert('並べ替えに失敗しました。同じ階層の要素を選択してください。');
     }
-    cancelReorder();
+    let targetScrollPath: string | null = null;
+    const sourceId = reorderSourceComponentId.value;
+    if (sourceId) {
+      const found = traverseComponents<string | undefined>(cmsData.page, 'page', (component, componentPath) => {
+        if (component.id === sourceId) {
+          return componentPath;
+        }
+        return undefined;
+      });
+      if (typeof found === 'string') {
+        targetScrollPath = found;
+      }
+    }
+    cancelReorder({ restoreScroll: false });
+    if (targetScrollPath) {
+      nextTick(() => {
+        if (!previewArea.value) return;
+        const element = previewArea.value.querySelector(
+          `[data-zcode-path="${targetScrollPath}"]`
+        ) as HTMLElement | null;
+        if (element) {
+          scrollToElement(element);
+        }
+      });
+    }
   }
 
   // 並べ替えをキャンセル
-  function cancelReorder() {
+  function cancelReorder(options: { restoreScroll?: boolean } = {}) {
+    const { restoreScroll = true } = options;
     if (reorderSourcePath.value && previewArea.value) {
       const element = previewArea.value.querySelector(
         `[data-zcode-path="${reorderSourcePath.value}"]`
       ) as HTMLElement;
       if (element) {
         removeActiveOutline(element);
-        scrollToElement(element);
       }
     }
+    if (restoreScroll && typeof window !== 'undefined' && initialScrollTop !== null) {
+      const target = Math.max(0, initialScrollTop);
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      });
+    }
     reorderSourcePath.value = '';
+    reorderSourceComponentId.value = null;
+    initialScrollTop = null;
   }
 
   // 並べ替え処理
@@ -167,10 +206,19 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
       const fromIndex = parseInt(fromParts[1]);
       const toIndex = parseInt(toParts[1]);
 
-      if (!isNaN(fromIndex) && !isNaN(toIndex) && fromIndex !== toIndex) {
+      if (
+        !isNaN(fromIndex) &&
+        !isNaN(toIndex) &&
+        fromIndex !== toIndex &&
+        fromIndex >= 0 &&
+        toIndex >= 0 &&
+        fromIndex < cmsData.page.length &&
+        toIndex < cmsData.page.length
+      ) {
         const items = [...cmsData.page];
-        const [removed] = items.splice(fromIndex, 1);
-        items.splice(toIndex, 0, removed);
+        const tmp = items[fromIndex];
+        items[fromIndex] = items[toIndex];
+        items[toIndex] = tmp;
         cmsData.page = items;
         return true;
       }
@@ -238,8 +286,13 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
       }
 
       // 並べ替え実行
-      const [removed] = children.splice(fromIndex, 1);
-      children.splice(toIndex, 0, removed);
+      if (fromIndex < 0 || fromIndex >= children.length || toIndex < 0 || toIndex >= children.length) {
+        return false;
+      }
+
+      const tmp = children[fromIndex];
+      children[fromIndex] = children[toIndex];
+      children[toIndex] = tmp;
 
       // SlotConfigの場合はchildrenを更新
       if (
@@ -272,8 +325,17 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
 
           // 配列であることを確認
           if (Array.isArray(current)) {
-            const [removed] = current.splice(fromIndex, 1);
-            current.splice(toIndex, 0, removed);
+            if (
+              fromIndex < 0 ||
+              fromIndex >= current.length ||
+              toIndex < 0 ||
+              toIndex >= current.length
+            ) {
+              return false;
+            }
+            const tmp = current[fromIndex];
+            current[fromIndex] = current[toIndex];
+            current[toIndex] = tmp;
             return true;
           }
         }
