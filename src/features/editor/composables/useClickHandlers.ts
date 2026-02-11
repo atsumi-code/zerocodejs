@@ -28,6 +28,14 @@ export function useClickHandlers(
   function setupClickHandlers() {
     if (!previewArea.value) return;
 
+    const clearAllHoverOutlines = () => {
+      const allActive = previewArea.value?.querySelectorAll('[data-zcode-id], [data-zcode-slot-path]');
+      if (!allActive) return;
+      allActive.forEach((el) => {
+        removeHoverOutline(el as HTMLElement);
+      });
+    };
+
     cleanupEventListeners();
 
     const editableElements = previewArea.value.querySelectorAll('[data-zcode-id]');
@@ -97,7 +105,10 @@ export function useClickHandlers(
       deleteConfirmPath.value === slotPath;
 
     const delegatedSlotMouseOver: EventListener = (e: Event) => {
-      const me = e as MouseEvent;
+      const me = e as PointerEvent;
+      if (me.pointerType !== 'mouse') {
+        return;
+      }
       const target = me.target as HTMLElement | null;
       if (!target) return;
 
@@ -130,7 +141,10 @@ export function useClickHandlers(
     };
 
     const delegatedSlotMouseOut: EventListener = (e: Event) => {
-      const me = e as MouseEvent;
+      const me = e as PointerEvent;
+      if (me.pointerType !== 'mouse') {
+        return;
+      }
       const target = me.target as HTMLElement | null;
       if (!target) return;
       const related = me.relatedTarget as HTMLElement | null;
@@ -151,12 +165,14 @@ export function useClickHandlers(
     };
 
     previewArea.value.addEventListener('click', delegatedAddSlotClick, true);
-    previewArea.value.addEventListener('mouseover', delegatedSlotMouseOver, true);
-    previewArea.value.addEventListener('mouseout', delegatedSlotMouseOut, true);
+    previewArea.value.addEventListener('pointerdown', clearAllHoverOutlines, true);
+    previewArea.value.addEventListener('pointerover', delegatedSlotMouseOver, true);
+    previewArea.value.addEventListener('pointerout', delegatedSlotMouseOut, true);
     eventListeners.set(previewArea.value, [
       { type: 'click', listener: delegatedAddSlotClick, options: true },
-      { type: 'mouseover', listener: delegatedSlotMouseOver, options: true },
-      { type: 'mouseout', listener: delegatedSlotMouseOut, options: true }
+      { type: 'pointerover', listener: delegatedSlotMouseOver, options: true },
+      { type: 'pointerout', listener: delegatedSlotMouseOut, options: true },
+      { type: 'pointerdown', listener: clearAllHoverOutlines, options: true }
     ]);
 
     editableElements.forEach((element) => {
@@ -270,7 +286,11 @@ export function useClickHandlers(
         return false;
       };
 
-      const mouseenterListener = () => {
+    const mouseenterListener = (event: Event) => {
+      const pointerEvent = event as PointerEvent;
+      if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
+        return;
+      }
         if (!isActive(path)) {
           if (currentMode.value === 'reorder' && reorderSourcePath.value) {
             if (canReorderWith(reorderSourcePath.value, path)) {
@@ -293,7 +313,11 @@ export function useClickHandlers(
         }
       };
 
-      const mouseleaveListener = () => {
+    const mouseleaveListener = (event: Event) => {
+      const pointerEvent = event as PointerEvent;
+      if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
+        return;
+      }
         if (!isActive(path)) {
           removeHoverOutline(htmlElement);
         }
@@ -301,13 +325,13 @@ export function useClickHandlers(
       };
 
       htmlElement.addEventListener('click', clickListener, true);
-      htmlElement.addEventListener('mouseenter', mouseenterListener);
-      htmlElement.addEventListener('mouseleave', mouseleaveListener);
+    htmlElement.addEventListener('pointerenter', mouseenterListener);
+    htmlElement.addEventListener('pointerleave', mouseleaveListener);
 
       eventListeners.set(htmlElement, [
         { type: 'click', listener: clickListener, options: true },
-        { type: 'mouseenter', listener: mouseenterListener },
-        { type: 'mouseleave', listener: mouseleaveListener }
+        { type: 'pointerenter', listener: mouseenterListener },
+        { type: 'pointerleave', listener: mouseleaveListener }
       ]);
     });
 
