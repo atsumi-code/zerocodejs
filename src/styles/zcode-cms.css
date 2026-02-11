@@ -4403,6 +4403,25 @@
     max-height: 95vh;
   }
 
+  .zcode-parts-category-tabs,
+  .zcode-images-category-tabs {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .zcode-parts-category-tab-group,
+  .zcode-images-category-tab-group {
+    flex: 1 1 220px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .zcode-parts-add-wrapper,
+  .zcode-images-add-wrapper {
+    flex: 0 0 auto;
+  }
+
   .zcode-part-editor-header {
     padding: 12px 14px;
   }
