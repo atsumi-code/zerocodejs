@@ -146,6 +146,7 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
       ) as HTMLElement;
       if (element) {
         removeActiveOutline(element);
+        scrollToElement(element);
       }
     }
     reorderSourcePath.value = '';

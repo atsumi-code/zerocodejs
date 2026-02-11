@@ -102,6 +102,7 @@ export function useEditMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLElement 
       ) as HTMLElement;
       if (editingElement) {
         removeActiveOutline(editingElement);
+      scrollToElement(editingElement);
       }
     }
 

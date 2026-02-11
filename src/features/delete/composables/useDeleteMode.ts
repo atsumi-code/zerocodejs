@@ -286,6 +286,7 @@ export function useDeleteMode(
       ) as HTMLElement;
       if (element) {
         removeActiveOutline(element);
+        scrollToElement(element);
       }
     }
 

@@ -583,16 +583,19 @@ export function useAddMode(
 
     const targetPath = addTargetPath.value;
     const pathParts = targetPath.split('.');
+    let newComponentPath: string | null = null;
 
     if (pathParts[0] === 'page' && pathParts.length === 2) {
       const index = parseInt(pathParts[1]);
       if (position === 'before') {
         cmsData.page.splice(index, 0, newComponent);
+        newComponentPath = `page.${index}`;
         if (keepAdding.value) {
           addTargetPath.value = `page.${index + 1}`;
         }
       } else {
         cmsData.page.splice(index + 1, 0, newComponent);
+        newComponentPath = `page.${index + 1}`;
       }
     } else if (pathParts.includes('slots')) {
       const slotPath = getSlotPath(targetPath);
@@ -644,9 +647,12 @@ export function useAddMode(
 
       if (slotItemIndex === -1) {
         children.push(newComponent);
+        newComponentPath = `${slotPath}.${children.length - 1}`;
       } else {
+        const insertionIndex = position === 'before' ? slotItemIndex : slotItemIndex + 1;
         if (position === 'before') {
           children.splice(slotItemIndex, 0, newComponent);
+          newComponentPath = `${slotPath}.${slotItemIndex}`;
           if (keepAdding.value) {
             const slotPath = getSlotPath(targetPath);
             if (targetPath !== slotPath) {
@@ -661,7 +667,8 @@ export function useAddMode(
             }
           }
         } else {
-          children.splice(slotItemIndex + 1, 0, newComponent);
+          children.splice(insertionIndex, 0, newComponent);
+          newComponentPath = `${slotPath}.${insertionIndex}`;
         }
       }
 
@@ -677,7 +684,7 @@ export function useAddMode(
     }
 
     if (!keepAdding.value) {
-      cancelAdd();
+      cancelAdd({ scrollBack: false });
     } else {
       if (position === 'before' && previewArea.value && addTargetPath.value) {
         const previousElement = previewArea.value.querySelector(
@@ -698,21 +705,40 @@ export function useAddMode(
         });
       }
     }
+
+    if (newComponentPath) {
+      nextTick(() => {
+        if (!previewArea.value) return;
+        const newElement = previewArea.value.querySelector(
+          `[data-zcode-path="${newComponentPath}"]`
+        ) as HTMLElement | null;
+        if (newElement) {
+          scrollToElement(newElement);
+        }
+      });
+    }
   }
 
-  function cancelAdd() {
+  function cancelAdd(options: { scrollBack?: boolean } = {}) {
+    const { scrollBack = true } = options;
     if (addTargetPath.value && previewArea.value) {
       const element = previewArea.value.querySelector(
         `[data-zcode-path="${addTargetPath.value}"]`
       ) as HTMLElement;
       if (element) {
         removeActiveOutline(element);
+        if (scrollBack) {
+          scrollToElement(element);
+        }
       }
       const slotElement = previewArea.value.querySelector(
         `[data-zcode-slot-path="${addTargetPath.value}"]`
       ) as HTMLElement;
       if (slotElement) {
         removeActiveOutline(slotElement);
+        if (scrollBack) {
+          scrollToElement(slotElement);
+        }
       }
     }
 
