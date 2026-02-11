@@ -387,162 +387,62 @@
   position: relative;
 }
 
-/* アクティブ時のアウトラインアニメーション */
-[data-zcode-id].zcode-outline-active-edit,
-[data-zcode-id].zcode-outline-active-add,
-[data-zcode-id].zcode-outline-active-reorder,
-[data-zcode-id].zcode-outline-active-delete,
-[data-zcode-slot-path].zcode-outline-active-edit,
-[data-zcode-slot-path].zcode-outline-active-add,
-[data-zcode-slot-path].zcode-outline-active-reorder,
-[data-zcode-slot-path].zcode-outline-active-delete {
+/* アクティブ時のアウトライン */
+[data-zcode-id].zcode-outline-active,
+[data-zcode-slot-path].zcode-outline-active {
+  outline-width: 4px;
   outline-style: solid;
-  animation: zcode-outline-pulse-edit 1.5s ease-in-out infinite;
+  outline-offset: 2px;
 }
 
-[data-zcode-id].zcode-outline-active-edit {
-  animation-name: zcode-outline-pulse-edit;
-}
-
-[data-zcode-id].zcode-outline-active-add {
-  animation-name: zcode-outline-pulse-add;
-}
-
-[data-zcode-id].zcode-outline-active-reorder {
-  animation-name: zcode-outline-pulse-reorder;
-}
-
-[data-zcode-id].zcode-outline-active-delete {
-  animation-name: zcode-outline-pulse-delete;
-}
-
+[data-zcode-id].zcode-outline-active-edit,
 [data-zcode-slot-path].zcode-outline-active-edit {
-  animation-name: zcode-outline-pulse-edit;
+  outline-color: var(--zcode-color-edit);
 }
 
+[data-zcode-id].zcode-outline-active-add,
 [data-zcode-slot-path].zcode-outline-active-add {
-  animation-name: zcode-outline-pulse-add;
+  outline-color: var(--zcode-color-add);
 }
 
+[data-zcode-id].zcode-outline-active-reorder,
 [data-zcode-slot-path].zcode-outline-active-reorder {
-  animation-name: zcode-outline-pulse-reorder;
+  outline-color: var(--zcode-color-reorder);
 }
 
+[data-zcode-id].zcode-outline-active-delete,
 [data-zcode-slot-path].zcode-outline-active-delete {
-  animation-name: zcode-outline-pulse-delete;
+  outline-color: var(--zcode-color-delete);
 }
 
-@keyframes zcode-outline-pulse-edit {
-  0% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(190, 91%, 60%);
-  }
-  25% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(217, 91%, 60%);
-  }
-  50% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(244, 91%, 60%);
-  }
-  75% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(217, 91%, 60%);
-  }
-  100% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(190, 91%, 60%);
-  }
+/* ホバー時のアウトライン */
+[data-zcode-id].zcode-outline-hover,
+[data-zcode-slot-path].zcode-outline-hover {
+  outline-width: 2px;
+  outline-style: dashed;
+  outline-offset: 2px;
 }
 
-@keyframes zcode-outline-pulse-add {
-  0% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(130, 85%, 39%);
-  }
-  25% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(160, 85%, 39%);
-  }
-  50% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(190, 85%, 39%);
-  }
-  75% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(160, 85%, 39%);
-  }
-  100% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(130, 85%, 39%);
-  }
+[data-zcode-id].zcode-outline-hover-edit,
+[data-zcode-slot-path].zcode-outline-hover-edit {
+  outline-color: var(--zcode-color-edit);
 }
 
-@keyframes zcode-outline-pulse-reorder {
-  0% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(30, 92%, 50%);
-  }
-  25% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(38, 92%, 50%);
-  }
-  50% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(46, 92%, 50%);
-  }
-  75% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(38, 92%, 50%);
-  }
-  100% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(30, 92%, 50%);
-  }
+[data-zcode-id].zcode-outline-hover-add,
+[data-zcode-slot-path].zcode-outline-hover-add {
+  outline-color: var(--zcode-color-add);
 }
 
-@keyframes zcode-outline-pulse-delete {
-  0% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(340, 84%, 60%);
-  }
-  25% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(0, 84%, 60%);
-  }
-  50% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(20, 84%, 60%);
-  }
-  75% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(0, 84%, 60%);
-  }
-  100% {
-    outline-width: 4px;
-    outline-offset: 2px;
-    outline-color: hsl(340, 84%, 60%);
-  }
+[data-zcode-id].zcode-outline-hover-reorder,
+[data-zcode-slot-path].zcode-outline-hover-reorder {
+  outline-color: var(--zcode-color-reorder);
 }
+
+[data-zcode-id].zcode-outline-hover-delete,
+[data-zcode-slot-path].zcode-outline-hover-delete {
+  outline-color: var(--zcode-color-delete);
+}
+
 
 /* ========================================
    5. ツールバー・モード切り替え
