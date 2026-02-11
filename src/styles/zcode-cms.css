@@ -4403,8 +4403,17 @@
     max-height: 95vh;
   }
 
+  .zcode-part-editor-header {
+    padding: 12px 14px;
+  }
+
+  .zcode-part-editor-form {
+    padding: 16px 12px;
+  }
+
   .zcode-part-editor-main {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .zcode-part-editor-topfields {
@@ -4414,6 +4423,11 @@
   .zcode-part-editor-preview {
     position: relative;
     max-height: 400px;
+    padding: 12px;
+  }
+
+  .zcode-part-editor-actions {
+    padding: 12px 16px;
   }
 
   .zcode-images-grid {
