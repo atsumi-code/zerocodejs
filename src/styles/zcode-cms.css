@@ -3817,23 +3817,23 @@
 }
 
 /* パーツ管理の新規タイプボタンをコンパクトに */
-.zcode-parts-new-btn {
-  padding: 7px 12px;
+.zcode-parts-new-btn,
+.zcode-images-add-btn {
   font-size: 13px;
-  border-radius: 4px;
+  border-radius: 6px;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-/* 画像管理の追加ボタンをコンパクトに */
-.zcode-images-add-btn {
-  padding: 7px 12px;
-  font-size: 13px;
-  border-radius: 4px;
-}
-
 .zcode-btn-primary:hover {
   background: var(--zcode-color-edit-hover);
+}
+
+.zcode-btn-primary.zcode-parts-new-btn,
+.zcode-btn-primary.zcode-images-add-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
 }
 
 .zcode-btn-secondary {
