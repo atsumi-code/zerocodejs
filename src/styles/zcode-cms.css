@@ -1777,12 +1777,9 @@
 .zcode-module-preview-content {
   padding: 0;
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   overflow-y: hidden;
-}
-
-.zcode-module-preview-content * {
-  max-width: 100%;
 }
 
 /* 追加位置選択 */
