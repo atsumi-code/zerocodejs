@@ -27,25 +27,25 @@ ZeroCode.js の「バックエンド連携」を示す3つの事例を実装す�
 
 ### 参考テンプレート（デザインの参考のみ。コードは流用しない）
 
-| 事例 | 参考 | セクション構成の参考 |
-|------|------|---------------------|
-| LP | tp_professionals1_red | ヒーロー、取扱分野、選ばれる理由、流れ、料金、お客様の声、FAQ |
-| コーポレート | tp_biz62_red_photo | ヒーロー（スライド）、ご案内カード、お知らせ、会社概要 |
-| ポータル | tp_portal1_pink | カテゴリ検索、一覧ページ、サイドバー、お知らせ |
+| 事例         | 参考                  | セクション構成の参考                                          |
+| ------------ | --------------------- | ------------------------------------------------------------- |
+| LP           | tp_professionals1_red | ヒーロー、取扱分野、選ばれる理由、流れ、料金、お客様の声、FAQ |
+| コーポレート | tp_biz62_red_photo    | ヒーロー（スライド）、ご案内カード、お知らせ、会社概要        |
+| ポータル     | tp_portal1_pink       | カテゴリ検索、一覧ページ、サイドバー、お知らせ                |
 
 ---
 
 ## 3事例の構成
 
-| | LP | コーポレート | ポータル |
-|---|---|---|---|
-| **フロント** | 静的 HTML + CDN | Laravel Blade | Next.js |
-| **バックエンド** | Node.js + Express | Laravel（PHP） | Next.js API Routes |
-| **DB** | JSON ファイル | MySQL（Docker） | Supabase（PostgreSQL） |
-| **認証** | なし | なし | Supabase Auth（master / owner） |
-| **ZeroCode コンポーネント** | `<zcode-editor>` | `<zcode-editor>` + `<zcode-cms>` | `<zcode-editor>` + `<zcode-cms>` |
-| **起動方法** | `npm start` | `docker compose up` | Supabase 登録 → `npm run dev` |
-| **バリデーション** | 最小限（型チェック + target 許可リスト） | 標準（Laravel FormRequest） | 標準 + 権限チェック |
+|                             | LP                                       | コーポレート                     | ポータル                         |
+| --------------------------- | ---------------------------------------- | -------------------------------- | -------------------------------- |
+| **フロント**                | 静的 HTML + CDN                          | Laravel Blade                    | Next.js                          |
+| **バックエンド**            | Node.js + Express                        | Laravel（PHP）                   | Next.js API Routes               |
+| **DB**                      | JSON ファイル                            | MySQL（Docker）                  | Supabase（PostgreSQL）           |
+| **認証**                    | なし                                     | なし                             | Supabase Auth（master / owner）  |
+| **ZeroCode コンポーネント** | `<zcode-editor>`                         | `<zcode-editor>` + `<zcode-cms>` | `<zcode-editor>` + `<zcode-cms>` |
+| **起動方法**                | `npm start`                              | `docker compose up`              | Supabase 登録 → `npm run dev`    |
+| **バリデーション**          | 最小限（型チェック + target 許可リスト） | 標準（Laravel FormRequest）      | 標準 + 権限チェック              |
 
 ### 技術の段階
 
@@ -182,29 +182,84 @@ examples/
 
 ### 概要
 
-- 複数ページの企業サイト
+- 複数ページの企業サイト（最低限の構成: トップ・会社概要・事業内容・新着情報・お問い合わせ・プライバシーポリシー）
 - Laravel + MySQL + Docker で「実務標準の構成」を示す
-- Blade テンプレートの中に ZeroCode コンポーネントを埋め込む
+- **基本情報＝Laravel / コンテンツ＝ZeroCode** に分離（二元管理にならない）
+- 制作会社（zcode-editor）と依頼会社（zcode-cms）で責務を分ける（受託イメージ）
 
-### ページ構成（参考: tp_biz62_red_photo）
+### データの分担
 
-- **トップページ（/）**: ヒーロー、ご案内カード、お知らせ一覧、会社概要サマリー
-- **管理画面（/admin）**: `<zcode-editor>` で全ページを管理
-- **CMS 画面（/cms）**: `<zcode-cms>` でページ編集のみ
+| 項目 | 担当 | 入力・保存 |
+|------|------|------------|
+| 基本情報 | Laravel | slug, title, 公開日, 抜粋 など。Laravel のフォーム or API で DB カラムに保存 |
+| コンテンツ（本文） | ZeroCode | パーツの組み替え・テキスト・画像。`page_data` (JSON) として保存し、zcode-editor / zcode-cms で編集 |
+
+### 公開ページ構成
+
+| 種別 | ページ名 / 対象 | URL 例 | データ |
+|------|-----------------|--------|--------|
+| 固定ページ | default | `/` | pages テーブル（id=default, page_data） |
+| 固定ページ | about | `/about/` | pages（id=about） |
+| 固定ページ | services | `/services/` | pages（id=services） |
+| 新着一覧 | — | `/news/` | Blade で記事メタ一覧表示 |
+| 新着記事 | 各記事 | `/news/{slug}` | news テーブル（ルートモデルバインディング） |
+| Blade のみ | お問い合わせ | `/contact/` | ZeroCode 不使用（セキュリティ） |
+| Blade のみ | プライバシーポリシー | `/privacy/` | ZeroCode 不使用 |
+
+### 管理画面の URL・構成
+
+| 画面 | URL | コンポーネント | 役割 |
+|------|-----|----------------|------|
+| 管理トップ | `/admin` | — | リダイレクト or 一覧 |
+| 固定ページ編集 | `/admin/page/{page}` | zcode-editor | `{page}` = default \| about \| services |
+| 新着一覧 | `/admin/news` | — | 一覧＋新規作成リンク |
+| 新着・新規作成 | `/admin/news/create` | — | 基本情報フォーム → POST で保存 → 編集画面へ |
+| 新着・記事編集 | `/admin/news/{news:slug}` | zcode-editor | ルートモデルバインディング |
+| CMS トップ | `/cms` | — | リダイレクト or 一覧 |
+| 固定ページ編集 | `/cms/page/{page}` | zcode-cms | コンテンツのみ編集 |
+| 新着一覧 | `/cms/news` | — | 依頼会社も新規作成可 |
+| 新着・新規作成 | `/cms/news/create` | — | 基本情報フォーム |
+| 新着・記事編集 | `/cms/news/{news:slug}` | zcode-cms | コンテンツのみ編集 |
+
+- ルートモデルバインディングは **新着情報（/news/{slug}）のみ**。固定ページは個別ルートで対応。
 
 ### DB 設計（MySQL）
 
 ```sql
--- CSS
+-- 固定ページ（基本情報 + コンテンツ）
+CREATE TABLE pages (
+  id              VARCHAR(100) PRIMARY KEY,  -- 'default' | 'about' | 'services'
+  slug            VARCHAR(200) NOT NULL,
+  title           VARCHAR(500),
+  meta_description TEXT,
+  sort_order      INT DEFAULT 0,
+  page_data       JSON,  -- ZeroCode のコンポーネント配列
+  created_at      TIMESTAMP NULL,
+  updated_at      TIMESTAMP NULL
+);
+
+-- 新着情報（基本情報 + コンテンツ）
+CREATE TABLE news (
+  id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  slug         VARCHAR(200) NOT NULL UNIQUE,
+  title        VARCHAR(500) NOT NULL,
+  published_at DATE NULL,
+  excerpt      TEXT,
+  page_data    JSON,  -- ZeroCode のコンポーネント配列
+  created_at   TIMESTAMP NULL,
+  updated_at   TIMESTAMP NULL
+);
+
+-- CSS（ZeroCode 共通）
 CREATE TABLE css (
-  category VARCHAR(20) PRIMARY KEY,  -- common | individual | special
+  category VARCHAR(20) PRIMARY KEY,
   content  LONGTEXT
 );
 
 -- パーツのタイプ
 CREATE TABLE types (
   id          VARCHAR(100) PRIMARY KEY,
-  category    VARCHAR(20),  -- common | individual | special
+  category    VARCHAR(20),
   type        VARCHAR(100),
   description TEXT,
   sort_order  INT DEFAULT 0
@@ -225,45 +280,36 @@ CREATE TABLE parts (
 
 -- 画像
 CREATE TABLE images (
-  id          VARCHAR(100) PRIMARY KEY,
-  category    VARCHAR(20),  -- common | individual | special
-  name        VARCHAR(200),
-  url         TEXT,
-  mime_type   VARCHAR(50),
+  id           VARCHAR(100) PRIMARY KEY,
+  category     VARCHAR(20),
+  name         VARCHAR(200),
+  url          TEXT,
+  mime_type    VARCHAR(50),
   needs_upload TINYINT DEFAULT 0
-);
-
--- ページ
-CREATE TABLE pages (
-  id   VARCHAR(100) PRIMARY KEY,  -- 'default' など
-  data JSON
 );
 ```
 
 ### バックエンド仕様
 
-- **GET /api/data** — 全テーブルから読み込み、ZeroCodeData 形式で返す
-- **POST /api/save** — `{ target, source, data }` を受け取り、該当テーブルを更新
-- **バリデーション（Laravel FormRequest）**:
-  - target の許可リスト
-  - source と target の組み合わせ検証（CMS からパーツ保存を拒否）
-  - data の構造検証（配列/文字列の型、必須フィールド）
-  - サイズ制限
-  - テンプレート（body）のサニタイズ（`<script>` タグ拒否）
-- **CSRF 保護** — Blade の `@csrf` + `X-CSRF-TOKEN` ヘッダー
+- **GET /api/data?page=xxx** — 固定ページの ZeroCodeData 取得（page に pages.page_data、共通で css/parts/images）
+- **GET /api/data?news=slug** — 新着記事の ZeroCodeData 取得（page に news.page_data）
+- **POST /api/save** — `{ target, source, page_id?, news_id?, data }`。固定は page_id、新着は news_id で対象を指定。source が cms のときはコンテンツ（page_data）のみ保存可
+- **POST /api/news** — 新着の新規作成（基本情報のみ）。作成後は slug 等を返して編集画面へ誘導
+- **バリデーション（Laravel FormRequest）**: target 許可リスト、source と target の組み合わせ（cms からパーツ・画像保存を拒否）、data の型・サイズ、body サニタイズ、CSRF
 
 ### 実装の流れ
 
 1. Docker 環境（PHP + MySQL + Nginx）を構築
 2. Laravel プロジェクトを初期化
-3. マイグレーション + シーダーを作成
-4. 静的 HTML/CSS を新規作成（コーポレートデザイン）
-5. Blade テンプレートに変換（admin.blade.php, cms.blade.php, page.blade.php）
-6. ブラウザで確認 → パーツ化する箇所を決定
-7. パーツ（テンプレート記法）に変換
-8. API コントローラー + バリデーション（SaveRequest）を実装
-9. zerocode-api.js（CSRF 対応）を実装
-10. README.md を作成
+3. マイグレーション（pages, news, css, types, parts, images）+ シーダー
+4. 公開ルート（/, /about, /services, /news, /news/{slug}, /contact, /privacy）と Blade
+5. 管理画面ルート（/admin, /admin/page/{page}, /admin/news, /admin/news/create, /admin/news/{news:slug} と /cms 同様）
+6. 静的 HTML/CSS を新規作成（コーポレートデザイン）
+7. ブラウザで確認 → パーツ化する箇所を決定 → テンプレート記法に変換
+8. API（data, save, news 作成）+ SaveRequest バリデーション
+9. zerocode-api.js（CSRF 対応・page_id/news_id・source 付与）
+10. 基本情報編集フォーム（任意）、お問い合わせフォーム送信処理
+11. 動作確認・README.md
 
 ---
 
@@ -290,10 +336,10 @@ CREATE TABLE pages (
 
 ### 認証・権限
 
-| ロール | コンポーネント | できること |
-|--------|--------------|-----------|
+| ロール | コンポーネント   | できること                                       |
+| ------ | ---------------- | ------------------------------------------------ |
 | master | `<zcode-editor>` | 全店舗の編集、パーツ管理、画像管理、ユーザー管理 |
-| owner | `<zcode-cms>` | 自店舗のページ編集、自店舗の画像管理 |
+| owner  | `<zcode-cms>`    | 自店舗のページ編集、自店舗の画像管理             |
 
 - Supabase Auth（メール + パスワード）
 - Row Level Security（RLS）で DB レベルのアクセス制御
@@ -443,11 +489,11 @@ CREATE POLICY "owner_own_shop" ON pages
 
 ### バリデーション（段階的に深くする）
 
-| 事例 | レベル | 内容 |
-|------|--------|------|
-| LP | 最小限 | target 許可リスト + 型チェック + サイズ制限 |
-| コーポレート | 標準 | 上記 + source 検証 + データ構造検証 + テンプレートサニタイズ + CSRF |
-| ポータル | 標準 + 権限 | 上記 + 認証チェック + 権限チェック（master / owner） |
+| 事例         | レベル      | 内容                                                                |
+| ------------ | ----------- | ------------------------------------------------------------------- |
+| LP           | 最小限      | target 許可リスト + 型チェック + サイズ制限                         |
+| コーポレート | 標準        | 上記 + source 検証 + データ構造検証 + テンプレートサニタイズ + CSRF |
+| ポータル     | 標準 + 権限 | 上記 + 認証チェック + 権限チェック（master / owner）                |
 
 ### save-request / save-result の流れ（全事例共通）
 
@@ -484,16 +530,16 @@ CREATE POLICY "owner_own_shop" ON pages
 - [ ] **CORP-1**: `examples/corporate/` ディレクトリ作成
 - [ ] **CORP-2**: `docker-compose.yml` 作成（PHP + MySQL + Nginx）
 - [ ] **CORP-3**: Laravel プロジェクト初期化
-- [ ] **CORP-4**: マイグレーション作成（css, types, parts, images, pages テーブル）
-- [ ] **CORP-5**: シーダー作成（初期データ投入）
-- [ ] **CORP-6**: 静的 HTML/CSS を新規作成（コーポレートデザイン）
-- [ ] **CORP-7**: Blade テンプレートに変換（admin, cms, page）
-- [ ] **CORP-8**: ブラウザで確認 → パーツ化する箇所を決定
-- [ ] **CORP-9**: パーツ（テンプレート記法）に変換
-- [ ] **CORP-10**: API コントローラー + SaveRequest バリデーション実装
-- [ ] **CORP-11**: `js/zerocode-api.js` 実装（CSRF 対応）
-- [ ] **CORP-12**: 動作確認（Docker 起動 → 編集 → 保存 → DB 反映）
-- [ ] **CORP-13**: `README.md` 作成
+- [ ] **CORP-4**: マイグレーション作成（pages, news, css, types, parts, images）
+- [ ] **CORP-5**: シーダー作成（固定ページ 3 件・共通 parts/images/css・初期 page_data）
+- [ ] **CORP-6**: 公開ルート・管理画面ルート・Blade 骨子（/, /about, /services, /news, /news/{slug}, /contact, /privacy, /admin/*, /cms/*）
+- [ ] **CORP-7**: 静的 HTML/CSS を新規作成（コーポレートデザイン）
+- [ ] **CORP-8**: ブラウザで確認 → パーツ化する箇所を決定 → テンプレート記法に変換
+- [ ] **CORP-9**: API（GET /api/data, POST /api/save, POST /api/news）+ SaveRequest バリデーション
+- [ ] **CORP-10**: zerocode-api.js 実装（CSRF・page_id/news_id・source 付与）
+- [ ] **CORP-11**: 基本情報編集・お問い合わせフォーム（Laravel 側）
+- [ ] **CORP-12**: 動作確認（Docker 起動 → 固定/新着の表示・編集・保存・新規作成・source 制限）
+- [ ] **CORP-13**: README.md 作成
 
 ### 事例3: ポータル
 
