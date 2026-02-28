@@ -1,0 +1,176 @@
+{
+  "page": [
+    {
+      "id": "hero-feature",
+      "part_id": "lp-part-hero",
+      "bg_image": "feature-hero-bg",
+      "label": "Feature",
+      "show_label": true,
+      "title": "〇〇の選び方",
+      "tag": "h1",
+      "desc": "〇〇についてまとめました。\n導入前に確認したいポイントを解説します。",
+      "btn_text": "相談する",
+      "link_btn": "#contact"
+    },
+    {
+      "id": "sec-feature-intro",
+      "part_id": "lp-part-section-list",
+      "label": "Check",
+      "heading": "選ぶときに見るべき5つのポイント",
+      "tag": "h2",
+      "sub": "実績・体制・成果の出し方・サポート・契約条件をチェックしましょう",
+      "show_sub": true,
+      "style": "default",
+      "slots": {
+        "items": [
+          {
+            "id": "reason-f1",
+            "part_id": "lp-part-reason",
+            "img": "img-reason-1",
+            "title": "実績と業界知見",
+            "text": "自社と近い業種・規模の実績があるか。コンサルだけ・開発だけではなく、戦略から導入まで一気通貫で対応できるかが重要です。"
+          },
+          {
+            "id": "reason-f2",
+            "part_id": "lp-part-reason",
+            "img": "img-reason-2",
+            "title": "専任体制とコミュニケーション",
+            "text": "担当が固定されているか、定期的な報告やチャットでの相談がしやすいか。プロジェクトの進捗が可視化されていると安心です。"
+          },
+          {
+            "id": "reason-f3",
+            "part_id": "lp-part-reason",
+            "img": "img-reason-3",
+            "title": "ROI・KPIの設定と報告",
+            "text": "導入前に目標を設定し、導入後に効果測定をしているか。「投資対効果が出るまで伴走する」姿勢があるパートナーを選びましょう。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sec-feature-faq",
+      "part_id": "lp-part-section-faq",
+      "label": "FAQ",
+      "heading": "選定時によくある質問",
+      "tag": "h2",
+      "sub": "パートナー選びの参考にしてください",
+      "show_sub": true,
+      "style": "gray",
+      "slots": {
+        "items": [
+          {
+            "id": "faq-f1",
+            "part_id": "lp-part-faq",
+            "question": "〇〇だけでも依頼できますか？",
+            "answer": "<p>はい、比較検討の材料としてご利用いただけます。結果の共有や、課題に応じた進め方のご説明まで対応します。</p>"
+          },
+          {
+            "id": "faq-f2",
+            "part_id": "lp-part-faq",
+            "question": "小規模なプロジェクトから始めたいのですが対応可能ですか？",
+            "answer": "<p>可能です。まずは小さく始めて効果を実感してから範囲を広げる、という進め方も推奨しています。スタートアッププランから始めるお客様も多数いらっしゃいます。</p>"
+          },
+          {
+            "id": "faq-f3",
+            "part_id": "lp-part-faq",
+            "question": "パートナーを決める前に、社内で共有できる資料はありますか？",
+            "answer": "<p>〇〇のレポートや事例集をご用意しています。導入後にダウンロードいただくことも可能です。</p>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cta-feature",
+      "part_id": "lp-part-cta",
+      "title": "まずは〇〇で相談から",
+      "tag": "h2",
+      "text": "お気軽にご相談ください。",
+      "btn_text": "申し込む",
+      "link_btn": "mailto:info@example.com",
+      "note": "※ 事例です。文言は編集で差し替えてください。",
+      "show_note": true
+    }
+  ],
+  "css": {
+    "individual": "",
+    "special": ""
+  },
+  "parts": {
+    "individual": [
+      {
+        "id": "lp-type-hero",
+        "type": "hero",
+        "description": "ヒーローセクション",
+        "parts": [
+          {
+            "id": "lp-part-hero",
+            "title": "hero",
+            "description": "ヒーロー（特集）",
+            "body": "<section class=\"hero\">\n  <div class=\"hero__bg\" style=\"background-image: url({$bg_image:feature-hero-bg:image})\"></div>\n  <div class=\"hero__inner\">\n    <div class=\"hero__label\" z-if=\"show_label\">{$label:Feature}</div>\n    <div class=\"hero__title\" z-tag=\"$tag:h1|h2|div\">{$title:特集タイトル}</div>\n    <div class=\"hero__divider\"></div>\n    <div class=\"hero__desc\">{$desc:説明文:textarea}</div>\n    <div class=\"hero__actions\">\n      <a href=\"{$link_btn:#contact}\" class=\"btn btn--white btn--lg\">{$btn_text:ボタン}</a>\n    </div>\n  </div>\n</section>"
+          }
+        ]
+      },
+      {
+        "id": "lp-type-section",
+        "type": "section",
+        "description": "セクション",
+        "parts": [
+          {
+            "id": "lp-part-section-list",
+            "title": "section_list",
+            "description": "リスト型セクション",
+            "slots": {
+              "items": {
+                "allowedParts": ["lp-part-reason"]
+              }
+            },
+            "body": "<section class=\"section section--($style:default|gray|dark)\">\n  <div class=\"container\">\n    <div class=\"section-header\" z-if=\"style\" data-light=\"dark\">\n      <span class=\"section-header__label\">{$label:Label}</span>\n      <div class=\"section-header__title\" z-tag=\"$tag:h2|h3|h4\">{$heading:セクション見出し}</div>\n      <div class=\"section-header__sub\" z-if=\"show_sub\">{$sub:サブテキスト}</div>\n    </div>\n    <div class=\"reasons\" z-slot=\"items\"></div>\n  </div>\n</section>"
+          },
+          {
+            "id": "lp-part-section-faq",
+            "title": "section_faq",
+            "description": "FAQ型セクション",
+            "slots": {
+              "items": {
+                "allowedParts": ["lp-part-faq"]
+              }
+            },
+            "body": "<section class=\"section section--($style:default|gray|dark)\">\n  <div class=\"container\">\n    <div class=\"section-header\">\n      <span class=\"section-header__label\">{$label:Label}</span>\n      <div class=\"section-header__title\" z-tag=\"$tag:h2|h3|h4\">{$heading:セクション見出し}</div>\n      <div class=\"section-header__sub\" z-if=\"show_sub\">{$sub:サブテキスト}</div>\n    </div>\n    <div class=\"faq-list\" z-slot=\"items\"></div>\n  </div>\n</section>"
+          }
+        ]
+      },
+      {
+        "id": "lp-type-cards",
+        "type": "cards",
+        "description": "カード・アイテム",
+        "parts": [
+          {
+            "id": "lp-part-reason",
+            "title": "reason",
+            "description": "選ばれる理由（1項目）",
+            "slotOnly": true,
+            "body": "<div class=\"reason\">\n  <div class=\"reason__figure\">\n    <div class=\"reason__figure-img\"><img src=\"{$img:img-reason-1:image}\" alt=\"\" loading=\"lazy\"></div>\n  </div>\n  <div class=\"reason__body\">\n    <div class=\"reason__title\">{$title:タイトル}</div>\n    <div class=\"reason__text\">{$text:説明文:textarea}</div>\n  </div>\n</div>"
+          },
+          {
+            "id": "lp-part-faq",
+            "title": "faq_item",
+            "description": "FAQ（1問）",
+            "slotOnly": true,
+            "body": "<details class=\"faq\">\n  <summary class=\"faq__q\">{$question:質問文を入力}</summary>\n  <div class=\"faq__a\">{$answer:回答文を入力:rich}</div>\n</details>"
+          }
+        ]
+      }
+    ],
+    "special": []
+  },
+  "images": {
+    "individual": [
+      {
+        "id": "feature-hero-bg",
+        "name": "特集ヒーロー",
+        "url": "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80"
+      }
+    ],
+    "special": []
+  }
+}

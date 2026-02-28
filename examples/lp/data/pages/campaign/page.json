@@ -1,0 +1,122 @@
+{
+  "page": [
+    {
+      "id": "hero-campaign",
+      "part_id": "lp-part-hero",
+      "bg_image": "campaign-hero-bg",
+      "label": "2025 Spring Campaign",
+      "show_label": true,
+      "title": "〇〇キャンペーン\n実施中",
+      "tag": "h1",
+      "desc": "〇〇のご案内。\nキャンペーン期間中はお早めにどうぞ。",
+      "btn_text": "申し込む",
+      "link_btn": "#contact"
+    },
+    {
+      "id": "sec-numbers-campaign",
+      "part_id": "lp-part-section-numbers",
+      "slots": {
+        "items": [
+          {
+            "id": "n1",
+            "part_id": "lp-part-number",
+            "val": "〇〇",
+            "unit": "",
+            "label": "料金"
+          },
+          {
+            "id": "n2",
+            "part_id": "lp-part-number",
+            "val": "30",
+            "unit": "分",
+            "label": "所要時間"
+          },
+          {
+            "id": "n3",
+            "part_id": "lp-part-number",
+            "val": "500",
+            "unit": "社+",
+            "label": "支援実績"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cta-campaign",
+      "part_id": "lp-part-cta",
+      "title": "キャンペーン期間中は〇〇でご利用いただけます",
+      "tag": "h2",
+      "text": "お申し込みは下記ボタンから。",
+      "btn_text": "申し込む",
+      "link_btn": "mailto:info@example.com",
+      "note": "※ 事例です。文言は編集で差し替えてください。",
+      "show_note": true
+    }
+  ],
+  "css": {
+    "individual": "",
+    "special": ""
+  },
+  "parts": {
+    "individual": [
+      {
+        "id": "lp-type-hero",
+        "type": "hero",
+        "description": "ヒーローセクション",
+        "parts": [
+          {
+            "id": "lp-part-hero",
+            "title": "hero",
+            "description": "ヒーロー（キャンペーン）",
+            "body": "<section class=\"hero\">\n  <div class=\"hero__bg\" style=\"background-image: url({$bg_image:campaign-hero-bg:image})\"></div>\n  <div class=\"hero__inner\">\n    <div class=\"hero__label\" z-if=\"show_label\">{$label:Campaign}</div>\n    <div class=\"hero__title\" z-tag=\"$tag:h1|h2|div\">{$title:キャンペーンタイトル}</div>\n    <div class=\"hero__divider\"></div>\n    <div class=\"hero__desc\">{$desc:説明文:textarea}</div>\n    <div class=\"hero__actions\">\n      <a href=\"{$link_btn:#contact}\" class=\"btn btn--white btn--lg\">{$btn_text:申し込む}</a>\n    </div>\n  </div>\n</section>"
+          }
+        ]
+      },
+      {
+        "id": "lp-type-section-numbers",
+        "type": "numbers",
+        "description": "実績数値セクション",
+        "parts": [
+          {
+            "id": "lp-part-section-numbers",
+            "title": "section_numbers",
+            "description": "実績数値",
+            "slots": {
+              "items": {
+                "allowedParts": [
+                  "lp-part-number"
+                ]
+              }
+            },
+            "body": "<section class=\"numbers\">\n  <div class=\"container\">\n    <div class=\"numbers__grid\" z-slot=\"items\"></div>\n  </div>\n</section>"
+          }
+        ]
+      },
+      {
+        "id": "lp-type-number",
+        "type": "number",
+        "description": "実績数値（1項目）",
+        "parts": [
+          {
+            "id": "lp-part-number",
+            "title": "number",
+            "description": "実績数値（1項目）",
+            "slotOnly": true,
+            "body": "<div class=\"numbers__item\">\n  <div class=\"numbers__value\">{$val:0}<span>{$unit: }</span></div>\n  <div class=\"numbers__label\">{$label:ラベル}</div>\n</div>"
+          }
+        ]
+      }
+    ],
+    "special": []
+  },
+  "images": {
+    "individual": [
+      {
+        "id": "campaign-hero-bg",
+        "name": "キャンペーン ヒーロー背景",
+        "url": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1920&q=80"
+      }
+    ],
+    "special": []
+  }
+}

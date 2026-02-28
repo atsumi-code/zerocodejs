@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>管理画面 — ZeroCode.js LP Example</title>
+    <link rel="stylesheet" href="/css/dev.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pages/default.css" id="lp-page-css" />
+  </head>
+  <body>
+    <div class="dev-header">
+      <div class="dev-header__inner">
+        <div class="dev-header__title">ZeroCode.js — 管理画面</div>
+        <div class="dev-header__desc">
+          <label for="page-select">ページ:</label>
+          <select id="page-select" class="dev-header__select"></select>
+        </div>
+        <a href="#" id="pub-link" class="dev-header__link">公開ページを表示</a>
+      </div>
+    </div>
+
+    <zcode-editor id="editor" locale="ja" use-shadow-dom="false">
+    </zcode-editor>
+
+    <div class="dev-footer">
+      <div class="dev-footer__inner">
+        保存先: <code id="store-path">data/common.json + data/pages/.../page.json</code> — 編集して保存すると JSON が更新されます
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/dist/zerocode.umd.js"></script>
+    <link rel="stylesheet" href="/dist/zerocodejs.css" />
+    <script src="/js/zerocode-api.js"></script>
+    <script>
+      (function () {
+        var editor = document.getElementById('editor');
+        var pageSelect = document.getElementById('page-select');
+        var pubLink = document.getElementById('pub-link');
+        var storePathEl = document.getElementById('store-path');
+
+        function getPage() {
+          var match = window.location.pathname.match(/^\/edit(?:\/([^/]+))?\/?$/);
+          return (match && match[1]) ? match[1] : 'default';
+        }
+
+        var PAGE_LABELS = {
+          default: 'トップ',
+          campaign: 'キャンペーンLPの例',
+          feature: '特集LPの例'
+        };
+        function getPageLabel(name) {
+          return PAGE_LABELS[name] || name;
+        }
+
+        function setPage(page, replace) {
+          var path = (page === 'default') ? '/edit' : '/edit/' + encodeURIComponent(page);
+          if (replace) {
+            window.history.replaceState({}, '', path);
+          } else {
+            window.history.pushState({}, '', path);
+          }
+          editor.setAttribute('data-current-page', page);
+          var pageCssLink = document.getElementById('lp-page-css');
+          if (pageCssLink) pageCssLink.href = '/css/pages/' + page + '.css';
+          storePathEl.textContent =
+            'data/common.json + ' +
+            (page === 'default' ? 'data/pages/default/page.json' : 'data/pages/' + page + '/page.json');
+          pubLink.href = page === 'default' ? '/' : '/lp/' + page + '/';
+        }
+
+        function loadPages() {
+          return fetch('/api/pages')
+            .then(function (res) { return res.json(); })
+            .then(function (names) {
+              pageSelect.innerHTML = '';
+              names.forEach(function (name) {
+                var opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = getPageLabel(name) + (name === 'default' ? ' (default)' : '');
+                pageSelect.appendChild(opt);
+              });
+              var page = getPage();
+              if (names.indexOf(page) === -1) page = 'default';
+              pageSelect.value = page;
+              setPage(page, true);
+            });
+        }
+
+        function loadData() {
+          var page = getPage();
+          return fetch('/api/data?page=' + encodeURIComponent(page))
+            .then(function (res) {
+              if (!res.ok) throw new Error('Failed to load');
+              return res.json();
+            })
+            .then(function (data) {
+              ZeroCodeApi.applyDataToComponent(editor, data);
+            });
+        }
+
+        function syncSelectFromPath() {
+          var page = getPage();
+          if (pageSelect.value !== page) pageSelect.value = page;
+        }
+
+        function init() {
+          ZeroCodeApi.setupApiSaveListeners();
+          loadPages().then(function () {
+            return loadData();
+          }).catch(function (err) {
+            console.error('Failed to load:', err);
+          });
+        }
+
+        pageSelect.addEventListener('change', function () {
+          setPage(pageSelect.value, false);
+          loadData();
+        });
+
+        window.addEventListener('popstate', function () {
+          syncSelectFromPath();
+          setPage(getPage(), true);
+          loadData();
+        });
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () {
+            customElements.whenDefined('zcode-editor').then(init);
+          });
+        } else {
+          customElements.whenDefined('zcode-editor').then(init);
+        }
+      })();
+    </script>
+  </body>
+</html>
