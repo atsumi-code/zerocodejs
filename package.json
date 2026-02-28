@@ -21,7 +21,8 @@
   "scripts": {
     "dev": "vite",
     "dev:pages": "vite --config vite.pages.config.ts",
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc && vite build && npm run build:ssr",
+    "build:ssr": "vite build --config vite.ssr.config.ts",
     "build:pages": "vite build --config vite.pages.config.ts",
     "preview": "vite preview",
     "preview:pages": "vite preview --config vite.pages.config.ts --outDir dist-pages",
