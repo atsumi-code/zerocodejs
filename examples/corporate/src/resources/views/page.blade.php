@@ -2,14 +2,15 @@
 
 @section('title', ($page->title ?? '') . ' — ' . config('app.name'))
 
+@php
+  $pageCssPath = $page->id === 'default' ? 'css/page.css' : $page->id . '/css/page.css';
+@endphp
+@section('page_css')
+    <link rel="stylesheet" href="{{ asset($pageCssPath) }}">
+@endsection
+
 @section('content')
-<div class="container">
-    <h1>{{ $page->title ?? 'ページ' }}</h1>
-    @if ($page->meta_description)
-        <p class="meta">{{ $page->meta_description }}</p>
-    @endif
-    <div class="content">
-        @include('partials.zerocode-public-render', ['pageId' => $page->id, 'newsSlug' => null])
-    </div>
+<div class="content">
+    @include('partials.zerocode-public-render', ['pageId' => $page->id, 'newsSlug' => null])
 </div>
 @endsection

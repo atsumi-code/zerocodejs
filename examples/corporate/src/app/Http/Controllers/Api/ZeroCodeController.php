@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SaveRequest;
+use App\Http\Requests\StoreNewsRequest;
 use App\Models\News;
 use App\Models\Page;
 use App\Services\ZeroCodeDataService;
@@ -37,15 +39,9 @@ class ZeroCodeController extends Controller
         return response()->json(['error' => 'Missing page or news parameter'], 400);
     }
 
-    public function save(Request $request): JsonResponse
+    public function save(SaveRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'target' => ['required', 'string', 'in:page'],
-            'source' => ['required', 'string', 'in:cms,editor'],
-            'page_id' => ['nullable', 'string', 'in:default,about,services'],
-            'news_id' => ['nullable', 'integer', 'exists:news,id'],
-            'data' => ['required', 'array'],
-        ]);
+        $validated = $request->validated();
         $source = $validated['source'];
         $target = $validated['target'];
         if ($source === 'cms' && $target !== 'page') {
@@ -85,5 +81,26 @@ class ZeroCodeController extends Controller
         $news->page_data = $data;
         $news->save();
         return response()->json(['ok' => true]);
+    }
+
+    public function newsStore(StoreNewsRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $slug = $validated['slug'] ?? \Illuminate\Support\Str::slug($validated['title']);
+        if (News::where('slug', $slug)->exists()) {
+            $slug = $slug . '-' . now()->format('YmdHis');
+        }
+        $news = News::create([
+            'slug' => $slug,
+            'title' => $validated['title'],
+            'published_at' => $validated['published_at'] ?? null,
+            'excerpt' => $validated['excerpt'] ?? null,
+            'page_data' => [],
+        ]);
+        return response()->json([
+            'ok' => true,
+            'id' => $news->id,
+            'slug' => $news->slug,
+        ], 201);
     }
 }

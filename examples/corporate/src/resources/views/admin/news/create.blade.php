@@ -3,8 +3,9 @@
 @section('title', '新規記事')
 
 @section('content')
-<h1>新規記事（基本情報）</h1>
-<form method="post" action="{{ route('admin.news.store') }}" style="max-width: 32rem;">
+<div class="l-container">
+    <h1>新規記事（基本情報）</h1>
+    <form method="post" action="{{ route('admin.news.store') }}" style="max-width: 32rem;">
     @csrf
     <div style="margin-bottom: 1rem;">
         <label for="title">タイトル <span style="color: #c00;">*</span></label><br>
@@ -36,4 +37,5 @@
     </div>
     <button type="submit">作成して編集画面へ</button>
 </form>
+</div>
 @endsection

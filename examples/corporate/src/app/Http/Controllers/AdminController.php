@@ -33,6 +33,25 @@ class AdminController extends Controller
         ]);
     }
 
+    public function pageUpdate(Request $request, string $page): RedirectResponse
+    {
+        if (!in_array($page, self::ALLOWED_PAGES, true)) {
+            abort(404);
+        }
+        $pageModel = Page::find($page);
+        if (!$pageModel) {
+            abort(404);
+        }
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:500'],
+            'meta_description' => ['nullable', 'string', 'max:1000'],
+        ]);
+        $pageModel->title = $validated['title'];
+        $pageModel->meta_description = $validated['meta_description'] ?? null;
+        $pageModel->save();
+        return redirect()->route('admin.page.edit', ['page' => $page])->with('message', '基本情報を更新しました。');
+    }
+
     public function newsIndex(): View
     {
         $news = News::orderByDesc('published_at')->orderByDesc('created_at')->get();

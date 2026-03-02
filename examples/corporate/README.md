@@ -30,12 +30,14 @@ Docker・Composer・Laravel の環境構築は [SETUP.md](./SETUP.md) を参照�
 | 種別 | URL | 内容 |
 |------|-----|------|
 | 固定ページ | `/` | トップ（default） |
-| 固定ページ | `/about/` | 会社概要 |
-| 固定ページ | `/services/` | 事業・サービス |
-| 新着一覧 | `/news/` | Blade で記事メタ一覧 |
+| 固定ページ | `/about` | 会社概要 |
+| 固定ページ | `/services` | 事業・サービス |
+| 新着一覧 | `/news` | Blade で記事メタ一覧 |
 | 新着記事 | `/news/{slug}` | 1 記事 = 1 本のコンテンツ（ルートモデルバインディング） |
-| Blade のみ | `/contact/` | お問い合わせ（ZeroCode 不使用） |
-| Blade のみ | `/privacy/` | プライバシーポリシー（ZeroCode 不使用） |
+| Blade のみ | `/contact` | お問い合わせ（ZeroCode 不使用） |
+| Blade のみ | `/privacy` | プライバシーポリシー（ZeroCode 不使用） |
+
+※ 末尾 `/` を付けた URL（例: `/about/`）は 301 で末尾なし（`/about`）に正規化します。
 
 ## 管理画面
 
@@ -73,16 +75,18 @@ Docker・Composer・Laravel の環境構築は [SETUP.md](./SETUP.md) を参照�
 
 既に DB をシード済みの場合は `NewsSeeder` を追加しただけなので、新規に 1 件挿入したいときはコンテナ内で `php artisan db:seed --class=NewsSeeder --force` を実行するか、管理画面で「新規記事を作成」から追加してください。
 
+**見た目・ページデータ**: 新規に `db:seed` すると、トップ・会社概要・事業内容にヒーロー・テキスト・CTA のパーツと文言が入ります。既存環境でデザインと各ページのデータをそろえるには、コンテナ内で `php artisan db:seed --force` を再実行するか、`CssSeeder`・`TypesSeeder`・`PartsSeeder`・`PagesSeeder` を順に実行してください（`PagesSeeder` は `updateOrInsert` で既存ページの `page_data` を上書きします）。
+
 ## 残りの実装（任意）
 
 コーポレート事例の「必須フロー」は一通り実装済みです。以下は必要に応じて検討する項目です。
 
 | 項目 | 内容 | 優先度 |
 |------|------|--------|
-| **フェーズ3の充実** | 静的 HTML/CSS の追加、パーツの増加（ヒーロー・テキストブロック等）、固定ページの初期 `page_data` にサンプルコンポーネントを 1 件入れる。シード時点でトップに CTA 等が表示されるようにする。 | 低（見た目・デモ用） |
-| **固定ページの基本情報編集** | 固定ページの title・meta_description を管理画面で編集するフォームとルート（例: PUT /admin/page/{page}）。新着は基本情報編集済み。 | 低 |
-| **SaveRequest** | `POST /api/save` のバリデーションを `App\Http\Requests\SaveRequest` に切り出し。現状はコントローラー内でバリデーション済み。 | 低（リファクタ） |
-| **POST /api/news** | 新着を REST API で作成するエンドポイント。現状は Web フォーム（/admin/news/create, /cms/news/create）で作成。API 経由で作成したい場合のみ。 | 低 |
+| **フェーズ3の充実** | 公開用 CSS は `css/common.css`（共通）を全ページで読み込み。TOP は `css/page.css`（接頭辞なし・TOP のみ）、about は `about/css/page.css`、services は `services/css/page.css` をページ別に読み込み。CssSeeder は空でスタイルはファイル指定。 | 任意 |
+| **固定ページの基本情報編集** | 固定ページの title・meta_description を管理画面で編集するフォームとルート（PUT /admin/page/{page}, PUT /cms/page/{page}）。編集画面の「基本情報」で保存可能。 | ✅ 実装済み |
+| **SaveRequest** | `POST /api/save` のバリデーションを `App\Http\Requests\SaveRequest` に切り出し。 | ✅ 実装済み |
+| **POST /api/news** | 新着を REST API で作成するエンドポイント（`POST /api/news`）。title, slug（任意）, published_at, excerpt で作成し、id / slug を JSON で返却。 | ✅ 実装済み |
 | **お問い合わせのメール送信** | 送信内容をメール送信または DB 保存する処理。バリデーション・完了表示は実装済み。 | 呼び出し側で実装 |
 | **認証** | 計画では「認証なし」。/admin や /cms を保護したい場合は Laravel Breeze 等を別途導入。 | 要件次第 |
 

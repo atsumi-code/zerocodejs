@@ -3,8 +3,9 @@
 @section('title', '新着情報')
 
 @section('content')
-<h1>新着情報</h1>
-<p><a href="{{ route('admin.news.create') }}">新規記事を作成</a></p>
+<div class="l-container">
+    <h1>新着情報</h1>
+    <p><a href="{{ route('admin.news.create') }}">新規記事を作成</a></p>
 @if ($news->isEmpty())
     <p>記事はまだありません。</p>
 @else
@@ -19,4 +20,5 @@
         @endforeach
     </ul>
 @endif
+</div>
 @endsection

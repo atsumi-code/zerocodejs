@@ -189,37 +189,37 @@ examples/
 
 ### データの分担
 
-| 項目 | 担当 | 入力・保存 |
-|------|------|------------|
-| 基本情報 | Laravel | slug, title, 公開日, 抜粋 など。Laravel のフォーム or API で DB カラムに保存 |
+| 項目               | 担当     | 入力・保存                                                                                         |
+| ------------------ | -------- | -------------------------------------------------------------------------------------------------- |
+| 基本情報           | Laravel  | slug, title, 公開日, 抜粋 など。Laravel のフォーム or API で DB カラムに保存                       |
 | コンテンツ（本文） | ZeroCode | パーツの組み替え・テキスト・画像。`page_data` (JSON) として保存し、zcode-editor / zcode-cms で編集 |
 
 ### 公開ページ構成
 
-| 種別 | ページ名 / 対象 | URL 例 | データ |
-|------|-----------------|--------|--------|
-| 固定ページ | default | `/` | pages テーブル（id=default, page_data） |
-| 固定ページ | about | `/about/` | pages（id=about） |
-| 固定ページ | services | `/services/` | pages（id=services） |
-| 新着一覧 | — | `/news/` | Blade で記事メタ一覧表示 |
-| 新着記事 | 各記事 | `/news/{slug}` | news テーブル（ルートモデルバインディング） |
-| Blade のみ | お問い合わせ | `/contact/` | ZeroCode 不使用（セキュリティ） |
-| Blade のみ | プライバシーポリシー | `/privacy/` | ZeroCode 不使用 |
+| 種別       | ページ名 / 対象      | URL 例         | データ                                      |
+| ---------- | -------------------- | -------------- | ------------------------------------------- |
+| 固定ページ | default              | `/`            | pages テーブル（id=default, page_data）     |
+| 固定ページ | about                | `/about/`      | pages（id=about）                           |
+| 固定ページ | services             | `/services/`   | pages（id=services）                        |
+| 新着一覧   | —                    | `/news/`       | Blade で記事メタ一覧表示                    |
+| 新着記事   | 各記事               | `/news/{slug}` | news テーブル（ルートモデルバインディング） |
+| Blade のみ | お問い合わせ         | `/contact/`    | ZeroCode 不使用（セキュリティ）             |
+| Blade のみ | プライバシーポリシー | `/privacy/`    | ZeroCode 不使用                             |
 
 ### 管理画面の URL・構成
 
-| 画面 | URL | コンポーネント | 役割 |
-|------|-----|----------------|------|
-| 管理トップ | `/admin` | — | リダイレクト or 一覧 |
-| 固定ページ編集 | `/admin/page/{page}` | zcode-editor | `{page}` = default \| about \| services |
-| 新着一覧 | `/admin/news` | — | 一覧＋新規作成リンク |
-| 新着・新規作成 | `/admin/news/create` | — | 基本情報フォーム → POST で保存 → 編集画面へ |
-| 新着・記事編集 | `/admin/news/{news:slug}` | zcode-editor | ルートモデルバインディング |
-| CMS トップ | `/cms` | — | リダイレクト or 一覧 |
-| 固定ページ編集 | `/cms/page/{page}` | zcode-cms | コンテンツのみ編集 |
-| 新着一覧 | `/cms/news` | — | 依頼会社も新規作成可 |
-| 新着・新規作成 | `/cms/news/create` | — | 基本情報フォーム |
-| 新着・記事編集 | `/cms/news/{news:slug}` | zcode-cms | コンテンツのみ編集 |
+| 画面           | URL                       | コンポーネント | 役割                                        |
+| -------------- | ------------------------- | -------------- | ------------------------------------------- |
+| 管理トップ     | `/admin`                  | —              | リダイレクト or 一覧                        |
+| 固定ページ編集 | `/admin/page/{page}`      | zcode-editor   | `{page}` = default \| about \| services     |
+| 新着一覧       | `/admin/news`             | —              | 一覧＋新規作成リンク                        |
+| 新着・新規作成 | `/admin/news/create`      | —              | 基本情報フォーム → POST で保存 → 編集画面へ |
+| 新着・記事編集 | `/admin/news/{news:slug}` | zcode-editor   | ルートモデルバインディング                  |
+| CMS トップ     | `/cms`                    | —              | リダイレクト or 一覧                        |
+| 固定ページ編集 | `/cms/page/{page}`        | zcode-cms      | コンテンツのみ編集                          |
+| 新着一覧       | `/cms/news`               | —              | 依頼会社も新規作成可                        |
+| 新着・新規作成 | `/cms/news/create`        | —              | 基本情報フォーム                            |
+| 新着・記事編集 | `/cms/news/{news:slug}`   | zcode-cms      | コンテンツのみ編集                          |
 
 - ルートモデルバインディングは **新着情報（/news/{slug}）のみ**。固定ページは個別ルートで対応。
 
@@ -532,7 +532,7 @@ CREATE POLICY "owner_own_shop" ON pages
 - [ ] **CORP-3**: Laravel プロジェクト初期化
 - [ ] **CORP-4**: マイグレーション作成（pages, news, css, types, parts, images）
 - [ ] **CORP-5**: シーダー作成（固定ページ 3 件・共通 parts/images/css・初期 page_data）
-- [ ] **CORP-6**: 公開ルート・管理画面ルート・Blade 骨子（/, /about, /services, /news, /news/{slug}, /contact, /privacy, /admin/*, /cms/*）
+- [ ] **CORP-6**: 公開ルート・管理画面ルート・Blade 骨子（/, /about, /services, /news, /news/{slug}, /contact, /privacy, /admin/_, /cms/_）
 - [ ] **CORP-7**: 静的 HTML/CSS を新規作成（コーポレートデザイン）
 - [ ] **CORP-8**: ブラウザで確認 → パーツ化する箇所を決定 → テンプレート記法に変換
 - [ ] **CORP-9**: API（GET /api/data, POST /api/save, POST /api/news）+ SaveRequest バリデーション

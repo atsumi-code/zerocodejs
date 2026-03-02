@@ -21,6 +21,7 @@ Route::view('/privacy', 'privacy');
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index']);
     Route::get('/page/{page}', [AdminController::class, 'pageEdit'])->name('page.edit');
+    Route::put('/page/{page}', [AdminController::class, 'pageUpdate'])->name('page.update');
     Route::get('/news', [AdminController::class, 'newsIndex'])->name('news.index');
     Route::get('/news/create', [AdminController::class, 'newsCreate'])->name('news.create');
     Route::post('/news', [AdminController::class, 'newsStore'])->name('news.store');
@@ -31,6 +32,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('cms')->name('cms.')->group(function () {
     Route::get('/', [CmsController::class, 'index']);
     Route::get('/page/{page}', [CmsController::class, 'pageEdit'])->name('page.edit');
+    Route::put('/page/{page}', [CmsController::class, 'pageUpdate'])->name('page.update');
     Route::get('/news', [CmsController::class, 'newsIndex'])->name('news.index');
     Route::get('/news/create', [CmsController::class, 'newsCreate'])->name('news.create');
     Route::post('/news', [CmsController::class, 'newsStore'])->name('news.store');

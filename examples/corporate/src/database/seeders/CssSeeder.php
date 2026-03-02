@@ -9,10 +9,17 @@ class CssSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('css')->insert([
-            ['category' => 'common', 'content' => ''],
-            ['category' => 'individual', 'content' => ''],
-            ['category' => 'special', 'content' => ''],
-        ]);
+        DB::table('css')->updateOrInsert(
+            ['category' => 'common'],
+            ['content' => '']
+        );
+        DB::table('css')->updateOrInsert(
+            ['category' => 'individual'],
+            ['content' => '']
+        );
+        DB::table('css')->updateOrInsert(
+            ['category' => 'special'],
+            ['content' => '']
+        );
     }
 }

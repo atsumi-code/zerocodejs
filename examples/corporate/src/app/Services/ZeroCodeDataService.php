@@ -19,7 +19,20 @@ class ZeroCodeDataService
     {
         $news = News::where('slug', $slug)->first();
         $pageData = $news ? ($news->page_data ?? []) : [];
+        $pageData = $this->ensureNewsPageDataHasShell($pageData);
         return $this->buildZeroCodeData($pageData);
+    }
+
+    private function ensureNewsPageDataHasShell(array $pageData): array
+    {
+        if ($pageData === []) {
+            return [['id' => 'comp-news-shell', 'part_id' => 'corp-part-article-shell', 'slots' => ['content' => []]]];
+        }
+        $first = $pageData[0] ?? null;
+        if (is_array($first) && ($first['part_id'] ?? '') === 'corp-part-article-shell') {
+            return $pageData;
+        }
+        return [['id' => 'comp-news-shell', 'part_id' => 'corp-part-article-shell', 'slots' => ['content' => $pageData]]];
     }
 
     private function buildZeroCodeData(array $pageData): array
@@ -29,6 +42,28 @@ class ZeroCodeDataService
             'css' => $this->getCss(),
             'parts' => $this->getParts(),
             'images' => $this->getImages(),
+            'backendData' => $this->getBackendData(),
+        ];
+    }
+
+    private function getBackendData(): array
+    {
+        $latestNews = News::query()
+            ->whereNotNull('published_at')
+            ->orderByDesc('published_at')
+            ->orderByDesc('created_at')
+            ->limit(3)
+            ->get(['slug', 'title', 'published_at'])
+            ->map(fn (News $n) => [
+                'title' => $n->title,
+                'date' => $n->published_at ? $n->published_at->format('Y-m-d') : '',
+                'url' => '/news/' . $n->slug,
+            ])
+            ->values()
+            ->all();
+
+        return [
+            'latestNews' => $latestNews,
         ];
     }
 
