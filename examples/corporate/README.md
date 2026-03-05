@@ -5,11 +5,11 @@ ZeroCode.js でコーポレートサイトを編集・公開する事例です�
 ## 実装状況
 
 - **公開ページ**: `/`, `/about`, `/services`, `/news`, `/news/{slug}`, `/contact`, `/privacy` を Blade で表示。固定ページ・新着記事の本文は GET /api/data で取得し、クライアント側で `ZeroCode.renderToHtml` により HTML にレンダリングして表示。
-- **管理画面**: `/admin`, `/admin/page/{page}`, `/admin/news`, `/admin/news/create`, `/admin/news/{slug}` と `/cms` 側の同構成を Blade で用意。固定ページ・新着記事の編集画面に zcode-editor（admin）／zcode-cms（cms）を組み込み済み。データは GET /api/data で取得、保存は POST /api/save で実行。リポジトリルートで `npm run build` 後に `docker compose up -d` すると dist が参照される。
+- **管理画面**: `/admin`, `/admin/page/{page}`, `/admin/news`, `/admin/news/create`, `/admin/news/{slug}` と `/cms` 側の同構成を Blade で用意。固定ページ・新着記事の編集画面に zcode-editor（admin）／zcode-cms（cms）を組み込み済み。データは GET /api/data で取得、保存は POST /api/save で実行。トップ編集時は backendData（最新新着 3 件）も渡るため、管理画面のプレビューでも新着一覧がフロントと同じ内容で表示される。リポジトリルートで `npm run build` 後に `docker compose up -d` すると dist が参照される。
 - **API**: `GET /api/data?page=xxx`（固定ページ）・`GET /api/data?news=slug`（新着記事）で ZeroCodeData を返却。`POST /api/save` で `target=page` と `page_id` または `news_id`、`source`（cms|editor）を指定してコンテンツを保存。cms は page のみ保存可。
 - **新着の基本情報**: 記事編集画面でタイトル・スラッグ・公開日・抜粋を編集し、`PUT /admin/news/{slug}` または `PUT /cms/news/{slug}` で保存可能。
 - **お問い合わせ**: `/contact` で名前・メール・本文のフォームを表示。送信時はバリデーション後、完了メッセージを表示（メール送信処理は未実装。呼び出し側で実装）。
-- **DB**: migrations / seeders 済み。固定ページ 3 件・新着サンプル 1 件をシード。phpMyAdmin で確認可能（`PMA_PORT` でポート指定）。
+- **DB**: migrations / seeders 済み。固定ページ 3 件・新着サンプル 5 件をシード。phpMyAdmin で確認可能（`PMA_PORT` でポート指定）。
 
 ## 準備（初回のみ）
 
@@ -66,7 +66,7 @@ Docker・Composer・Laravel の環境構築は [SETUP.md](./SETUP.md) を参照�
 |----------|------|
 | 公開トップ | `http://localhost:8080/` でトップが表示される。編集していればコンテンツが表示される。 |
 | 固定ページ | `/about`, `/services` が表示される。 |
-| 新着一覧 | `/news` で一覧表示。シードで 1 件（サンプルお知らせ）が入っている。 |
+| 新着一覧 | `/news` で一覧表示。シードで 5 件のデモお知らせが入っている。 |
 | 新着記事 | `/news/sample-news` で記事詳細が表示される。 |
 | お問い合わせ | `/contact` でフォームを表示し、送信すると「お問い合わせを受け付けました。」が表示される。 |
 | 管理（admin） | `/admin` でトップ編集画面。固定ページ・新着の編集、新規記事作成、基本情報の更新ができる。 |

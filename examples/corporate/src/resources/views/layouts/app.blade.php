@@ -11,7 +11,7 @@
     <header class="l-header">
         <div class="l-container">
             <div class="l-header__logo">
-                <a href="{{ url('/') }}">{{ config('app.name', 'サンプル会社') }}</a>
+                <a href="{{ url('/') }}">ZeroCode.js</a>
             </div>
             <nav class="l-header__nav">
                 <a href="{{ url('/') }}" class="{{ request()->is('/') || request()->is('') ? 'is-active' : '' }}">トップ</a>
@@ -29,8 +29,8 @@
         <div class="l-container">
             <div class="l-footer__inner">
                 <div class="l-footer__company">
-                    <p class="l-footer__company-name">{{ config('app.name', 'サンプル株式会社') }}</p>
-                    <p class="l-footer__company-address">〒100-0001 東京都千代田区例町1-2-3<br>TEL: 03-1234-5678</p>
+                    <p class="l-footer__company-name">{{ config('app.name', 'ZeroCode.js デモ') }}</p>
+                    <p class="l-footer__company-address">このサイトはデモです。記載の住所・電話は架空であり実在しません。</p>
                 </div>
                 <nav class="l-footer__nav">
                     <a href="{{ url('/') }}">トップ</a>
@@ -41,7 +41,7 @@
                     <a href="{{ url('/privacy') }}">プライバシーポリシー</a>
                 </nav>
             </div>
-            <p class="l-footer__copy">&copy; {{ date('Y') }} {{ config('app.name', 'サンプル株式会社') }}. All rights reserved.</p>
+            <p class="l-footer__copy">&copy; {{ date('Y') }} {{ config('app.name', 'ZeroCode.js デモ') }}. デモサイトのため実在の団体・会社ではありません。</p>
         </div>
     </footer>
 </body>

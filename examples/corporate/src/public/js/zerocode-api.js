@@ -3,6 +3,9 @@
 
   function applyDataToComponent(component, data) {
     if (!component || !data) return;
+    if (data.backendData) {
+      component.setAttribute('backend-data', JSON.stringify(data.backendData));
+    }
     component.setAttribute('page', JSON.stringify(data.page || []));
     if (data.css) {
       if (data.css.common) component.setAttribute('css-common', data.css.common);

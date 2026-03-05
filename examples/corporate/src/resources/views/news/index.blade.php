@@ -5,8 +5,8 @@
 @section('content')
 <div class="p-page-shell">
     <div class="l-container">
-        <h1 class="p-page-title">新着情報</h1>
-        <p class="p-meta">最新のニュースやお知らせをご案内します。</p>
+        <h1 class="p-page-title">新着情報（デモ用サンプル）</h1>
+        <p class="p-meta">表示されている記事はすべてデモ用のサンプルです。実在のニュースではありません。</p>
         @if ($news->isEmpty())
             <div class="p-contact-card">
                 <p>記事はまだありません。</p>

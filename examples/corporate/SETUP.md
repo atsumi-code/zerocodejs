@@ -170,6 +170,6 @@ npm run build
 | 3 | `docker compose run --rm app composer create-project laravel/laravel . --no-interaction` で `src/` に Laravel 作成 |
 | 4 | `src/.env` を用意し、`APP_KEY` と DB 設定を編集 |
 | 5 | `docker compose up -d` で起動 |
-| 6 | `docker compose run --rm app php artisan migrate --force` と `php artisan db:seed --force` でコーポレート用テーブル・初期データ（固定ページ・新着サンプル 1 件含む）投入 |
+| 6 | `docker compose run --rm app php artisan migrate --force` と `php artisan db:seed --force` でコーポレート用テーブル・初期データ（固定ページ・新着サンプル 5 件含む）投入 |
 | 7 | 管理・公開で ZeroCode を使う場合は、**リポジトリルート**で `npm run build` を実行 |
 | 8 | 動作確認は [README.md](./README.md) の「動作確認」を参照 |

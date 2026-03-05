@@ -5,9 +5,9 @@
 @section('content')
 <div class="p-page-shell">
     <div class="l-container">
-        <h1 class="p-page-title">お問い合わせ</h1>
+        <h1 class="p-page-title">お問い合わせ（デモ）</h1>
         <div class="p-contact-card">
-            <p class="p-contact-intro">ご相談・ご質問は以下フォームよりお気軽にお送りください。担当者が1営業日以内を目安にご連絡いたします。</p>
+            <p class="p-contact-intro">このサイトは ZeroCode.js のデモです。フォーム送信は動作確認用であり、実在の窓口には届きません。送信後は「受け付けました」と表示されるのみです。</p>
 
             @if (session('contact_sent'))
                 <p class="c-alert--success">お問い合わせを受け付けました。ご連絡ありがとうございます。</p>
