@@ -387,12 +387,12 @@
   position: relative;
 }
 
-/* アクティブ時のアウトライン */
+/* アクティブ時のアウトライン（内側に表示） */
 [data-zcode-id].zcode-outline-active,
 [data-zcode-slot-path].zcode-outline-active {
   outline-width: 4px;
   outline-style: solid;
-  outline-offset: 2px;
+  outline-offset: -4px;
 }
 
 [data-zcode-id].zcode-outline-active-edit,
@@ -421,7 +421,7 @@
   [data-zcode-slot-path].zcode-outline-hover {
     outline-width: 2px;
     outline-style: dashed;
-    outline-offset: 2px;
+    outline-offset: -2px;
   }
 
   [data-zcode-id].zcode-outline-hover-edit,
