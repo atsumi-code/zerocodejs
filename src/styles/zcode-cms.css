@@ -415,32 +415,34 @@
   outline-color: var(--zcode-color-delete);
 }
 
-/* ホバー時のアウトライン */
-[data-zcode-id].zcode-outline-hover,
-[data-zcode-slot-path].zcode-outline-hover {
-  outline-width: 2px;
-  outline-style: dashed;
-  outline-offset: 2px;
-}
+/* ホバー時のアウトライン（ホバー可能な入力のみ。タッチデバイスでは表示しない） */
+@media (hover: hover) {
+  [data-zcode-id].zcode-outline-hover,
+  [data-zcode-slot-path].zcode-outline-hover {
+    outline-width: 2px;
+    outline-style: dashed;
+    outline-offset: 2px;
+  }
 
-[data-zcode-id].zcode-outline-hover-edit,
-[data-zcode-slot-path].zcode-outline-hover-edit {
-  outline-color: var(--zcode-color-edit);
-}
+  [data-zcode-id].zcode-outline-hover-edit,
+  [data-zcode-slot-path].zcode-outline-hover-edit {
+    outline-color: var(--zcode-color-edit);
+  }
 
-[data-zcode-id].zcode-outline-hover-add,
-[data-zcode-slot-path].zcode-outline-hover-add {
-  outline-color: var(--zcode-color-add);
-}
+  [data-zcode-id].zcode-outline-hover-add,
+  [data-zcode-slot-path].zcode-outline-hover-add {
+    outline-color: var(--zcode-color-add);
+  }
 
-[data-zcode-id].zcode-outline-hover-reorder,
-[data-zcode-slot-path].zcode-outline-hover-reorder {
-  outline-color: var(--zcode-color-reorder);
-}
+  [data-zcode-id].zcode-outline-hover-reorder,
+  [data-zcode-slot-path].zcode-outline-hover-reorder {
+    outline-color: var(--zcode-color-reorder);
+  }
 
-[data-zcode-id].zcode-outline-hover-delete,
-[data-zcode-slot-path].zcode-outline-hover-delete {
-  outline-color: var(--zcode-color-delete);
+  [data-zcode-id].zcode-outline-hover-delete,
+  [data-zcode-slot-path].zcode-outline-hover-delete {
+    outline-color: var(--zcode-color-delete);
+  }
 }
 
 
