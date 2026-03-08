@@ -267,13 +267,52 @@
               >
                 {{ $t('partsManager.editPart', { title: editingPart.part.title }) }}
               </div>
-              <button
-                class="zcode-close-btn"
-                :aria-label="$t('common.close')"
-                @click="handleCancelPart"
+              <div
+                ref="partOptionsRef"
+                class="zcode-part-editor-header-actions"
               >
-                <X :size="18" />
-              </button>
+                <button
+                  type="button"
+                  class="zcode-part-editor-options-btn"
+                  :title="$t('partsManager.options')"
+                  :aria-expanded="showPartOptionsPopover"
+                  aria-haspopup="dialog"
+                  @click="showPartOptionsPopover = !showPartOptionsPopover"
+                >
+                  <SlidersHorizontal :size="18" />
+                </button>
+                <div
+                  v-if="showPartOptionsPopover"
+                  class="zcode-part-editor-options-popover"
+                  role="dialog"
+                  :aria-label="$t('partsManager.options')"
+                  @click.stop
+                >
+                  <div class="zcode-part-editor-options-popover-title">
+                    {{ $t('partsManager.options') }}
+                  </div>
+                  <div class="zcode-part-editor-options-popover-body">
+                    <div class="zcode-part-editor-options-row">
+                      <label class="zcode-part-editor-options-label">{{ $t('partsManager.outlinePosition') }}</label>
+                      <select
+                        :value="editingPart.part.outlinePosition === 'inner' ? 'inner' : 'outer'"
+                        class="zcode-part-editor-options-select"
+                        @change="editingPart.part.outlinePosition = ($event.target as HTMLSelectElement).value === 'inner' ? 'inner' : undefined"
+                      >
+                        <option value="outer">{{ $t('partsManager.outlinePositionOuter') }}</option>
+                        <option value="inner">{{ $t('partsManager.outlinePositionInner') }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="zcode-close-btn"
+                  :aria-label="$t('common.close')"
+                  @click="handleCancelPart"
+                >
+                  <X :size="18" />
+                </button>
+              </div>
             </div>
 
             <div class="zcode-part-editor-form">
@@ -977,7 +1016,8 @@ import {
   ArrowUpDown,
   HelpCircle,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  SlidersHorizontal
 } from 'lucide-vue-next';
 import MonacoEditor from './MonacoEditor.vue';
 import {
@@ -995,6 +1035,8 @@ const props = defineProps<{
 }>();
 
 const showPreviewModal = ref(false);
+const showPartOptionsPopover = ref(false);
+const partOptionsRef = ref<HTMLElement | null>(null);
 const enableTemplateSuggestions = ref(getDevSetting('enableTemplateSuggestions', false));
 const showTemplateHelp = ref(false);
 const showCssWarningModal = ref(false);
@@ -1124,6 +1166,23 @@ watch(enableTemplateSuggestions, (value) => {
   saveDevSettings({ enableTemplateSuggestions: value });
 });
 
+function closePartOptionsPopoverOnClickOutside(e: MouseEvent) {
+  if (partOptionsRef.value && !partOptionsRef.value.contains(e.target as Node)) {
+    showPartOptionsPopover.value = false;
+    document.removeEventListener('click', closePartOptionsPopoverOnClickOutside);
+  }
+}
+
+watch(showPartOptionsPopover, (open) => {
+  if (open) {
+    nextTick(() => {
+      document.addEventListener('click', closePartOptionsPopoverOnClickOutside);
+    });
+  } else {
+    document.removeEventListener('click', closePartOptionsPopoverOnClickOutside);
+  }
+});
+
 // タブの順序を制御
 const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
@@ -1183,6 +1242,7 @@ watch(
   (part) => {
     if (!part) {
       editPanelPreviewComponent.value = null;
+      showPartOptionsPopover.value = false;
       return;
     }
     const temp = createTempComponentFromType(part.type, part.part);

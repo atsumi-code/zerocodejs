@@ -45,6 +45,7 @@ export interface PartData {
   body: string;
   slots?: Record<string, { allowedParts?: string[] }>; // allowedPartsはパーツIDの配列
   slotOnly?: boolean; // スロット専用パーツ（通常の追加パネルには表示しない）
+  outlinePosition?: 'inner'; // 未指定は外側。'inner' のときのみ内側にアウトライン表示
 }
 
 export interface ImageData {

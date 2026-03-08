@@ -120,6 +120,10 @@ export default {
     partTitle: 'Title',
     partDescription: 'Description',
     partDescriptionPlaceholder: 'Part description',
+    options: 'Options',
+    outlinePosition: 'Outline position',
+    outlinePositionOuter: 'Outer',
+    outlinePositionInner: 'Inner',
     deletePartConfirm:
       'Do you want to delete part {number}?\n(Other parts in the type will remain)',
     deleteTypeConfirm: 'Do you want to delete this type?',

@@ -64,11 +64,15 @@ export function renderComponentCore(
   );
 
   if (context.enableEditorAttributes) {
-    return injectAttributesToRootElement(html, {
-      'data-zcode-id': component.id,
-      'data-zcode-path': path,
-      'data-zcode-part': partId
-    });
+    return injectAttributesToRootElement(
+      html,
+      {
+        'data-zcode-id': component.id,
+        'data-zcode-path': path,
+        'data-zcode-part': partId
+      },
+      part.outlinePosition === 'inner' ? { addClass: 'zcode-outline-inner' } : undefined
+    );
   }
   return html;
 }

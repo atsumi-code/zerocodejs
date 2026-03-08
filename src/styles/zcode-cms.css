@@ -387,11 +387,16 @@
   position: relative;
 }
 
-/* アクティブ時のアウトライン（内側に表示） */
+/* アクティブ時のアウトライン（デフォルトは外側） */
 [data-zcode-id].zcode-outline-active,
 [data-zcode-slot-path].zcode-outline-active {
   outline-width: 4px;
   outline-style: solid;
+  outline-offset: 2px;
+}
+
+[data-zcode-id].zcode-outline-inner.zcode-outline-active,
+[data-zcode-slot-path].zcode-outline-inner.zcode-outline-active {
   outline-offset: -4px;
 }
 
@@ -421,6 +426,11 @@
   [data-zcode-slot-path].zcode-outline-hover {
     outline-width: 2px;
     outline-style: dashed;
+    outline-offset: 1px;
+  }
+
+  [data-zcode-id].zcode-outline-inner.zcode-outline-hover,
+  [data-zcode-slot-path].zcode-outline-inner.zcode-outline-hover {
     outline-offset: -2px;
   }
 
@@ -3670,6 +3680,89 @@
   color: #6b7280;
 }
 
+.zcode-part-editor-header-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.zcode-part-editor-options-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.zcode-part-editor-options-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.zcode-part-editor-options-btn[aria-expanded='true'] {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.zcode-part-editor-options-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  min-width: 220px;
+  padding: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.zcode-part-editor-options-popover-title {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.zcode-part-editor-options-popover-body {
+  padding: 12px;
+}
+
+.zcode-part-editor-options-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.zcode-part-editor-options-label {
+  margin: 0;
+  font-weight: normal;
+  flex-shrink: 0;
+}
+
+.zcode-part-editor-options-select {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: white;
+  color: #374151;
+  min-width: 0;
+  flex: 1;
+}
+
 .zcode-part-editor-actions {
   display: flex;
   gap: 8px;
@@ -4327,6 +4420,11 @@
 
   .zcode-part-editor-form {
     padding: 16px 12px;
+  }
+
+  .zcode-part-editor-options-popover {
+    right: 0;
+    left: auto;
   }
 
   .zcode-part-editor-main {

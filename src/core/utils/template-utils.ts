@@ -1,7 +1,11 @@
 import { getDOMParser } from './dom-utils';
 import { logger } from './logger';
 
-export function injectAttributesToRootElement(html: string, attrs: Record<string, string>): string {
+export function injectAttributesToRootElement(
+  html: string,
+  attrs: Record<string, string>,
+  options?: { addClass?: string }
+): string {
   const DOMParser = getDOMParser();
   const parser = new DOMParser();
   const doc = parser.parseFromString(`<template>${html}</template>`, 'text/html');
@@ -17,6 +21,12 @@ export function injectAttributesToRootElement(html: string, attrs: Record<string
   Object.entries(attrs).forEach(([key, value]) => {
     rootElement.setAttribute(key, value);
   });
+
+  if (options?.addClass) {
+    const existing = rootElement.getAttribute('class')?.trim() || '';
+    const merged = existing ? `${existing} ${options.addClass}` : options.addClass;
+    rootElement.setAttribute('class', merged);
+  }
 
   return rootElement.outerHTML;
 }
