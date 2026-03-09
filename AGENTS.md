@@ -941,4 +941,25 @@ const expensiveValue = computed(() => {
 
 ---
 
+## Cursor Cloud specific instructions
+
+This is a pure frontend Vue 3 library with no backend services. The only service needed is the Vite dev server.
+
+**Quick reference for common commands** (all defined in `package.json` scripts):
+
+| Task | Command | Notes |
+|------|---------|-------|
+| Dev server | `npm run dev` | Vite on port 5173. Add `-- --host 0.0.0.0` for external access. |
+| Lint | `npm run lint` | ESLint. Has 1 pre-existing error (unused var) and ~83 warnings. |
+| Type check | `npm run type-check` | `vue-tsc --noEmit` |
+| Tests | `npx vitest run` | 180 tests across 10 files. All pass. |
+| Build | `npm run build` | `vue-tsc && vite build && vite build --config vite.ssr.config.ts` |
+
+**Caveats:**
+- Node.js 22.x is required (`.nvmrc` specifies 22.22.0).
+- The dev server demo pages are at `/test-dev.html` (editor), `/test-cms.html` (CMS), and `/` (homepage with links).
+- The `examples/corporate/` directory has a Docker-based PHP example app; it is **not** needed for core library development.
+
+---
+
 **最終更新日**: 2026年2月
