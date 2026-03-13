@@ -22,7 +22,11 @@ module.exports = {
     jQuery: 'readonly',
     ZeroCodeCommon: 'readonly'
   },
-  ignorePatterns: ['public/js/*.js'],
+  ignorePatterns: [
+    'public/js/*.js',
+    'examples/**/vendor/**',
+    'examples/**/public/js/**'
+  ],
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/no-reserved-component-names': 'off',
