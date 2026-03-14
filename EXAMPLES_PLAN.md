@@ -102,38 +102,9 @@ examples/
 │   └── db/
 │       └── init.sql                 (Docker 初期化用)
 │
-├── portal/                          ← 事例3: ポータル
-│   ├── README.md
-│   ├── package.json                 (next, react, zerocodejs, @supabase/supabase-js)
-│   ├── next.config.js
-│   ├── .env.example                 (SUPABASE_URL, SUPABASE_ANON_KEY)
-│   ├── supabase/
-│   │   └── migrations/
-│   │       └── 001_init.sql         (テーブル定義 + RLS)
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── layout.tsx           (共通レイアウト)
-│   │   │   ├── page.tsx             (公開トップ: 店舗一覧)
-│   │   │   ├── shop/[shopId]/
-│   │   │   │   └── page.tsx         (公開: 店舗ページ SSR)
-│   │   │   ├── login/
-│   │   │   │   └── page.tsx         (ログイン画面)
-│   │   │   ├── admin/
-│   │   │   │   ├── page.tsx         (マスター管理: zcode-editor)
-│   │   │   │   └── shop/[shopId]/
-│   │   │   │       └── page.tsx     (マスター: 店舗別編集)
-│   │   │   ├── dashboard/
-│   │   │   │   └── page.tsx         (オーナー: 自店舗編集 zcode-cms)
-│   │   │   └── api/
-│   │   │       ├── data/route.ts    (GET: データ取得)
-│   │   │       └── save/route.ts    (POST: データ保存)
-│   │   ├── lib/
-│   │   │   └── supabase.ts          (Supabase クライアント)
-│   │   └── components/
-│   │       └── ZeroCodeWrapper.tsx   (Web Components の CSR ラッパー)
-│   └── public/
-│       ├── css/style.css            (ポータル用デザイン)
-│       └── images/
+│
+│   ※ ポータル（Zeroportal）は別リポジトリ `zeroportal` で管理
+│   （ZeroCode.js は npm 依存として参照。Vercel でホスティング）
 ```
 
 ---
@@ -313,145 +284,40 @@ CREATE TABLE images (
 
 ---
 
-## 事例3: ポータル
+## 事例3: ポータル — Zeroportal（ゼロポータル / 愛称: ゼロポ）
 
 ### 概要
 
-- 検索・一覧型のポータルサイト
+- **サービス名**: Zeroportal（ゼロポータル）、愛称: ゼロポ
+- **リポジトリ**: 別リポジトリ `zeroportal`（プライベート）。ZeroCode.js は npm 依存として参照
+- **ホスティング**: Vercel（無料枠、独自ドメイン検討中）
+- **事例紹介**: ZeroCode.js 側のデモサイト・EXAMPLES_PLAN にリンクとスクリーンショットで掲載
+- 地域・カテゴリ・駅で掲載者を探せるポータルサイト
 - Next.js + Supabase で「モダンスタック + 認証」を示す
-- 店舗単位で編集可能。マスター / 店舗オーナーの権限分け
+- 掲載者単位で編集可能。マスター / オーナーの権限分け
+- コーポレートの「ページ単位」ではなく、「機能単位（ドメイン単位）」で ZeroCode を使う
+- 掲載者（listing）= 店舗・フリーランス・スタジオ・スクールなど広義の事業者
 
-### ページ構成（参考: tp_portal1_pink）
+### ビジネスモデル
 
-- **公開ページ**:
-  - `/` — トップページ（店舗一覧、カテゴリ検索）
-  - `/shop/[shopId]` — 店舗ページ（SSR）
-- **認証**:
-  - `/login` — ログイン画面
-- **マスター管理**:
-  - `/admin` — 全店舗管理（`<zcode-editor>`）
-  - `/admin/shop/[shopId]` — 特定店舗の編集
-- **店舗オーナー**:
-  - `/dashboard` — 自店舗の編集（`<zcode-cms>`）
+- 掲載は無料
+- オーナーは CMS パーツで自分のページを作成（レベル 1）
+- よりデザイン性の高いページが必要なら、ポータルに掲載されている制作会社に依頼（レベル 2: 独自 HTML/CSS パーツ）
+- さらに高度な機能が必要なら、管理者がカスタム実装で支援（レベル 3）
 
-### 認証・権限
+### 公開向け考慮事項
 
-| ロール | コンポーネント   | できること                                       |
-| ------ | ---------------- | ------------------------------------------------ |
-| master | `<zcode-editor>` | 全店舗の編集、パーツ管理、画像管理、ユーザー管理 |
-| owner  | `<zcode-cms>`    | 自店舗のページ編集、自店舗の画像管理             |
+- **SEO**: meta tags、OGP（og:title, og:image 等）、sitemap.xml、robots.txt
+- **セキュリティ**: rate limiting（API）、入力サニタイズ、CORS 設定、環境変数の管理
+- **パフォーマンス**: Next.js Image 最適化、適切なキャッシュヘッダー、ISR/SSR の使い分け
+- **エラーハンドリング**: カスタム 404/500 ページ、API エラーレスポンスの統一
+- **ログ・監視**: Vercel Analytics（無料枠あり）、エラーログ
+- **法的**: プライバシーポリシー、利用規約（必要に応じて）
 
-- Supabase Auth（メール + パスワード）
-- Row Level Security（RLS）で DB レベルのアクセス制御
-- API Routes で権限チェック
+### 仕様の詳細
 
-### DB 設計（Supabase / PostgreSQL）
-
-```sql
--- ユーザープロフィール
-CREATE TABLE profiles (
-  id       UUID PRIMARY KEY REFERENCES auth.users(id),
-  role     TEXT NOT NULL CHECK (role IN ('master', 'owner')),
-  shop_id  UUID REFERENCES shops(id),
-  name     TEXT
-);
-
--- 店舗
-CREATE TABLE shops (
-  id    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name  TEXT NOT NULL,
-  slug  TEXT UNIQUE NOT NULL
-);
-
--- ページ（店舗ごと）
-CREATE TABLE pages (
-  shop_id    UUID REFERENCES shops(id) ON DELETE CASCADE,
-  data       JSONB,
-  updated_at TIMESTAMPTZ DEFAULT now(),
-  PRIMARY KEY (shop_id)
-);
-
--- CSS（店舗ごと）
-CREATE TABLE css (
-  shop_id   UUID REFERENCES shops(id) ON DELETE CASCADE,
-  category  TEXT NOT NULL,
-  content   TEXT DEFAULT '',
-  PRIMARY KEY (shop_id, category)
-);
-
--- パーツのタイプ（全店舗共通）
-CREATE TABLE types (
-  id          TEXT PRIMARY KEY,
-  category    TEXT NOT NULL,
-  type        TEXT NOT NULL,
-  description TEXT,
-  sort_order  INT DEFAULT 0
-);
-
--- パーツ（全店舗共通）
-CREATE TABLE parts (
-  id          TEXT PRIMARY KEY,
-  type_id     TEXT REFERENCES types(id) ON DELETE CASCADE,
-  title       TEXT,
-  description TEXT,
-  body        TEXT,
-  slot_only   BOOLEAN DEFAULT false,
-  slots       JSONB,
-  sort_order  INT DEFAULT 0
-);
-
--- 画像（店舗ごと）
-CREATE TABLE images (
-  id          TEXT NOT NULL,
-  shop_id     UUID REFERENCES shops(id) ON DELETE CASCADE,
-  category    TEXT NOT NULL,
-  name        TEXT,
-  url         TEXT,
-  mime_type   TEXT,
-  needs_upload BOOLEAN DEFAULT false,
-  PRIMARY KEY (id, shop_id)
-);
-
--- RLS ポリシー
-ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE images ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "master_all" ON pages
-  FOR ALL USING (
-    (SELECT role FROM profiles WHERE id = auth.uid()) = 'master'
-  );
-
-CREATE POLICY "owner_own_shop" ON pages
-  FOR ALL USING (
-    shop_id = (SELECT shop_id FROM profiles WHERE id = auth.uid())
-  );
-```
-
-### バックエンド仕様
-
-- **GET /api/data?shopId=xxx** — 指定店舗のデータを返す（権限チェック付き）
-- **POST /api/save** — `{ shopId, target, source, data }` を受け取り保存（権限チェック付き）
-- **バリデーション**:
-  - 認証チェック（未ログインは 401）
-  - 権限チェック（owner は自店舗のみ、パーツ変更不可）
-  - target の許可リスト
-  - データ構造検証
-  - テンプレートのサニタイズ
-
-### 実装の流れ
-
-1. Next.js プロジェクトを初期化
-2. Supabase プロジェクトを作成（無料枠）
-3. マイグレーション（テーブル + RLS）を作成
-4. 初期データ（店舗 2〜3、デモユーザー）を投入
-5. 静的 HTML/CSS を新規作成（ポータルデザイン）
-6. Next.js ページに変換（layout, page, admin, dashboard）
-7. ZeroCodeWrapper（CSR ラッパー: `dynamic(() => ..., { ssr: false })`）を作成
-8. ブラウザで確認 → パーツ化する箇所を決定
-9. パーツ（テンプレート記法）に変換
-10. API Routes（data, save）を実装（権限チェック付き）
-11. ログイン画面を実装
-12. README.md を作成
+詳細な仕様（URL構造・データモデル・API・検索ロジック・認証等）は **別リポジトリ `zeroportal` の `AGENTS.md`** に移植済み。
+このファイルでは概要・TODOのみ管理する。
 
 ---
 
@@ -461,13 +327,14 @@ CREATE POLICY "owner_own_shop" ON pages
 
 - GitHub Pages のデモサイトに「事例紹介」セクションを追加
 - 各事例のスクリーンショット、技術スタック、構成図を掲載
-- 「ローカルで試す」ボタンで GitHub の各事例 README へ誘導
-- 実際のバックエンドは動かさない（静的ページとして紹介のみ）
+- LP・コーポレートは「ローカルで試す」ボタンで GitHub の各事例 README へ誘導
+- **ポータル（Zeroportal）は実稼働サイトへのリンクで紹介**（別リポジトリ・Vercel ホスティング）
 
 ### 実装
 
 - `index.html`（デモサイトトップ）に事例セクションを追加
 - 各事例のスクリーンショット画像を `public/images/examples/` に配置
+- Zeroportal は実サイト URL と技術スタック紹介を掲載
 
 ---
 
@@ -541,21 +408,22 @@ CREATE POLICY "owner_own_shop" ON pages
 - [ ] **CORP-12**: 動作確認（Docker 起動 → 固定/新着の表示・編集・保存・新規作成・source 制限）
 - [ ] **CORP-13**: README.md 作成
 
-### 事例3: ポータル
+### 事例3: ポータル — Zeroportal（別リポジトリ `zeroportal`）
 
-- [ ] **PORTAL-1**: `examples/portal/` ディレクトリ作成
-- [ ] **PORTAL-2**: Next.js プロジェクト初期化
-- [ ] **PORTAL-3**: Supabase プロジェクト作成 + マイグレーション（テーブル + RLS）
-- [ ] **PORTAL-4**: 初期データ投入（店舗 2〜3、デモユーザー）
-- [ ] **PORTAL-5**: 静的 HTML/CSS を新規作成（ポータルデザイン）
-- [ ] **PORTAL-6**: Next.js ページに変換（layout, page, shop, admin, dashboard, login）
-- [ ] **PORTAL-7**: ZeroCodeWrapper（CSR ラッパー）作成
+- [ ] **PORTAL-1**: 別リポジトリ `zeroportal` 作成（プライベート）、Next.js プロジェクト初期化
+- [ ] **PORTAL-2**: Vercel と連携（GitHub → 自動デプロイ）
+- [ ] **PORTAL-3**: Supabase プロジェクト作成 + マイグレーション（categories, regions, stations, groups, listings, listing_categories, profiles, pages, css, types, parts, images + RLS）
+- [ ] **PORTAL-4**: 初期データ投入（カテゴリ 2〜3 親 + 子、地域、駅 50〜100、掲載者 5〜10、グループ 1〜2、master 1 + owner 2）
+- [ ] **PORTAL-5**: 静的 HTML/CSS を新規作成（ポータルデザイン: TOP・検索結果・掲載者・グループ）
+- [ ] **PORTAL-6**: Next.js ページに変換（layout, TOP, /{category}, /listing/{id}, /group/{slug}, /login, /admin, /dashboard）
+- [ ] **PORTAL-7**: ZeroCodeWrapper（CSR ラッパー: `dynamic(() => ..., { ssr: false })`）作成
 - [ ] **PORTAL-8**: ブラウザで確認 → パーツ化する箇所を決定
 - [ ] **PORTAL-9**: パーツ（テンプレート記法）に変換
-- [ ] **PORTAL-10**: API Routes 実装（data, save + 権限チェック）
+- [ ] **PORTAL-10**: API Routes 実装（GET /api/data, POST /api/save + 権限チェック）
 - [ ] **PORTAL-11**: ログイン画面実装
-- [ ] **PORTAL-12**: 動作確認（ログイン → 編集 → 保存 → 権限チェック）
-- [ ] **PORTAL-13**: `README.md` 作成
+- [ ] **PORTAL-12**: 公開向け対応（SEO、エラーページ、セキュリティ、パフォーマンス）
+- [ ] **PORTAL-13**: 動作確認（公開ページ → ログイン → 編集 → 保存 → 権限チェック）
+- [ ] **PORTAL-14**: `README.md` 作成
 
 ### 全体
 
@@ -566,4 +434,4 @@ CREATE POLICY "owner_own_shop" ON pages
 
 ---
 
-**最終更新日**: 2026年2月
+**最終更新日**: 2026年3月
