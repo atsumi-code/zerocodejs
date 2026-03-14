@@ -59,7 +59,7 @@ class PagesSeeder extends Seeder
             [
                 'id' => 'comp-about-hero',
                 'part_id' => 'corp-part-hero',
-                'title' => '会社概要（デモ用ページ）',
+                'title' => '会社概要（デモ用）',
                 'lead' => 'このページは ZeroCode.js デモの「会社概要」サンプルです。内容は架空です。',
             ],
             [
@@ -102,7 +102,7 @@ class PagesSeeder extends Seeder
             [
                 'id' => 'comp-services-hero',
                 'part_id' => 'corp-part-hero',
-                'title' => '事業内容（デモ用ページ）',
+                'title' => '事業内容（デモ用）',
                 'lead' => 'このページは ZeroCode.js デモの「事業内容」サンプルです。記載は架空です。',
             ],
             [
