@@ -321,22 +321,11 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));
 ### 設定の型定義
 
 ```typescript
-interface ImageModalActionsCategory {
-  add?: boolean;
-  delete?: boolean;
-}
-
-interface ImageModalActionsConfig {
-  common?: ImageModalActionsCategory;
-  individual?: ImageModalActionsCategory;
-  special?: ImageModalActionsCategory;
-}
-
 interface CMSSettings {
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
-  imageModalActions?: ImageModalActionsConfig; // 画像選択モーダルで共通/個別/特別ごとに追加・削除ボタンを表示するか（未指定時は非表示）。ページ編集の保存対象（targets）も算出に使用
+  enableSpecialParts?: boolean; // ZeroCodeCMS から特別パーツ・画像の管理を許可する（デフォルト: false）
 }
 
 interface DevSettings {
@@ -763,7 +752,8 @@ watch(enableContextMenu, (newValue) => {
   - `detail.requestId`: リクエストID（`save-result`で使用）
   - `detail.source`: 送信元（`'cms'` または `'editor'`）
   - `detail.targets`: 保存対象の配列
-    - zcode-cms 編集モード / zcode-editor ページ管理: `imageModalActions` から算出。`page` + (add または delete が true の画像カテゴリ)。未指定時は `['page']` のみ
+    - zcode-cms 編集モード: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`
+    - zcode-editor ページ管理: `['page']`
     - パーツ管理: `[primaryTarget, 'parts-*-css']`
     - 画像管理: `['images-common']` / `['images-individual']` / `['images-special']`
   - `detail.timestamp`: タイムスタンプ
@@ -1033,7 +1023,7 @@ cms.addEventListener('save-request', async (event) => {
 
 **ターゲットの決定**:
 
-- `internalActiveTab === 'page'` → `imageModalActions` から算出。`page` + (add または delete が true の画像カテゴリ)。未指定時は `['page']` のみ
+- `internalActiveTab === 'page'` → `['page']`
 - `internalActiveTab === 'parts'` + `activeCategory === 'common'` → `targets = ['parts-common', 'parts-common-css']`
 - `internalActiveTab === 'parts'` + `activeCategory === 'individual'` → `targets = ['parts-individual', 'parts-individual-css']`
 - `internalActiveTab === 'parts'` + `activeCategory === 'special'` → `targets = ['parts-special', 'parts-special-css']`

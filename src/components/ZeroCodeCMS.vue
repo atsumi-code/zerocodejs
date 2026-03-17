@@ -9,9 +9,12 @@
       :current-mode="currentMode"
       :view-mode="viewMode"
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
+      :enable-manage-panel="enableSpecialParts"
+      :manage-panel-open="managePanelOpen"
       @switch-mode="switchMode"
       @switch-view-mode="(mode) => (viewMode = mode)"
       @open-settings="settingsPanelOpen = true"
+      @open-manage-panel="managePanelOpen = !managePanelOpen"
     />
 
     <div
@@ -73,12 +76,9 @@
         :images-common="cmsData.images.common"
         :images-individual="cmsData.images.individual"
         :images-special="cmsData.images.special"
-        :image-modal-actions="imageModalActions"
         @close="closeEditPanel"
         @select-parent="selectParentElement"
         @save-field="handleSaveFieldEdit"
-        @add-image="handleAddImage"
-        @delete-image="handleDeleteImage"
       />
 
       <!-- 削除確認パネル -->
@@ -151,6 +151,60 @@
       @close="closeContextMenu"
     />
 
+    <!-- 管理パネルモーダル -->
+    <Teleport to="body">
+      <div
+        v-if="managePanelOpen && enableSpecialParts"
+        class="zcode-manage-panel-modal"
+        @click.self="managePanelOpen = false"
+      >
+        <div
+          class="zcode-manage-panel-modal-content"
+          @click.stop
+        >
+          <div class="zcode-manage-panel-modal-header">
+            <div class="zcode-manage-panel-tabs">
+              <button
+                :class="{ active: manageTab === 'parts' }"
+                class="zcode-manage-panel-tab"
+                @click="manageTab = 'parts'"
+              >
+                {{ $t('toolbar.manageSpecialParts') }}
+              </button>
+              <button
+                :class="{ active: manageTab === 'images' }"
+                class="zcode-manage-panel-tab"
+                @click="manageTab = 'images'"
+              >
+                {{ $t('toolbar.manageSpecialImages') }}
+              </button>
+            </div>
+            <button
+              class="zcode-close-btn"
+              :aria-label="$t('common.close')"
+              @click="managePanelOpen = false"
+            >
+              <X :size="18" />
+            </button>
+          </div>
+          <div class="zcode-manage-panel-modal-body">
+            <PartsManagerPanel
+              v-if="manageTab === 'parts'"
+              :cms-data="cmsData"
+              :config="config"
+              fixed-category="special"
+            />
+            <ImagesManagerPanel
+              v-if="manageTab === 'images'"
+              :cms-data="cmsData"
+              :config="config"
+              fixed-category="special"
+            />
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- 保存確認ダイアログ -->
     <div
       v-if="showSaveConfirmDialog"
@@ -187,7 +241,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue';
-import { Save } from 'lucide-vue-next';
+import { Save, X } from 'lucide-vue-next';
 import ZeroCodePreview from './ZeroCodePreview.vue';
 import PreviewArea from '../features/preview/PreviewArea.vue';
 import Toolbar from '../features/editor/components/Toolbar.vue';
@@ -197,6 +251,8 @@ import DeletePanel from '../features/delete/components/DeletePanel.vue';
 import ReorderPanel from '../features/reorder/components/ReorderPanel.vue';
 import AddPanel from '../features/add/components/AddPanel.vue';
 import ContextMenu from '../features/editor/components/ContextMenu.vue';
+import PartsManagerPanel from '../features/parts-manager/components/PartsManagerPanel.vue';
+import ImagesManagerPanel from '../features/images-manager/components/ImagesManagerPanel.vue';
 import { useZeroCodeData } from '../core/composables/useZeroCodeData';
 import { useZeroCodeRenderer } from '../core/composables/useZeroCodeRenderer';
 import { useEditorMode } from '../features/editor/composables/useEditorMode';
@@ -209,11 +265,10 @@ import { useClickHandlers } from '../features/editor/composables/useClickHandler
 import { useModeSwitcher } from '../features/editor/composables/useModeSwitcher';
 import { useContextMenu } from '../features/editor/composables/useContextMenu';
 import { validateData as validateDataUtil } from '../core/utils/validation';
-import { findImageReferences } from '../core/utils/image-utils';
 import { saveCMSSettings, loadCMSSettings } from '../core/utils/storage';
 import { logger } from '../core/utils/logger';
 import { useI18n } from 'vue-i18n';
-import type { ImageData, CMSConfig, CMSSettings } from '../types';
+import type { CMSConfig, CMSSettings } from '../types';
 
 const { t } = useI18n();
 
@@ -236,6 +291,8 @@ const props = defineProps<{
 
 const viewMode = ref<'preview' | 'manage'>('manage');
 const settingsPanelOpen = ref(false);
+const managePanelOpen = ref(false);
+const manageTab = ref<'parts' | 'images'>('parts');
 
 // configをパース
 const parseConfig = (configString?: string): Partial<CMSConfig> => {
@@ -250,32 +307,12 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 
 const config = parseConfig(props.config);
 
-const imageModalActions = computed(() => {
-  const def = {
-    common: { add: false, delete: false },
-    individual: { add: false, delete: false },
-    special: { add: false, delete: false }
-  };
-  const c = config.cms?.imageModalActions;
-  if (!c) return def;
-  return {
-    common: { ...def.common, ...c.common },
-    individual: { ...def.individual, ...c.individual },
-    special: { ...def.special, ...c.special }
-  };
-});
+const enableSpecialParts = computed(() => config.cms?.enableSpecialParts === true);
 
 const saveTargets = computed(() => {
   const targets: string[] = ['page'];
-  const actions = imageModalActions.value;
-  if (actions.common?.add || actions.common?.delete) {
-    targets.push('images-common');
-  }
-  if (actions.individual?.add || actions.individual?.delete) {
-    targets.push('images-individual');
-  }
-  if (actions.special?.add || actions.special?.delete) {
-    targets.push('images-special');
+  if (enableSpecialParts.value) {
+    targets.push('images-special', 'parts-special', 'parts-special-css');
   }
   return targets;
 });
@@ -663,44 +700,6 @@ function applyFieldErrorsForPath(path: string | null) {
   fieldErrors.value = next;
 }
 
-const handleAddImage = (imageData: ImageData, target: 'common' | 'individual' | 'special') => {
-  if (target === 'common') {
-    cmsData.images.common.push(imageData);
-  } else if (target === 'individual') {
-    cmsData.images.individual.push(imageData);
-  } else {
-    cmsData.images.special.push(imageData);
-  }
-};
-
-const handleDeleteImage = (imageId: string) => {
-  const references = findImageReferences(imageId, cmsData.page);
-
-  references.forEach((ref) => {
-    Object.keys(ref.component).forEach((key) => {
-      if (key.includes('image') && ref.component[key] === imageId) {
-        ref.component[key] = '';
-      }
-    });
-  });
-
-  const commonIndex = cmsData.images.common.findIndex((img: ImageData) => img.id === imageId);
-  if (commonIndex !== -1) {
-    cmsData.images.common.splice(commonIndex, 1);
-  }
-
-  const individualIndex = cmsData.images.individual.findIndex(
-    (img: ImageData) => img.id === imageId
-  );
-  if (individualIndex !== -1) {
-    cmsData.images.individual.splice(individualIndex, 1);
-  }
-
-  const specialIndex = cmsData.images.special.findIndex((img: ImageData) => img.id === imageId);
-  if (specialIndex !== -1) {
-    cmsData.images.special.splice(specialIndex, 1);
-  }
-};
 
 function handleSaveResult(e: Event) {
   const detail = (e as CustomEvent<unknown>).detail;

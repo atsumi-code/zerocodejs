@@ -391,8 +391,8 @@ interface ImageData {
 
 **targets配列の仕様:**
 
-- **zcode-cms の編集モード**: `imageModalActions` から算出。`page` + (add または delete が true の画像カテゴリ)。何も指定しない場合は `['page']` のみ
-- **zcode-editor のページ管理タブ**: 同上
+- **zcode-cms の編集モード**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`
+- **zcode-editor のページ管理タブ**: `['page']`
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -503,14 +503,10 @@ interface ImageData {
 14. ✅ **データ永続化の改善**（2025年1月）
     - `sessionStorage`から`localStorage`に変更（別窓でのデータ連動のため）
     - 呼び出し側でリセットボタンを実装（本番環境では不要のため、ZeroCode側には実装しない）
-15. ✅ **画像モーダルの追加・削除の任意設定**（2025年1月）
-    - `config.cms.imageModalActions` で共通/個別/特別ごとに追加・削除ボタンの表示を制御
-    - 未指定時は追加・削除とも非表示（基本は画像管理パネルで操作）
-16. ✅ **特別画像の削除処理**（2025年1月）
-    - `handleDeleteImage` で `cmsData.images.special` からも削除するように修正
-17. ✅ **imageModalActions に基づく targets 算出**（2025年1月）
-    - ページ編集の targets を `imageModalActions` から算出（add または delete が true のカテゴリのみ）
-    - 何も指定しない場合は `['page']` のみ
+15. ✅ **特別パーツ・画像管理の統一**（2025年1月→2026年3月改修）
+    - ツールバーに「管理」ボタンを追加（`enableSpecialParts` 有効時のみ表示）
+    - 管理モーダル内に「特別パーツ」「特別画像」タブを設け、`PartsManagerPanel`/`ImagesManagerPanel` で一元管理
+    - 画像選択モーダル（`ImageSelectModal`）は純粋な選択UIに簡素化
 18. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
     - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
     - 同じ part_id のページ上コンポーネント（先頭1件）にも値を同期し、表示モード切り替え時に反映
@@ -571,7 +567,7 @@ interface ImageData {
 - **保存は`save-request`イベントのみ**: `change`イベントは削除済み
 - **保存ボタンクリック時のみ発火**: 自動保存は行わない
 - **画像追加時の自動保存は行わない**: 保存ボタンで一括保存
-- **編集モードでの保存対象**: `imageModalActions` から算出。`page` + (add または delete が true の画像カテゴリ)。何も指定しない場合は `['page']` のみ（CSSは除外）
+- **編集モードでの保存対象**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`（CSSは除外）
 - **パーツ管理での保存対象**: `parts-common`/`parts-individual`/`parts-special`、対応する`parts-common-css`/`parts-individual-css`/`parts-special-css`
 
 ### テンプレート記法の実装

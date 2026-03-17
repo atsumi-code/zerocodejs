@@ -1150,11 +1150,11 @@
 &gt;&lt;/zcode-editor&gt;</code></pre>
 
         <p>
-          画像選択モーダルで追加・削除ボタンを表示するカテゴリを指定するには
-          <code>imageModalActions</code> を使用します（未指定時は追加・削除とも非表示）。
-          保存対象（targets）も同様に、add または delete が true のカテゴリのみに限定されます。
+          ZeroCodeCMSから特別パーツ・画像の管理を許可するには
+          <code>enableSpecialParts</code> を使用します（デフォルト: false）。
+          有効にすると、追加パネルで特別パーツの管理ボタンが表示され、画像選択モーダルから画像管理パネルを開けるようになります。
         </p>
-        <pre><code>config='{"cms":{"imageModalActions":{"special":{"add":true,"delete":true}}}}'</code></pre>
+        <pre><code>config='{"cms":{"enableSpecialParts":true}}'</code></pre>
 
         <p>または、JavaScript変数で指定することもできます：</p>
         <pre><code>const cmsConfig = {
@@ -1162,7 +1162,7 @@
     allowDynamicContentInteraction: true,
     devRightPadding: true,
     enableContextMenu: true,
-    imageModalActions: { special: { add: true, delete: true } }
+    enableSpecialParts: true
   },
   categoryOrder: 'individual'
 };
@@ -1869,10 +1869,10 @@ cms.addEventListener('save-request', (event) => {
             <tr>
               <td>ページ管理（編集モード）</td>
               <td>
-                <code>imageModalActions</code> から算出。<code>page</code> + (add または delete が true の画像カテゴリ)。未指定時は <code>['page']</code> のみ
+                <code>['page']</code>。<code>enableSpecialParts</code> が有効な場合は <code>['page', 'images-special', 'parts-special', 'parts-special-css']</code>
               </td>
               <td>
-                ページデータと画像データを保存。ページCSSは含まれない（パーツ管理でのみ編集可能）
+                ページデータを保存。<code>enableSpecialParts</code> 有効時は特別パーツ・画像データも保存対象
               </td>
             </tr>
             <tr>

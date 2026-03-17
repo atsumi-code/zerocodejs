@@ -305,7 +305,6 @@ const props = defineProps<{
   config?: Partial<CMSConfig>;
 }>();
 
-// タブの順序を制御
 const categoryOrder = computed(() => 
   props.config?.categoryOrder || 'common'
 );

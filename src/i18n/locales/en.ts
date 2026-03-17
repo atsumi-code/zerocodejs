@@ -24,6 +24,9 @@ export default {
     reorderMode: 'Reorder',
     deleteMode: 'Delete',
     viewMode: 'View',
+    manageMode: 'Manage',
+    manageSpecialParts: 'Special parts',
+    manageSpecialImages: 'Special images',
     settings: 'Settings'
   },
   settings: {
@@ -206,7 +209,6 @@ export default {
     altText: 'Alt attribute',
     deleteImageConfirm: 'Do you want to delete this image?',
     deleteImageWithUsagesConfirm: 'This image is used in {count} places. Do you want to delete it?',
-    deleteImageFromModalConfirm: 'Do you want to delete this image?',
     addImageFailed: 'Failed to add image',
     replaceImage: 'Replace',
     selectImage: 'Select image',

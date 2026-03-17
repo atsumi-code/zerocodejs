@@ -341,10 +341,7 @@
       :images-individual="imagesIndividual"
       :images-special="imagesSpecial"
       :current-value="currentImageField?.currentValue || undefined"
-      :image-modal-actions="imageModalActions"
       @update:model-value="handleImageSelect"
-      @add-image="handleAddImage"
-      @delete-image="handleDeleteImage"
       @close="closeImageModal"
     />
   </div>
@@ -390,11 +387,6 @@ const props = defineProps<{
   imagesIndividual: ImageData[];
   imagesSpecial: ImageData[];
   previewMode?: boolean;
-  imageModalActions?: {
-    common?: { add?: boolean; delete?: boolean };
-    individual?: { add?: boolean; delete?: boolean };
-    special?: { add?: boolean; delete?: boolean };
-  };
 }>();
 
 const activeGroup = ref<string | 'all' | undefined>('all');
@@ -473,8 +465,6 @@ const emit = defineEmits<{
   close: [];
   'select-parent': [];
   'save-field': [field: any];
-  'add-image': [imageData: ImageData, target: 'common' | 'individual' | 'special'];
-  'delete-image': [imageId: string];
 }>();
 
 const localFieldErrors = ref<Record<string, string>>({});
@@ -535,19 +525,6 @@ const clearImage = (field: any) => {
 const handleImageSelect = (imageId: string | null) => {
   if (currentImageField.value) {
     currentImageField.value.currentValue = imageId || '';
-    emit('save-field', currentImageField.value);
-  }
-};
-
-const handleAddImage = (imageData: ImageData, target: 'common' | 'individual' | 'special') => {
-  emit('add-image', imageData, target);
-  // 画像を追加しただけでは適用しない（選択ボタンを押したタイミングで適用）
-};
-
-const handleDeleteImage = (imageId: string) => {
-  emit('delete-image', imageId);
-  if (currentImageField.value?.currentValue === imageId) {
-    currentImageField.value.currentValue = '';
     emit('save-field', currentImageField.value);
   }
 };

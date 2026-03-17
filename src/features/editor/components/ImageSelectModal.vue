@@ -95,27 +95,6 @@
         </div>
       </div>
 
-      <!-- 画像追加ボタン -->
-      <div
-        v-if="canAddInModal"
-        class="zcode-image-add"
-      >
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          style="display: none"
-          @change="handleFileSelect"
-        >
-        <button
-          class="zcode-image-add-btn"
-          @click="fileInput?.click()"
-        >
-          <Plus :size="16" />
-          <span>{{ $t('imagesManager.addImage') }}</span>
-        </button>
-      </div>
-
       <!-- アクションボタン -->
       <div class="zcode-image-modal-actions">
         <button
@@ -126,14 +105,6 @@
           <Check :size="16" />
           <span>{{ $t('imagesManager.select') }}</span>
         </button>
-        <button
-          v-if="selectedImageId && canDeleteInModal"
-          class="zcode-btn-danger zcode-image-modal-actions-btn"
-          @click="handleDelete"
-        >
-          <Trash2 :size="16" />
-          <span>{{ $t('common.delete') }}</span>
-        </button>
       </div>
     </div>
   </div>
@@ -141,11 +112,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import type { ImageData } from '../../../types';
-import { X, Plus, Check, Trash2 } from 'lucide-vue-next';
-
-const { t } = useI18n();
+import { X, Check } from 'lucide-vue-next';
 
 const props = defineProps<{
   isOpen: boolean;
@@ -153,22 +121,14 @@ const props = defineProps<{
   imagesIndividual: ImageData[];
   imagesSpecial: ImageData[];
   currentValue?: string;
-  imageModalActions?: {
-    common?: { add?: boolean; delete?: boolean };
-    individual?: { add?: boolean; delete?: boolean };
-    special?: { add?: boolean; delete?: boolean };
-  };
 }>();
 
 const emit = defineEmits<{
   'update:model-value': [imageId: string | null];
-  'add-image': [imageData: ImageData, target: 'common' | 'individual' | 'special'];
-  'delete-image': [imageId: string];
   close: [];
 }>();
 
 const activeTab = ref<'common' | 'individual' | 'special'>('common');
-const fileInput = ref<HTMLInputElement | null>(null);
 const selectedImageId = ref<string | null>(props.currentValue || null);
 
 const currentImages = computed(() => {
@@ -180,18 +140,6 @@ const currentImages = computed(() => {
     return props.imagesSpecial;
   }
 });
-
-const actionsForCurrentTab = computed(() => {
-  const def = { add: false, delete: false };
-  const c = props.imageModalActions;
-  if (!c) return def;
-  if (activeTab.value === 'common') return { ...def, ...c.common };
-  if (activeTab.value === 'individual') return { ...def, ...c.individual };
-  return { ...def, ...c.special };
-});
-
-const canAddInModal = computed(() => actionsForCurrentTab.value.add);
-const canDeleteInModal = computed(() => actionsForCurrentTab.value.delete);
 
 const getCurrentImage = (): ImageData | null => {
   if (!props.currentValue) return null;
@@ -208,44 +156,6 @@ const handleConfirm = () => {
     emit('update:model-value', selectedImageId.value);
     close();
   }
-};
-
-const handleDelete = () => {
-  if (!selectedImageId.value) return;
-
-  if (confirm(t('imagesManager.deleteImageFromModalConfirm'))) {
-    emit('delete-image', selectedImageId.value);
-    selectedImageId.value = null;
-  }
-};
-
-const handleFileSelect = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const base64 = e.target?.result as string;
-    const newImage: ImageData = {
-      id: `img-${Date.now()}`,
-      name: file.name,
-      url: base64,
-      mimeType: file.type,
-      needsUpload: true
-    };
-    // 現在選択中のタブに応じて追加先を決定
-    const target =
-      activeTab.value === 'common'
-        ? 'common'
-        : activeTab.value === 'individual'
-          ? 'individual'
-          : 'special';
-    emit('add-image', newImage, target);
-    // 画像を追加したら選択状態にするが、自動的に適用はしない
-    selectedImageId.value = newImage.id;
-  };
-  reader.readAsDataURL(file);
 };
 
 const close = () => {

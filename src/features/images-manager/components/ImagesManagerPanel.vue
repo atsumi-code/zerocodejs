@@ -2,7 +2,10 @@
   <div class="zcode-images-manager">
     <!-- 共通/個別タブ ＋ 画像追加ボタン（右上にコンパクト配置） -->
     <div class="zcode-images-category-tabs">
-      <div class="zcode-images-category-tab-group">
+      <div
+        v-if="!fixedCategory"
+        class="zcode-images-category-tab-group"
+      >
         <button
           v-for="category in categoryTabs"
           :key="category"
@@ -269,6 +272,7 @@ const { t } = useI18n();
 const props = defineProps<{
   cmsData: ZeroCodeData;
   config?: Partial<CMSConfig>;
+  fixedCategory?: 'common' | 'individual' | 'special';
 }>();
 
 
@@ -312,8 +316,10 @@ const {
   checkImageUsage
 } = useImagesManager(props.cmsData);
 
-// categoryOrderに基づいて初期値を設定
-if (props.config?.categoryOrder === 'individual') {
+// fixedCategory が指定されていればそれを使用、そうでなければ categoryOrder に基づいて設定
+if (props.fixedCategory) {
+  activeCategory.value = props.fixedCategory;
+} else if (props.config?.categoryOrder === 'individual') {
   activeCategory.value = 'individual';
 } else if (props.config?.categoryOrder === 'special') {
   activeCategory.value = 'special';

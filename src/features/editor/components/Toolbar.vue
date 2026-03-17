@@ -45,6 +45,15 @@
       <span>{{ $t('toolbar.deleteMode') }}</span>
     </button>
     <button
+      v-if="enableManagePanel"
+      :class="{ active: managePanelOpen }"
+      class="zcode-mode-btn zcode-mode-manage"
+      @click="$emit('open-manage-panel')"
+    >
+      <Package :size="16" />
+      <span>{{ $t('toolbar.manageMode') }}</span>
+    </button>
+    <button
       class="zcode-settings-btn"
       :title="$t('toolbar.settings')"
       @click="$emit('open-settings')"
@@ -56,7 +65,7 @@
 
 <script setup lang="ts">
 import { nextTick } from 'vue';
-import { Pencil, Plus, ArrowUpDown, Trash2, Eye, Settings } from 'lucide-vue-next';
+import { Pencil, Plus, ArrowUpDown, Trash2, Eye, Settings, Package } from 'lucide-vue-next';
 
 type ModeType = 'edit' | 'add' | 'reorder' | 'delete';
 type ViewModeType = 'preview' | 'manage';
@@ -66,25 +75,25 @@ const props = defineProps<{
   viewMode: ViewModeType;
   availableModes?: ModeType[];
   allowDynamicContentInteraction: boolean;
+  enableManagePanel?: boolean;
+  managePanelOpen?: boolean;
 }>();
 
 const emit = defineEmits<{
   'switch-mode': [mode: ModeType];
   'switch-view-mode': [mode: ViewModeType];
   'open-settings': [];
+  'open-manage-panel': [];
   'toggle-dynamic-content': [enabled: boolean];
 }>();
 
 const handleModeClick = (mode: ModeType) => {
   if (props.viewMode === 'preview') {
-    // 表示モードの時は、まず管理モードに戻ってからモードを切り替え
     emit('switch-view-mode', 'manage');
-    // 次のtickでモードを切り替える（DOM更新を待つ）
     nextTick(() => {
       emit('switch-mode', mode);
     });
   } else {
-    // 管理モードの時は通常通り
     emit('switch-mode', mode);
   }
 };
