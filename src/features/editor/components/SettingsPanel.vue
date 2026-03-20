@@ -1,19 +1,8 @@
 <template>
-  <div
-    v-if="isOpen"
-    class="zcode-settings-panel-overlay"
-    @click.self="$emit('close')"
-  >
-    <div
-      class="zcode-settings-panel"
-      @click.stop
-    >
+  <div v-if="isOpen" class="zcode-settings-panel-overlay" @click.self="$emit('close')">
+    <div class="zcode-settings-panel" @click.stop>
       <div class="zcode-settings-panel-header">
-        <div
-          class="zcode-settings-panel-header-title"
-          role="heading"
-          aria-level="3"
-        >
+        <div class="zcode-settings-panel-header-title" role="heading" aria-level="3">
           {{ $t('settings.title') }}
         </div>
         <div class="zcode-settings-panel-header-actions">
@@ -30,11 +19,7 @@
               {{ $t('settings.language.en') }}
             </option>
           </select>
-          <button
-            class="zcode-close-btn"
-            aria-label="$t('common.close')"
-            @click="$emit('close')"
-          >
+          <button class="zcode-close-btn" aria-label="$t('common.close')" @click="$emit('close')">
             <X :size="18" />
           </button>
         </div>
@@ -54,7 +39,7 @@
                 @change="
                   $emit('toggle-dynamic-content', ($event.target as HTMLInputElement).checked)
                 "
-              >
+              />
               <span>{{ $t('settings.enableDynamicContent') }}</span>
               <button
                 class="zcode-info-btn"
@@ -65,14 +50,10 @@
                 <HelpCircle :size="16" />
               </button>
             </label>
-            <div
-              v-if="showDynamicContentInfo"
-              class="zcode-setting-description"
-            >
+            <div v-if="showDynamicContentInfo" class="zcode-setting-description">
               {{ $t('settings.enableDynamicContentDescription') }}
             </div>
           </div>
-
 
           <div
             v-if="props.mode === 'toolbar' || props.mode === undefined"
@@ -84,7 +65,7 @@
                 :checked="devRightPaddingValue"
                 class="zcode-setting-checkbox"
                 @change="$emit('toggle-dev-padding', ($event.target as HTMLInputElement).checked)"
-              >
+              />
               <span>{{ $t('settings.devRightPadding') }}</span>
               <button
                 class="zcode-info-btn"
@@ -95,10 +76,7 @@
                 <HelpCircle :size="16" />
               </button>
             </label>
-            <div
-              v-if="showDevPaddingInfo"
-              class="zcode-setting-description"
-            >
+            <div v-if="showDevPaddingInfo" class="zcode-setting-description">
               {{ $t('settings.devRightPaddingDescription') }}
             </div>
           </div>
@@ -112,10 +90,8 @@
                 type="checkbox"
                 :checked="props.enableContextMenu ?? false"
                 class="zcode-setting-checkbox"
-                @change="
-                  $emit('toggle-context-menu', ($event.target as HTMLInputElement).checked)
-                "
-              >
+                @change="$emit('toggle-context-menu', ($event.target as HTMLInputElement).checked)"
+              />
               <span>{{ $t('settings.enableContextMenu') }}</span>
               <button
                 class="zcode-info-btn"
@@ -126,27 +102,19 @@
                 <HelpCircle :size="16" />
               </button>
             </label>
-            <div
-              v-if="showContextMenuInfo"
-              class="zcode-setting-description"
-            >
+            <div v-if="showContextMenuInfo" class="zcode-setting-description">
               {{ $t('settings.enableContextMenuDescription') }}
             </div>
           </div>
 
-          <div
-            v-if="props.mode === 'dev-tabs'"
-            class="zcode-setting-item"
-          >
+          <div v-if="props.mode === 'dev-tabs'" class="zcode-setting-item">
             <label class="zcode-setting-label">
               <input
                 type="checkbox"
                 :checked="props.showSaveConfirm ?? true"
                 class="zcode-setting-checkbox"
-                @change="
-                  $emit('toggle-save-confirm', ($event.target as HTMLInputElement).checked)
-                "
-              >
+                @change="$emit('toggle-save-confirm', ($event.target as HTMLInputElement).checked)"
+              />
               <span>{{ $t('settings.showSaveConfirm') }}</span>
               <button
                 class="zcode-info-btn"
@@ -157,19 +125,13 @@
                 <HelpCircle :size="16" />
               </button>
             </label>
-            <div
-              v-if="showSaveConfirmInfo"
-              class="zcode-setting-description"
-            >
+            <div v-if="showSaveConfirmInfo" class="zcode-setting-description">
               {{ $t('settings.showSaveConfirmDescription') }}
             </div>
           </div>
         </div>
 
-        <div
-          v-else
-          class="zcode-setting-item"
-        >
+        <div v-else class="zcode-setting-item">
           <div class="zcode-setting-info">
             {{ $t('settings.previewModeInfo') }}
           </div>

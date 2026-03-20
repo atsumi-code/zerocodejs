@@ -1,0 +1,19 @@
+---
+description: コミットメッセージの形式。1行目は日本語で簡潔に、3行目に任意で詳細を書く。
+globs:
+alwaysApply: true
+---
+
+# コミットメッセージのルール
+
+- **1行目**: 日本語で1行・簡潔に要約する。
+- **2行目**: 空行。
+- **3行目以降**: 任意で詳細（変更内容の補足や理由）を書く。
+
+例:
+
+```
+Husky と lint-staged を導入
+
+pre-commit で ESLint / Prettier を実行。CI に format:check を追加
+```

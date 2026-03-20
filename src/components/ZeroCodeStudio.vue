@@ -56,10 +56,7 @@
       :config="config"
       fixed-category="special"
     />
-    <div
-      v-if="activeTab === 'parts' && !cmsData"
-      class="zcode-loading-message"
-    >
+    <div v-if="activeTab === 'parts' && !cmsData" class="zcode-loading-message">
       <div class="zcode-loading-message-text">
         {{ $t('editor.loading') }}
       </div>
@@ -71,20 +68,13 @@
       :config="config"
       fixed-category="special"
     />
-    <div
-      v-if="activeTab === 'images' && !cmsData"
-      class="zcode-loading-message"
-    >
+    <div v-if="activeTab === 'images' && !cmsData" class="zcode-loading-message">
       <div class="zcode-loading-message-text">
         {{ $t('editor.loading') }}
       </div>
     </div>
 
-    <DataViewer
-      v-show="activeTab === 'data' && cmsData"
-      :cms-data="cmsData"
-      :config="config"
-    />
+    <DataViewer v-show="activeTab === 'data' && cmsData" :cms-data="cmsData" :config="config" />
 
     <SettingsPanel
       v-show="settingsPanelOpen"
@@ -97,10 +87,7 @@
     />
 
     <div class="zcode-save-controls-fixed">
-      <button
-        class="zcode-save-btn"
-        @click="handleSaveClick"
-      >
+      <button class="zcode-save-btn" @click="handleSaveClick">
         <Save :size="16" />
         <span>{{ $t('common.save') }}</span>
       </button>
@@ -120,25 +107,16 @@
         <div class="zcode-save-confirm-dialog-body">
           <p>{{ $t('saveConfirm.message') }}</p>
           <ul class="zcode-save-confirm-targets">
-            <li
-              v-for="target in pendingSaveTargets"
-              :key="target"
-            >
+            <li v-for="target in pendingSaveTargets" :key="target">
               {{ getTargetLabel(target) }}
             </li>
           </ul>
         </div>
         <div class="zcode-save-confirm-dialog-footer">
-          <button
-            class="zcode-btn-secondary"
-            @click="cancelSave"
-          >
+          <button class="zcode-btn-secondary" @click="cancelSave">
             {{ $t('common.cancel') }}
           </button>
-          <button
-            class="zcode-btn-primary"
-            @click="confirmSave"
-          >
+          <button class="zcode-btn-primary" @click="confirmSave">
             {{ $t('saveConfirm.saveButton') }}
           </button>
         </div>

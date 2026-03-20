@@ -107,4 +107,3 @@ export function setCssWarningPartsSetting(value: boolean): void {
     logger.warn('Failed to save CSS warning setting:', e);
   }
 }
-

@@ -8,7 +8,8 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-recommended',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
+    'prettier'
   ],
   parser: 'vue-eslint-parser',
   parserOptions: {
@@ -22,22 +23,20 @@ module.exports = {
     jQuery: 'readonly',
     ZeroCodeCommon: 'readonly'
   },
-  ignorePatterns: [
-    'public/js/*.js',
-    'examples/**/vendor/**',
-    'examples/**/public/js/**'
-  ],
+  ignorePatterns: ['public/js/*.js', 'examples/**/vendor/**', 'examples/**/public/js/**'],
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/no-reserved-component-names': 'off',
     'vue/no-mutating-props': 'warn',
     '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-unused-vars': ['error', {
-      argsIgnorePattern: '^_'
-    }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_'
+      }
+    ],
     'no-console': ['warn', { allow: ['warn', 'error', 'debug'] }],
     '@typescript-eslint/no-var-requires': 'off',
     'no-useless-escape': 'off'
   }
-}
-
+};

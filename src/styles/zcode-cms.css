@@ -466,7 +466,6 @@
   }
 }
 
-
 /* ========================================
    5. ツールバー・モード切り替え
    ======================================== */
@@ -3710,7 +3709,9 @@
   background: transparent;
   color: #6b7280;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .zcode-part-editor-options-btn:hover {

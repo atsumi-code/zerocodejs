@@ -56,6 +56,8 @@ Build check:
 npm run build
 ```
 
+After `npm ci` or `npm install`, [Husky](https://github.com/typicode/husky) sets up a `pre-commit` hook. On `git commit`, [lint-staged](https://github.com/lint-staged/lint-staged) runs ESLint (`--fix`) and Prettier on staged files (see `package.json`). Manual checks: `npm run lint`, `npm run format:check`.
+
 ### Pull Requests
 
 - Small, focused PRs are appreciated
@@ -111,6 +113,8 @@ npm run dev
 ```bash
 npm run build
 ```
+
+`npm ci` / `npm install` 後、[Husky](https://github.com/typicode/husky) が `pre-commit` を有効にします。`git commit` 時に [lint-staged](https://github.com/lint-staged/lint-staged) がステージしたファイルに対して ESLint（`--fix`）と Prettier を実行します（設定は `package.json`）。手動確認: `npm run lint` / `npm run format:check`。
 
 ### Pull Request
 

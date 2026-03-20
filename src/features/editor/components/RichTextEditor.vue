@@ -1,9 +1,6 @@
 <template>
   <div class="zcode-rich-text-editor">
-    <div
-      v-if="editor"
-      class="zcode-rich-text-toolbar"
-    >
+    <div v-if="editor" class="zcode-rich-text-toolbar">
       <button
         type="button"
         :class="{ 'is-active': editor.isActive('bold') }"
@@ -61,10 +58,7 @@
         <Link :size="16" />
       </button>
     </div>
-    <EditorContent
-      :editor="editor"
-      class="zcode-rich-text-editor-content"
-    />
+    <EditorContent :editor="editor" class="zcode-rich-text-editor-content" />
   </div>
 </template>
 

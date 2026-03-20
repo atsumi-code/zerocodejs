@@ -131,14 +131,8 @@
     />
 
     <!-- 保存ボタン（左下固定、管理モードの時のみ表示） -->
-    <div
-      v-if="viewMode === 'manage'"
-      class="zcode-save-controls-fixed"
-    >
-      <button
-        class="zcode-save-btn"
-        @click="handleSaveClick"
-      >
+    <div v-if="viewMode === 'manage'" class="zcode-save-controls-fixed">
+      <button class="zcode-save-btn" @click="handleSaveClick">
         <Save :size="16" />
         <span>{{ $t('common.save') }}</span>
       </button>
@@ -159,25 +153,16 @@
         <div class="zcode-save-confirm-dialog-body">
           <p>{{ $t('saveConfirm.message') }}</p>
           <ul class="zcode-save-confirm-targets">
-            <li
-              v-for="target in pendingSaveTargets"
-              :key="target"
-            >
+            <li v-for="target in pendingSaveTargets" :key="target">
               {{ getTargetLabel(target) }}
             </li>
           </ul>
         </div>
         <div class="zcode-save-confirm-dialog-footer">
-          <button
-            class="zcode-btn-secondary"
-            @click="cancelSave"
-          >
+          <button class="zcode-btn-secondary" @click="cancelSave">
             {{ $t('common.cancel') }}
           </button>
-          <button
-            class="zcode-btn-primary"
-            @click="confirmSave"
-          >
+          <button class="zcode-btn-primary" @click="confirmSave">
             {{ $t('saveConfirm.saveButton') }}
           </button>
         </div>
@@ -442,23 +427,23 @@ onMounted(() => {
   loadDevDataFromProps();
 });
 
-  watch(
-    [
-      () => props.page,
-      () => props.partsCommon,
-      () => props.partsIndividual,
-      () => props.partsSpecial,
-      () => props.imagesCommon,
-      () => props.imagesIndividual,
-      () => props.imagesSpecial,
-      () => props.cssCommon,
-      () => props.cssIndividual,
-      () => props.cssSpecial
-    ],
-    () => {
-      loadDevDataFromProps();
-    }
-  );
+watch(
+  [
+    () => props.page,
+    () => props.partsCommon,
+    () => props.partsIndividual,
+    () => props.partsSpecial,
+    () => props.imagesCommon,
+    () => props.imagesIndividual,
+    () => props.imagesSpecial,
+    () => props.cssCommon,
+    () => props.cssIndividual,
+    () => props.cssSpecial
+  ],
+  () => {
+    loadDevDataFromProps();
+  }
+);
 
 // 設定変更時にローカルストレージに保存（ZeroCodeEditor専用の設定のみ）
 watch(showDataViewer, (value) => {
@@ -520,17 +505,13 @@ function calculateSaveTargets(): string[] {
   } else if (activeTab.value === 'parts') {
     // PartsManagerPanelからactiveCategoryを取得
     if (!partsManagerRef.value) {
-      logger.warn(
-        'partsManagerRefが設定されていません。デフォルトで"common"を使用します。'
-      );
+      logger.warn('partsManagerRefが設定されていません。デフォルトで"common"を使用します。');
       primaryTarget = 'parts-common';
     } else {
       const activeCategory = readCategoryFromInstance(partsManagerRef.value as unknown);
 
       if (activeCategory === undefined || activeCategory === null) {
-        logger.warn(
-          'parts activeCategoryが取得できません。デフォルトで"common"を使用します。'
-        );
+        logger.warn('parts activeCategoryが取得できません。デフォルトで"common"を使用します。');
         primaryTarget = 'parts-common';
       } else if (activeCategory === 'common') {
         primaryTarget = 'parts-common';
@@ -543,17 +524,13 @@ function calculateSaveTargets(): string[] {
   } else if (activeTab.value === 'images') {
     // ImagesManagerPanelからactiveCategoryを取得
     if (!imagesManagerRef.value) {
-logger.warn(
-          'imagesManagerRefが設定されていません。デフォルトで"common"を使用します。'
-        );
+      logger.warn('imagesManagerRefが設定されていません。デフォルトで"common"を使用します。');
       primaryTarget = 'images-common';
     } else {
       const activeCategory = readCategoryFromInstance(imagesManagerRef.value as unknown);
 
       if (activeCategory === undefined || activeCategory === null) {
-        logger.warn(
-          'images activeCategoryが取得できません。デフォルトで"common"を使用します。'
-        );
+        logger.warn('images activeCategoryが取得できません。デフォルトで"common"を使用します。');
         primaryTarget = 'images-common';
       } else if (activeCategory === 'common') {
         primaryTarget = 'images-common';
@@ -566,9 +543,7 @@ logger.warn(
   } else if (activeTab.value === 'data') {
     // DataViewerからinternalActiveTabとactiveCategoryを取得
     if (!dataViewerRef.value) {
-logger.warn(
-          'dataViewerRefが設定されていません。デフォルトで"page"を使用します。'
-        );
+      logger.warn('dataViewerRefが設定されていません。デフォルトで"page"を使用します。');
       primaryTarget = 'page';
     } else {
       const internalActiveTab = readDataViewerTabFromInstance(dataViewerRef.value as unknown);

@@ -576,8 +576,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
       component,
       '',
       findPartForPreview,
-      (childComponent: ComponentData, path: string) =>
-        renderComponentToHtml(childComponent, path),
+      (childComponent: ComponentData, path: string) => renderComponentToHtml(childComponent, path),
       false,
       cmsData.images.common,
       cmsData.images.individual,

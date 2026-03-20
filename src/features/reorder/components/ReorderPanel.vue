@@ -5,31 +5,17 @@
     @click.stop
   >
     <div class="zcode-reorder-panel-header">
-      <div
-        class="zcode-panel-header-title"
-        role="heading"
-        aria-level="3"
-      >
+      <div class="zcode-panel-header-title" role="heading" aria-level="3">
         {{ $t('reorderPanel.title') }}
       </div>
-      <button
-        class="zcode-close-btn"
-        :aria-label="$t('common.close')"
-        @click="$emit('cancel')"
-      >
+      <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
         <X :size="18" />
       </button>
     </div>
 
     <!-- 親要素選択ボタン -->
-    <div
-      v-if="canSelectParent"
-      class="zcode-parent-selector"
-    >
-      <button
-        class="zcode-parent-select-btn"
-        @click="$emit('select-parent')"
-      >
+    <div v-if="canSelectParent" class="zcode-parent-selector">
+      <button class="zcode-parent-select-btn" @click="$emit('select-parent')">
         <ChevronUp :size="16" />
         <span>{{ $t('reorderPanel.selectParent') }}</span>
       </button>

@@ -1,13 +1,7 @@
 <template>
   <div class="monaco-editor-wrapper">
-    <div
-      ref="editorContainer"
-      class="monaco-editor-container"
-    />
-    <div
-      v-if="error"
-      class="monaco-editor-error"
-    >
+    <div ref="editorContainer" class="monaco-editor-container" />
+    <div v-if="error" class="monaco-editor-error">
       {{ error }}
     </div>
   </div>

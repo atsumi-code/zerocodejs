@@ -76,9 +76,7 @@ describe('processImageField', () => {
   });
 
   it('should search in individual images', () => {
-    const individualImages = [
-      { id: 'img-3', url: 'https://example.com/individual.jpg' }
-    ];
+    const individualImages = [{ id: 'img-3', url: 'https://example.com/individual.jpg' }];
     const result = processImageField('img-3', '', sampleImageData, individualImages);
     expect(result).toBe('https://example.com/individual.jpg');
   });

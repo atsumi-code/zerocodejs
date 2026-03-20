@@ -29,7 +29,9 @@ export function useClickHandlers(
     if (!previewArea.value) return;
 
     const clearAllHoverOutlines = () => {
-      const allActive = previewArea.value?.querySelectorAll('[data-zcode-id], [data-zcode-slot-path]');
+      const allActive = previewArea.value?.querySelectorAll(
+        '[data-zcode-id], [data-zcode-slot-path]'
+      );
       if (!allActive) return;
       allActive.forEach((el) => {
         removeHoverOutline(el as HTMLElement);
@@ -286,11 +288,11 @@ export function useClickHandlers(
         return false;
       };
 
-    const mouseenterListener = (event: Event) => {
-      const pointerEvent = event as PointerEvent;
-      if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
-        return;
-      }
+      const mouseenterListener = (event: Event) => {
+        const pointerEvent = event as PointerEvent;
+        if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
+          return;
+        }
         if (!isActive(path)) {
           if (currentMode.value === 'reorder' && reorderSourcePath.value) {
             if (canReorderWith(reorderSourcePath.value, path)) {
@@ -313,11 +315,11 @@ export function useClickHandlers(
         }
       };
 
-    const mouseleaveListener = (event: Event) => {
-      const pointerEvent = event as PointerEvent;
-      if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
-        return;
-      }
+      const mouseleaveListener = (event: Event) => {
+        const pointerEvent = event as PointerEvent;
+        if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
+          return;
+        }
         if (!isActive(path)) {
           removeHoverOutline(htmlElement);
         }
@@ -325,8 +327,8 @@ export function useClickHandlers(
       };
 
       htmlElement.addEventListener('click', clickListener, true);
-    htmlElement.addEventListener('pointerenter', mouseenterListener);
-    htmlElement.addEventListener('pointerleave', mouseleaveListener);
+      htmlElement.addEventListener('pointerenter', mouseenterListener);
+      htmlElement.addEventListener('pointerleave', mouseleaveListener);
 
       eventListeners.set(htmlElement, [
         { type: 'click', listener: clickListener, options: true },

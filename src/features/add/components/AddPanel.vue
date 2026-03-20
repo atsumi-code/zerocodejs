@@ -1,35 +1,17 @@
 <template>
-  <div
-    v-if="addTargetPath"
-    class="zcode-add-panel"
-    @click.stop
-  >
+  <div v-if="addTargetPath" class="zcode-add-panel" @click.stop>
     <div class="zcode-add-panel-header">
-      <div
-        class="zcode-panel-header-title"
-        role="heading"
-        aria-level="3"
-      >
+      <div class="zcode-panel-header-title" role="heading" aria-level="3">
         {{ $t('addPanel.title') }}
       </div>
-      <button
-        class="zcode-close-btn"
-        :aria-label="$t('common.close')"
-        @click="$emit('cancel')"
-      >
+      <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
         <X :size="18" />
       </button>
     </div>
 
     <!-- 親要素選択ボタン -->
-    <div
-      v-if="canSelectParent"
-      class="zcode-parent-selector"
-    >
-      <button
-        class="zcode-parent-select-btn"
-        @click="$emit('select-parent')"
-      >
+    <div v-if="canSelectParent" class="zcode-parent-selector">
+      <button class="zcode-parent-select-btn" @click="$emit('select-parent')">
         <ChevronUp :size="16" />
         <span>{{ $t('addPanel.selectParent') }}</span>
       </button>
@@ -44,7 +26,13 @@
         class="zcode-category-tab"
         @click="$emit('category-tab-click', category as 'common' | 'individual' | 'special')"
       >
-        {{ category === 'common' ? $t('addPanel.category.common') : category === 'individual' ? $t('addPanel.category.individual') : $t('dataViewer.special') }}
+        {{
+          category === 'common'
+            ? $t('addPanel.category.common')
+            : category === 'individual'
+              ? $t('addPanel.category.individual')
+              : $t('dataViewer.special')
+        }}
       </button>
       <button
         :class="{ active: addTypeTab === 'selected' }"
@@ -56,10 +44,7 @@
     </div>
 
     <!-- Typeタブ（選択したパーツタブがアクティブでない場合のみ表示） -->
-    <div
-      v-if="availablePartTypes.length > 0 && addTypeTab !== 'selected'"
-      class="zcode-type-tabs"
-    >
+    <div v-if="availablePartTypes.length > 0 && addTypeTab !== 'selected'" class="zcode-type-tabs">
       <button
         :class="{ active: addTypeTab === 'all' }"
         class="zcode-type-tab"
@@ -82,15 +67,8 @@
       <!-- パーツ一覧（typeをセクション、partをボタンとして表示） -->
       <div class="zcode-part-list">
         <!-- 選択したパーツタブがアクティブな場合のみ表示 -->
-        <div
-          v-show="addTypeTab === 'selected'"
-          class="zcode-part-type-section"
-        >
-          <div
-            class="zcode-type-section-title"
-            role="heading"
-            aria-level="3"
-          >
+        <div v-show="addTypeTab === 'selected'" class="zcode-part-type-section">
+          <div class="zcode-type-section-title" role="heading" aria-level="3">
             {{ $t('addPanel.activeParts') }}
           </div>
           <div class="zcode-type-section-description">
@@ -100,10 +78,7 @@
             v-if="clickedComponent && addSelectedPart && addSelectedType"
             class="zcode-module-buttons"
           >
-            <div
-              :class="{ active: true }"
-              class="zcode-module-preview"
-            >
+            <div :class="{ active: true }" class="zcode-module-preview">
               <div class="zcode-module-preview-header">
                 <div class="zcode-module-preview-label zcode-module-preview-label-header">
                   {{ $t('addPanel.activeParts') }}
@@ -117,16 +92,10 @@
                   <ZoomIn :size="14" />
                 </button>
               </div>
-              <div
-                class="zcode-module-preview-content"
-                v-html="getClickedComponentPreviewHtml()"
-              />
+              <div class="zcode-module-preview-content" v-html="getClickedComponentPreviewHtml()" />
             </div>
           </div>
-          <div
-            v-else
-            class="zcode-empty-parts"
-          >
+          <div v-else class="zcode-empty-parts">
             <div class="zcode-empty-parts-text">
               {{ $t('addPanel.clickPartInPreview') }}
             </div>
@@ -138,17 +107,10 @@
             :key="typeGroup.type"
             class="zcode-part-type-section"
           >
-            <div
-              class="zcode-type-section-title"
-              role="heading"
-              aria-level="3"
-            >
+            <div class="zcode-type-section-title" role="heading" aria-level="3">
               {{ typeGroup.type }}
             </div>
-            <div
-              v-if="typeGroup.description"
-              class="zcode-type-section-description"
-            >
+            <div v-if="typeGroup.description" class="zcode-type-section-description">
               {{ typeGroup.description }}
             </div>
             <div class="zcode-module-buttons">
@@ -186,10 +148,7 @@
               </div>
             </div>
           </div>
-          <div
-            v-if="groupedPartsByType.length === 0 && !addSelectedPart"
-            class="zcode-empty-parts"
-          >
+          <div v-if="groupedPartsByType.length === 0 && !addSelectedPart" class="zcode-empty-parts">
             <div class="zcode-empty-parts-text">
               {{ $t('addPanel.noPartsAvailable') }}
             </div>
@@ -199,25 +158,16 @@
     </div>
 
     <!-- 追加位置選択（パーツ選択後に表示） -->
-    <div
-      v-if="addSelectedPart"
-      class="zcode-insert-position"
-    >
+    <div v-if="addSelectedPart" class="zcode-insert-position">
       <div class="zcode-insert-header">
-        <div
-          class="zcode-insert-position-title"
-          role="heading"
-          aria-level="4"
-        >
-          追加位置を選択
-        </div>
+        <div class="zcode-insert-position-title" role="heading" aria-level="4">追加位置を選択</div>
         <label class="zcode-keep-adding-label zcode-keep-adding-label-position">
           <input
             type="checkbox"
             :checked="keepAdding"
             class="zcode-keep-adding-checkbox"
             @change="$emit('update-keep-adding', ($event.target as HTMLInputElement).checked)"
-          >
+          />
           <span>{{ $t('addPanel.continueAdding') }}</span>
         </label>
       </div>
@@ -228,10 +178,7 @@
         >
           {{ $t('addPanel.addBefore') }}
         </button>
-        <button
-          class="zcode-insert-btn zcode-insert-after"
-          @click="$emit('confirm-add', 'after')"
-        >
+        <button class="zcode-insert-btn zcode-insert-after" @click="$emit('confirm-add', 'after')">
           {{ $t('addPanel.addAfter') }}
         </button>
       </div>
@@ -244,23 +191,15 @@
         class="zcode-preview-modal"
         @click="closePreviewModal"
       >
-        <div
-          class="zcode-preview-modal-content"
-          @click.stop
-        >
+        <div class="zcode-preview-modal-content" @click.stop>
           <div class="zcode-preview-modal-header">
-            <div
-              class="zcode-preview-modal-header-title"
-              role="heading"
-              aria-level="4"
-            >
+            <div class="zcode-preview-modal-header-title" role="heading" aria-level="4">
               {{ $t('common.preview') }}:
-              {{ previewTarget.isActiveParts ? $t('addPanel.activeParts') : previewTarget.part.title }}
+              {{
+                previewTarget.isActiveParts ? $t('addPanel.activeParts') : previewTarget.part.title
+              }}
             </div>
-            <button
-              class="zcode-close-btn"
-              @click="closePreviewModal"
-            >
+            <button class="zcode-close-btn" @click="closePreviewModal">
               <X :size="18" />
             </button>
           </div>
@@ -305,9 +244,7 @@ const props = defineProps<{
   config?: Partial<CMSConfig>;
 }>();
 
-const categoryOrder = computed(() => 
-  props.config?.categoryOrder || 'common'
-);
+const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
 const categoryTabs = computed(() => {
   const tabs: Array<'common' | 'individual' | 'special'> = [];

@@ -1,6 +1,13 @@
 import { ref, computed, nextTick, type Ref } from 'vue';
 
-import type { ZeroCodeData, ComponentData, TypeData, PartData, SlotConfig, CMSConfig } from '../../../types';
+import type {
+  ZeroCodeData,
+  ComponentData,
+  TypeData,
+  PartData,
+  SlotConfig,
+  CMSConfig
+} from '../../../types';
 import { getComponentByPath, generateId } from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { logger } from '../../../core/utils/logger';
@@ -17,7 +24,11 @@ export function useAddMode(
   const addSelectedType = ref<TypeData | null>(null);
   const addSelectedPart = ref<PartData | null>(null);
   const addPartCategory = ref<'common' | 'individual' | 'special'>(
-    config?.categoryOrder === 'individual' ? 'individual' : config?.categoryOrder === 'special' ? 'special' : 'common'
+    config?.categoryOrder === 'individual'
+      ? 'individual'
+      : config?.categoryOrder === 'special'
+        ? 'special'
+        : 'common'
   );
   const addTypeTab = ref<string | 'all' | 'selected' | null>('all');
   const clickedComponent = ref<ComponentData | null>(null);
@@ -42,7 +53,12 @@ export function useAddMode(
 
   const availablePartTypes = computed(() => {
     const parts = cmsData.parts;
-    const targetTypes = addPartCategory.value === 'common' ? parts.common : addPartCategory.value === 'individual' ? parts.individual : parts.special;
+    const targetTypes =
+      addPartCategory.value === 'common'
+        ? parts.common
+        : addPartCategory.value === 'individual'
+          ? parts.individual
+          : parts.special;
 
     if (addTargetPath.value && addTargetPath.value.includes('.slots.')) {
       const allTypes = [...parts.common, ...parts.individual, ...parts.special];
@@ -106,7 +122,12 @@ export function useAddMode(
 
   const groupedPartsByType = computed(() => {
     const parts = cmsData.parts;
-    const targetTypes = addPartCategory.value === 'common' ? parts.common : addPartCategory.value === 'individual' ? parts.individual : parts.special;
+    const targetTypes =
+      addPartCategory.value === 'common'
+        ? parts.common
+        : addPartCategory.value === 'individual'
+          ? parts.individual
+          : parts.special;
 
     const availableTypes = availablePartTypes.value;
     let filteredTypes = targetTypes.filter((t) => availableTypes.includes(t.type));
@@ -426,25 +447,25 @@ export function useAddMode(
     if (processedParts.has(partKey)) {
       const fieldInfos = extractFieldsFromTemplate(part.body);
       const defaults: Record<string, any> = {};
-    fieldInfos.forEach((field) => {
-      if (field.optional) {
-        defaults[field.fieldName] = undefined;
-      } else if (field.type === 'text') {
-        defaults[field.fieldName] = field.defaultValue;
-      } else if (field.type === 'radio') {
-        defaults[field.fieldName] = field.options?.[0];
-      } else if (field.type === 'checkbox') {
-        defaults[field.fieldName] = [];
-      } else if (field.type === 'boolean') {
-        defaults[field.fieldName] = true;
-      } else if (field.type === 'rich') {
-        defaults[field.fieldName] = field.defaultValue
-          ? `<p>${field.defaultValue}</p>`
-          : '<p></p>';
-      } else if (field.type === 'image') {
-        defaults[field.fieldName] = field.defaultValue || '';
-      }
-    });
+      fieldInfos.forEach((field) => {
+        if (field.optional) {
+          defaults[field.fieldName] = undefined;
+        } else if (field.type === 'text') {
+          defaults[field.fieldName] = field.defaultValue;
+        } else if (field.type === 'radio') {
+          defaults[field.fieldName] = field.options?.[0];
+        } else if (field.type === 'checkbox') {
+          defaults[field.fieldName] = [];
+        } else if (field.type === 'boolean') {
+          defaults[field.fieldName] = true;
+        } else if (field.type === 'rich') {
+          defaults[field.fieldName] = field.defaultValue
+            ? `<p>${field.defaultValue}</p>`
+            : '<p></p>';
+        } else if (field.type === 'image') {
+          defaults[field.fieldName] = field.defaultValue || '';
+        }
+      });
       return {
         id: generateId(),
         part_id: part.id,

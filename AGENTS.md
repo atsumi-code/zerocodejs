@@ -158,6 +158,13 @@ const textWithGroupRegex = new RegExp(...);
 - 変数名や関数名で意図を明確にする
 - 必要最小限のコメントのみ記載
 
+### Git（pre-commit）
+
+- `git commit` 時に Husky が **lint-staged** を実行する。staged の `*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}` に **ESLint --fix** と **Prettier**、`*.{json,md,css,html,yml,yaml}` は **Prettier** のみ。
+- 初回は `npm install` の `prepare` で Husky が有効になる（`core.hooksPath` が `.husky/_`）。
+- 手動確認: `npm run lint` / `npm run format:check`
+- **コミットメッセージ・コミットタイミング**（Cursor エージェント向け）: `.cursor/rules/commit.mdc` と `commit-timing.mdc`。Git フックでメッセージ形式を検証する場合は **commitlint** 等の別途導入が必要。
+
 ## HTMLタグの使用方針
 
 **適用範囲**: この方針は **ZeroCodeのUIコンポーネント**（パネル、ツールバー、編集画面など `src/` 配下のVueコンポーネント）にのみ適用します。ユーザーが記述する**パーツのテンプレート**には適用しません。パーツでは `z-tag` により見出し・段落などのタグを選択可能にできます。
@@ -509,24 +516,28 @@ interface ImageData {
     - `zcode-cms` / `zcode-editor` から特別パーツ管理モーダル（`enableSpecialParts`）を削除
     - 特別パーツ・特別CSS・特別画像の編集は `zcode-studio` に一元化
     - 画像選択モーダル（`ImageSelectModal`）は純粋な選択UIに簡素化
-18. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
+16. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
     - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
     - 同じ part_id のページ上コンポーネント（先頭1件）にも値を同期し、表示モード切り替え時に反映
     - `getPartPreviewHtmlWithComponent`（usePartsManager）、`findFirstComponentWithPartId`（path-utils）を追加
-19. ✅ **パーツ管理の画像ID参照パネル**（2025年2月）
+17. ✅ **パーツ管理の画像ID参照パネル**（2025年2月）
     - HTMLタブ編集時にサイドパネルに「画像ID参照」タブを追加
     - 画像一覧（サムネイル・ID・名前）を表示、コピー・挿入ボタンでテンプレートに画像IDを挿入可能
     - `{$field:default:image}` の default に指定する画像IDを参照しやすくする
-20. ✅ **パーツ編集プレビューの debounce**（2025年2月）
+18. ✅ **パーツ編集プレビューの debounce**（2025年2月）
     - テンプレート編集時のプレビュー更新を 300ms debounce
     - 入力のたびに発生していた「Image not found」警告の連発を抑制
 
-21. ✅ **ZeroCodeStudio（制作会社向けコンポーネント）**（2026年3月）
+19. ✅ **ZeroCodeStudio（制作会社向けコンポーネント）**（2026年3月）
     - `<zcode-studio>` Web Component を追加（特別パーツ・特別CSS・特別画像のみ編集可、読み取り専用プレビュー付き）
     - `save-request` の `source: 'studio'` を追加（サーバー側での権限チェック用）
-    - パーツテンプレート用サニタイズ関数 `sanitizePartTemplate` を追加（DOMPurify ベース、z-* 属性許可）
+    - パーツテンプレート用サニタイズ関数 `sanitizePartTemplate` を追加（DOMPurify ベース、z-\* 属性許可）
     - `beforeSavePart` フック、`sanitizePartTemplate` オプトインを config から設定可能
     - サニタイズ関数を npm パッケージから export（サーバーとルール共有用）
+
+20. ✅ **Husky + lint-staged（pre-commit）**（2026年3月）
+    - `git commit` 時に staged ファイルへ ESLint --fix / Prettier を実行
+    - `eslint-config-prettier` で ESLint と Prettier の競合を回避
 
 ### 保留・スキップ機能
 

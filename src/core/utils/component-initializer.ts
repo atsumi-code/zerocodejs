@@ -80,7 +80,7 @@ export function initializeAllComponentFields(cmsData: ZeroCodeData): void {
       Object.values(component.slots).forEach((slotData) => {
         const children: ComponentData[] = Array.isArray(slotData)
           ? slotData
-          : (slotData?.children || []);
+          : slotData?.children || [];
 
         children.forEach((child) => {
           processComponentRecursive(child);

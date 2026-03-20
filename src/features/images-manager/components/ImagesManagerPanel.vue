@@ -2,10 +2,7 @@
   <div class="zcode-images-manager">
     <!-- 共通/個別タブ ＋ 画像追加ボタン（右上にコンパクト配置） -->
     <div class="zcode-images-category-tabs">
-      <div
-        v-if="!fixedCategory"
-        class="zcode-images-category-tab-group"
-      >
+      <div v-if="!fixedCategory" class="zcode-images-category-tab-group">
         <button
           v-for="category in categoryTabs"
           :key="category"
@@ -13,7 +10,13 @@
           class="zcode-category-tab"
           @click="activeCategory = category"
         >
-          {{ category === 'common' ? $t('dataViewer.common') : category === 'individual' ? $t('dataViewer.individual') : $t('dataViewer.special') }}
+          {{
+            category === 'common'
+              ? $t('dataViewer.common')
+              : category === 'individual'
+                ? $t('dataViewer.individual')
+                : $t('dataViewer.special')
+          }}
         </button>
         <button
           class="zcode-help-btn"
@@ -30,11 +33,8 @@
           accept="image/*"
           style="display: none"
           @change="handleFileSelect"
-        >
-        <button
-          class="zcode-btn-primary zcode-images-add-btn"
-          @click="fileInput?.click()"
-        >
+        />
+        <button class="zcode-btn-primary zcode-images-add-btn" @click="fileInput?.click()">
           <Plus :size="14" />
           <span>{{ $t('imagesManager.addImage') }}</span>
         </button>
@@ -51,16 +51,10 @@
           @click="startEditing(image)"
         >
           <!-- 並べ替え中の移動元インジケーター -->
-          <div
-            v-if="reorderSourceImage === image.id"
-            class="zcode-reorder-source-indicator"
-          >
+          <div v-if="reorderSourceImage === image.id" class="zcode-reorder-source-indicator">
             {{ $t('partsManager.source') }}
           </div>
-          <img
-            :src="image.url"
-            :alt="image.name"
-          >
+          <img :src="image.url" :alt="image.name" />
           <!-- ホバー時に表示されるアクションボタン -->
           <div class="zcode-image-item-overlay">
             <div class="zcode-image-item-actions">
@@ -90,29 +84,13 @@
 
     <!-- 画像編集モーダル -->
     <Teleport to="body">
-      <div
-        v-if="editingImage"
-        class="zcode-image-modal"
-        @click.self="cancelEditing"
-      >
-        <div
-          class="zcode-image-modal-content"
-          data-edit-mode
-          @click.stop
-        >
+      <div v-if="editingImage" class="zcode-image-modal" @click.self="cancelEditing">
+        <div class="zcode-image-modal-content" data-edit-mode @click.stop>
           <div class="zcode-image-editor-header">
-            <div
-              class="zcode-image-editor-header-title"
-              role="heading"
-              aria-level="4"
-            >
+            <div class="zcode-image-editor-header-title" role="heading" aria-level="4">
               {{ $t('imagesManager.editImage') }}
             </div>
-            <button
-              class="zcode-close-btn"
-              :aria-label="$t('common.close')"
-              @click="cancelEditing"
-            >
+            <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="cancelEditing">
               <X :size="18" />
             </button>
           </div>
@@ -123,7 +101,7 @@
                 :src="editingImage.url"
                 :alt="editingImage.name"
                 class="zcode-image-preview-large-img"
-              >
+              />
             </div>
 
             <div class="zcode-image-editor-replace">
@@ -133,7 +111,7 @@
                 accept="image/*"
                 class="zcode-image-replace-input"
                 @change="handleReplaceFile"
-              >
+              />
               <button
                 type="button"
                 class="zcode-image-select-btn"
@@ -146,28 +124,16 @@
 
             <div class="zcode-form-field">
               <label>{{ $t('imagesManager.imageId') }}</label>
-              <input
-                v-model="editingImage.id"
-                type="text"
-                class="zcode-text-input"
-                disabled
-              >
+              <input v-model="editingImage.id" type="text" class="zcode-text-input" disabled />
             </div>
 
             <div class="zcode-form-field">
               <label>{{ $t('imagesManager.imageName') }}</label>
-              <input
-                v-model="editingImage.name"
-                type="text"
-                class="zcode-text-input"
-              >
+              <input v-model="editingImage.name" type="text" class="zcode-text-input" />
             </div>
 
             <div class="zcode-image-editor-actions">
-              <button
-                class="zcode-btn-primary zcode-image-editor-actions-btn"
-                @click="saveImage"
-              >
+              <button class="zcode-btn-primary zcode-image-editor-actions-btn" @click="saveImage">
                 <Check :size="16" />
                 <span>{{ $t('common.confirm') }}</span>
               </button>
@@ -191,20 +157,10 @@
         class="zcode-help-modal-overlay"
         @click.self="showCategoryInfoModal = false"
       >
-        <div
-          class="zcode-help-modal"
-          @click.stop
-        >
+        <div class="zcode-help-modal" @click.stop>
           <div class="zcode-help-modal-header">
-            <div
-              class="zcode-help-modal-header-title"
-              role="heading"
-              aria-level="3"
-            >
-              <Info
-                :size="20"
-                class="zcode-css-warning-modal-title-icon"
-              />
+            <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
+              <Info :size="20" class="zcode-css-warning-modal-title-icon" />
               <span>{{ $t('dataViewer.categoryInfo.title') }}</span>
             </div>
             <button
@@ -217,11 +173,7 @@
           </div>
           <div class="zcode-help-modal-body">
             <div class="zcode-help-section">
-              <div
-                class="zcode-help-section-title"
-                role="heading"
-                aria-level="4"
-              >
+              <div class="zcode-help-section-title" role="heading" aria-level="4">
                 {{ $t('dataViewer.categoryInfo.common.title') }}
               </div>
               <div class="zcode-help-section-item">
@@ -229,11 +181,7 @@
               </div>
             </div>
             <div class="zcode-help-section">
-              <div
-                class="zcode-help-section-title"
-                role="heading"
-                aria-level="4"
-              >
+              <div class="zcode-help-section-title" role="heading" aria-level="4">
                 {{ $t('dataViewer.categoryInfo.individual.title') }}
               </div>
               <div class="zcode-help-section-item">
@@ -241,11 +189,7 @@
               </div>
             </div>
             <div class="zcode-help-section">
-              <div
-                class="zcode-help-section-title"
-                role="heading"
-                aria-level="4"
-              >
+              <div class="zcode-help-section-title" role="heading" aria-level="4">
                 {{ $t('dataViewer.categoryInfo.special.title') }}
               </div>
               <div class="zcode-help-section-item">
@@ -275,15 +219,12 @@ const props = defineProps<{
   fixedCategory?: 'common' | 'individual' | 'special';
 }>();
 
-
 const fileInput = ref<HTMLInputElement | null>(null);
 const replaceFileInputRef = ref<HTMLInputElement | null>(null);
 const showCategoryInfoModal = ref(false);
 
 // タブの順序を制御
-const categoryOrder = computed(() => 
-  props.config?.categoryOrder || 'common'
-);
+const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
 const categoryTabs = computed(() => {
   const tabs: Array<'common' | 'individual' | 'special'> = [];

@@ -1,6 +1,10 @@
 import { ref, type Ref, nextTick } from 'vue';
 import type { ZeroCodeData, ComponentData, SlotConfig } from '../../../types';
-import { getComponentByPath, getParentPath, traverseComponents } from '../../../core/utils/path-utils';
+import {
+  getComponentByPath,
+  getParentPath,
+  traverseComponents
+} from '../../../core/utils/path-utils';
 import {
   setActiveOutline,
   removeActiveOutline,
@@ -145,12 +149,16 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
     let targetScrollPath: string | null = null;
     const sourceId = reorderSourceComponentId.value;
     if (sourceId) {
-      const found = traverseComponents<string | undefined>(cmsData.page, 'page', (component, componentPath) => {
-        if (component.id === sourceId) {
-          return componentPath;
+      const found = traverseComponents<string | undefined>(
+        cmsData.page,
+        'page',
+        (component, componentPath) => {
+          if (component.id === sourceId) {
+            return componentPath;
+          }
+          return undefined;
         }
-        return undefined;
-      });
+      );
       if (typeof found === 'string') {
         targetScrollPath = found;
       }
@@ -286,7 +294,12 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
       }
 
       // 並べ替え実行
-      if (fromIndex < 0 || fromIndex >= children.length || toIndex < 0 || toIndex >= children.length) {
+      if (
+        fromIndex < 0 ||
+        fromIndex >= children.length ||
+        toIndex < 0 ||
+        toIndex >= children.length
+      ) {
         return false;
       }
 

@@ -1,21 +1,12 @@
 <template>
   <div ref="previewArea">
     <!-- 完全リアクティブなHTMLレンダリング（ラッパーなし） -->
-    <div
-      ref="htmlContainer"
-      v-html="fullPageHtml"
-    />
+    <div ref="htmlContainer" v-html="fullPageHtml" />
 
     <!-- パーツが空の場合（編集機能がある場合のみ表示） -->
-    <div
-      v-if="cmsData.page.length === 0 && onAddClick"
-      class="zcode-empty-state"
-    >
+    <div v-if="cmsData.page.length === 0 && onAddClick" class="zcode-empty-state">
       <p>{{ $t('emptyState.message') }}</p>
-      <button
-        class="zcode-add-btn"
-        @click="onAddClick('page.0')"
-      >
+      <button class="zcode-add-btn" @click="onAddClick('page.0')">
         {{ $t('emptyState.addPart') }}
       </button>
     </div>

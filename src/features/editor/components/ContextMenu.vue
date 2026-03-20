@@ -38,10 +38,7 @@
       <span>{{ $t('contextMenu.delete') }}</span>
     </button>
     <div class="zcode-context-menu-divider" />
-    <button
-      class="zcode-context-menu-item"
-      @click="handleClose"
-    >
+    <button class="zcode-context-menu-item" @click="handleClose">
       <X :size="16" />
       <span>{{ $t('contextMenu.close') }}</span>
     </button>
@@ -60,7 +57,7 @@ defineProps<{
 
 const emit = defineEmits<{
   'select-mode': [mode: EditorMode];
-  'close': [];
+  close: [];
 }>();
 
 function handleModeSelect(mode: EditorMode) {
@@ -72,4 +69,3 @@ function handleClose() {
   emit('close');
 }
 </script>
-

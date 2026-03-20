@@ -2,9 +2,7 @@ const ACTIVE_CLASS_PREFIX = 'zcode-outline-active-';
 const HOVER_CLASS_PREFIX = 'zcode-outline-hover-';
 
 function clearPrefixedClasses(element: HTMLElement, prefix: string) {
-  const classesToRemove = Array.from(element.classList).filter((cls) =>
-    cls.startsWith(prefix)
-  );
+  const classesToRemove = Array.from(element.classList).filter((cls) => cls.startsWith(prefix));
   classesToRemove.forEach((cls) => element.classList.remove(cls));
 }
 

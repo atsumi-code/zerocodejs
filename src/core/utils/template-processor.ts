@@ -7,11 +7,36 @@ import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from
 import { logger } from './logger';
 
 const VALID_TAGS: string[] = [
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-  'div', 'p', 'span', 'li', 'ul', 'ol',
-  'section', 'article', 'aside', 'nav', 'header', 'footer', 'main',
-  'figure', 'figcaption', 'blockquote', 'pre', 'code',
-  'table', 'thead', 'tbody', 'tr', 'th', 'td'
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'div',
+  'p',
+  'span',
+  'li',
+  'ul',
+  'ol',
+  'section',
+  'article',
+  'aside',
+  'nav',
+  'header',
+  'footer',
+  'main',
+  'figure',
+  'figcaption',
+  'blockquote',
+  'pre',
+  'code',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td'
 ];
 
 function processZIf(content: DocumentFragment, component: ComponentData): void {
@@ -181,7 +206,12 @@ export function processTemplateWithDOM(
           }
           return;
         }
-        let richTextValue: string = rawValue === undefined ? '' : (typeof rawValue === 'string' ? rawValue : String(rawValue || defaultValue));
+        let richTextValue: string =
+          rawValue === undefined
+            ? ''
+            : typeof rawValue === 'string'
+              ? rawValue
+              : String(rawValue || defaultValue);
 
         if (!enableEditorAttributes) {
           richTextValue = sanitizeRichText(richTextValue);
@@ -241,7 +271,12 @@ export function processTemplateWithDOM(
         const varName = richTextMatch[1];
         const defaultValue = isGrouped ? richTextMatch[3] : richTextMatch[2];
         const rawValue = component[varName];
-        let richTextValue: string = rawValue === undefined ? '' : (typeof rawValue === 'string' ? rawValue : String(rawValue || defaultValue));
+        let richTextValue: string =
+          rawValue === undefined
+            ? ''
+            : typeof rawValue === 'string'
+              ? rawValue
+              : String(rawValue || defaultValue);
 
         if (!enableEditorAttributes) {
           richTextValue = sanitizeRichText(richTextValue);
@@ -556,7 +591,8 @@ export function processTemplateWithDOM(
               return '';
             }
             const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            const imageIdValue = typeof imageId === 'string' ? imageId : String(imageId || defaultValue);
+            const imageIdValue =
+              typeof imageId === 'string' ? imageId : String(imageId || defaultValue);
             const imageUrl = processImageField(
               imageIdValue,
               defaultValue,
@@ -564,7 +600,8 @@ export function processTemplateWithDOM(
               imagesIndividual,
               imagesSpecial
             );
-            const imageUrlString = typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
+            const imageUrlString =
+              typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
             if (attrName === 'href' || attrName === 'src') {
               return sanitizeUrl(imageUrlString);
             }
@@ -580,7 +617,8 @@ export function processTemplateWithDOM(
               return '';
             }
             const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            const imageIdValue = typeof imageId === 'string' ? imageId : String(imageId || defaultValue);
+            const imageIdValue =
+              typeof imageId === 'string' ? imageId : String(imageId || defaultValue);
             const imageUrl = processImageField(
               imageIdValue,
               defaultValue,
@@ -588,7 +626,8 @@ export function processTemplateWithDOM(
               imagesIndividual,
               imagesSpecial
             );
-            const imageUrlString = typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
+            const imageUrlString =
+              typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
             if (attrName === 'href' || attrName === 'src') {
               return sanitizeUrl(imageUrlString);
             }
@@ -764,7 +803,9 @@ export function processTemplateWithDOM(
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
             const optionList = options.split(',');
-            return valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+            return valuesArray
+              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+              .join(' ');
           }
           return component[fieldName] || options;
         }
@@ -782,7 +823,9 @@ export function processTemplateWithDOM(
           const selectedValues = component[fieldName];
           const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
           const optionList = options.split(',');
-          return valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+          return valuesArray
+            .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+            .join(' ');
         }
         const value = component[fieldName];
         return typeof value === 'string' ? value : options;
@@ -802,7 +845,9 @@ export function processTemplateWithDOM(
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
             const optionList = options.split(',');
-            return valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+            return valuesArray
+              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+              .join(' ');
           }
           const value = component[fieldName];
           return typeof value === 'string' ? value : options;
@@ -821,7 +866,9 @@ export function processTemplateWithDOM(
           const selectedValues = component[fieldName];
           const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
           const optionList = options.split(',');
-          return valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+          return valuesArray
+            .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+            .join(' ');
         }
         const value = component[fieldName];
         return typeof value === 'string' ? value : options;
@@ -849,7 +896,9 @@ export function processTemplateWithDOM(
               const selectedValues = component[fieldName];
               const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
               const optionList = options.split(',');
-              result = valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+              result = valuesArray
+                .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+                .join(' ');
             } else {
               const value = component[fieldName];
               result = typeof value === 'string' ? value : options;
@@ -873,7 +922,9 @@ export function processTemplateWithDOM(
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
             const optionList = options.split(',');
-            result = valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+            result = valuesArray
+              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+              .join(' ');
           } else {
             const value = component[fieldName];
             result = typeof value === 'string' ? value : options;
@@ -898,7 +949,9 @@ export function processTemplateWithDOM(
               const selectedValues = component[fieldName];
               const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
               const optionList = options.split(',');
-              result = valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+              result = valuesArray
+                .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+                .join(' ');
             } else {
               const value = component[fieldName];
               result = typeof value === 'string' ? value : options;
@@ -922,7 +975,9 @@ export function processTemplateWithDOM(
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
             const optionList = options.split(',');
-            result = valuesArray.filter((val: unknown) => typeof val === 'string' && optionList.includes(val)).join(' ');
+            result = valuesArray
+              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+              .join(' ');
           } else {
             const value = component[fieldName];
             result = typeof value === 'string' ? value : options;
@@ -990,7 +1045,11 @@ export function processTemplateWithDOM(
         let current: unknown = backendData;
 
         for (const part of parts) {
-          if (current && typeof current === 'object' && part in (current as Record<string, unknown>)) {
+          if (
+            current &&
+            typeof current === 'object' &&
+            part in (current as Record<string, unknown>)
+          ) {
             current = (current as Record<string, unknown>)[part];
           } else {
             current = null;

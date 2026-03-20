@@ -124,8 +124,7 @@ export function renderToHtml(
       path,
       processedPaths,
       context,
-      (childComponent, childPath) =>
-        renderComponent(childComponent, childPath, processedPaths)
+      (childComponent, childPath) => renderComponent(childComponent, childPath, processedPaths)
     );
   }
 

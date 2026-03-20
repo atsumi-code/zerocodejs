@@ -53,7 +53,13 @@
             class="zcode-data-viewer-tab"
             @click="activeCategory = category as 'common' | 'individual' | 'special'"
           >
-            {{ category === 'common' ? $t('dataViewer.common') : category === 'individual' ? $t('dataViewer.individual') : $t('dataViewer.special') }}
+            {{
+              category === 'common'
+                ? $t('dataViewer.common')
+                : category === 'individual'
+                  ? $t('dataViewer.individual')
+                  : $t('dataViewer.special')
+            }}
           </button>
         </template>
       </div>
@@ -69,14 +75,8 @@
           :title="isCopied ? $t('common.copied') : $t('common.copy')"
           @click="handleCopy"
         >
-          <Check
-            v-if="isCopied"
-            :size="18"
-          />
-          <Copy
-            v-else
-            :size="18"
-          />
+          <Check v-if="isCopied" :size="18" />
+          <Copy v-else :size="18" />
         </button>
       </div>
     </div>
@@ -101,9 +101,7 @@ const viewFormat = ref<'json' | 'html'>('json');
 const isCopied = ref(false);
 
 // タブの順序を制御
-const categoryOrder = computed(() => 
-  props.config?.categoryOrder || 'common'
-);
+const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
 const categoryTabs = computed(() => {
   const tabs: Array<'common' | 'individual' | 'special'> = [];
@@ -121,7 +119,11 @@ const categoryTabs = computed(() => {
 
 // activeCategoryの初期値をcategoryOrderに基づいて設定
 const activeCategory = ref<'common' | 'individual' | 'special'>(
-  props.config?.categoryOrder === 'individual' ? 'individual' : props.config?.categoryOrder === 'special' ? 'special' : 'common'
+  props.config?.categoryOrder === 'individual'
+    ? 'individual'
+    : props.config?.categoryOrder === 'special'
+      ? 'special'
+      : 'common'
 );
 
 // ページ全体のHTML（編集モード属性なし）
