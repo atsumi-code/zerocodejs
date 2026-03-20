@@ -25,9 +25,16 @@ export default {
     deleteMode: '削除',
     viewMode: '表示',
     manageMode: '管理',
-    manageSpecialParts: '特別パーツ',
-    manageSpecialImages: '特別画像',
     settings: '設定'
+  },
+  managePanel: {
+    tabParts: 'パーツ',
+    tabImages: '画像',
+    infoTitle: 'この画面で扱うパーツ・画像について',
+    infoDescription:
+      'ここで編集するパーツ・画像は、公開したあとのサイトで、条件によって表示が変わるページ向けを想定しています。',
+    infoExample: '例：まとまりごとに、専用のページを用意する場合など',
+    infoScopeNote: '共通・個別のパーツと画像は、この画面では編集できません。'
   },
   settings: {
     title: '設定',
@@ -233,7 +240,7 @@ export default {
       special: {
         title: '特別',
         description:
-          '動的ページ（例：店舗ごと、商品ごと）や特定の条件で使用されるパーツ・画像を想定しています。動的ルートやURLパラメータに応じて生成されるページで使用できる想定です。'
+          'ここで編集するパーツ・画像は、公開したあとのサイトで、条件によって表示が変わるページ向けを想定しています。例：まとまりごとに、専用のページを用意する場合など。'
       }
     }
   },

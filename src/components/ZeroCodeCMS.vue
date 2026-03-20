@@ -163,20 +163,29 @@
           @click.stop
         >
           <div class="zcode-manage-panel-modal-header">
-            <div class="zcode-manage-panel-tabs">
+            <div class="zcode-manage-panel-tab-group">
               <button
                 :class="{ active: manageTab === 'parts' }"
                 class="zcode-manage-panel-tab"
                 @click="manageTab = 'parts'"
               >
-                {{ $t('toolbar.manageSpecialParts') }}
+                {{ $t('managePanel.tabParts') }}
               </button>
               <button
                 :class="{ active: manageTab === 'images' }"
                 class="zcode-manage-panel-tab"
                 @click="manageTab = 'images'"
               >
-                {{ $t('toolbar.manageSpecialImages') }}
+                {{ $t('managePanel.tabImages') }}
+              </button>
+              <button
+                type="button"
+                class="zcode-help-btn"
+                :title="$t('managePanel.infoTitle')"
+                :aria-label="$t('managePanel.infoTitle')"
+                @click="showManageInfoModal = true"
+              >
+                <HelpCircle :size="14" />
               </button>
             </div>
             <button
@@ -200,6 +209,51 @@
               :config="config"
               fixed-category="special"
             />
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <Teleport to="body">
+      <div
+        v-if="showManageInfoModal && managePanelOpen && enableSpecialParts"
+        class="zcode-help-modal-overlay"
+        @click.self="showManageInfoModal = false"
+      >
+        <div
+          class="zcode-help-modal zcode-manage-panel-help-modal"
+          @click.stop
+        >
+          <div class="zcode-help-modal-header">
+            <div
+              class="zcode-help-modal-header-title"
+              role="heading"
+              aria-level="3"
+            >
+              <Info
+                :size="20"
+                class="zcode-css-warning-modal-title-icon"
+              />
+              <span>{{ $t('managePanel.infoTitle') }}</span>
+            </div>
+            <button
+              class="zcode-close-btn"
+              :aria-label="$t('common.close')"
+              @click="showManageInfoModal = false"
+            >
+              <X :size="18" />
+            </button>
+          </div>
+          <div class="zcode-help-modal-body">
+            <div class="zcode-help-section-item">
+              {{ $t('managePanel.infoDescription') }}
+            </div>
+            <div class="zcode-help-section-item zcode-manage-panel-info-example">
+              {{ $t('managePanel.infoExample') }}
+            </div>
+            <div class="zcode-help-section-item zcode-manage-panel-info-scope-note">
+              {{ $t('managePanel.infoScopeNote') }}
+            </div>
           </div>
         </div>
       </div>
@@ -241,7 +295,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue';
-import { Save, X } from 'lucide-vue-next';
+import { Save, X, Info, HelpCircle } from 'lucide-vue-next';
 import ZeroCodePreview from './ZeroCodePreview.vue';
 import PreviewArea from '../features/preview/PreviewArea.vue';
 import Toolbar from '../features/editor/components/Toolbar.vue';
@@ -292,7 +346,14 @@ const props = defineProps<{
 const viewMode = ref<'preview' | 'manage'>('manage');
 const settingsPanelOpen = ref(false);
 const managePanelOpen = ref(false);
+const showManageInfoModal = ref(false);
 const manageTab = ref<'parts' | 'images'>('parts');
+
+watch(managePanelOpen, (open) => {
+  if (!open) {
+    showManageInfoModal.value = false;
+  }
+});
 
 // configをパース
 const parseConfig = (configString?: string): Partial<CMSConfig> => {

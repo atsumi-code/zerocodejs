@@ -25,9 +25,17 @@ export default {
     deleteMode: 'Delete',
     viewMode: 'View',
     manageMode: 'Manage',
-    manageSpecialParts: 'Special parts',
-    manageSpecialImages: 'Special images',
     settings: 'Settings'
+  },
+  managePanel: {
+    tabParts: 'Parts',
+    tabImages: 'Images',
+    infoTitle: 'About the parts and images on this screen',
+    infoDescription:
+      'The parts and images you edit here are intended for pages on your published site whose content changes depending on the conditions.',
+    infoExample:
+      'Example: Such as creating a dedicated page for each content grouping, among other cases.',
+    infoScopeNote: 'Common and individual parts and images cannot be edited on this screen.'
   },
   settings: {
     title: 'Settings',
@@ -239,7 +247,7 @@ export default {
       special: {
         title: 'Special',
         description:
-          'Intended for parts and images used for dynamic pages (e.g., per store, per product) or under specific conditions. Assumed to be usable on pages generated according to dynamic routes or URL parameters.'
+          'The parts and images you edit here are intended for pages on your published site whose content changes depending on the conditions. Example: Such as creating a dedicated page for each content grouping, among other cases.'
       }
     }
   },
