@@ -6,6 +6,7 @@ import { useZeroCodeRenderer } from '../../../core/composables/useZeroCodeRender
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { logger } from '../../../core/utils/logger';
 import { processTemplateWithDOM } from '../../../core/utils/template-processor';
+import { sanitizePartTemplate } from '../../../core/utils/sanitize';
 type EditingLevel = 'type' | 'part' | null;
 
 type EditingPart = {
@@ -15,7 +16,12 @@ type EditingPart = {
   isNewPart?: boolean;
 };
 
-export function usePartsManager(cmsData: ZeroCodeData) {
+export interface PartsManagerOptions {
+  beforeSavePart?: (body: string) => string | Promise<string>;
+  sanitize?: boolean;
+}
+
+export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOptions) {
   const { t } = useI18n();
 
   // ========================================
@@ -289,7 +295,7 @@ export function usePartsManager(cmsData: ZeroCodeData) {
   async function savePart() {
     if (!editingPart.value) return;
 
-    const body = editingPart.value.part.body || '';
+    let body = editingPart.value.part.body || '';
     const validation = validateTemplateHtml(body);
     if (validation.hasWarning) {
       const proceed = confirm(
@@ -298,6 +304,21 @@ export function usePartsManager(cmsData: ZeroCodeData) {
         )}\n\nこのまま保存しますか？`
       );
       if (!proceed) return;
+    }
+
+    if (options?.sanitize) {
+      body = sanitizePartTemplate(body);
+      editingPart.value.part.body = body;
+    }
+
+    if (options?.beforeSavePart) {
+      try {
+        body = await options.beforeSavePart(body);
+        editingPart.value.part.body = body;
+      } catch (e) {
+        logger.error('beforeSavePart hook failed:', e);
+        return;
+      }
     }
 
     const targetArray = getTargetArray();

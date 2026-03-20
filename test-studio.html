@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZeroCodeEditor - Test</title>
+    <title>ZeroCodeStudio - Test</title>
 
     <!-- 共通CSS（リセットCSS含む） -->
     <link rel="stylesheet" href="./css/common.css" />
@@ -14,15 +14,14 @@
   </head>
   <body>
     <div class="l-header l-header--dev">
-      <h1>ZeroCodeEditor - エンジニア用管理画面テスト</h1>
-      <p>全機能付き（編集、パーツ管理、画像管理）</p>
+      <h1>ZeroCodeStudio - 制作会社向け管理画面テスト</h1>
+      <p>特別パーツ・特別CSS・特別画像のみ編集可（それ以外は読み取り専用）</p>
     </div>
 
     <div class="l-container">
-      <zcode-editor
-        id="test-cms"
+      <zcode-studio
+        id="test-studio"
         locale="ja"
-        
       >
         <!-- 共通CSS（リセットCSS含む） -->
         <link slot="css" rel="stylesheet" href="./css/common.css" />
@@ -38,15 +37,15 @@
           crossorigin="anonymous"
         ></script>
         <script slot="script" src="./js/accordion.js"></script>
-      </zcode-editor>
+      </zcode-studio>
     </div>
 
     <div class="l-footer l-footer--dev">
-      <h1>ZeroCodeEditor - エンジニア用管理画面テスト</h1>
-      <p>全機能付き（編集、パーツ管理、画像管理）</p>
+      <h1>ZeroCodeStudio - 制作会社向け管理画面テスト</h1>
+      <p>特別パーツ・特別CSS・特別画像のみ編集可</p>
     </div>
 
-    <!-- リセットボタン（保存ボタンの横に配置） -->
+    <!-- リセットボタン -->
     <div id="reset-controls-fixed" class="reset-controls-fixed">
       <button id="reset-data-btn" class="reset-btn">
         <svg
@@ -74,50 +73,26 @@
     <script type="module" src="/src/index.ts"></script>
 
     <script>
-      let cms = null;
+      let studio = null;
 
       async function init() {
-        await waitForCMS();
+        await waitForStudio();
         setTimeout(() => {
-          cms = document.getElementById('test-cms');
-          if (cms) {
-            // ローカルストレージからデータを読み込んで適用
-            const data = ZeroCodeCommon.StorageManager.loadData('test-cms');
+          studio = document.getElementById('test-studio');
+          if (studio) {
+            const data = ZeroCodeCommon.StorageManager.loadData('test-studio');
             if (data.page.length === 0) {
-              // データがない場合はサンプルデータを読み込む
-              ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
+              ZeroCodeCommon.StorageManager.saveSampleData('test-studio');
             }
-            ZeroCodeCommon.StorageManager.applyToComponent('test-cms');
+            ZeroCodeCommon.StorageManager.applyToComponent('test-studio');
 
-            // コンテンツ更新イベントを発火（動的コンテンツ用フック）
-            const event = new CustomEvent('cms-content-updated');
-            window.dispatchEvent(event);
-            if (typeof jQuery !== 'undefined') {
-              jQuery(document).trigger('cms-content-updated');
-            }
-
-            // リセットボタンのイベントリスナー
             const resetBtn = document.getElementById('reset-data-btn');
-            const resetControls = document.getElementById('reset-controls-fixed');
-            if (resetBtn && resetControls) {
+            if (resetBtn) {
               resetBtn.addEventListener('click', () => {
                 if (confirm('すべてのデータをリセットしますか？この操作は取り消せません。')) {
-                  const instanceId = 'test-cms';
-                  ZeroCodeCommon.StorageManager.clear(instanceId);
-                  ZeroCodeCommon.StorageManager.saveSampleData(instanceId);
+                  ZeroCodeCommon.StorageManager.clear('test-studio');
+                  ZeroCodeCommon.StorageManager.saveSampleData('test-studio');
                   window.location.reload();
-                }
-              });
-
-              // 表示モード変更イベントをリッスン
-              cms.addEventListener('view-mode-changed', (event) => {
-                const mode = event.detail.mode;
-                if (mode === 'preview') {
-                  // 表示モードの時はリセットボタンを非表示
-                  resetControls.style.display = 'none';
-                } else {
-                  // 管理モードの時はリセットボタンを表示
-                  resetControls.style.display = 'flex';
                 }
               });
             }
@@ -125,17 +100,15 @@
         }, 100);
       }
 
-      function waitForCMS() {
+      function waitForStudio() {
         return new Promise((resolve) => {
-          if (customElements.get('zcode-editor')) {
+          if (customElements.get('zcode-studio')) {
             resolve();
           } else {
-            customElements.whenDefined('zcode-editor').then(resolve);
+            customElements.whenDefined('zcode-studio').then(resolve);
           }
         });
       }
-
-      // 保存ボタンはZeroCode側で実装済み（左下固定）
 
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);

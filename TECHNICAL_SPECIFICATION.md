@@ -207,11 +207,63 @@ interface ImageData {
 </zcode-editor>
 ```
 
+### zcode-studio
+
+制作会社・信頼ユーザー向け管理画面のWebコンポーネント。特別パーツ・特別CSS・特別画像のみ編集でき、それ以外のデータは読み取り専用プレビューとして表示します。
+
+**属性**:
+
+- `locale`: ロケール設定（デフォルト: `'ja'`）
+- `page`: ページデータ（JSON文字列、読み取り専用プレビュー用）
+- `parts-common`: 共通パーツデータ（JSON文字列、読み取り専用）
+- `parts-individual`: 個別パーツデータ（JSON文字列、読み取り専用）
+- `parts-special`: 特別パーツデータ（JSON文字列、**編集可能**）
+- `images-common`: 共通画像データ（JSON文字列、読み取り専用）
+- `images-individual`: 個別画像データ（JSON文字列、読み取り専用）
+- `images-special`: 特別画像データ（JSON文字列、**編集可能**）
+- `css-common`: 共通パーツ用CSS（文字列、読み取り専用）
+- `css-individual`: 個別パーツ用CSS（文字列、読み取り専用）
+- `css-special`: 特別パーツ用CSS（文字列、**編集可能**）
+- `backend-data`: バックエンドデータ（JSON文字列）
+- `config`: 初期設定データ（JSON文字列）。`{"studio": {...}}`の形式で指定
+- `endpoints`: エンドポイント設定（JSON文字列）
+- `use-shadow-dom`: Shadow DOMを使用するか（`'true'` | `'false'`）
+
+**スロット**:
+
+- `css`: CSSファイルを指定
+- `script`: JavaScriptファイルを指定
+
+**メソッド**:
+
+- `getData(path?: string)`: データを取得
+- `setData(path: string | object, value?: any)`: データを設定
+
+**イベント**:
+
+- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`、`targets` は常に特別系のみ（`['parts-special', 'parts-special-css']` / `['images-special']`）
+
+**config.studio オプション**:
+
+- `showSaveConfirm`: 保存時の確認ダイアログを表示する（デフォルト: `true`）
+- `sanitizePartTemplate`: パーツテンプレート保存時に DOMPurify ベースのサニタイズを実行する（デフォルト: `false`）
+- `beforeSavePart`: パーツテンプレート保存時に実行するフック関数。`(body: string) => string | Promise<string>`
+
+**使用例**:
+
+```html
+<zcode-studio id="studio" locale="ja"
+  config='{"studio":{"sanitizePartTemplate":true}}'>
+  <link slot="css" rel="stylesheet" href="/css/common.css" />
+  <script slot="script" src="/js/accordion.js"></script>
+</zcode-studio>
+```
+
 ## 設定オプション
 
 ### 設定の構造
 
-設定は`cms`と`dev`の2つのカテゴリに分離されています。`zcode-cms`と`zcode-editor`の両方で編集モード（CMS）の設定は共有されます。
+設定は`cms`、`dev`、`studio`の3つのカテゴリに分離されています。`zcode-cms`と`zcode-editor`の両方で編集モード（CMS）の設定は共有されます。`zcode-studio`は`studio`カテゴリの設定を使用します。
 
 #### localStorageの構造
 
@@ -325,7 +377,6 @@ interface CMSSettings {
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
-  enableSpecialParts?: boolean; // ZeroCodeCMS から特別パーツ・画像の管理を許可する（デフォルト: false）
 }
 
 interface DevSettings {
@@ -750,13 +801,14 @@ watch(enableContextMenu, (newValue) => {
 
 - `save-request`: 保存ボタンクリック時に発火（保存リクエスト）
   - `detail.requestId`: リクエストID（`save-result`で使用）
-  - `detail.source`: 送信元（`'cms'` または `'editor'`）
+  - `detail.source`: 送信元（`'cms'`、`'editor'`、または `'studio'`）
   - `detail.targets`: 保存対象の配列
-    - zcode-cms 編集モード: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`
-    - zcode-editor ページ管理: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`（zcode-cms 編集モードと同様）
+    - zcode-cms 編集モード: `['page']`
+    - zcode-editor ページ管理: `['page']`
+    - zcode-studio: `['parts-special', 'parts-special-css']` または `['images-special']`（編集中のタブに依存）
     - パーツ管理: `[primaryTarget, 'parts-*-css']`
     - 画像管理: `['images-common']` / `['images-individual']` / `['images-special']`
-    - ページ編集の保存バンドルには `parts-common-css` / `parts-individual-css` は含まれない（パーツ管理で保存）。編集モードUIでも共通・個別のパーツ用CSSは編集しない。`enableSpecialParts` 有効時のみ `parts-special-css` がページ系バンドルに含まれる
+    - ページ編集の保存バンドルには `parts-*-css` は含まれない（パーツ管理で保存）。特別系の編集・保存は `zcode-studio` で行う
   - `detail.timestamp`: タイムスタンプ
   - `detail` に `data` は含まれない。受信側で `getData()` を呼んで取得する。
   - ⚠️ **セキュリティ注意**: `source`を確認し、CMSからのパーツ保存をサーバー側で拒否すること。
@@ -793,6 +845,18 @@ watch(enableContextMenu, (newValue) => {
     - **style属性にユーザー入力を直接設定する場合は、サーバー側での検証を推奨します。**
     - **サーバー側でのデータ検証を必ず実装してください。**
 
+#### サニタイズ関数
+
+以下の関数はサーバーサイドとルール共有を目的として npm パッケージから export されています。
+
+- `sanitizeRichText(html: string): string`: リッチテキストフィールドのサニタイズ（DOMPurify）
+- `sanitizeUrl(url: string): string`: URL の検証・サニタイズ（`javascript:` / `vbscript:` / `file:` 等を拒否）
+- `sanitizePartTemplate(html: string): string`: パーツテンプレート HTML のサニタイズ（DOMPurify ベース、ZeroCode テンプレート記法 `z-*` 属性を許可、`<script>` / `<iframe>` 等の危険タグとイベントハンドラ属性を除去）
+
+```javascript
+import { sanitizePartTemplate, sanitizeRichText, sanitizeUrl } from 'zerocodejs';
+```
+
 ## セキュリティ
 
 ### 概要
@@ -805,7 +869,7 @@ ZeroCode.jsはフロントエンドライブラリのため、クライアント
 
 - **データ保存前の検証**: すべてのデータをサーバー側で検証してください
 - **パーツテンプレートの検証**: パーツテンプレート（`part.body`）が信頼できるソースからのみ来ることを確認してください
-- **送信元の検証**: `save-request`イベントの`source`フィールドを確認し、CMSからのパーツデータ保存を拒否してください
+- **送信元の検証**: `save-request`イベントの`source`フィールド（`'cms'` / `'editor'` / `'studio'`）を確認し、送信元に応じたアクセス制御を実装してください。例: `source: 'cms'` からのパーツデータ保存を拒否、`source: 'studio'` は特別系データのみ許可
 
 #### 2. 属性値のセキュリティ
 
@@ -1035,7 +1099,7 @@ cms.addEventListener('save-request', async (event) => {
 
 - `save-request`: 保存リクエストイベント（`common.js`で処理）
   - `detail.requestId`: リクエストID
-  - `detail.source`: 送信元（`'cms'` または `'editor'`）
+  - `detail.source`: 送信元（`'cms'`、`'editor'`、または `'studio'`）
   - `detail.targets`: 保存対象の配列（複数のターゲットが含まれる場合がある）
   - `detail.timestamp`: タイムスタンプ
 

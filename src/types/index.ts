@@ -61,7 +61,6 @@ export interface CMSSettings {
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
   showSaveConfirm?: boolean; // 保存時の確認ダイアログを表示する（デフォルト: true）
-  enableSpecialParts?: boolean; // ZeroCodeCMS から特別パーツの管理を許可する（デフォルト: false）
 }
 
 export interface DevSettings {
@@ -77,9 +76,16 @@ export interface UserSettings {
   dev?: DevSettings;
 }
 
+export interface StudioSettings {
+  showSaveConfirm?: boolean;
+  sanitizePartTemplate?: boolean;
+  beforeSavePart?: (body: string) => string | Promise<string>;
+}
+
 export interface CMSConfig {
   cms?: CMSSettings;
   dev?: DevSettings;
+  studio?: StudioSettings;
   categoryOrder?: 'common' | 'individual' | 'special';
 }
 

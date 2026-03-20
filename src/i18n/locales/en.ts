@@ -24,18 +24,7 @@ export default {
     reorderMode: 'Reorder',
     deleteMode: 'Delete',
     viewMode: 'View',
-    manageMode: 'Manage',
     settings: 'Settings'
-  },
-  managePanel: {
-    tabParts: 'Parts',
-    tabImages: 'Images',
-    infoTitle: 'About the parts and images on this screen',
-    infoDescription:
-      'The parts and images you edit here are intended for pages on your published site whose content changes depending on the conditions.',
-    infoExample:
-      'Example: Such as creating a dedicated page for each content grouping, among other cases.',
-    infoScopeNote: 'Common and individual parts and images cannot be edited on this screen.'
   },
   settings: {
     title: 'Settings',
@@ -268,5 +257,10 @@ export default {
     saveFailedWithCount: 'Save failed ({count} items)',
     saveFailedWithMessage: 'Save failed ({count} items): {message}',
     noSaveTargets: 'No save targets'
+  },
+  studio: {
+    preview: 'Preview',
+    partsManagement: 'Special Parts',
+    imagesManagement: 'Special Images'
   }
 };

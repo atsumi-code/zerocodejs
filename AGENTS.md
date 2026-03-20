@@ -383,7 +383,7 @@ interface ImageData {
 ```typescript
 {
   requestId: string; // リクエストID（save-resultイベントで使用）
-  source: 'cms' | 'editor'; // 送信元
+  source: 'cms' | 'editor' | 'studio'; // 送信元
   targets: string[]; // 保存対象の配列（複数のターゲットが含まれる場合がある）
   timestamp: number; // タイムスタンプ
 }
@@ -391,8 +391,9 @@ interface ImageData {
 
 **targets配列の仕様:**
 
-- **zcode-cms の編集モード**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`
-- **zcode-editor のページ管理タブ**: `['page']`。`enableSpecialParts` が有効な場合は zcode-cms の編集モードと同様に `['page', 'images-special', 'parts-special', 'parts-special-css']`
+- **zcode-cms の編集モード**: `['page']`
+- **zcode-editor のページ管理タブ**: `['page']`
+- **zcode-studio**: 特別パーツタブ: `['parts-special', 'parts-special-css']`、特別画像タブ: `['images-special']`、プレビュータブ: `['parts-special', 'parts-special-css', 'images-special']`
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -403,7 +404,7 @@ interface ImageData {
 
 - `change`イベントは削除済み（保存ボタン以外での自動保存は行わない）
 - 画像追加時の自動保存は行わない
-- 編集モードのUIでは共通・個別のパーツ用CSSは編集できない（パーツ管理で編集）。`enableSpecialParts` が有効なとき、ページ保存の `targets` に `parts-special-css` が含まれる（特別パーツ用CSSの永続化）
+- 編集モードのUIでは共通・個別のパーツ用CSSは編集できない（パーツ管理で編集）。特別パーツの編集は `zcode-studio` で行う
 
 ### save-result
 
@@ -437,6 +438,7 @@ interface ImageData {
 
 - `src/components/ZeroCodeCMS.vue`: ユーザー用管理画面
 - `src/components/ZeroCodeEditor.vue`: エンジニア用管理画面（ZeroCodeCMS + パーツ管理・画像管理・データビューア）
+- `src/components/ZeroCodeStudio.vue`: 制作会社向け管理画面（特別パーツ・特別CSS・特別画像のみ編集可、それ以外は読み取り専用プレビュー）
 - `src/components/ZeroCodePreview.vue`: プレビュー表示用コンポーネント
 
 ### コアコンポーザブル
@@ -473,7 +475,7 @@ interface ImageData {
 - `src/core/utils/component-initializer.ts`: コンポーネント初期化（不足フィールドの自動初期化）
 - `src/core/utils/storage.ts`: ローカルストレージ管理（ユーザー設定の保存・読み込み）
 - `src/core/utils/dom-utils.ts`: DOM操作ユーティリティ
-- `src/core/utils/sanitize.ts`: サニタイズ処理（リッチテキスト、URL、属性値）
+- `src/core/utils/sanitize.ts`: サニタイズ処理（リッチテキスト、URL、属性値、パーツテンプレート）
 - `src/core/utils/path-utils.ts`: パス操作ユーティリティ
 - `src/core/utils/image-utils.ts`: 画像処理ユーティリティ
 - `src/core/utils/css-manager.ts`: CSS管理
@@ -504,10 +506,9 @@ interface ImageData {
     - `sessionStorage`から`localStorage`に変更（別窓でのデータ連動のため）
     - 呼び出し側でリセットボタンを実装（本番環境では不要のため、ZeroCode側には実装しない）
 15. ✅ **特別パーツ・画像管理の統一**（2025年1月→2026年3月改修）
-    - ツールバーに「管理」ボタンを追加（`enableSpecialParts` 有効時のみ表示）
-    - 管理モーダル内に「パーツ」「画像」タブと説明（情報）モーダルを設け、`PartsManagerPanel`/`ImagesManagerPanel` で一元管理
+    - `zcode-cms` / `zcode-editor` から特別パーツ管理モーダル（`enableSpecialParts`）を削除
+    - 特別パーツ・特別CSS・特別画像の編集は `zcode-studio` に一元化
     - 画像選択モーダル（`ImageSelectModal`）は純粋な選択UIに簡素化
-    - ZeroCodeEditor ではページ管理タブの**外側**ツールバーに「管理」を表示し、`ZeroCodeCMS` 側は `suppressToolbarManageButton` で内側の重複ボタンを抑制。`managePanelOpen` を `defineExpose` で連携
 18. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
     - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
     - 同じ part_id のページ上コンポーネント（先頭1件）にも値を同期し、表示モード切り替え時に反映
@@ -519,6 +520,13 @@ interface ImageData {
 20. ✅ **パーツ編集プレビューの debounce**（2025年2月）
     - テンプレート編集時のプレビュー更新を 300ms debounce
     - 入力のたびに発生していた「Image not found」警告の連発を抑制
+
+21. ✅ **ZeroCodeStudio（制作会社向けコンポーネント）**（2026年3月）
+    - `<zcode-studio>` Web Component を追加（特別パーツ・特別CSS・特別画像のみ編集可、読み取り専用プレビュー付き）
+    - `save-request` の `source: 'studio'` を追加（サーバー側での権限チェック用）
+    - パーツテンプレート用サニタイズ関数 `sanitizePartTemplate` を追加（DOMPurify ベース、z-* 属性許可）
+    - `beforeSavePart` フック、`sanitizePartTemplate` オプトインを config から設定可能
+    - サニタイズ関数を npm パッケージから export（サーバーとルール共有用）
 
 ### 保留・スキップ機能
 
@@ -568,7 +576,7 @@ interface ImageData {
 - **保存は`save-request`イベントのみ**: `change`イベントは削除済み
 - **保存ボタンクリック時のみ発火**: 自動保存は行わない
 - **画像追加時の自動保存は行わない**: 保存ボタンで一括保存
-- **編集モードでの保存対象（zcode-cms / zcode-editor のページ相当）**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`（共通・個別の `parts-*-css` はページ編集のバンドルには含めず、パーツ管理タブの保存で扱う）
+- **編集モードでの保存対象（zcode-cms / zcode-editor のページ相当）**: `['page']`（共通・個別の `parts-*-css` はページ編集のバンドルには含めず、パーツ管理タブの保存で扱う。特別系は `zcode-studio` で保存）
 - **パーツ管理での保存対象**: `parts-common`/`parts-individual`/`parts-special`、対応する`parts-common-css`/`parts-individual-css`/`parts-special-css`
 
 ### テンプレート記法の実装

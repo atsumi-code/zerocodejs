@@ -24,17 +24,7 @@ export default {
     reorderMode: '並べ替え',
     deleteMode: '削除',
     viewMode: '表示',
-    manageMode: '管理',
     settings: '設定'
-  },
-  managePanel: {
-    tabParts: 'パーツ',
-    tabImages: '画像',
-    infoTitle: 'この画面で扱うパーツ・画像について',
-    infoDescription:
-      'ここで編集するパーツ・画像は、公開したあとのサイトで、条件によって表示が変わるページ向けを想定しています。',
-    infoExample: '例：まとまりごとに、専用のページを用意する場合など',
-    infoScopeNote: '共通・個別のパーツと画像は、この画面では編集できません。'
   },
   settings: {
     title: '設定',
@@ -257,5 +247,10 @@ export default {
     imagesManagement: '画像管理',
     dataViewer: 'データビューアー',
     loading: 'データを読み込み中...'
+  },
+  studio: {
+    preview: 'プレビュー',
+    partsManagement: '特別パーツ管理',
+    imagesManagement: '特別画像管理'
   }
 };

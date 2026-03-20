@@ -1149,20 +1149,12 @@
   config='{"cms": {"allowDynamicContentInteraction": true}, "dev": {"showDataViewer": true}, "categoryOrder": "individual"}'
 &gt;&lt;/zcode-editor&gt;</code></pre>
 
-        <p>
-          ZeroCodeCMSから特別パーツ・画像の管理を許可するには
-          <code>enableSpecialParts</code> を使用します（デフォルト: false）。
-          有効にすると、ツールバーに「管理」ボタンが表示され、特別カテゴリのパーツ・画像をモーダルで編集できるようになります（タブは「パーツ」「画像」。内容の説明は情報ボタンから表示できます）。
-        </p>
-        <pre><code>config='{"cms":{"enableSpecialParts":true}}'</code></pre>
-
         <p>または、JavaScript変数で指定することもできます：</p>
         <pre><code>const cmsConfig = {
   cms: {
     allowDynamicContentInteraction: true,
     devRightPadding: true,
-    enableContextMenu: true,
-    enableSpecialParts: true
+    enableContextMenu: true
   },
   categoryOrder: 'individual'
 };
@@ -1869,10 +1861,10 @@ cms.addEventListener('save-request', (event) => {
             <tr>
               <td>ページ管理（編集モード）</td>
               <td>
-                <code>['page']</code>。<code>enableSpecialParts</code> が有効な場合は <code>['page', 'images-special', 'parts-special', 'parts-special-css']</code>
+                <code>['page']</code>
               </td>
               <td>
-                ページデータを保存。<code>enableSpecialParts</code> 有効時は特別パーツ・画像データも保存対象
+                ページデータを保存
               </td>
             </tr>
             <tr>

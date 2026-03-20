@@ -1237,7 +1237,10 @@ const {
   reorderSourceType,
   startReorderType,
   deletePartType
-} = usePartsManager(props.cmsData);
+} = usePartsManager(props.cmsData, {
+  beforeSavePart: props.config?.studio?.beforeSavePart,
+  sanitize: props.config?.studio?.sanitizePartTemplate
+});
 
 const editPanelPreviewComponent = ref<ComponentData | null>(null);
 

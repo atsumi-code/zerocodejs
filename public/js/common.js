@@ -945,8 +945,8 @@ const StorageManager = {
 
 // 保存/リセットイベントリスナーを設定
 function setupSaveResetListeners() {
-  // zcode-cmsとzcode-editorの両方に対応
-  const components = document.querySelectorAll('zcode-cms, zcode-editor');
+  // zcode-cms, zcode-editor, zcode-studioの全てに対応
+  const components = document.querySelectorAll('zcode-cms, zcode-editor, zcode-studio');
 
   components.forEach((component) => {
     // インスタンスIDを取得

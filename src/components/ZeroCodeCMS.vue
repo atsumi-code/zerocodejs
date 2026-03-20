@@ -9,12 +9,9 @@
       :current-mode="currentMode"
       :view-mode="viewMode"
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
-      :enable-manage-panel="enableSpecialParts && !props.suppressToolbarManageButton"
-      :manage-panel-open="managePanelOpen"
       @switch-mode="switchMode"
       @switch-view-mode="(mode) => (viewMode = mode)"
       @open-settings="settingsPanelOpen = true"
-      @open-manage-panel="managePanelOpen = !managePanelOpen"
     />
 
     <div
@@ -151,114 +148,6 @@
       @close="closeContextMenu"
     />
 
-    <!-- 管理パネルモーダル -->
-    <Teleport to="body">
-      <div
-        v-if="managePanelOpen && enableSpecialParts"
-        class="zcode-manage-panel-modal"
-        @click.self="managePanelOpen = false"
-      >
-        <div
-          class="zcode-manage-panel-modal-content"
-          @click.stop
-        >
-          <div class="zcode-manage-panel-modal-header">
-            <div class="zcode-manage-panel-tab-group">
-              <button
-                :class="{ active: manageTab === 'parts' }"
-                class="zcode-manage-panel-tab"
-                @click="manageTab = 'parts'"
-              >
-                {{ $t('managePanel.tabParts') }}
-              </button>
-              <button
-                :class="{ active: manageTab === 'images' }"
-                class="zcode-manage-panel-tab"
-                @click="manageTab = 'images'"
-              >
-                {{ $t('managePanel.tabImages') }}
-              </button>
-              <button
-                type="button"
-                class="zcode-help-btn"
-                :title="$t('managePanel.infoTitle')"
-                :aria-label="$t('managePanel.infoTitle')"
-                @click="showManageInfoModal = true"
-              >
-                <HelpCircle :size="14" />
-              </button>
-            </div>
-            <button
-              class="zcode-close-btn"
-              :aria-label="$t('common.close')"
-              @click="managePanelOpen = false"
-            >
-              <X :size="18" />
-            </button>
-          </div>
-          <div class="zcode-manage-panel-modal-body">
-            <PartsManagerPanel
-              v-if="manageTab === 'parts'"
-              :cms-data="cmsData"
-              :config="config"
-              fixed-category="special"
-            />
-            <ImagesManagerPanel
-              v-if="manageTab === 'images'"
-              :cms-data="cmsData"
-              :config="config"
-              fixed-category="special"
-            />
-          </div>
-        </div>
-      </div>
-    </Teleport>
-
-    <Teleport to="body">
-      <div
-        v-if="showManageInfoModal && managePanelOpen && enableSpecialParts"
-        class="zcode-help-modal-overlay"
-        @click.self="showManageInfoModal = false"
-      >
-        <div
-          class="zcode-help-modal zcode-manage-panel-help-modal"
-          @click.stop
-        >
-          <div class="zcode-help-modal-header">
-            <div
-              class="zcode-help-modal-header-title"
-              role="heading"
-              aria-level="3"
-            >
-              <Info
-                :size="20"
-                class="zcode-css-warning-modal-title-icon"
-              />
-              <span>{{ $t('managePanel.infoTitle') }}</span>
-            </div>
-            <button
-              class="zcode-close-btn"
-              :aria-label="$t('common.close')"
-              @click="showManageInfoModal = false"
-            >
-              <X :size="18" />
-            </button>
-          </div>
-          <div class="zcode-help-modal-body">
-            <div class="zcode-help-section-item">
-              {{ $t('managePanel.infoDescription') }}
-            </div>
-            <div class="zcode-help-section-item zcode-manage-panel-info-example">
-              {{ $t('managePanel.infoExample') }}
-            </div>
-            <div class="zcode-help-section-item zcode-manage-panel-info-scope-note">
-              {{ $t('managePanel.infoScopeNote') }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
-
     <!-- 保存確認ダイアログ -->
     <div
       v-if="showSaveConfirmDialog"
@@ -295,7 +184,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue';
-import { Save, X, Info, HelpCircle } from 'lucide-vue-next';
+import { Save } from 'lucide-vue-next';
 import ZeroCodePreview from './ZeroCodePreview.vue';
 import PreviewArea from '../features/preview/PreviewArea.vue';
 import Toolbar from '../features/editor/components/Toolbar.vue';
@@ -305,8 +194,6 @@ import DeletePanel from '../features/delete/components/DeletePanel.vue';
 import ReorderPanel from '../features/reorder/components/ReorderPanel.vue';
 import AddPanel from '../features/add/components/AddPanel.vue';
 import ContextMenu from '../features/editor/components/ContextMenu.vue';
-import PartsManagerPanel from '../features/parts-manager/components/PartsManagerPanel.vue';
-import ImagesManagerPanel from '../features/images-manager/components/ImagesManagerPanel.vue';
 import { useZeroCodeData } from '../core/composables/useZeroCodeData';
 import { useZeroCodeRenderer } from '../core/composables/useZeroCodeRenderer';
 import { useEditorMode } from '../features/editor/composables/useEditorMode';
@@ -341,20 +228,10 @@ const props = defineProps<{
   config?: string;
   endpoints?: string;
   backendData?: string;
-  suppressToolbarManageButton?: boolean;
 }>();
 
 const viewMode = ref<'preview' | 'manage'>('manage');
 const settingsPanelOpen = ref(false);
-const managePanelOpen = ref(false);
-const showManageInfoModal = ref(false);
-const manageTab = ref<'parts' | 'images'>('parts');
-
-watch(managePanelOpen, (open) => {
-  if (!open) {
-    showManageInfoModal.value = false;
-  }
-});
 
 // configをパース
 const parseConfig = (configString?: string): Partial<CMSConfig> => {
@@ -369,17 +246,7 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 
 const config = parseConfig(props.config);
 
-const enableSpecialParts = computed(
-  () => parseConfig(props.config).cms?.enableSpecialParts === true
-);
-
-const saveTargets = computed(() => {
-  const targets: string[] = ['page'];
-  if (enableSpecialParts.value) {
-    targets.push('images-special', 'parts-special', 'parts-special-css');
-  }
-  return targets;
-});
+const saveTargets = ['page'];
 
 // 初期値の読み込みロジック（優先順位: localStorage > config.cms > デフォルト値）
 const getInitialCMSValue = <K extends keyof CMSSettings>(
@@ -940,7 +807,7 @@ function executeSave() {
   dispatchEvent('save-request', {
     requestId,
     source: 'cms',
-    targets: saveTargets.value,
+    targets: saveTargets,
     timestamp: Date.now()
   });
 }
@@ -956,13 +823,6 @@ function cancelSave() {
   showSaveConfirmDialog.value = false;
 }
 
-const managePanelOpenState = computed(() => managePanelOpen.value);
-
-function toggleManagePanel() {
-  if (!enableSpecialParts.value) return;
-  managePanelOpen.value = !managePanelOpen.value;
-}
-
 defineExpose({
   getData,
   setData,
@@ -973,9 +833,6 @@ defineExpose({
   allowDynamicContentInteraction,
   devRightPadding,
   devRightPaddingValue,
-  settingsPanelOpen,
-  managePanelOpen,
-  managePanelOpenState,
-  toggleManagePanel
+  settingsPanelOpen
 });
 </script>
