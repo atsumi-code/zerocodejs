@@ -20,7 +20,7 @@
 
     <div class="l-container">
       <zcode-studio
-        id="test-studio"
+        id="test-cms"
         locale="ja"
       >
         <!-- 共通CSS（リセットCSS含む） -->
@@ -78,20 +78,20 @@
       async function init() {
         await waitForStudio();
         setTimeout(() => {
-          studio = document.getElementById('test-studio');
+          studio = document.getElementById('test-cms');
           if (studio) {
-            const data = ZeroCodeCommon.StorageManager.loadData('test-studio');
+            const data = ZeroCodeCommon.StorageManager.loadData('test-cms');
             if (data.page.length === 0) {
-              ZeroCodeCommon.StorageManager.saveSampleData('test-studio');
+              ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
             }
-            ZeroCodeCommon.StorageManager.applyToComponent('test-studio');
+            ZeroCodeCommon.StorageManager.applyToComponent('test-cms');
 
             const resetBtn = document.getElementById('reset-data-btn');
             if (resetBtn) {
               resetBtn.addEventListener('click', () => {
                 if (confirm('すべてのデータをリセットしますか？この操作は取り消せません。')) {
-                  ZeroCodeCommon.StorageManager.clear('test-studio');
-                  ZeroCodeCommon.StorageManager.saveSampleData('test-studio');
+                  ZeroCodeCommon.StorageManager.clear('test-cms');
+                  ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
                   window.location.reload();
                 }
               });
