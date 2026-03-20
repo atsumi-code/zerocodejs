@@ -392,7 +392,7 @@ interface ImageData {
 **targets配列の仕様:**
 
 - **zcode-cms の編集モード**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`
-- **zcode-editor のページ管理タブ**: `['page']`
+- **zcode-editor のページ管理タブ**: `['page']`。`enableSpecialParts` が有効な場合は zcode-cms の編集モードと同様に `['page', 'images-special', 'parts-special', 'parts-special-css']`
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -403,7 +403,7 @@ interface ImageData {
 
 - `change`イベントは削除済み（保存ボタン以外での自動保存は行わない）
 - 画像追加時の自動保存は行わない
-- CSSは編集モードの保存対象から除外（パーツ管理でのみ編集可能）
+- 編集モードのUIでは共通・個別のパーツ用CSSは編集できない（パーツ管理で編集）。`enableSpecialParts` が有効なとき、ページ保存の `targets` に `parts-special-css` が含まれる（特別パーツ用CSSの永続化）
 
 ### save-result
 
@@ -507,6 +507,7 @@ interface ImageData {
     - ツールバーに「管理」ボタンを追加（`enableSpecialParts` 有効時のみ表示）
     - 管理モーダル内に「パーツ」「画像」タブと説明（情報）モーダルを設け、`PartsManagerPanel`/`ImagesManagerPanel` で一元管理
     - 画像選択モーダル（`ImageSelectModal`）は純粋な選択UIに簡素化
+    - ZeroCodeEditor ではページ管理タブの**外側**ツールバーに「管理」を表示し、`ZeroCodeCMS` 側は `suppressToolbarManageButton` で内側の重複ボタンを抑制。`managePanelOpen` を `defineExpose` で連携
 18. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
     - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
     - 同じ part_id のページ上コンポーネント（先頭1件）にも値を同期し、表示モード切り替え時に反映
@@ -567,7 +568,7 @@ interface ImageData {
 - **保存は`save-request`イベントのみ**: `change`イベントは削除済み
 - **保存ボタンクリック時のみ発火**: 自動保存は行わない
 - **画像追加時の自動保存は行わない**: 保存ボタンで一括保存
-- **編集モードでの保存対象**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`（CSSは除外）
+- **編集モードでの保存対象（zcode-cms / zcode-editor のページ相当）**: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`（共通・個別の `parts-*-css` はページ編集のバンドルには含めず、パーツ管理タブの保存で扱う）
 - **パーツ管理での保存対象**: `parts-common`/`parts-individual`/`parts-special`、対応する`parts-common-css`/`parts-individual-css`/`parts-special-css`
 
 ### テンプレート記法の実装

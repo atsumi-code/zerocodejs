@@ -9,7 +9,7 @@
       :current-mode="currentMode"
       :view-mode="viewMode"
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
-      :enable-manage-panel="enableSpecialParts"
+      :enable-manage-panel="enableSpecialParts && !props.suppressToolbarManageButton"
       :manage-panel-open="managePanelOpen"
       @switch-mode="switchMode"
       @switch-view-mode="(mode) => (viewMode = mode)"
@@ -341,6 +341,7 @@ const props = defineProps<{
   config?: string;
   endpoints?: string;
   backendData?: string;
+  suppressToolbarManageButton?: boolean;
 }>();
 
 const viewMode = ref<'preview' | 'manage'>('manage');
@@ -368,7 +369,9 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 
 const config = parseConfig(props.config);
 
-const enableSpecialParts = computed(() => config.cms?.enableSpecialParts === true);
+const enableSpecialParts = computed(
+  () => parseConfig(props.config).cms?.enableSpecialParts === true
+);
 
 const saveTargets = computed(() => {
   const targets: string[] = ['page'];
@@ -953,6 +956,13 @@ function cancelSave() {
   showSaveConfirmDialog.value = false;
 }
 
+const managePanelOpenState = computed(() => managePanelOpen.value);
+
+function toggleManagePanel() {
+  if (!enableSpecialParts.value) return;
+  managePanelOpen.value = !managePanelOpen.value;
+}
+
 defineExpose({
   getData,
   setData,
@@ -963,6 +973,9 @@ defineExpose({
   allowDynamicContentInteraction,
   devRightPadding,
   devRightPaddingValue,
-  settingsPanelOpen
+  settingsPanelOpen,
+  managePanelOpen,
+  managePanelOpenState,
+  toggleManagePanel
 });
 </script>

@@ -1021,6 +1021,10 @@ function setupSaveResetListeners() {
             key = 'parts-individual';
             dataToSave = data.parts?.individual || [];
             break;
+          case 'parts-special':
+            key = 'parts-special';
+            dataToSave = data.parts?.special || [];
+            break;
           case 'images-common':
             key = 'images-common';
             dataToSave = data.images?.common || [];

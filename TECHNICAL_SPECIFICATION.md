@@ -753,9 +753,10 @@ watch(enableContextMenu, (newValue) => {
   - `detail.source`: 送信元（`'cms'` または `'editor'`）
   - `detail.targets`: 保存対象の配列
     - zcode-cms 編集モード: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`
-    - zcode-editor ページ管理: `['page']`
+    - zcode-editor ページ管理: `['page']`。`enableSpecialParts` が有効な場合は `['page', 'images-special', 'parts-special', 'parts-special-css']`（zcode-cms 編集モードと同様）
     - パーツ管理: `[primaryTarget, 'parts-*-css']`
     - 画像管理: `['images-common']` / `['images-individual']` / `['images-special']`
+    - ページ編集の保存バンドルには `parts-common-css` / `parts-individual-css` は含まれない（パーツ管理で保存）。編集モードUIでも共通・個別のパーツ用CSSは編集しない。`enableSpecialParts` 有効時のみ `parts-special-css` がページ系バンドルに含まれる
   - `detail.timestamp`: タイムスタンプ
   - `detail` に `data` は含まれない。受信側で `getData()` を呼んで取得する。
   - ⚠️ **セキュリティ注意**: `source`を確認し、CMSからのパーツ保存をサーバー側で拒否すること。

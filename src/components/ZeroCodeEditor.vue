@@ -53,9 +53,12 @@
       :current-mode="currentMode"
       :view-mode="viewMode"
       :allow-dynamic-content-interaction="allowDynamicContentInteractionValue"
+      :enable-manage-panel="enableSpecialParts"
+      :manage-panel-open="editorManagePanelOpen"
       @switch-mode="switchMode"
       @switch-view-mode="(mode) => (viewMode = mode)"
       @open-settings="handleOpenSettings"
+      @open-manage-panel="handleEditorOpenManagePanel"
     />
 
     <ZeroCodePreview
@@ -67,6 +70,7 @@
     <ZeroCodeCMS
       v-show="viewMode === 'manage' && activeTab === 'edit'"
       ref="cmsRef"
+      suppress-toolbar-manage-button
       :locale="props.locale"
       :page="props.page"
       :css-common="props.cssCommon"
@@ -187,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, type Ref } from 'vue';
+import { ref, computed, watch, onMounted, nextTick, type Ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ZeroCodeCMS from './ZeroCodeCMS.vue';
 import ZeroCodePreview from './ZeroCodePreview.vue';
@@ -251,6 +255,35 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 };
 
 const config = parseConfig(props.config);
+
+const enableSpecialParts = computed(
+  () => parseConfig(props.config).cms?.enableSpecialParts === true
+);
+
+type ZeroCodeCmsExposed = {
+  managePanelOpenState?: { value: boolean } | boolean;
+  toggleManagePanel?: () => void;
+};
+
+const editorManagePanelOpen = computed(() => {
+  const inst = cmsRef.value as ZeroCodeCmsExposed | null;
+  const st = inst?.managePanelOpenState;
+  if (typeof st === 'boolean') return st;
+  if (st && typeof st === 'object' && 'value' in st) {
+    return Boolean(st.value);
+  }
+  return false;
+});
+
+function handleEditorOpenManagePanel() {
+  if (viewMode.value === 'preview') {
+    viewMode.value = 'manage';
+  }
+  void nextTick(() => {
+    const inst = cmsRef.value as ZeroCodeCmsExposed | null;
+    inst?.toggleManagePanel?.();
+  });
+}
 
 type EditorMode = 'edit' | 'add' | 'reorder' | 'delete';
 type Category = 'common' | 'individual' | 'special';
@@ -619,6 +652,9 @@ logger.warn(
   let targets: string[];
   if (primaryTarget === 'page') {
     targets = ['page'];
+    if (enableSpecialParts.value) {
+      targets.push('images-special', 'parts-special', 'parts-special-css');
+    }
   } else if (primaryTarget === 'parts-common') {
     targets = [primaryTarget, 'parts-common-css'];
   } else if (primaryTarget === 'parts-individual') {
@@ -682,7 +718,6 @@ function cancelSave() {
 
 // ターゲットのラベルを取得
 function getTargetLabel(target: string): string {
-  const { t } = useI18n();
   const labels: Record<string, string> = {
     page: t('saveConfirm.targets.page'),
     'parts-common': t('saveConfirm.targets.parts-common'),
