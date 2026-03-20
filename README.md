@@ -115,6 +115,14 @@ User-facing CMS editor for content management (no parts/image management).
 <zcode-cms locale="en"></zcode-cms>
 ```
 
+### `<zcode-studio>`
+
+For **trusted users / agencies**: edit **special** parts, special parts CSS, and special images only. Other data (page, common/individual parts and images, etc.) is **read-only** with preview. Use alongside `zcode-cms` when page content is edited by end users but special assets are maintained separately.
+
+`save-request` may use `detail.source: 'studio'` and targets such as `parts-special`, `parts-special-css`, `images-special`. From `zcode-cms`, page saves use `targets: ['page']` only—handle persistence of special data in your host app (often via Studio or your API).
+
+See [Technical Specification – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcode-studio).
+
 ## Loading Existing Data
 
 To load existing data, set attributes via JavaScript:
@@ -155,7 +163,7 @@ ZeroCode.js is a frontend library. Complete security cannot be guaranteed on the
 
 - **Server-side validation is required**: Validate data before saving on the server
 - **Implement authentication/authorization**: Only allow authenticated users to modify parts data
-- **Verify the source**: Check the `source` field in `save-request` events
+- **Verify the source**: Check the `source` field in `save-request` events (`'cms'`, `'editor'`, or `'studio'`)
 - **Template management**: Only use templates from trusted sources
 
 See the [Technical Specification](./TECHNICAL_SPECIFICATION.md) for security details.
@@ -166,4 +174,4 @@ MIT License
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026

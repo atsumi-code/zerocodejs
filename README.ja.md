@@ -122,6 +122,14 @@ import 'zerocodejs/style.css';
 <zcode-cms></zcode-cms>
 ```
 
+### `<zcode-studio>`
+
+**信頼できるユーザー・制作会社向け**。**特別**カテゴリのパーツ・特別パーツ用CSS・特別画像のみ編集可能。ページや共通・個別のパーツ/画像などは**読み取り専用**（プレビュー・データビューアあり）。エンドユーザー用の `zcode-cms` と役割を分けたいときに使います。
+
+`save-request` では `detail.source: 'studio'` と、`parts-special` / `parts-special-css` / `images-special` などのターゲットが渡り得ます。`zcode-cms` からのページ保存は **`targets: ['page']` のみ**です。特別系の永続化はホストアプリ側で処理してください（Studio 経由や API など）。
+
+詳細は [技術仕様書 – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcode-studio)。
+
 ## 既存データの読み込み
 
 既存データを読み込む場合は、JavaScriptで属性を設定します：
@@ -163,7 +171,7 @@ ZeroCode.jsはフロントエンドライブラリのため、クライアント
 
 - **サーバー側での検証を必須とする**: データ保存前にサーバー側で検証してください
 - **認証・認可の実装**: パーツデータの変更は認証されたユーザーのみ許可してください
-- **送信元の検証**: `save-request`イベントの`source`フィールドを確認してください
+- **送信元の検証**: `save-request`イベントの`source`フィールド（`cms` / `editor` / `studio`）を確認してください
 - **パーツテンプレートの管理**: パーツテンプレートは信頼できるソースからのみ使用してください
 
 詳細は[技術仕様書](./TECHNICAL_SPECIFICATION.md)のセキュリティセクションを参照してください。
@@ -174,4 +182,4 @@ MIT License
 
 ---
 
-**最終更新日**: 2026年2月
+**最終更新日**: 2026年3月
