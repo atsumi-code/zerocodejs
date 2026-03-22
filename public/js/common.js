@@ -818,6 +818,9 @@ const StorageManager = {
       'css-common',
       'css-individual',
       'css-special',
+      'parts-common-css',
+      'parts-individual-css',
+      'parts-special-css',
       'parts-common',
       'parts-individual',
       'parts-special',
@@ -889,6 +892,24 @@ const StorageManager = {
       imagesIndividual: this.load(instanceId, 'images-individual', []),
       imagesSpecial: this.load(instanceId, 'images-special', [])
     };
+
+    const cssLegacy = [
+      ['parts-common-css', 'cssCommon', 'css-common'],
+      ['parts-individual-css', 'cssIndividual', 'css-individual'],
+      ['parts-special-css', 'cssSpecial', 'css-special']
+    ];
+    for (const [legacyKey, field, saveKey] of cssLegacy) {
+      const legacyVal = this.load(instanceId, legacyKey, undefined);
+      if (legacyVal === undefined) continue;
+      const cur = data[field];
+      const curStr = typeof cur === 'string' ? cur : '';
+      const legStr = typeof legacyVal === 'string' ? legacyVal : '';
+      if (curStr === '' && legStr !== '') {
+        data[field] = legStr;
+        this.save(instanceId, saveKey, legStr);
+      }
+      this.remove(instanceId, legacyKey);
+    }
 
     const normalizedCommon = this.normalizeImages(data.imagesCommon);
     const normalizedIndividual = this.normalizeImages(data.imagesIndividual);
@@ -1002,15 +1023,15 @@ function setupSaveResetListeners() {
             dataToSave = data.page;
             break;
           case 'parts-common-css':
-            key = 'parts-common-css';
+            key = 'css-common';
             dataToSave = typeof data.css?.common === 'string' ? data.css.common : '';
             break;
           case 'parts-individual-css':
-            key = 'parts-individual-css';
+            key = 'css-individual';
             dataToSave = typeof data.css?.individual === 'string' ? data.css.individual : '';
             break;
           case 'parts-special-css':
-            key = 'parts-special-css';
+            key = 'css-special';
             dataToSave = typeof data.css?.special === 'string' ? data.css.special : '';
             break;
           case 'parts-common':
