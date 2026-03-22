@@ -77,6 +77,22 @@ export function renderComponentCore(
   return html;
 }
 
+const CSS_CATEGORIES = ['common', 'individual', 'special'] as const;
+
+/**
+ * CSSデータから<style>タグのHTML文字列を生成する
+ * 順序は common → individual → special（PageCSSManager と同一）
+ */
+export function renderCssToHtml(css: ZeroCodeData['css'] | undefined | null): string {
+  if (!css) return '';
+  return CSS_CATEGORIES.filter((cat) => css[cat]?.trim())
+    .map((cat) => {
+      const escaped = css[cat]!.replace(/<\/style/gi, '<\\/style');
+      return `<style id="zcode-css-style-${cat}" data-zcode-css="true" data-zcode-css-category="${cat}">${escaped}</style>`;
+    })
+    .join('\n');
+}
+
 /**
  * データからHTMLを生成（サーバーサイド/クライアントサイド両対応）
  *

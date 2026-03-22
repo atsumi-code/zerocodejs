@@ -252,8 +252,7 @@ interface ImageData {
 **使用例**:
 
 ```html
-<zcode-studio id="studio" locale="ja"
-  config='{"studio":{"sanitizePartTemplate":true}}'>
+<zcode-studio id="studio" locale="ja" config='{"studio":{"sanitizePartTemplate":true}}'>
   <link slot="css" rel="stylesheet" href="/css/common.css" />
   <script slot="script" src="/js/accordion.js"></script>
 </zcode-studio>
@@ -835,15 +834,31 @@ watch(enableContextMenu, (newValue) => {
 
 #### 関数
 
-- `renderToHtml(data: ZeroCodeData, options?: { enableEditorAttributes?: boolean }): string`: データからHTML文字列を生成
+- `renderToHtml(data: ZeroCodeData, options?: { enableEditorAttributes?: boolean }): string`: ページコンポーネントからHTML文字列を生成
   - `data`: ZeroCodeData形式のデータ
   - `options.enableEditorAttributes`: 編集用属性を有効にするか（デフォルト: `false`）
-  - 戻り値: 生成されたHTML文字列
+  - 戻り値: 生成されたHTML文字列（CSSは含まない）
   - ⚠️ **セキュリティ注意**:
     - この関数は属性値に対して基本的なエスケープ処理とURL検証を行いますが、完全なセキュリティ保証はできません。
     - **パーツテンプレート（`part.body`）は信頼できるソースからのみ使用してください。**
     - **style属性にユーザー入力を直接設定する場合は、サーバー側での検証を推奨します。**
     - **サーバー側でのデータ検証を必ず実装してください。**
+
+- `renderCssToHtml(css: ZeroCodeData['css']): string`: CSSデータから`<style>`タグのHTML文字列を生成
+  - `css`: `ZeroCodeData.css`オブジェクト（`{ common?: string; individual?: string; special?: string }`）
+  - 戻り値: `<style>`タグを含むHTML文字列（common → individual → special の順）
+  - 空・`undefined`のカテゴリはスキップされる
+  - CSS内の`</style>`はエスケープされる
+  - 各`<style>`タグには`id="zcode-css-style-{category}"`、`data-zcode-css="true"`、`data-zcode-css-category="{category}"`属性が付与される
+
+```javascript
+import { renderToHtml, renderCssToHtml } from 'zerocodejs';
+
+const content = renderToHtml(data, { enableEditorAttributes: false });
+const styles = renderCssToHtml(data.css);
+
+// content は <body> に、styles は <head> に配置
+```
 
 #### サニタイズ関数
 

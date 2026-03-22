@@ -10,7 +10,7 @@ import './styles/zcode-cms.css';
 export * from './types';
 
 // サーバーサイド用のレンダリング関数をエクスポート
-export { renderToHtml, RenderError } from './core/renderer/renderer';
+export { renderToHtml, renderCssToHtml, RenderError } from './core/renderer/renderer';
 
 // サニタイズ関数のエクスポート（サーバーサイドとルール共有用）
 export { sanitizeRichText, sanitizeUrl, sanitizePartTemplate } from './core/utils/sanitize';

@@ -1260,7 +1260,7 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
         </table>
 
         <h3>renderToHtml()</h3>
-        <p>サーバーサイドレンダリング用のHTML文字列生成関数。</p>
+        <p>ページコンポーネントからHTML文字列を生成します。CSSは含まれません。</p>
         <pre><code>import { renderToHtml } from 'zerocodejs';
 
 const html = renderToHtml(data, {
@@ -1278,6 +1278,32 @@ const html = renderToHtml(data, {
 
         <h4>戻り値</h4>
         <p>生成されたHTML文字列</p>
+
+        <h3>renderCssToHtml()</h3>
+        <p>
+          CSSデータから<code>&lt;style&gt;</code>タグのHTML文字列を生成します。common → individual →
+          special の順で出力されます。
+        </p>
+        <pre><code>import { renderToHtml, renderCssToHtml } from 'zerocodejs';
+
+const content = renderToHtml(data, { enableEditorAttributes: false });
+const styles = renderCssToHtml(data.css);
+
+// content は &lt;body&gt; に、styles は &lt;head&gt; に配置</code></pre>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li>
+            <code>css</code>:
+            <code>{ common?: string; individual?: string; special?: string }</code>
+          </li>
+        </ul>
+
+        <h4>戻り値</h4>
+        <p>
+          <code>&lt;style&gt;</code
+          >タグを含むHTML文字列。空や<code>undefined</code>のカテゴリはスキップされます。
+        </p>
 
         <h2 id="events">イベント</h2>
 
@@ -1863,9 +1889,7 @@ cms.addEventListener('save-request', (event) => {
               <td>
                 <code>['page']</code>
               </td>
-              <td>
-                ページデータを保存
-              </td>
+              <td>ページデータを保存</td>
             </tr>
             <tr>
               <td>パーツ管理</td>

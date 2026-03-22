@@ -151,7 +151,9 @@ function listPageNames() {
       .filter((n) => !PREFERRED_PAGE_ORDER.includes(n))
       .sort()
       .forEach((name) => names.push(name));
-  } catch (_) { /* ignore */ }
+  } catch (_) {
+    /* ignore */
+  }
   if (!names.includes('default')) names.unshift('default');
   return names;
 }
@@ -338,27 +340,7 @@ app.post('/api/reset', (req, res) => {
 });
 
 let renderToHtml = null;
-
-function buildStyleTags(css) {
-  if (!css) return '';
-  let html = '';
-  if (css.common)
-    html +=
-      '<style id="zcode-css-style-common" data-zcode-css-category="common">' +
-      css.common +
-      '</style>';
-  if (css.individual)
-    html +=
-      '<style id="zcode-css-style-individual" data-zcode-css-category="individual">' +
-      css.individual +
-      '</style>';
-  if (css.special)
-    html +=
-      '<style id="zcode-css-style-special" data-zcode-css-category="special">' +
-      css.special +
-      '</style>';
-  return html;
-}
+let renderCssToHtml = null;
 
 const SHOW_DEV_UI = process.env.NODE_ENV !== 'production';
 
@@ -423,10 +405,11 @@ async function serveSSR(req, res, pageName) {
         pathToFileURL(path.join(__dirname, '../../dist/zerocode-ssr.es.js')).href
       );
       renderToHtml = mod.renderToHtml;
+      renderCssToHtml = mod.renderCssToHtml;
     }
     const store = buildMergedData(name);
     const content = renderToHtml(store, { enableEditorAttributes: false });
-    const styles = buildStyleTags(store.css || {});
+    const styles = renderCssToHtml(store.css);
     const editLink = name === 'default' ? '/edit' : '/edit/' + encodeURIComponent(name);
     const devCss = SHOW_DEV_UI ? devCssLink : '';
     const devHeader = SHOW_DEV_UI ? devHeaderBlock.replace(/\{\{EDIT_LINK\}\}/g, editLink) : '';
