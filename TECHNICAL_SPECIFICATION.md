@@ -832,6 +832,11 @@ watch(enableContextMenu, (newValue) => {
 
 ### サーバーサイドレンダリング
 
+#### パッケージのエントリ
+
+- **Node / SSR（推奨）**: `zerocodejs/ssr` から `renderToHtml`、`renderCssToHtml`、`RenderError` を import する。Vue や Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）。テンプレートの DOM 処理には [jsdom](https://github.com/jsdom/jsdom) が必要で、`zerocodejs` の依存としてインストールされる。
+- **フルエントリ**: `zerocodejs` 本体からも同じ関数が export されている（ブラウザ用ビルドにまとめて解決する場合や、既存コードとの互換用）。
+
 #### 関数
 
 - `renderToHtml(data: ZeroCodeData, options?: { enableEditorAttributes?: boolean }): string`: ページコンポーネントからHTML文字列を生成
@@ -852,12 +857,13 @@ watch(enableContextMenu, (newValue) => {
   - 各`<style>`タグには`id="zcode-css-style-{category}"`、`data-zcode-css="true"`、`data-zcode-css-category="{category}"`属性が付与される
 
 ```javascript
-import { renderToHtml, renderCssToHtml } from 'zerocodejs';
+import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
 
 const content = renderToHtml(data, { enableEditorAttributes: false });
 const styles = renderCssToHtml(data.css);
 
 // content は <body> に、styles は <head> に配置
+// フルパッケージから import する場合: import { ... } from 'zerocodejs';
 ```
 
 #### サニタイズ関数

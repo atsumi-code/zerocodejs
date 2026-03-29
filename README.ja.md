@@ -130,6 +130,16 @@ import 'zerocodejs/style.css';
 
 詳細は [技術仕様書 – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcode-studio)。
 
+## サーバーサイドレンダリング（SSR）
+
+**Node.js** や Next.js などでは、公式サブパス **`zerocodejs/ssr`** から `renderToHtml` / `renderCssToHtml` を import することを推奨します。Vue・Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）です。テンプレート処理には **jsdom** が必要です（`zerocodejs` の依存として入ります）。
+
+```javascript
+import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
+```
+
+従来どおり **`zerocodejs`** 本体から同じ関数を import することもできます。
+
 ## 既存データの読み込み
 
 既存データを読み込む場合は、JavaScriptで属性を設定します：

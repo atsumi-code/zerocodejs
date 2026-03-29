@@ -389,6 +389,8 @@ async function serveSSR(req, res, pageName) {
         );
     }
     if (!renderToHtml) {
+      // 本番のホストアプリでは npm の `import('zerocodejs/ssr')` を推奨（package exports）。
+      // このリポジトリ内デモは workspace の dist を dynamic import する。
       const { JSDOM } = require('jsdom');
       const dom = new JSDOM();
       const w = dom.window;

@@ -492,6 +492,10 @@ interface ImageData {
 
 - `src/core/renderer/renderer.ts`: レンダリング処理（HTML生成）
 
+### SSR 用エントリ（npm）
+
+- `src/ssr-entry.ts`: `zerocodejs/ssr` の公開エントリ（`renderToHtml`、`renderCssToHtml`、`RenderError` のみ。`vite.ssr.config.ts` で `dist/zerocode-ssr.es.js` を生成）
+
 ## 実装済み機能
 
 ### 完了済み機能
@@ -948,6 +952,7 @@ const expensiveValue = computed(() => {
 - [ZeroCodeCMS](./src/components/ZeroCodeCMS.vue) - ユーザー用管理画面
 - [ZeroCodeEditor](./src/components/ZeroCodeEditor.vue) - エンジニア用管理画面
 - [データ管理](./src/core/composables/useZeroCodeData.ts) - データの読み込み・取得・設定
+- [SSR エントリ](./src/ssr-entry.ts) - npm サブパス `zerocodejs/ssr`
 
 ### ドキュメント
 
@@ -957,4 +962,4 @@ const expensiveValue = computed(() => {
 
 ---
 
-**最終更新日**: 2026年2月
+**最終更新日**: 2026年3月

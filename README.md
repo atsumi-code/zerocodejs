@@ -123,6 +123,16 @@ For **trusted users / agencies**: same **shell as `zcode-editor`** (page, parts,
 
 See [Technical Specification – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcode-studio).
 
+## Server-side rendering (SSR)
+
+For **Node.js** or app frameworks (e.g. Next.js), import from the **`zerocodejs/ssr`** subpath. It is the supported `package.json` export for the SSR bundle (no Vue / Web Components). Template processing needs **jsdom** (already a dependency of `zerocodejs`).
+
+```javascript
+import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
+```
+
+The main **`zerocodejs`** entry also exports these functions if you prefer one resolution from the full library.
+
 ## Loading Existing Data
 
 To load existing data, set attributes via JavaScript:

@@ -1261,7 +1261,12 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
 
         <h3>renderToHtml()</h3>
         <p>ページコンポーネントからHTML文字列を生成します。CSSは含まれません。</p>
-        <pre><code>import { renderToHtml } from 'zerocodejs';
+        <p>
+          Node や SSR では <code>zerocodejs/ssr</code> から import
+          することを推奨します（軽量エントリ。Vue / Web Components は含みません）。ブラウザ用の一括
+          import は <code>zerocodejs</code> のままでも問題ありません。
+        </p>
+        <pre><code>import { renderToHtml } from 'zerocodejs/ssr';
 
 const html = renderToHtml(data, {
   enableEditorAttributes: false
@@ -1284,7 +1289,7 @@ const html = renderToHtml(data, {
           CSSデータから<code>&lt;style&gt;</code>タグのHTML文字列を生成します。common → individual →
           special の順で出力されます。
         </p>
-        <pre><code>import { renderToHtml, renderCssToHtml } from 'zerocodejs';
+        <pre><code>import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
 
 const content = renderToHtml(data, { enableEditorAttributes: false });
 const styles = renderCssToHtml(data.css);
