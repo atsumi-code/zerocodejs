@@ -269,6 +269,26 @@
   cursor: default;
 }
 
+/* 呼び出し側のリセットCSS（appearance: none 等）でもネイティブの見た目が残るよう補強 */
+.zcode-radio-item input[type='radio'],
+.zcode-checkbox-item input[type='checkbox'],
+.zcode-setting-checkbox,
+.zcode-keep-adding-checkbox,
+.zcode-dynamic-content-toggle-checkbox,
+.zcode-checkbox,
+.zcode-checkbox-input,
+.zcode-language-select,
+.zcode-select,
+.zcode-select[multiple],
+.zcode-part-editor-options-select,
+.zcode-select-input {
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  appearance: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
 /* ラジオボタン */
 .zcode-radio-editor {
   margin-top: 12px;

@@ -104,6 +104,10 @@ import 'zerocodejs/style.css';
 </script>
 ```
 
+### スタイルシートの読み込み順
+
+**`zerocodejs/style.css`**（または `dist/zerocodejs.css`）は、**強いグローバルリセット（Tailwind の Preflight、`input { appearance: none }` など）より後に**読み込むことを推奨します。クラスは `zcode-` でスコープされますが、チェックボックス・ラジオ・`select` などネイティブ要素は広い `input` / `select` リセットの影響を受けることがあります。
+
 ## コンポーネント
 
 ### `<zcode-editor>`

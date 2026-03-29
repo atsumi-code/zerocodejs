@@ -1143,6 +1143,13 @@ cms.addEventListener('save-request', async (event) => {
 - `.zcode-settings-panel`: 設定パネル
 - `.zcode-panels-wrapper`: パネルラッパー（`position: sticky`）
 
+### 呼び出し側のリセットCSSとの共存
+
+クラスは `zcode-` でスコープされていますが、**チェックボックス・ラジオ・`select` などのネイティブコントロール**はグローバルな `input` / `select` 向けリセット（例: `appearance: none`、強い `*` リセット）の影響を受けることがあります。
+
+- **`zerocodejs/style.css`（または `dist/zerocodejs.css`）は、強力なグローバルリセットの後に読み込む**ことを推奨します。
+- ライブラリ側では上記コントロールに対し `appearance: auto` などの補強を入れていますが、呼び出し側で **同じセレクタより後に** ゼロコードの CSS が当たる構成にすると確実です。
+
 ## 依存関係
 
 ### 主要な依存関係

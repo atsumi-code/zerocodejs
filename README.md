@@ -97,6 +97,10 @@ import 'zerocodejs/style.css';
 </script>
 ```
 
+### Stylesheet load order
+
+Import **`zerocodejs/style.css`** after any aggressive global reset (for example Tailwind Preflight or rules that set `input { appearance: none }`). ZeroCode scopes UI with `zcode-` classes, but native checkboxes, radios, and selects can still be affected by broad `input` / `select` resets.
+
 ## Components
 
 ### `<zcode-editor>`
