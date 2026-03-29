@@ -1,4 +1,4 @@
-import { getDOMParser } from './dom-utils';
+import { getDOMParser, DOM_NODE_TYPE_ELEMENT, DOM_NODE_TYPE_TEXT } from './dom-utils';
 import { TEMPLATE_REGEX, type FieldInfo } from './template-regex';
 import { logger } from './logger';
 
@@ -55,7 +55,7 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
   if (!templateEl) return fields;
 
   const processNode = (node: Node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeType === DOM_NODE_TYPE_TEXT) {
       const text = node.textContent || '';
 
       // オプショナルフィールドを先にチェック（グループ付きリッチテキスト）
@@ -499,7 +499,7 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
       });
       // TEXT_NODEには子ノードがないので、ここで終了
       return;
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
+    } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
       const element = node as Element;
 
       // z-if属性をチェック

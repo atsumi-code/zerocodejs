@@ -5,6 +5,10 @@
 
 import { logger } from './logger';
 
+/** WHATWG nodeType — Node.js has no global `Node`; use these in SSR paths. */
+export const DOM_NODE_TYPE_ELEMENT = 1;
+export const DOM_NODE_TYPE_TEXT = 3;
+
 export function getDOMParser(): typeof DOMParser {
   if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
     return DOMParser;

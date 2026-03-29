@@ -12,6 +12,10 @@
       "import": "./dist/zerocode.es.js",
       "require": "./dist/zerocode.umd.js"
     },
+    "./ssr": {
+      "types": "./dist/ssr-entry.d.ts",
+      "import": "./dist/zerocode-ssr.es.js"
+    },
     "./style.css": "./dist/zerocodejs.css",
     "./zerocodejs.css": "./dist/zerocodejs.css"
   },

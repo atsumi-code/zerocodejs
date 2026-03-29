@@ -1,5 +1,5 @@
 import type { ComponentData, PartData, SlotConfig } from '../../types';
-import { getDOMParser } from './dom-utils';
+import { getDOMParser, DOM_NODE_TYPE_ELEMENT, DOM_NODE_TYPE_TEXT } from './dom-utils';
 import { sanitizeRichText, escapeAttributeValue, sanitizeUrl } from './sanitize';
 import { TEMPLATE_REGEX } from './template-regex';
 import { splitDefaultAndValidation } from './field-extractor';
@@ -160,7 +160,7 @@ export function processTemplateWithDOM(
 
   // 1. テキストノードの変数展開 {$variable:default}
   const processTextNodes = (node: Node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeType === DOM_NODE_TYPE_TEXT) {
       let text = node.textContent || '';
 
       // バックエンドデータの展開（先に処理）
@@ -503,7 +503,7 @@ export function processTemplateWithDOM(
       });
 
       node.textContent = text;
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
+    } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
       // 属性内の変数展開
       const element = node as Element;
       const attributesToRemove: string[] = [];
@@ -787,7 +787,7 @@ export function processTemplateWithDOM(
 
   // 2. 選択式・複数選択式の処理 ($field:opt1|opt2) と ($field@:opt1|opt2)
   const processSelectionSyntax = (node: Node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeType === DOM_NODE_TYPE_TEXT) {
       let text = node.textContent || '';
 
       // グループ付きセレクトボックス（先に処理）
@@ -875,7 +875,7 @@ export function processTemplateWithDOM(
       });
 
       node.textContent = text;
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
+    } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
       // 属性内の選択式処理
       const element = node as Element;
       Array.from(element.attributes).forEach((attr) => {
@@ -1104,7 +1104,7 @@ export function processTemplateWithDOM(
   ) => {
     // テキストノード内のループ変数を展開
     const processNode = (node: Node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
+      if (node.nodeType === DOM_NODE_TYPE_TEXT) {
         let text = node.textContent || '';
 
         // {item.name} のような参照を展開
@@ -1150,7 +1150,7 @@ export function processTemplateWithDOM(
         });
 
         node.textContent = text;
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
+      } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
         const el = node as Element;
 
         // 属性内のループ変数を展開
