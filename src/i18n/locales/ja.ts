@@ -247,10 +247,5 @@ export default {
     imagesManagement: '画像管理',
     dataViewer: 'データビューアー',
     loading: 'データを読み込み中...'
-  },
-  studio: {
-    preview: 'プレビュー',
-    partsManagement: '特別パーツ管理',
-    imagesManagement: '特別画像管理'
   }
 };

@@ -209,12 +209,12 @@ interface ImageData {
 
 ### zcode-studio
 
-制作会社・信頼ユーザー向け管理画面のWebコンポーネント。特別パーツ・特別CSS・特別画像のみ編集でき、それ以外のデータは読み取り専用プレビューとして表示します。
+制作会社・信頼ユーザー向け管理画面のWebコンポーネント。**UI は `zcode-editor` と同型**（タブ: ページ管理・パーツ管理・画像管理・データビューア、ページ管理内の表示/管理トグルとツールバー）。**ページ管理**は `ZeroCodeCMS` と同一の編集体験（共通/個別/特別のパーツ利用を含む）。**パーツ管理・画像管理**は特別カテゴリのみ編集（共通/個別の切り替え UI なし）。**データビューア**はページ／特別パーツ／特別画像の表示と JSON/HTML 切替（共通・個別のカテゴリタブなし）。`view-mode-changed` イベントは `zcode-editor` と同様に発火する。
 
 **属性**:
 
 - `locale`: ロケール設定（デフォルト: `'ja'`）
-- `page`: ページデータ（JSON文字列、読み取り専用プレビュー用）
+- `page`: ページデータ（JSON文字列、**ページ編集タブで編集可能**）
 - `parts-common`: 共通パーツデータ（JSON文字列、読み取り専用）
 - `parts-individual`: 個別パーツデータ（JSON文字列、読み取り専用）
 - `parts-special`: 特別パーツデータ（JSON文字列、**編集可能**）
@@ -241,7 +241,7 @@ interface ImageData {
 
 **イベント**:
 
-- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`、`targets` は常に特別系のみ（`['parts-special', 'parts-special-css']` / `['images-special']`）
+- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`。`targets` は `zcode-editor` と同様にアクティブなタブとデータビューアの表示に応じて決まる（ページ管理 → `['page']`、特別パーツ → `['parts-special', 'parts-special-css']`、特別画像 → `['images-special']`、データビューアはページ／特別パーツ／特別画像のいずれを表示中かに応じて `page` または `parts-special`+CSS または `images-special`）
 
 **config.studio オプション**:
 

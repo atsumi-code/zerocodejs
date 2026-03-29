@@ -9,7 +9,7 @@ setupI18nErrorHandler();
 
 /**
  * Web Component for ZeroCode.js Studio (制作会社・信頼ユーザー向け管理画面)
- * 特別パーツ・特別CSS・特別画像のみ編集可。それ以外は読み取り専用。
+ * シェルは zcode-editor と同型。ページ管理は CMS 同等。パーツ/画像管理とデータビューのパーツ・画像は特別のみ。
  */
 class ZeroCodeStudioElement extends HTMLElement {
   private app: App | null = null;

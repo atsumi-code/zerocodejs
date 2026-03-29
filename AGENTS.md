@@ -400,7 +400,7 @@ interface ImageData {
 
 - **zcode-cms の編集モード**: `['page']`
 - **zcode-editor のページ管理タブ**: `['page']`
-- **zcode-studio**: 特別パーツタブ: `['parts-special', 'parts-special-css']`、特別画像タブ: `['images-special']`、プレビュータブ: `['parts-special', 'parts-special-css', 'images-special']`
+- **zcode-studio**: `zcode-editor` と同型のタブ・保存ルール。ページ管理: `['page']`、特別パーツ管理: `['parts-special', 'parts-special-css']`、特別画像管理: `['images-special']`、データビューアは表示中がページ／特別パーツ／特別画像に応じて `page` または `parts-special`+CSS または `images-special`（共通・個別のデータビュー切替はなし）
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -529,7 +529,7 @@ interface ImageData {
     - 入力のたびに発生していた「Image not found」警告の連発を抑制
 
 19. ✅ **ZeroCodeStudio（制作会社向けコンポーネント）**（2026年3月）
-    - `<zcode-studio>` Web Component を追加（特別パーツ・特別CSS・特別画像のみ編集可、読み取り専用プレビュー付き）
+    - `<zcode-studio>` Web Component（シェルは `zcode-editor` と同型、ページ管理は CMS 同等、パーツ/画像/データは特別系に限定）
     - `save-request` の `source: 'studio'` を追加（サーバー側での権限チェック用）
     - パーツテンプレート用サニタイズ関数 `sanitizePartTemplate` を追加（DOMPurify ベース、z-\* 属性許可）
     - `beforeSavePart` フック、`sanitizePartTemplate` オプトインを config から設定可能

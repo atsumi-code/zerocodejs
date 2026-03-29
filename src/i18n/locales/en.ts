@@ -257,10 +257,5 @@ export default {
     saveFailedWithCount: 'Save failed ({count} items)',
     saveFailedWithMessage: 'Save failed ({count} items): {message}',
     noSaveTargets: 'No save targets'
-  },
-  studio: {
-    preview: 'Preview',
-    partsManagement: 'Special Parts',
-    imagesManagement: 'Special Images'
   }
 };

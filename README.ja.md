@@ -124,9 +124,9 @@ import 'zerocodejs/style.css';
 
 ### `<zcode-studio>`
 
-**信頼できるユーザー・制作会社向け**。**特別**カテゴリのパーツ・特別パーツ用CSS・特別画像のみ編集可能。ページや共通・個別のパーツ/画像などは**読み取り専用**（プレビュー・データビューアあり）。エンドユーザー用の `zcode-cms` と役割を分けたいときに使います。
+**信頼できるユーザー・制作会社向け**。画面構成は **`zcode-editor` と同じ**（ページ管理・パーツ管理・画像管理・データビューア）。ページ管理は `zcode-cms` 相当の編集（共通/個別/特別のパーツ利用を含む）。パーツ・画像の管理タブとデータビューアのパーツ/画像表示は**特別カテゴリのみ**（共通・個別の切り替えはなし）。エンドユーザー用の `zcode-cms` と役割を分けたいときに使います。
 
-`save-request` では `detail.source: 'studio'` と、`parts-special` / `parts-special-css` / `images-special` などのターゲットが渡り得ます。`zcode-cms` からのページ保存は **`targets: ['page']` のみ**です。特別系の永続化はホストアプリ側で処理してください（Studio 経由や API など）。
+`save-request` では `detail.source: 'studio'` と、タブ・表示に応じた `targets` が渡ります。`zcode-cms` からのページ保存は **`targets: ['page']` のみ**です。永続化はホストアプリ側で処理してください。
 
 詳細は [技術仕様書 – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcode-studio)。
 

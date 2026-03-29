@@ -31,8 +31,8 @@
       </button>
     </div>
 
-    <!-- 保存ボタン（左下固定、管理モードの時のみ表示） -->
-    <div v-if="viewMode === 'manage'" class="zcode-save-controls-fixed">
+    <!-- 保存ボタン（左下固定、管理モードの時のみ表示。Studio 等で親に委譲する場合は非表示） -->
+    <div v-if="viewMode === 'manage' && !hideFixedSaveButton" class="zcode-save-controls-fixed">
       <button class="zcode-save-btn" @click="handleSave">
         <Save :size="16" />
         <span>{{ $t('common.save') }}</span>
@@ -216,6 +216,10 @@ const props = defineProps<{
   config?: string;
   endpoints?: string;
   backendData?: string;
+  /** true のとき固定保存ボタンを出さない（親が save-request を送る） */
+  hideFixedSaveButton?: boolean;
+  /** save-request の detail.source（埋め込み先が studio のときは 'studio'） */
+  saveRequestSource?: 'cms' | 'studio';
 }>();
 
 const viewMode = ref<'preview' | 'manage'>('manage');
@@ -235,6 +239,9 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 const config = parseConfig(props.config);
 
 const saveTargets = ['page'];
+
+const hideFixedSaveButton = computed(() => props.hideFixedSaveButton === true);
+const saveRequestSource = computed(() => props.saveRequestSource ?? 'cms');
 
 // 初期値の読み込みロジック（優先順位: localStorage > config.cms > デフォルト値）
 const getInitialCMSValue = <K extends keyof CMSSettings>(
@@ -545,7 +552,9 @@ function getHostElement(): HTMLElement | null {
     }
     // Light DOM の場合
     const host =
-      containerRef.value.closest?.('zcode-cms') || containerRef.value.closest?.('zcode-editor');
+      containerRef.value.closest?.('zcode-cms') ||
+      containerRef.value.closest?.('zcode-editor') ||
+      containerRef.value.closest?.('zcode-studio');
     if (host) {
       return host as HTMLElement;
     }
@@ -561,7 +570,8 @@ function getHostElement(): HTMLElement | null {
       if (root instanceof ShadowRoot && root.host) {
         return root.host as HTMLElement;
       }
-      const host = el.closest?.('zcode-cms') || el.closest?.('zcode-editor');
+      const host =
+        el.closest?.('zcode-cms') || el.closest?.('zcode-editor') || el.closest?.('zcode-studio');
       if (host) {
         return host as HTMLElement;
       }
@@ -793,7 +803,7 @@ function executeSave() {
   const requestId = createRequestId();
   dispatchEvent('save-request', {
     requestId,
-    source: 'cms',
+    source: saveRequestSource.value,
     targets: saveTargets,
     timestamp: Date.now()
   });

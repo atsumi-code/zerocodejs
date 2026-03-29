@@ -44,8 +44,8 @@
             {{ $t('dataViewer.html') }}
           </button>
         </template>
-        <!-- パーツ・画像用: 共通/個別切り替え -->
-        <template v-else>
+        <!-- パーツ・画像用: 共通/個別/特別（fixedCategory 時は非表示で固定） -->
+        <template v-else-if="!fixedCategory">
           <button
             v-for="category in categoryTabs"
             :key="category"
@@ -93,6 +93,7 @@ import { logger } from '../../../core/utils/logger';
 const props = defineProps<{
   cmsData: ZeroCodeData;
   config?: Partial<CMSConfig>;
+  fixedCategory?: 'common' | 'individual' | 'special';
 }>();
 
 // 内部で管理するタブ（ページ/パーツ/画像）
@@ -117,13 +118,13 @@ const categoryTabs = computed(() => {
   return tabs as readonly ('common' | 'individual' | 'special')[];
 });
 
-// activeCategoryの初期値をcategoryOrderに基づいて設定
 const activeCategory = ref<'common' | 'individual' | 'special'>(
-  props.config?.categoryOrder === 'individual'
-    ? 'individual'
-    : props.config?.categoryOrder === 'special'
-      ? 'special'
-      : 'common'
+  props.fixedCategory ??
+    (props.config?.categoryOrder === 'individual'
+      ? 'individual'
+      : props.config?.categoryOrder === 'special'
+        ? 'special'
+        : 'common')
 );
 
 // ページ全体のHTML（編集モード属性なし）
@@ -274,13 +275,13 @@ watch(
       case 'page':
         return props.cmsData.page;
       case 'parts':
-        return activeCategory.value === 'common'
-          ? props.cmsData.parts.common
-          : props.cmsData.parts.individual;
+        if (activeCategory.value === 'common') return props.cmsData.parts.common;
+        if (activeCategory.value === 'individual') return props.cmsData.parts.individual;
+        return props.cmsData.parts.special;
       case 'images':
-        return activeCategory.value === 'common'
-          ? props.cmsData.images.common
-          : props.cmsData.images.individual;
+        if (activeCategory.value === 'common') return props.cmsData.images.common;
+        if (activeCategory.value === 'individual') return props.cmsData.images.individual;
+        return props.cmsData.images.special;
       default:
         return null;
     }
@@ -298,7 +299,11 @@ watch(activeCategory, () => {
 
 // 内部アクティブタブ変更時にリセット
 watch(internalActiveTab, () => {
-  activeCategory.value = props.config?.categoryOrder === 'individual' ? 'individual' : 'common';
+  if (props.fixedCategory) {
+    activeCategory.value = props.fixedCategory;
+  } else {
+    activeCategory.value = props.config?.categoryOrder === 'individual' ? 'individual' : 'common';
+  }
   updateFormattedJson();
 });
 
