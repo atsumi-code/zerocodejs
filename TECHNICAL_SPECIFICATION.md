@@ -834,7 +834,7 @@ watch(enableContextMenu, (newValue) => {
 
 #### パッケージのエントリ
 
-- **Node / SSR（推奨）**: `zerocodejs/ssr` から `renderToHtml`、`renderCssToHtml`、`RenderError` を import する。Vue や Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）。テンプレートの DOM 処理には [jsdom](https://github.com/jsdom/jsdom) が必要で、`zerocodejs` の依存としてインストールされる。
+- **Node / SSR（推奨）**: `zerocodejs/ssr` から `renderToHtml`、`renderCssToHtml`、`RenderError` を import する。Vue や Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）。テンプレート処理は **グローバルに `DOMParser` があればそれを利用**し、無い環境では [jsdom](https://github.com/jsdom/jsdom) を `require` する（`zerocodejs` の依存として同梱・インストールされる想定）。`DOMParser` が先に使える場合は `require("jsdom")` を行わない。
 - **フルエントリ**: `zerocodejs` 本体からも同じ関数が export されている（ブラウザ用ビルドにまとめて解決する場合や、既存コードとの互換用）。
 
 #### 関数

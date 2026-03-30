@@ -9,29 +9,39 @@ import { logger } from './logger';
 export const DOM_NODE_TYPE_ELEMENT = 1;
 export const DOM_NODE_TYPE_TEXT = 3;
 
+let cachedJSDOMParserClass: typeof DOMParser | undefined;
+
+function loadDOMParserFromJSDOM(): typeof DOMParser {
+  if (cachedJSDOMParserClass) {
+    return cachedJSDOMParserClass;
+  }
+  if (typeof require === 'undefined') {
+    throw new Error('DOMParser is not available in this environment');
+  }
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { JSDOM } = require('jsdom');
+    const dom = new JSDOM('');
+    cachedJSDOMParserClass = dom.window.DOMParser as typeof DOMParser;
+    return cachedJSDOMParserClass;
+  } catch {
+    throw new Error(
+      'jsdom is required for server-side rendering. Please install it: npm install jsdom'
+    );
+  }
+}
+
 export function getDOMParser(): typeof DOMParser {
-  if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
-    return DOMParser;
-  }
-
-  if (typeof require !== 'undefined') {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { JSDOM } = require('jsdom');
-      const dom = new JSDOM();
-      return dom.window.DOMParser as typeof DOMParser;
-    } catch (error) {
-      throw new Error(
-        'jsdom is required for server-side rendering. Please install it: npm install jsdom'
-      );
-    }
-  }
-
   if (typeof DOMParser !== 'undefined') {
     return DOMParser;
   }
 
-  throw new Error('DOMParser is not available in this environment');
+  const g = globalThis as typeof globalThis & { window?: { DOMParser?: typeof DOMParser } };
+  if (g.window?.DOMParser) {
+    return g.window.DOMParser;
+  }
+
+  return loadDOMParserFromJSDOM();
 }
 
 /**

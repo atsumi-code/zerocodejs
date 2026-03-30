@@ -1070,10 +1070,10 @@ export function processTemplateWithDOM(
         return;
       }
 
-      // 各イテレーションでテンプレートを複製（ownerDocument で Node/SSR 対応）
-      const doc = loopEl.ownerDocument ?? (typeof document !== 'undefined' ? document : null);
-      if (!doc) throw new Error('Document not available for createDocumentFragment');
-      const fragment = doc.createDocumentFragment();
+      // 各イテレーションでテンプレートを複製（パース済み doc にフォールバック、グローバル document は使わない）
+      const fragmentOwner = loopEl.ownerDocument ?? doc;
+      if (!fragmentOwner) throw new Error('Document not available for createDocumentFragment');
+      const fragment = fragmentOwner.createDocumentFragment();
 
       (dataSource as unknown[]).forEach((item) => {
         // 子要素をクローン
