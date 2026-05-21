@@ -116,6 +116,10 @@
   z-index: 1002;
 }
 
+.zcode-add-panel {
+  overflow: visible;
+}
+
 /* 共通パネルヘッダースタイル */
 .zcode-edit-panel-header,
 .zcode-add-panel-header,
@@ -1490,6 +1494,10 @@
     right: 0;
   }
 
+  .zcode-add-panel-category-toolbar {
+    flex-wrap: nowrap;
+  }
+
   .zcode-edit-actions {
     flex-direction: column;
     gap: 12px;
@@ -1623,14 +1631,78 @@
    6. 追加モード
    ======================================== */
 
+.zcode-add-panel-category-toolbar {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.zcode-add-panel-options-anchor {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+}
+
+.zcode-add-panel-options-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.zcode-add-panel-options-trigger:hover,
+.zcode-add-panel-options-trigger.is-active {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.zcode-add-panel-options-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  min-width: 260px;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.zcode-add-panel-options-popover-title {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
 /* 共通/個別タブ */
 .zcode-part-category-tabs {
   display: flex;
   gap: 4px;
   padding: 8px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  flex-shrink: 1;
+  -webkit-overflow-scrolling: touch;
+  border-bottom: none;
+  background: transparent;
 }
 
 .zcode-category-tab {
@@ -1940,6 +2012,35 @@
 .zcode-insert-after:hover {
   background: var(--zcode-color-add-bg);
   border-color: var(--zcode-color-add-hover);
+}
+
+.zcode-add-panel-options-popover .zcode-add-option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  color: #374151;
+}
+
+.zcode-add-panel-options-popover .zcode-add-option-label + .zcode-add-option-label {
+  margin-top: 10px;
+}
+
+.zcode-module-preview--duplicate {
+  cursor: pointer;
+}
+
+.zcode-module-preview--duplicate:focus-visible {
+  outline: 2px solid var(--zcode-color-add);
+  outline-offset: 2px;
+}
+
+.zcode-duplicate-selected-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 /* 空のスロット */

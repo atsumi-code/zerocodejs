@@ -72,7 +72,13 @@ export default {
     noPartsAvailable: 'No parts available',
     addBefore: 'Add before',
     addAfter: 'Add after',
-    continueAdding: 'Continue adding parts'
+    continueAdding: 'Continue adding parts',
+    insertBefore: 'Insert before the selected element',
+    closePanelAfterAdd: 'Close panel after adding',
+    duplicateSelectedHint: 'Click to duplicate and add (see tab row gear icon for options)',
+    duplicateSelectedAria: 'Duplicate selected part and add',
+    optionsAriaLabel: 'Open add options',
+    optionsPopoverTitle: 'Add options'
   },
   editPanel: {
     title: 'Editing',

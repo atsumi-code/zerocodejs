@@ -33,7 +33,8 @@ export function useAddMode(
   );
   const addTypeTab = ref<string | 'all' | 'selected' | null>('all');
   const clickedComponent = ref<ComponentData | null>(null);
-  const keepAdding = ref<boolean>(false);
+  const addInsertBefore = ref<boolean>(false);
+  const closePanelAfterAdd = ref<boolean>(false);
 
   function getSlotPath(path: string): string {
     if (path.includes('.slots.')) {
@@ -285,6 +286,8 @@ export function useAddMode(
     addPartCategory.value = 'common';
     addSelectedType.value = null;
     addSelectedPart.value = null;
+    addInsertBefore.value = false;
+    closePanelAfterAdd.value = false;
 
     const component = getComponentByPath(path, cmsData);
     if (component && component.part_id) {
@@ -376,7 +379,6 @@ export function useAddMode(
     addTypeTab.value = 'all';
     addSelectedType.value = null;
     addSelectedPart.value = null;
-    keepAdding.value = false;
   }
 
   function handleTypeTabClick(type: string | 'all' | 'selected') {
@@ -396,7 +398,6 @@ export function useAddMode(
       addSelectedType.value = null;
       addSelectedPart.value = null;
     }
-    keepAdding.value = false;
   }
 
   function getPartPreviewHtml(type: TypeData, part: PartData): string {
@@ -418,18 +419,25 @@ export function useAddMode(
   }
 
   function selectPart(type: TypeData, part: PartData) {
-    if (addSelectedPart.value?.id === part.id) {
-      addSelectedType.value = null;
-      addSelectedPart.value = null;
-      return;
-    }
-
     addSelectedType.value = type;
     addSelectedPart.value = part;
     if (addTypeTab.value === 'selected') {
       addTypeTab.value = 'all';
     }
-    keepAdding.value = false;
+    confirmAddPart(addInsertBefore.value ? 'before' : 'after');
+  }
+
+  function duplicateSelectedPart() {
+    if (
+      addTypeTab.value !== 'selected' ||
+      !clickedComponent.value ||
+      !addSelectedPart.value ||
+      !addSelectedType.value ||
+      !addTargetPath.value
+    ) {
+      return;
+    }
+    confirmAddPart(addInsertBefore.value ? 'before' : 'after');
   }
 
   function createComponentFromTypeRecursive(
@@ -608,6 +616,7 @@ export function useAddMode(
     }
 
     const targetPath = addTargetPath.value;
+    const anchorBeforeInsert = targetPath;
     const pathParts = targetPath.split('.');
     let newComponentPath: string | null = null;
 
@@ -616,9 +625,6 @@ export function useAddMode(
       if (position === 'before') {
         cmsData.page.splice(index, 0, newComponent);
         newComponentPath = `page.${index}`;
-        if (keepAdding.value) {
-          addTargetPath.value = `page.${index + 1}`;
-        }
       } else {
         cmsData.page.splice(index + 1, 0, newComponent);
         newComponentPath = `page.${index + 1}`;
@@ -676,26 +682,8 @@ export function useAddMode(
         newComponentPath = `${slotPath}.${children.length - 1}`;
       } else {
         const insertionIndex = position === 'before' ? slotItemIndex : slotItemIndex + 1;
-        if (position === 'before') {
-          children.splice(slotItemIndex, 0, newComponent);
-          newComponentPath = `${slotPath}.${slotItemIndex}`;
-          if (keepAdding.value) {
-            const slotPath = getSlotPath(targetPath);
-            if (targetPath !== slotPath) {
-              const newPathParts = [...pathParts];
-              newPathParts[newPathParts.length - 1] = String(slotItemIndex + 1);
-              addTargetPath.value = newPathParts.join('.');
-            } else {
-              const slotPathParts = slotPath.split('.');
-              const newPathParts = [...slotPathParts];
-              newPathParts.push('0');
-              addTargetPath.value = newPathParts.join('.');
-            }
-          }
-        } else {
-          children.splice(insertionIndex, 0, newComponent);
-          newComponentPath = `${slotPath}.${insertionIndex}`;
-        }
+        children.splice(insertionIndex, 0, newComponent);
+        newComponentPath = `${slotPath}.${insertionIndex}`;
       }
 
       if (!Array.isArray(parent.slots[slotName])) {
@@ -709,40 +697,89 @@ export function useAddMode(
       }
     }
 
-    if (!keepAdding.value) {
+    const stayOpen = !closePanelAfterAdd.value;
+
+    if (!stayOpen) {
       cancelAdd({ scrollBack: false });
-    } else {
-      if (position === 'before' && previewArea.value && addTargetPath.value) {
-        const previousElement = previewArea.value.querySelector(
-          `[data-zcode-path="${targetPath}"]`
-        ) as HTMLElement;
-        if (previousElement) {
-          removeActiveOutline(previousElement);
-        }
+      if (newComponentPath) {
         nextTick(() => {
-          if (previewArea.value && addTargetPath.value) {
-            const currentElement = previewArea.value.querySelector(
-              `[data-zcode-path="${addTargetPath.value}"]`
-            ) as HTMLElement;
-            if (currentElement) {
-              setActiveOutline(currentElement, 'add');
-            }
+          if (!previewArea.value) return;
+          const newElement = previewArea.value.querySelector(
+            `[data-zcode-path="${newComponentPath}"]`
+          ) as HTMLElement | null;
+          if (newElement && unref(scrollIntoViewOnPartEdit)) {
+            scrollToElement(newElement);
           }
         });
       }
+      return;
     }
 
+    addSelectedType.value = null;
+    addSelectedPart.value = null;
+
     if (newComponentPath) {
-      nextTick(() => {
-        if (!previewArea.value) return;
-        const newElement = previewArea.value.querySelector(
-          `[data-zcode-path="${newComponentPath}"]`
-        ) as HTMLElement | null;
-        if (newElement && unref(scrollIntoViewOnPartEdit)) {
-          scrollToElement(newElement);
+      addTargetPath.value = newComponentPath;
+      const nc = getComponentByPath(newComponentPath, cmsData);
+      if (nc) {
+        clickedComponent.value = nc;
+        if (addTypeTab.value === 'selected' && nc.part_id) {
+          const parts = cmsData.parts;
+          const allTypes = [...parts.common, ...parts.individual, ...parts.special];
+          let synced = false;
+          for (const typeData of allTypes) {
+            const part = typeData.parts.find((p) => p.id === nc.part_id);
+            if (part) {
+              addSelectedType.value = typeData;
+              addSelectedPart.value = part;
+              synced = true;
+              break;
+            }
+          }
+          if (!synced) {
+            addSelectedType.value = null;
+            addSelectedPart.value = null;
+          }
         }
-      });
+      }
     }
+
+    nextTick(() => {
+      if (!previewArea.value) return;
+
+      const oldEl = previewArea.value.querySelector(
+        `[data-zcode-path="${anchorBeforeInsert}"]`
+      ) as HTMLElement | null;
+      const oldSlot = previewArea.value.querySelector(
+        `[data-zcode-slot-path="${anchorBeforeInsert}"]`
+      ) as HTMLElement | null;
+      if (oldEl) removeActiveOutline(oldEl);
+      if (oldSlot) removeActiveOutline(oldSlot);
+
+      const nextPath = addTargetPath.value;
+      if (!nextPath) return;
+
+      const newEl = previewArea.value.querySelector(
+        `[data-zcode-path="${nextPath}"]`
+      ) as HTMLElement | null;
+      if (newEl) {
+        setActiveOutline(newEl, 'add');
+        if (unref(scrollIntoViewOnPartEdit)) {
+          scrollToElement(newEl);
+        }
+        return;
+      }
+
+      const slotPathOnly = getSlotPath(nextPath);
+      if (slotPathOnly === nextPath) {
+        const slotEl = previewArea.value.querySelector(
+          `[data-zcode-slot-path="${slotPathOnly}"]`
+        ) as HTMLElement | null;
+        if (slotEl) {
+          setActiveOutline(slotEl, 'add');
+        }
+      }
+    });
   }
 
   function cancelAdd(options: { scrollBack?: boolean } = {}) {
@@ -774,7 +811,6 @@ export function useAddMode(
     clickedComponent.value = null;
     addPartCategory.value = 'common';
     addTypeTab.value = 'all';
-    keepAdding.value = false;
   }
 
   const hasSpecialParts = computed(() => cmsData.parts.special.length > 0);
@@ -786,7 +822,8 @@ export function useAddMode(
     clickedComponent,
     addPartCategory,
     addTypeTab,
-    keepAdding,
+    addInsertBefore,
+    closePanelAfterAdd,
     availablePartTypes,
     groupedPartsByType,
     hasSpecialParts,
@@ -794,6 +831,7 @@ export function useAddMode(
     handleCategoryTabClick,
     handleTypeTabClick,
     selectPart,
+    duplicateSelectedPart,
     getPartPreviewHtml,
     getClickedComponentPreviewHtml,
     confirmAddPart,

@@ -72,7 +72,13 @@ export default {
     noPartsAvailable: '利用可能なパーツがありません',
     addBefore: '前に追加',
     addAfter: '後に追加',
-    continueAdding: 'パーツ追加を続ける'
+    continueAdding: 'パーツ追加を続ける',
+    insertBefore: '選択した要素の前に追加する',
+    closePanelAfterAdd: '追加後にパネルを閉じる',
+    duplicateSelectedHint: 'クリックして複製で追加（詳細はタブ右の設定アイコン）',
+    duplicateSelectedAria: '選択中のパーツを複製して追加',
+    optionsAriaLabel: '追加のオプションを開く',
+    optionsPopoverTitle: '追加のオプション'
   },
   editPanel: {
     title: '編集中',

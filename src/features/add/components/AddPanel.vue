@@ -17,30 +17,77 @@
       </button>
     </div>
 
-    <!-- 共通/個別/動的タブ -->
-    <div class="zcode-part-category-tabs">
-      <button
-        v-for="category in categoryTabs"
-        :key="category"
-        :class="{ active: addPartCategory === category && addTypeTab !== 'selected' }"
-        class="zcode-category-tab"
-        @click="$emit('category-tab-click', category as 'common' | 'individual' | 'special')"
-      >
-        {{
-          category === 'common'
-            ? $t('addPanel.category.common')
-            : category === 'individual'
-              ? $t('addPanel.category.individual')
-              : $t('dataViewer.special')
-        }}
-      </button>
-      <button
-        :class="{ active: addTypeTab === 'selected' }"
-        class="zcode-category-tab"
-        @click="$emit('type-tab-click', 'selected')"
-      >
-        {{ $t('addPanel.category.selected') }}
-      </button>
+    <div class="zcode-add-panel-category-toolbar">
+      <div class="zcode-part-category-tabs">
+        <button
+          v-for="category in categoryTabs"
+          :key="category"
+          :class="{ active: addPartCategory === category && addTypeTab !== 'selected' }"
+          class="zcode-category-tab"
+          @click="$emit('category-tab-click', category as 'common' | 'individual' | 'special')"
+        >
+          {{
+            category === 'common'
+              ? $t('addPanel.category.common')
+              : category === 'individual'
+                ? $t('addPanel.category.individual')
+                : $t('dataViewer.special')
+          }}
+        </button>
+        <button
+          :class="{ active: addTypeTab === 'selected' }"
+          class="zcode-category-tab"
+          @click="$emit('type-tab-click', 'selected')"
+        >
+          {{ $t('addPanel.category.selected') }}
+        </button>
+      </div>
+      <div ref="addOptionsAnchorRef" class="zcode-add-panel-options-anchor">
+        <button
+          type="button"
+          class="zcode-add-panel-options-trigger"
+          :class="{ 'is-active': optionsPopoverOpen }"
+          :aria-expanded="optionsPopoverOpen"
+          :aria-label="$t('addPanel.optionsAriaLabel')"
+          :title="$t('addPanel.optionsAriaLabel')"
+          @click.stop="toggleOptionsPopover"
+        >
+          <Settings :size="18" />
+        </button>
+        <div
+          v-show="optionsPopoverOpen"
+          class="zcode-add-panel-options-popover"
+          role="region"
+          :aria-label="$t('addPanel.optionsPopoverTitle')"
+          tabindex="-1"
+        >
+          <div class="zcode-add-panel-options-popover-title">
+            {{ $t('addPanel.optionsPopoverTitle') }}
+          </div>
+          <label class="zcode-add-option-label">
+            <input
+              type="checkbox"
+              :checked="addInsertBefore"
+              class="zcode-keep-adding-checkbox"
+              @change="
+                $emit('update:add-insert-before', ($event.target as HTMLInputElement).checked)
+              "
+            />
+            <span>{{ $t('addPanel.insertBefore') }}</span>
+          </label>
+          <label class="zcode-add-option-label">
+            <input
+              type="checkbox"
+              :checked="closePanelAfterAdd"
+              class="zcode-keep-adding-checkbox"
+              @change="
+                $emit('update:close-panel-after-add', ($event.target as HTMLInputElement).checked)
+              "
+            />
+            <span>{{ $t('addPanel.closePanelAfterAdd') }}</span>
+          </label>
+        </div>
+      </div>
     </div>
 
     <!-- Typeタブ（選択したパーツタブがアクティブでない場合のみ表示） -->
@@ -78,7 +125,15 @@
             v-if="clickedComponent && addSelectedPart && addSelectedType"
             class="zcode-module-buttons"
           >
-            <div :class="{ active: true }" class="zcode-module-preview">
+            <div
+              class="zcode-module-preview zcode-module-preview--duplicate"
+              role="button"
+              tabindex="0"
+              :aria-label="$t('addPanel.duplicateSelectedAria')"
+              @click="$emit('duplicate-selected')"
+              @keydown.enter.prevent="$emit('duplicate-selected')"
+              @keydown.space.prevent="$emit('duplicate-selected')"
+            >
               <div class="zcode-module-preview-header">
                 <div class="zcode-module-preview-label zcode-module-preview-label-header">
                   {{ $t('addPanel.activeParts') }}
@@ -93,6 +148,9 @@
                 </button>
               </div>
               <div class="zcode-module-preview-content" v-html="getClickedComponentPreviewHtml()" />
+            </div>
+            <div class="zcode-duplicate-selected-hint">
+              {{ $t('addPanel.duplicateSelectedHint') }}
             </div>
           </div>
           <div v-else class="zcode-empty-parts">
@@ -117,14 +175,6 @@
               <div
                 v-for="part in typeGroup.parts"
                 :key="part.title"
-                :class="{
-                  active:
-                    addTypeTab === 'selected' &&
-                    clickedComponent?.part_id === part.id &&
-                    clickedComponent?.id
-                      ? true
-                      : addTypeTab !== 'selected' && addSelectedPart?.id === part.id
-                }"
                 class="zcode-module-preview"
                 @click="$emit('select-part', typeGroup.typeData, part)"
               >
@@ -148,39 +198,15 @@
               </div>
             </div>
           </div>
-          <div v-if="groupedPartsByType.length === 0 && !addSelectedPart" class="zcode-empty-parts">
+          <div
+            v-if="groupedPartsByType.length === 0 && addTypeTab !== 'selected'"
+            class="zcode-empty-parts"
+          >
             <div class="zcode-empty-parts-text">
               {{ $t('addPanel.noPartsAvailable') }}
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- 追加位置選択（パーツ選択後に表示） -->
-    <div v-if="addSelectedPart" class="zcode-insert-position">
-      <div class="zcode-insert-header">
-        <div class="zcode-insert-position-title" role="heading" aria-level="4">追加位置を選択</div>
-        <label class="zcode-keep-adding-label zcode-keep-adding-label-position">
-          <input
-            type="checkbox"
-            :checked="keepAdding"
-            class="zcode-keep-adding-checkbox"
-            @change="$emit('update-keep-adding', ($event.target as HTMLInputElement).checked)"
-          />
-          <span>{{ $t('addPanel.continueAdding') }}</span>
-        </label>
-      </div>
-      <div class="zcode-insert-buttons">
-        <button
-          class="zcode-insert-btn zcode-insert-before"
-          @click="$emit('confirm-add', 'before')"
-        >
-          {{ $t('addPanel.addBefore') }}
-        </button>
-        <button class="zcode-insert-btn zcode-insert-after" @click="$emit('confirm-add', 'after')">
-          {{ $t('addPanel.addAfter') }}
-        </button>
       </div>
     </div>
 
@@ -218,10 +244,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import type { TypeData, PartData, ComponentData, CMSConfig } from '../../../types';
-import { X, ChevronUp, ZoomIn } from 'lucide-vue-next';
+import { X, ChevronUp, ZoomIn, Settings } from 'lucide-vue-next';
 
 const props = defineProps<{
   addTargetPath: string | null;
@@ -240,7 +266,8 @@ const props = defineProps<{
   canSelectParent: boolean;
   getPartPreviewHtml: (type: TypeData, part: PartData) => string;
   getClickedComponentPreviewHtml: () => string;
-  keepAdding: boolean;
+  addInsertBefore: boolean;
+  closePanelAfterAdd: boolean;
   hasSpecialParts: boolean;
   config?: Partial<CMSConfig>;
 }>();
@@ -268,12 +295,68 @@ defineEmits<{
   'category-tab-click': [category: 'common' | 'individual' | 'special'];
   'type-tab-click': [type: string | 'all' | 'selected'];
   'select-part': [type: TypeData, part: PartData];
-  'confirm-add': [position: 'before' | 'after'];
-  'update-keep-adding': [value: boolean];
+  'duplicate-selected': [];
+  'update:add-insert-before': [value: boolean];
+  'update:close-panel-after-add': [value: boolean];
 }>();
 
 const showPreviewModal = ref(false);
 const previewTarget = ref<{ type: TypeData; part: PartData; isActiveParts?: boolean } | null>(null);
+
+const optionsPopoverOpen = ref(false);
+const addOptionsAnchorRef = ref<HTMLElement | null>(null);
+let outsideClickCleanup: (() => void) | null = null;
+let outsideClickTimer: number | null = null;
+
+function toggleOptionsPopover() {
+  optionsPopoverOpen.value = !optionsPopoverOpen.value;
+}
+
+function closeOptionsPopover() {
+  optionsPopoverOpen.value = false;
+}
+
+function clearOutsideListeners() {
+  if (outsideClickTimer !== null) {
+    clearTimeout(outsideClickTimer);
+    outsideClickTimer = null;
+  }
+  outsideClickCleanup?.();
+  outsideClickCleanup = null;
+}
+
+watch(optionsPopoverOpen, (open) => {
+  clearOutsideListeners();
+  if (!open) return;
+
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      closeOptionsPopover();
+    }
+  };
+  const onDocClick = (e: MouseEvent) => {
+    const anchor = addOptionsAnchorRef.value;
+    if (anchor && !anchor.contains(e.target as Node)) {
+      closeOptionsPopover();
+    }
+  };
+
+  document.addEventListener('keydown', onKeyDown);
+
+  outsideClickTimer = window.setTimeout(() => {
+    outsideClickTimer = null;
+    document.addEventListener('click', onDocClick);
+  }, 0);
+
+  outsideClickCleanup = () => {
+    document.removeEventListener('keydown', onKeyDown);
+    document.removeEventListener('click', onDocClick);
+  };
+});
+
+onUnmounted(() => {
+  clearOutsideListeners();
+});
 
 function openPreviewModal(type: TypeData, part: PartData) {
   previewTarget.value = { type, part, isActiveParts: false };

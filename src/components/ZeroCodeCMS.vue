@@ -104,14 +104,16 @@
         :can-select-parent="canSelectParent"
         :get-part-preview-html="getPartPreviewHtml"
         :get-clicked-component-preview-html="getClickedComponentPreviewHtml"
-        :keep-adding="keepAdding"
+        :add-insert-before="addInsertBefore"
+        :close-panel-after-add="closePanelAfterAdd"
         @cancel="cancelAdd"
         @select-parent="selectParentElement"
         @category-tab-click="handleCategoryTabClick"
         @type-tab-click="handleTypeTabClick"
         @select-part="selectPart"
-        @confirm-add="confirmAddPart"
-        @update-keep-adding="keepAdding = $event"
+        @duplicate-selected="duplicateSelectedPart"
+        @update:add-insert-before="addInsertBefore = $event"
+        @update:close-panel-after-add="closePanelAfterAdd = $event"
       />
     </template>
 
@@ -412,7 +414,8 @@ const {
   clickedComponent,
   addPartCategory,
   addTypeTab,
-  keepAdding,
+  addInsertBefore,
+  closePanelAfterAdd,
   availablePartTypes,
   groupedPartsByType,
   hasSpecialParts,
@@ -420,9 +423,9 @@ const {
   handleCategoryTabClick,
   handleTypeTabClick,
   selectPart,
+  duplicateSelectedPart,
   getPartPreviewHtml,
   getClickedComponentPreviewHtml,
-  confirmAddPart,
   cancelAdd
 } = useAddMode(cmsData, previewArea, renderComponentToHtml, config, scrollIntoViewOnPartEdit);
 
