@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, toRef } from 'vue';
 import { Copy, Check } from 'lucide-vue-next';
 import type { ZeroCodeData, CMSConfig } from '../../../types';
 import { useZeroCodeRenderer } from '../../../core/composables/useZeroCodeRenderer';
@@ -127,8 +127,9 @@ const activeCategory = ref<'common' | 'individual' | 'special'>(
         : 'common')
 );
 
-// ページ全体のHTML（編集モード属性なし）
-const { fullPageHtml } = useZeroCodeRenderer(props.cmsData, false);
+// ページ全体のHTML（編集モード属性なし）— props.cmsData を Ref として渡し依存を明示
+const cmsDataRef = toRef(props, 'cmsData');
+const { fullPageHtml } = useZeroCodeRenderer(cmsDataRef, false);
 
 // 現在表示するデータを取得
 const currentData = computed(() => {

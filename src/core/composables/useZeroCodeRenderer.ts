@@ -1,4 +1,4 @@
-import { computed } from 'vue';
+import { computed, toValue, type MaybeRefOrGetter } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ComponentData, PartData } from '../../types';
 import {
@@ -12,24 +12,30 @@ function renderErrorToHtml(error: RenderError): string {
   return `<div class="zcode-error-message" data-error-code="${error.code}">${error.message}</div>`;
 }
 
-export function useZeroCodeRenderer(cmsData: ZeroCodeData, enableEditorAttributes: boolean = true) {
+export function useZeroCodeRenderer(
+  cmsData: MaybeRefOrGetter<ZeroCodeData>,
+  enableEditorAttributes: boolean = true
+) {
   const { t } = useI18n();
 
   function findPart(partId: string): PartData | null {
-    return findPartById(partId, cmsData.parts);
+    return findPartById(partId, toValue(cmsData).parts);
   }
 
-  const context = computed<RenderComponentCoreContext>(() => ({
-    findPart,
-    enableEditorAttributes,
-    imagesCommon: cmsData.images.common,
-    imagesIndividual: cmsData.images.individual,
-    imagesSpecial: cmsData.images.special,
-    backendData: cmsData.backendData,
-    options: enableEditorAttributes
-      ? { translations: { addSlotButton: t('emptyState.addPart') } }
-      : undefined
-  }));
+  const context = computed<RenderComponentCoreContext>(() => {
+    const data = toValue(cmsData);
+    return {
+      findPart,
+      enableEditorAttributes,
+      imagesCommon: data.images.common,
+      imagesIndividual: data.images.individual,
+      imagesSpecial: data.images.special,
+      backendData: data.backendData,
+      options: enableEditorAttributes
+        ? { translations: { addSlotButton: t('emptyState.addPart') } }
+        : undefined
+    };
+  });
 
   function renderComponentToHtml(
     component: ComponentData,
@@ -54,7 +60,8 @@ export function useZeroCodeRenderer(cmsData: ZeroCodeData, enableEditorAttribute
   }
 
   const fullPageHtml = computed(() => {
-    return cmsData.page
+    const data = toValue(cmsData);
+    return data.page
       .map((component, index) => renderComponentToHtml(component, `page.${index}`))
       .join('');
   });

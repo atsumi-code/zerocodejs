@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, toRef } from 'vue';
 import PreviewArea from '../features/preview/PreviewArea.vue';
 import { useZeroCodeRenderer } from '../core/composables/useZeroCodeRenderer';
 import type { ZeroCodeData } from '../types';
@@ -18,8 +18,8 @@ const props = defineProps<{
   allowDynamicContentInteraction?: boolean;
 }>();
 
-// 表示専用なので常に編集用属性を無効化
-const { fullPageHtml } = useZeroCodeRenderer(props.cmsData, false);
+// 表示専用なので常に編集用属性を無効化（props の依存を明示）
+const { fullPageHtml } = useZeroCodeRenderer(toRef(props, 'cmsData'), false);
 
 // PreviewAreaの参照
 const previewAreaRef = ref<InstanceType<typeof PreviewArea> | null>(null);

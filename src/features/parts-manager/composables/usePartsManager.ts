@@ -136,7 +136,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
             defaults[field.fieldName] = field.defaultValue || '';
             break;
           case 'radio':
-            defaults[field.fieldName] = field.options?.[0] || '';
+            defaults[field.fieldName] = field.options?.[0]?.value || '';
             break;
           case 'checkbox':
             defaults[field.fieldName] = [];
