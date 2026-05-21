@@ -31,6 +31,7 @@ ZeroCode.jsの多言語対応機能の仕様を定義します。日本語と英
 ```
 
 **理由:**
+
 - 設定項目として自然な配置
 - ツールバーが混雑しない
 - 他の設定と一緒に管理できる
@@ -57,11 +58,12 @@ export default {
     close: '閉じる',
     save: '保存',
     cancel: 'キャンセル',
+    toggleSettingHelp: 'この設定の詳細説明を表示または非表示にします'
     // ...
   },
   toolbar: {
     editMode: '編集',
-    addMode: '追加',
+    addMode: '追加'
     // ...
   },
   addPanel: {
@@ -70,9 +72,9 @@ export default {
       common: '共通',
       individual: '個別',
       selected: '選択したパーツ'
-    },
+    }
     // ...
-  },
+  }
   // ...
 };
 ```
@@ -124,7 +126,7 @@ import { saveUserSettings } from '../core/utils/storage';
 function handleLocaleChange(event: Event) {
   const target = event.target as HTMLSelectElement;
   const newLocale = target.value as SupportedLocale;
-  
+
   locale.value = newLocale;
   saveUserSettings({ locale: newLocale });
 }
@@ -149,6 +151,7 @@ this.app.use(i18n);
 ```
 
 **優先順位:**
+
 1. HTML属性の`locale`（最優先）
 2. ローカルストレージに保存された言語
 3. デフォルト（日本語）
@@ -287,4 +290,3 @@ const message = t('common.save');
 
 - [vue-i18n公式ドキュメント](https://vue-i18n.intlify.dev/)
 - [vue-i18n Composition API](https://vue-i18n.intlify.dev/guide/advanced/composition.html)
-

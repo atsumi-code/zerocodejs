@@ -315,6 +315,8 @@ interface ImageData {
 - **セレクトボックス（単一選択）**: `($fieldName@:option1|option2|option3)`
 - **セレクトボックス（複数選択）**: `($fieldName@:option1,option2,option3)`
 
+各オプションは `表示ラベル=保存値` と書ける（例: `($status:下書き=draft|公開=published)`）。`=` を含めない場合はその文字列がラベル兼保存値。値に含まれた `|` や `,` は選択肢の区切りとは別途扱う必要があるため、通常は値側にそれらは使わない運用とする。
+
 #### バリデーション記法
 
 - **必須**: `{$fieldName:defaultValue:required}`
@@ -369,10 +371,10 @@ interface ImageData {
 - テキスト/テキストエリア: テンプレートで指定されたデフォルト値、または空文字列
 - リッチテキスト: デフォルト値がある場合は`<p>デフォルト値</p>`、ない場合は`<p></p>`
 - 画像: テンプレートで指定されたデフォルト値、または空文字列
-- ラジオボタン/セレクトボックス: 最初の選択肢
+- ラジオボタン/セレクトボックス: 最初の選択肢の保存値（`ラベル=値` のときは値）
 - チェックボックス/複数選択セレクト: 空配列`[]`
 - ブール値: `true`
-- タグ: テンプレートで書いたタグ名（選択肢に含まれていない場合は選択肢の最初の値）
+- タグ: テンプレートで書いたタグ名（選択肢に含まれていない場合は選択肢の最初の保存値）
 
 **実装箇所:**
 
@@ -398,9 +400,9 @@ interface ImageData {
 
 **targets配列の仕様:**
 
-- **zcode-cms の編集モード**: `['page']`
-- **zcode-editor のページ管理タブ**: `['page']`
-- **zcode-studio**: `zcode-editor` と同型のタブ・保存ルール。ページ管理: `['page']`、特別パーツ管理: `['parts-special', 'parts-special-css']`、特別画像管理: `['images-special']`、データビューアは表示中がページ／特別パーツ／特別画像に応じて `page` または `parts-special`+CSS または `images-special`（共通・個別のデータビュー切替はなし）
+- **zcode-cms の編集モード**: `['page', 'images-special']`（ページと特別画像をまとめて保存対象として通知。ホストは `getData()` と `targets` に応じて永続化を決定）
+- **zcode-editor のページ管理タブ**: `['page', 'images-special']`（ページ本体と特別画像プール。編集内の画像選択モーダルで特別画像を変更した場合もホストが永続化できる）
+- **zcode-studio**: `zcode-editor` と同型のタブ・保存ルール。ページ管理: `['page', 'images-special']`、特別パーツ管理: `['parts-special', 'parts-special-css']`、特別画像管理: `['images-special']`、データビューアは表示中がページ／特別パーツ／特別画像に応じて `page`+`images-special` または `parts-special`+CSS または `images-special`（共通・個別のデータビュー切替はなし）
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -591,7 +593,7 @@ interface ImageData {
 - **保存は`save-request`イベントのみ**: `change`イベントは削除済み
 - **保存ボタンクリック時のみ発火**: 自動保存は行わない
 - **画像追加時の自動保存は行わない**: 保存ボタンで一括保存
-- **編集モードでの保存対象（zcode-cms / zcode-editor のページ相当）**: `['page']`（共通・個別の `parts-*-css` はページ編集のバンドルには含めず、パーツ管理タブの保存で扱う。特別系は `zcode-studio` で保存）
+- **編集モードでの保存対象（zcode-cms）**: `['page', 'images-special']`。**編集モードでの保存対象（zcode-editor / zcode-studio のページ管理タブ）**: `['page', 'images-special']`（共通・個別の `parts-*-css` はページ編集のバンドルには含めず、パーツ管理タブの保存で扱う）
 - **パーツ管理での保存対象**: `parts-common`/`parts-individual`/`parts-special`、対応する`parts-common-css`/`parts-individual-css`/`parts-special-css`
 
 ### テンプレート記法の実装

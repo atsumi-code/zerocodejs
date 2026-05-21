@@ -241,7 +241,7 @@ interface ImageData {
 
 **イベント**:
 
-- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`。`targets` は `zcode-editor` と同様にアクティブなタブとデータビューアの表示に応じて決まる（ページ管理 → `['page']`、特別パーツ → `['parts-special', 'parts-special-css']`、特別画像 → `['images-special']`、データビューアはページ／特別パーツ／特別画像のいずれを表示中かに応じて `page` または `parts-special`+CSS または `images-special`）
+- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`。`targets` は `zcode-editor` と同様にアクティブなタブとデータビューアの表示に応じて決まる（ページ管理 → `['page', 'images-special']`、特別パーツ → `['parts-special', 'parts-special-css']`、特別画像 → `['images-special']`、データビューアはページ／特別パーツ／特別画像のいずれを表示中かに応じて `page`+`images-special` または `parts-special`+CSS または `images-special`）
 
 **config.studio オプション**:
 
@@ -339,6 +339,10 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));
   - 右クリックメニューを有効にする
   - 設定パネルでは「右クリックメニューを有効にする」として表示
 
+- **`scrollIntoViewOnPartEdit`** (デフォルト: `false`)
+  - `true` のとき、編集・追加・並べ替え・削除の各モードで、パーツ選択や関連操作（追加完了後の新パーツ、追加キャンセル時の元位置、並べ替え完了後の移動元、削除確認のキャンセル、編集パネル閉じるなど）に合わせてプレビュー内の該当要素へスクロールする
+  - 設定パネルでは「パーツ選択時に該当箇所へスクロールする」として表示
+
 ### Dev設定（`dev`）
 
 `zcode-editor`専用の設定です。
@@ -362,6 +366,7 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));
 - **ページの動作を有効にする**: `allowDynamicContentInteraction`の設定
 - **編集パネル分の余白をつける**: `devRightPadding`の設定
 - **右クリックメニューを有効にする**: `enableContextMenu`の設定
+- **パーツ選択時に該当箇所へスクロールする**: `scrollIntoViewOnPartEdit`の設定
 
 #### dev-tabs用設定（ZeroCodeEditor）
 
@@ -376,6 +381,7 @@ interface CMSSettings {
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
+  scrollIntoViewOnPartEdit?: boolean;
 }
 
 interface DevSettings {
@@ -802,8 +808,8 @@ watch(enableContextMenu, (newValue) => {
   - `detail.requestId`: リクエストID（`save-result`で使用）
   - `detail.source`: 送信元（`'cms'`、`'editor'`、または `'studio'`）
   - `detail.targets`: 保存対象の配列
-    - zcode-cms 編集モード: `['page']`
-    - zcode-editor ページ管理: `['page']`
+    - zcode-cms 編集モード: `['page', 'images-special']`
+    - zcode-editor / zcode-studio ページ管理: `['page', 'images-special']`
     - zcode-studio: `['parts-special', 'parts-special-css']` または `['images-special']`（編集中のタブに依存）
     - パーツ管理: `[primaryTarget, 'parts-*-css']`
     - 画像管理: `['images-common']` / `['images-individual']` / `['images-special']`
@@ -1109,7 +1115,7 @@ cms.addEventListener('save-request', async (event) => {
 
 **ターゲットの決定**:
 
-- `internalActiveTab === 'page'` → `['page']`
+- `internalActiveTab === 'page'` → `['page', 'images-special']`
 - `internalActiveTab === 'parts'` + `activeCategory === 'common'` → `targets = ['parts-common', 'parts-common-css']`
 - `internalActiveTab === 'parts'` + `activeCategory === 'individual'` → `targets = ['parts-individual', 'parts-individual-css']`
 - `internalActiveTab === 'parts'` + `activeCategory === 'special'` → `targets = ['parts-special', 'parts-special-css']`

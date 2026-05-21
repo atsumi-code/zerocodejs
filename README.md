@@ -123,7 +123,7 @@ User-facing CMS editor for content management (no parts/image management).
 
 For **trusted users / agencies**: same **shell as `zcode-editor`** (page, parts, images, data viewer tabs). **Page** management matches `zcode-cms` (including common/individual/special parts when adding to the page). **Parts / images** management and the data viewer’s parts/images views are **special category only** (no common/individual toggles there). Use alongside `zcode-cms` when you want a separate trusted surface.
 
-`save-request` uses `detail.source: 'studio'`; `targets` follow the active tab and data viewer view. From `zcode-cms`, page saves use `targets: ['page']` only—handle persistence in your host app.
+`save-request` uses `detail.source: 'studio'`; `targets` follow the active tab and data viewer view. From `zcode-cms`, page saves use `targets: ['page', 'images-special']`—handle persistence in your host app.
 
 See [Technical Specification – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcode-studio).
 
