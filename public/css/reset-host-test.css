@@ -1,0 +1,6 @@
+/**
+ * test-cms.html / test-dev.html ホスト用（検証）
+ * Shadow 内は slot の common.css が読み込む reset-host-default と同じベースに揃える。
+ */
+
+@import './reset-host-default.css';

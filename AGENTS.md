@@ -213,6 +213,10 @@ ZeroCodeのUIが呼び出し側のCSS（リセットCSSやデフォルトCSS）�
 - `button`タグは機能維持のため、CSSで防御する方針
 - フォーム要素（`input`, `textarea`, `select`など）は機能上必要なため使用可能
 
+### Shadow DOM とホストスタイル
+
+`src/styles/zcode-cms.css` 先頭の `:host` は、`<zcode-cms>` / `<zcode-editor>` / `<zcode-studio>` がシャドウルートへスタイルを注入するときのみ意味を持ち、ホストページからの継承を `all: initial` で切り直す（ホストが見えないタイポグラフィ・配色をライブラリ側で決めない）。レイアウト上、`display: block` と `box-sizing: border-box` のみ明示する。サイト固有の見た目は `slot="css"` やホスト側で足す。Light DOM（`use-shadow-dom="false"`）では `:host` は適用されない。
+
 ## データ構造
 
 ### ZeroCodeData

@@ -3,6 +3,10 @@
    ========================================
    すべてのクラスに zcode- プレフィックスを使用してスコープを確保
 
+   Shadow DOM（Web Component がシャドウを使う構成）においては、ホスト側から継承されるスタイルを
+   `all: initial` で切り直すための :host を置く（タイポグラフィや配色のデフォルトは付けず、必要なら `slot="css"` で）。
+   （このファイルをシャドウ外で単独読み込みしたときの :host は環境により無視されることがある）
+
    z-index 階層:
      L1  1000  保存ボタン (.zcode-save-controls-fixed)
      L1  1001  ツールバー / 保存バナー (.zcode-toolbar, .zcode-save-banner)
@@ -12,6 +16,12 @@
      L4  4000  プレビュー拡大 (.zcode-preview-modal)
      L5  9000  最上位 (.zcode-help-modal-overlay, .zcode-context-menu, .zcode-save-confirm-dialog-overlay)
    ======================================== */
+
+:host {
+  all: initial;
+  display: block;
+  box-sizing: border-box;
+}
 
 /* ========================================
    1. CSS変数定義

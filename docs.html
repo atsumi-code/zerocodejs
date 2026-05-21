@@ -41,6 +41,11 @@
             </div>
             <a href="#multiple-instances" class="docs-nav-link">複数インスタンス対応</a>
             <a href="#shadow-dom" class="docs-nav-link">Shadow DOM</a>
+            <div class="docs-nav-sub">
+              <a href="#shadow-dom-host-style" class="docs-nav-link-sub"
+                >ホストスタイルのリセット</a
+              >
+            </div>
             <a href="#template-syntax" class="docs-nav-link">テンプレート記法</a>
             <div class="docs-nav-sub">
               <a href="#field-syntax" class="docs-nav-link-sub">フィールド記法</a>
@@ -258,6 +263,28 @@
           </li>
           <li><strong>セキュリティ</strong>: 外部からのスタイルやスクリプトの干渉を防ぎます</li>
         </ul>
+
+        <h3 id="shadow-dom-host-style">ホストスタイルのリセット（:host）</h3>
+        <p>
+          Shadow DOM を使うとき、カスタム要素（<code>zcode-cms</code> / <code>zcode-editor</code> /
+          <code>zcode-studio</code
+          >）にはホストページ側からフォントや文字色などが継承されることがあります。ZeroCode.js
+          がシャドウ内に注入するスタイルシートの先頭では、<code>:host</code> に対して
+          <code>all: initial</code> を指定し、この継承を一度リセットしています。
+        </p>
+        <p>
+          続けて明示しているのはレイアウト上ほぼ必須な <code>display: block</code> と、内部の
+          <code>.zcode-*</code> と整合させるための <code>box-sizing: border-box</code>
+          のみです。サイト固有のタイポグラフィや配色をライブラリ側で決めることはなく、ページに合わせた見た目が必要な場合は従来どおり
+          <code>slot="css"</code> でシャドウに渡すスタイルシートなどで追加してください。
+        </p>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong> Light DOM（<code>use-shadow-dom="false"</code>）では
+            <code>:host</code> は効きません。ホストの CSS
+            がそのまま影響するため、競合対策は別途検討してください。
+          </p>
+        </div>
 
         <h3 id="shadow-dom-disable">Shadow DOMの無効化</h3>
         <p>

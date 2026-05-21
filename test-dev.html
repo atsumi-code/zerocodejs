@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZeroCodeEditor - Test</title>
 
-    <!-- 共通CSS（リセットCSS含む） -->
-    <link rel="stylesheet" href="./css/common.css" />
+    <!-- 検証用: ホストのみ別リセット（Shadow 内は slot の common.css のまま） -->
+    <link rel="stylesheet" href="./css/reset-host-test.css" />
+    <link rel="stylesheet" href="./css/common-core.css" />
     <!-- ページ専用CSS -->
     <link rel="stylesheet" href="./css/page.css" />
     <!-- サンプルデータ用CSS -->
@@ -19,11 +20,7 @@
     </div>
 
     <div class="l-container">
-      <zcode-editor
-        id="test-cms"
-        locale="ja"
-        
-      >
+      <zcode-editor id="test-cms" locale="ja">
         <!-- 共通CSS（リセットCSS含む） -->
         <link slot="css" rel="stylesheet" href="./css/common.css" />
         <!-- ページ専用CSS -->
