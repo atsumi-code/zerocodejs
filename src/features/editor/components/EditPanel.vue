@@ -106,15 +106,19 @@
           <!-- ラジオボタン -->
           <div v-if="field.type === 'radio'" class="zcode-radio-editor">
             <div class="zcode-radio-group">
-              <label v-for="option in field.options" :key="option" class="zcode-radio-item">
+              <label
+                v-for="(option, optIdx) in field.options"
+                :key="`${field.fieldName}-radio-${optIdx}`"
+                class="zcode-radio-item"
+              >
                 <input
                   v-model="field.currentValue"
                   type="radio"
                   :name="field.fieldName"
-                  :value="option"
+                  :value="option.value"
                   @change="$emit('save-field', field)"
                 />
-                <span class="zcode-radio-item-label">{{ option }}</span>
+                <span class="zcode-radio-item-label">{{ option.label }}</span>
               </label>
             </div>
           </div>
@@ -122,14 +126,18 @@
           <!-- チェックボックス -->
           <div v-if="field.type === 'checkbox'" class="zcode-checkbox-editor">
             <div class="zcode-checkbox-group">
-              <label v-for="option in field.options" :key="option" class="zcode-checkbox-item">
+              <label
+                v-for="(option, optIdx) in field.options"
+                :key="`${field.fieldName}-checkbox-${optIdx}`"
+                class="zcode-checkbox-item"
+              >
                 <input
                   v-model="field.currentValue"
                   type="checkbox"
-                  :value="option"
+                  :value="option.value"
                   @change="$emit('save-field', field)"
                 />
-                <span class="zcode-checkbox-item-label">{{ option }}</span>
+                <span class="zcode-checkbox-item-label">{{ option.label }}</span>
               </label>
             </div>
           </div>
@@ -141,8 +149,12 @@
               class="zcode-select"
               @change="$emit('save-field', field)"
             >
-              <option v-for="option in field.options" :key="option" :value="option">
-                {{ option }}
+              <option
+                v-for="(option, optIdx) in field.options"
+                :key="`${field.fieldName}-select-${optIdx}`"
+                :value="option.value"
+              >
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -156,8 +168,12 @@
               :size="Math.min(field.options?.length || 3, 5)"
               @change="$emit('save-field', field)"
             >
-              <option v-for="option in field.options" :key="option" :value="option">
-                {{ option }}
+              <option
+                v-for="(option, optIdx) in field.options"
+                :key="`${field.fieldName}-select-multi-${optIdx}`"
+                :value="option.value"
+              >
+                {{ option.label }}
               </option>
             </select>
           </div>
@@ -169,8 +185,12 @@
               class="zcode-select"
               @change="$emit('save-field', field)"
             >
-              <option v-for="tag in field.options" :key="tag" :value="tag">
-                {{ tag }}
+              <option
+                v-for="(tag, optIdx) in field.options"
+                :key="`${field.fieldName}-tag-${optIdx}`"
+                :value="tag.value"
+              >
+                {{ tag.label }}
               </option>
             </select>
             <div class="zcode-tag-preview">
@@ -249,6 +269,7 @@ import type { ComponentData, ImageData } from '../../../types';
 import RichTextEditor from './RichTextEditor.vue';
 import ImageSelectModal from './ImageSelectModal.vue';
 import { X, ChevronUp, Image } from 'lucide-vue-next';
+import type { FieldChoiceOption } from '../../../core/utils/template-regex';
 
 const props = defineProps<{
   editingComponent: ComponentData | null;
@@ -268,7 +289,7 @@ const props = defineProps<{
     groupName?: string; // グループ名（オプション）
     label: string;
     defaultValue?: string;
-    options?: string[];
+    options?: FieldChoiceOption[];
     currentValue: any;
     optional?: boolean;
     required?: boolean;

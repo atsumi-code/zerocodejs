@@ -136,25 +136,53 @@ describe('extractFieldsFromTemplate', () => {
     it('should extract radio field', () => {
       const fields = extractFieldsFromTemplate(sampleTemplates.radio);
       expect(fields[0].type).toBe('radio');
-      expect(fields[0].options).toEqual(['option1', 'option2', 'option3']);
+      expect(fields[0].options).toEqual([
+        { label: 'option1', value: 'option1' },
+        { label: 'option2', value: 'option2' },
+        { label: 'option3', value: 'option3' }
+      ]);
     });
 
     it('should extract checkbox field', () => {
       const fields = extractFieldsFromTemplate(sampleTemplates.checkbox);
       expect(fields[0].type).toBe('checkbox');
-      expect(fields[0].options).toEqual(['tag1', 'tag2', 'tag3']);
+      expect(fields[0].options).toEqual([
+        { label: 'tag1', value: 'tag1' },
+        { label: 'tag2', value: 'tag2' },
+        { label: 'tag3', value: 'tag3' }
+      ]);
     });
 
     it('should extract select field', () => {
       const fields = extractFieldsFromTemplate(sampleTemplates.select);
       expect(fields[0].type).toBe('select');
-      expect(fields[0].options).toEqual(['option1', 'option2', 'option3']);
+      expect(fields[0].options).toEqual([
+        { label: 'option1', value: 'option1' },
+        { label: 'option2', value: 'option2' },
+        { label: 'option3', value: 'option3' }
+      ]);
     });
 
     it('should extract select-multiple field', () => {
       const fields = extractFieldsFromTemplate(sampleTemplates.selectMultiple);
       expect(fields[0].type).toBe('select-multiple');
-      expect(fields[0].options).toEqual(['tag1', 'tag2', 'tag3']);
+      expect(fields[0].options).toEqual([
+        { label: 'tag1', value: 'tag1' },
+        { label: 'tag2', value: 'tag2' },
+        { label: 'tag3', value: 'tag3' }
+      ]);
+    });
+
+    it('should parse label=value options for radio', () => {
+      const fields = extractFieldsFromTemplate(
+        '<div>($status:下書き=draft|公開=published|非公開=hidden)</div>'
+      );
+      expect(fields[0].type).toBe('radio');
+      expect(fields[0].options).toEqual([
+        { label: '下書き', value: 'draft' },
+        { label: '公開', value: 'published' },
+        { label: '非公開', value: 'hidden' }
+      ]);
     });
   });
 
@@ -177,7 +205,11 @@ describe('extractFieldsFromTemplate', () => {
       const tagField = fields.find((f) => f.fieldName === 'headingTag');
       expect(tagField).toBeDefined();
       expect(tagField?.type).toBe('tag');
-      expect(tagField?.options).toEqual(['h1', 'h2', 'h3']);
+      expect(tagField?.options).toEqual([
+        { label: 'h1', value: 'h1' },
+        { label: 'h2', value: 'h2' },
+        { label: 'h3', value: 'h3' }
+      ]);
       expect(tagField?.defaultValue).toBe('h2');
     });
 

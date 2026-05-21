@@ -29,7 +29,7 @@ function getDefaultFieldValue(
       return '<p></p>';
     case 'radio':
     case 'select':
-      return field.options?.[0] || '';
+      return field.options?.[0]?.value || '';
     case 'checkbox':
     case 'select-multiple':
       return [];

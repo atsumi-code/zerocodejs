@@ -1,6 +1,7 @@
 import type { ComponentData, PartData } from '../../types';
 import { getFieldLabel } from './path-utils';
 import { extractFieldsFromTemplate } from './field-extractor';
+import type { FieldChoiceOption } from './template-regex';
 
 export type EditPanelField = {
   type:
@@ -18,7 +19,7 @@ export type EditPanelField = {
   groupName?: string;
   label: string;
   defaultValue?: string;
-  options?: string[];
+  options?: FieldChoiceOption[];
   currentValue: unknown;
   optional?: boolean;
   required?: boolean;
@@ -83,7 +84,7 @@ export function getAvailableFieldsFromPart(
         options: field.options,
         optional: field.optional,
         currentValue:
-          compVal !== undefined ? compVal : field.optional ? undefined : field.options?.[0]
+          compVal !== undefined ? compVal : field.optional ? undefined : field.options?.[0]?.value
       };
     }
     if (field.type === 'boolean') {
@@ -112,7 +113,7 @@ export function getAvailableFieldsFromPart(
         options: field.options,
         optional: field.optional,
         currentValue:
-          compVal !== undefined ? compVal : field.optional ? undefined : field.options?.[0]
+          compVal !== undefined ? compVal : field.optional ? undefined : field.options?.[0]?.value
       };
     }
     if (field.type === 'select-multiple') {
@@ -125,7 +126,7 @@ export function getAvailableFieldsFromPart(
       };
     }
     if (field.type === 'tag') {
-      const allTags = [
+      const allTags: FieldChoiceOption[] = [
         'h1',
         'h2',
         'h3',
@@ -156,8 +157,8 @@ export function getAvailableFieldsFromPart(
         'tr',
         'th',
         'td'
-      ];
-      const tagOptions = field.options || allTags;
+      ].map((t) => ({ label: t, value: t }));
+      const tagOptions = field.options?.length ? field.options : allTags;
       return {
         ...baseField,
         type: 'tag' as const,

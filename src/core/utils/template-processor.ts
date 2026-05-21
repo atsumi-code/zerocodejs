@@ -3,8 +3,18 @@ import { getDOMParser, DOM_NODE_TYPE_ELEMENT, DOM_NODE_TYPE_TEXT } from './dom-u
 import { sanitizeRichText, escapeAttributeValue, sanitizeUrl } from './sanitize';
 import { TEMPLATE_REGEX } from './template-regex';
 import { splitDefaultAndValidation } from './field-extractor';
+import { firstChoiceValueFromRaw, rawChoiceValues } from './choice-options';
 import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from './template-utils';
 import { logger } from './logger';
+
+function selectionSingleFromComponent(
+  component: ComponentData,
+  fieldName: string,
+  optionsRaw: string
+): string {
+  const v = component[fieldName];
+  return (typeof v === 'string' ? v : '') || firstChoiceValueFromRaw(optionsRaw);
+}
 
 const VALID_TAGS: string[] = [
   'h1',
@@ -797,17 +807,17 @@ export function processTemplateWithDOM(
           // 区切り文字で判定: | = 単一選択、, = 複数選択
           if (options.includes('|')) {
             // セレクトボックス（単一選択）
-            return component[fieldName] || options.split('|')[0];
+            return selectionSingleFromComponent(component, fieldName, options);
           } else if (options.includes(',')) {
             // セレクトボックス（複数選択）
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = options.split(',');
+            const optionList = rawChoiceValues(options, ',');
             return valuesArray
               .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
               .join(' ');
           }
-          return component[fieldName] || options;
+          return selectionSingleFromComponent(component, fieldName, options);
         }
       );
 
@@ -817,18 +827,18 @@ export function processTemplateWithDOM(
         if (options.includes('|')) {
           // セレクトボックス（単一選択）
           const value = component[fieldName];
-          return typeof value === 'string' ? value : options.split('|')[0];
+          return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
         } else if (options.includes(',')) {
           // セレクトボックス（複数選択）
           const selectedValues = component[fieldName];
           const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-          const optionList = options.split(',');
+          const optionList = rawChoiceValues(options, ',');
           return valuesArray
             .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
             .join(' ');
         }
         const value = component[fieldName];
-        return typeof value === 'string' ? value : options;
+        return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
       });
 
       // グループ付きラジオボタン/チェックボックス（先に処理）
@@ -839,18 +849,18 @@ export function processTemplateWithDOM(
           if (options.includes('|')) {
             // ラジオボタン: 単一選択
             const value = component[fieldName];
-            return typeof value === 'string' ? value : options.split('|')[0];
+            return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
           } else if (options.includes(',')) {
             // チェックボックス: 複数選択
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = options.split(',');
+            const optionList = rawChoiceValues(options, ',');
             return valuesArray
               .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
               .join(' ');
           }
           const value = component[fieldName];
-          return typeof value === 'string' ? value : options;
+          return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
         }
       );
 
@@ -860,18 +870,18 @@ export function processTemplateWithDOM(
         if (options.includes('|')) {
           // ラジオボタン: 単一選択
           const value = component[fieldName];
-          return typeof value === 'string' ? value : options.split('|')[0];
+          return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
         } else if (options.includes(',')) {
           // チェックボックス: 複数選択
           const selectedValues = component[fieldName];
           const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-          const optionList = options.split(',');
+          const optionList = rawChoiceValues(options, ',');
           return valuesArray
             .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
             .join(' ');
         }
         const value = component[fieldName];
-        return typeof value === 'string' ? value : options;
+        return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
       });
 
       node.textContent = text;
@@ -890,18 +900,18 @@ export function processTemplateWithDOM(
             // 区切り文字で判定: | = 単一選択、, = 複数選択
             if (options.includes('|')) {
               // セレクトボックス（単一選択）
-              result = component[fieldName] || options.split('|')[0];
+              result = selectionSingleFromComponent(component, fieldName, options);
             } else if (options.includes(',')) {
               // セレクトボックス（複数選択）
               const selectedValues = component[fieldName];
               const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-              const optionList = options.split(',');
+              const optionList = rawChoiceValues(options, ',');
               result = valuesArray
                 .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
                 .join(' ');
             } else {
               const value = component[fieldName];
-              result = typeof value === 'string' ? value : options;
+              result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
             }
             if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
               return sanitizeUrl(String(result));
@@ -916,18 +926,18 @@ export function processTemplateWithDOM(
           // 区切り文字で判定: | = 単一選択、, = 複数選択
           if (options.includes('|')) {
             // セレクトボックス（単一選択）
-            result = component[fieldName] || options.split('|')[0];
+            result = selectionSingleFromComponent(component, fieldName, options);
           } else if (options.includes(',')) {
             // セレクトボックス（複数選択）
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = options.split(',');
+            const optionList = rawChoiceValues(options, ',');
             result = valuesArray
               .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
               .join(' ');
           } else {
             const value = component[fieldName];
-            result = typeof value === 'string' ? value : options;
+            result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
           }
           if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
             return sanitizeUrl(String(result));
@@ -943,18 +953,18 @@ export function processTemplateWithDOM(
             // 区切り文字で判定: | = ラジオボタン（単一選択）、, = チェックボックス（複数選択）
             if (options.includes('|')) {
               // ラジオボタン: 単一選択
-              result = component[fieldName] || options.split('|')[0];
+              result = selectionSingleFromComponent(component, fieldName, options);
             } else if (options.includes(',')) {
               // チェックボックス: 複数選択
               const selectedValues = component[fieldName];
               const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-              const optionList = options.split(',');
+              const optionList = rawChoiceValues(options, ',');
               result = valuesArray
                 .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
                 .join(' ');
             } else {
               const value = component[fieldName];
-              result = typeof value === 'string' ? value : options;
+              result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
             }
             if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
               return sanitizeUrl(String(result));
@@ -969,18 +979,18 @@ export function processTemplateWithDOM(
           // 区切り文字で判定: | = ラジオボタン（単一選択）、, = チェックボックス（複数選択）
           if (options.includes('|')) {
             // ラジオボタン: 単一選択
-            result = component[fieldName] || options.split('|')[0];
+            result = selectionSingleFromComponent(component, fieldName, options);
           } else if (options.includes(',')) {
             // チェックボックス: 複数選択
             const selectedValues = component[fieldName];
             const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = options.split(',');
+            const optionList = rawChoiceValues(options, ',');
             result = valuesArray
               .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
               .join(' ');
           } else {
             const value = component[fieldName];
-            result = typeof value === 'string' ? value : options;
+            result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
           }
           if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
             return sanitizeUrl(String(result));

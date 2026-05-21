@@ -1,5 +1,6 @@
 import { getDOMParser, DOM_NODE_TYPE_ELEMENT, DOM_NODE_TYPE_TEXT } from './dom-utils';
 import { TEMPLATE_REGEX, type FieldInfo } from './template-regex';
+import { mapRawChoices } from './choice-options';
 import { logger } from './logger';
 
 export function parseValidationFromTokens(tokens: string[]) {
@@ -400,14 +401,14 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
               fieldName: fieldName,
               groupName: groupName,
               type: 'select',
-              options: optionsStr.split('|')
+              options: mapRawChoices(optionsStr, '|')
             });
           } else if (optionsStr.includes(',')) {
             fields.push({
               fieldName: fieldName,
               groupName: groupName,
               type: 'select-multiple',
-              options: optionsStr.split(',')
+              options: mapRawChoices(optionsStr, ',')
             });
           }
           seenFields.add(fieldName);
@@ -427,13 +428,13 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
             fields.push({
               fieldName: fieldName,
               type: 'select',
-              options: optionsStr.split('|')
+              options: mapRawChoices(optionsStr, '|')
             });
           } else if (optionsStr.includes(',')) {
             fields.push({
               fieldName: fieldName,
               type: 'select-multiple',
-              options: optionsStr.split(',')
+              options: mapRawChoices(optionsStr, ',')
             });
           }
           seenFields.add(fieldName);
@@ -458,14 +459,14 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
               fieldName: fieldName,
               groupName: groupName,
               type: 'radio',
-              options: optionsStr.split('|')
+              options: mapRawChoices(optionsStr, '|')
             });
           } else if (optionsStr.includes(',')) {
             fields.push({
               fieldName: fieldName,
               groupName: groupName,
               type: 'checkbox',
-              options: optionsStr.split(',')
+              options: mapRawChoices(optionsStr, ',')
             });
           }
           seenFields.add(fieldName);
@@ -485,13 +486,13 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
             fields.push({
               fieldName: fieldName,
               type: 'radio',
-              options: optionsStr.split('|')
+              options: mapRawChoices(optionsStr, '|')
             });
           } else if (optionsStr.includes(',')) {
             fields.push({
               fieldName: fieldName,
               type: 'checkbox',
-              options: optionsStr.split(',')
+              options: mapRawChoices(optionsStr, ',')
             });
           }
           seenFields.add(fieldName);
@@ -523,32 +524,30 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
           const optionsString = tagMatch[2]; // "h1|h2|h3" または undefined
 
           if (!seenFields.has(fieldName)) {
-            // 選択肢が指定されている場合はパース
-            const options = optionsString
-              ? optionsString.split('|').map((opt) => opt.trim())
-              : undefined;
+            const parsedOptions = optionsString ? mapRawChoices(optionsString, '|') : undefined;
+            const values = parsedOptions?.map((o) => o.value);
 
             // デフォルト値はテンプレートで書いたタグ名
             const currentTagName = element.tagName.toLowerCase();
             let defaultValue = currentTagName;
 
             // 選択肢が指定されている場合、現在のタグ名が選択肢に含まれているかチェック
-            if (options && !options.includes(currentTagName)) {
+            if (values && !values.includes(currentTagName)) {
               // 含まれていない場合は警告を出して、最初の選択肢を使用
               if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
                 logger.warn(
                   `z-tag="${zTagValue}": 現在のタグ名 "${currentTagName}" が選択肢に含まれていません。` +
-                    `デフォルト値として "${options[0]}" を使用します。`
+                    `デフォルト値として "${values[0]}" を使用します。`
                 );
               }
-              defaultValue = options[0];
+              defaultValue = values[0];
             }
 
             fields.push({
               fieldName: fieldName,
               type: 'tag',
               defaultValue: defaultValue,
-              options: options,
+              options: parsedOptions,
               optional: false
             });
             seenFields.add(fieldName);
@@ -822,14 +821,14 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
                 fieldName: fieldName,
                 groupName: groupName,
                 type: 'select',
-                options: optionsStr.split('|')
+                options: mapRawChoices(optionsStr, '|')
               });
             } else if (optionsStr.includes(',')) {
               fields.push({
                 fieldName: fieldName,
                 groupName: groupName,
                 type: 'select-multiple',
-                options: optionsStr.split(',')
+                options: mapRawChoices(optionsStr, ',')
               });
             }
             seenFields.add(fieldName);
@@ -849,13 +848,13 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
               fields.push({
                 fieldName: fieldName,
                 type: 'select',
-                options: optionsStr.split('|')
+                options: mapRawChoices(optionsStr, '|')
               });
             } else if (optionsStr.includes(',')) {
               fields.push({
                 fieldName: fieldName,
                 type: 'select-multiple',
-                options: optionsStr.split(',')
+                options: mapRawChoices(optionsStr, ',')
               });
             }
             seenFields.add(fieldName);
@@ -882,14 +881,14 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
                 fieldName: fieldName,
                 groupName: groupName,
                 type: 'radio',
-                options: optionsStr.split('|')
+                options: mapRawChoices(optionsStr, '|')
               });
             } else if (optionsStr.includes(',')) {
               fields.push({
                 fieldName: fieldName,
                 groupName: groupName,
                 type: 'checkbox',
-                options: optionsStr.split(',')
+                options: mapRawChoices(optionsStr, ',')
               });
             }
             seenFields.add(fieldName);
@@ -909,13 +908,13 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
               fields.push({
                 fieldName: fieldName,
                 type: 'radio',
-                options: optionsStr.split('|')
+                options: mapRawChoices(optionsStr, '|')
               });
             } else if (optionsStr.includes(',')) {
               fields.push({
                 fieldName: fieldName,
                 type: 'checkbox',
-                options: optionsStr.split(',')
+                options: mapRawChoices(optionsStr, ',')
               });
             }
             seenFields.add(fieldName);

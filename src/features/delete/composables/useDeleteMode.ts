@@ -217,7 +217,7 @@ export function useDeleteMode(
       } else if (field.type === 'text') {
         defaults[field.fieldName] = field.defaultValue;
       } else if (field.type === 'radio') {
-        defaults[field.fieldName] = field.options?.[0];
+        defaults[field.fieldName] = field.options?.[0]?.value;
       } else if (field.type === 'checkbox') {
         defaults[field.fieldName] = [];
       } else if (field.type === 'boolean') {

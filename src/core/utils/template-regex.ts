@@ -28,6 +28,11 @@ export const TEMPLATE_REGEX = {
   BACKEND_DATA: /\{@([\w.[\]]+)\}/g
 } as const;
 
+export interface FieldChoiceOption {
+  label: string;
+  value: string;
+}
+
 // テンプレートからフィールド情報を抽出する共通関数
 export interface FieldInfo {
   fieldName: string;
@@ -44,7 +49,7 @@ export interface FieldInfo {
     | 'select-multiple'
     | 'tag';
   defaultValue?: string;
-  options?: string[];
+  options?: FieldChoiceOption[];
   optional?: boolean; // オプショナルフィールド（空入力時はundefined）
   required?: boolean;
   maxLength?: number;
