@@ -14,6 +14,7 @@ export default {
     confirm: 'Confirm',
     clear: 'Clear',
     select: 'Select',
+    toggleSettingHelp: 'Show or hide a detailed description for this setting',
     replace: 'Replace',
     copy: 'Copy',
     copied: 'Copied'
@@ -41,6 +42,9 @@ export default {
     enableContextMenu: 'Enable right-click menu',
     enableContextMenuDescription:
       'Right-clicking on content displays a menu to switch between edit, add, reorder, and delete modes.',
+    scrollIntoViewOnPartEdit: 'Scroll preview to selected part',
+    scrollIntoViewOnPartEditDescription:
+      'When enabled, selecting a part in edit, add, reorder, or delete mode scrolls the preview to that element (including after add, cancel, reorder completion, and delete confirmation cancel). Off by default.',
     showSaveConfirm: 'Show save confirmation dialog',
     showSaveConfirmDescription:
       'Displays a dialog to confirm save targets when clicking the save button.',
@@ -124,6 +128,8 @@ export default {
     outlinePosition: 'Outline position',
     outlinePositionOuter: 'Outer',
     outlinePositionInner: 'Inner',
+    slotOnly: 'Slot-only part',
+    slotOnlyDescription: 'Hidden from the main add list; add only via a parent slot.',
     deletePartConfirm:
       'Do you want to delete part {number}?\n(Other parts in the type will remain)',
     deleteTypeConfirm: 'Do you want to delete this type?',

@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue';
+import { ref, unref, type Ref } from 'vue';
 import type { ZeroCodeData, ComponentData, TypeData, PartData } from '../../../types';
 import { getComponentByPath, generateId } from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
@@ -10,7 +10,8 @@ export function useDeleteMode(
   cmsData: ZeroCodeData,
   previewArea: Ref<HTMLElement | null>,
   switchModeBase: (mode: 'add' | 'edit' | 'reorder' | 'delete') => void,
-  nextTick: (fn: () => void) => void
+  nextTick: (fn: () => void) => void,
+  scrollIntoViewOnPartEdit: Ref<boolean> = ref(false)
 ) {
   // 状態管理
   const deleteConfirmComponent = ref<ComponentData | null>(null);
@@ -46,7 +47,9 @@ export function useDeleteMode(
         ) as HTMLElement;
         if (currentElement) {
           setActiveOutline(currentElement, 'delete');
-          scrollToElement(currentElement);
+          if (unref(scrollIntoViewOnPartEdit)) {
+            scrollToElement(currentElement);
+          }
         }
       }
     });
@@ -286,7 +289,9 @@ export function useDeleteMode(
       ) as HTMLElement;
       if (element) {
         removeActiveOutline(element);
-        scrollToElement(element);
+        if (unref(scrollIntoViewOnPartEdit)) {
+          scrollToElement(element);
+        }
       }
     }
 

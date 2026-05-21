@@ -1,4 +1,4 @@
-import { ref, type Ref, nextTick } from 'vue';
+import { ref, unref, type Ref, nextTick } from 'vue';
 import type { ZeroCodeData, ComponentData, SlotConfig } from '../../../types';
 import {
   getComponentByPath,
@@ -12,7 +12,11 @@ import {
 } from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
-export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLElement | null>) {
+export function useReorderMode(
+  cmsData: ZeroCodeData,
+  previewArea: Ref<HTMLElement | null>,
+  scrollIntoViewOnPartEdit: Ref<boolean> = ref(false)
+) {
   // 状態管理
   const reorderSourcePath = ref<string>('');
   const reorderSourceComponentId = ref<string | null>(null);
@@ -123,7 +127,9 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
         ) as HTMLElement;
         if (element) {
           setActiveOutline(element, 'reorder');
-          scrollToElement(element);
+          if (unref(scrollIntoViewOnPartEdit)) {
+            scrollToElement(element);
+          }
         }
       }
       return;
@@ -170,7 +176,7 @@ export function useReorderMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLEleme
         const element = previewArea.value.querySelector(
           `[data-zcode-path="${targetScrollPath}"]`
         ) as HTMLElement | null;
-        if (element) {
+        if (element && unref(scrollIntoViewOnPartEdit)) {
           scrollToElement(element);
         }
       });

@@ -1,4 +1,4 @@
-import { ref, nextTick, type Ref } from 'vue';
+import { ref, nextTick, unref, type Ref } from 'vue';
 import type { ZeroCodeData, ComponentData, PartData } from '../../../types';
 import { getComponentByPath } from '../../../core/utils/path-utils';
 import {
@@ -8,7 +8,11 @@ import {
 import { setActiveOutline, removeActiveOutline } from './useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
-export function useEditMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLElement | null>) {
+export function useEditMode(
+  cmsData: ZeroCodeData,
+  previewArea: Ref<HTMLElement | null>,
+  scrollIntoViewOnPartEdit: Ref<boolean> = ref(false)
+) {
   const editingComponent = ref<ComponentData | null>(null);
   const editingComponentIndex = ref<number>(-1);
   const editingComponentPath = ref<string>('');
@@ -63,7 +67,9 @@ export function useEditMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLElement 
         ) as HTMLElement;
         if (currentElement) {
           setActiveOutline(currentElement, 'edit');
-          scrollToElement(currentElement);
+          if (unref(scrollIntoViewOnPartEdit)) {
+            scrollToElement(currentElement);
+          }
         }
       }
     });
@@ -102,7 +108,9 @@ export function useEditMode(cmsData: ZeroCodeData, previewArea: Ref<HTMLElement 
       ) as HTMLElement;
       if (editingElement) {
         removeActiveOutline(editingElement);
-        scrollToElement(editingElement);
+        if (unref(scrollIntoViewOnPartEdit)) {
+          scrollToElement(editingElement);
+        }
       }
     }
 

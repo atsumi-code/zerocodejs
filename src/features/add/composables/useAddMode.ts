@@ -1,4 +1,4 @@
-import { ref, computed, nextTick, type Ref } from 'vue';
+import { ref, computed, nextTick, unref, type Ref } from 'vue';
 
 import type {
   ZeroCodeData,
@@ -18,7 +18,8 @@ export function useAddMode(
   cmsData: ZeroCodeData,
   previewArea: Ref<HTMLElement | null>,
   renderComponentToHtml: (component: ComponentData, path: string) => string,
-  config?: Partial<CMSConfig>
+  config?: Partial<CMSConfig>,
+  scrollIntoViewOnPartEdit: Ref<boolean> = ref(false)
 ) {
   const addTargetPath = ref<string | null>(null);
   const addSelectedType = ref<TypeData | null>(null);
@@ -349,7 +350,9 @@ export function useAddMode(
         ) as HTMLElement;
         if (currentElement) {
           setActiveOutline(currentElement, 'add');
-          scrollToElement(currentElement);
+          if (unref(scrollIntoViewOnPartEdit)) {
+            scrollToElement(currentElement);
+          }
         } else {
           const slotPath = getSlotPath(path);
           if (slotPath !== path) {
@@ -358,7 +361,9 @@ export function useAddMode(
             ) as HTMLElement;
             if (slotElement) {
               setActiveOutline(slotElement, 'add');
-              scrollToElement(slotElement);
+              if (unref(scrollIntoViewOnPartEdit)) {
+                scrollToElement(slotElement);
+              }
             }
           }
         }
@@ -733,7 +738,7 @@ export function useAddMode(
         const newElement = previewArea.value.querySelector(
           `[data-zcode-path="${newComponentPath}"]`
         ) as HTMLElement | null;
-        if (newElement) {
+        if (newElement && unref(scrollIntoViewOnPartEdit)) {
           scrollToElement(newElement);
         }
       });
@@ -748,7 +753,7 @@ export function useAddMode(
       ) as HTMLElement;
       if (element) {
         removeActiveOutline(element);
-        if (scrollBack) {
+        if (scrollBack && unref(scrollIntoViewOnPartEdit)) {
           scrollToElement(element);
         }
       }
@@ -757,7 +762,7 @@ export function useAddMode(
       ) as HTMLElement;
       if (slotElement) {
         removeActiveOutline(slotElement);
-        if (scrollBack) {
+        if (scrollBack && unref(scrollIntoViewOnPartEdit)) {
           scrollToElement(slotElement);
         }
       }

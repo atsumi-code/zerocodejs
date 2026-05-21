@@ -253,9 +253,7 @@
     <!-- 画像選択モーダル -->
     <ImageSelectModal
       :is-open="imageModalOpen"
-      :images-common="imagesCommon"
-      :images-individual="imagesIndividual"
-      :images-special="imagesSpecial"
+      :cms-data="cmsData"
       :current-value="currentImageField?.currentValue || undefined"
       @update:model-value="handleImageSelect"
       @close="closeImageModal"
@@ -265,7 +263,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { ComponentData, ImageData } from '../../../types';
+import type { ComponentData, ZeroCodeData } from '../../../types';
 import RichTextEditor from './RichTextEditor.vue';
 import ImageSelectModal from './ImageSelectModal.vue';
 import { X, ChevronUp, Image } from 'lucide-vue-next';
@@ -300,9 +298,7 @@ const props = defineProps<{
   fieldErrors?: Record<string, string>;
   currentMode: 'edit' | 'add' | 'reorder' | 'delete';
   canSelectParent: boolean;
-  imagesCommon: ImageData[];
-  imagesIndividual: ImageData[];
-  imagesSpecial: ImageData[];
+  cmsData: ZeroCodeData;
   previewMode?: boolean;
 }>();
 
@@ -448,7 +444,8 @@ const handleImageSelect = (imageId: string | null) => {
 
 const getImageUrl = (imageId: string | null | undefined): string | null => {
   if (!imageId) return null;
-  const allImages = [...props.imagesCommon, ...props.imagesIndividual, ...props.imagesSpecial];
+  const { common, individual, special } = props.cmsData.images;
+  const allImages = [...common, ...individual, ...special];
   const image = allImages.find((img) => img.id === imageId);
   return image?.url || null;
 };

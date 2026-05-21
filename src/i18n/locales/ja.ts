@@ -14,6 +14,7 @@ export default {
     confirm: '確定',
     clear: 'クリア',
     select: '選択',
+    toggleSettingHelp: 'この設定の詳細説明を表示または非表示にします',
     replace: '差し替え',
     copy: 'コピー',
     copied: 'コピーしました'
@@ -41,6 +42,9 @@ export default {
     enableContextMenu: '右クリックメニューを有効にする',
     enableContextMenuDescription:
       'コンテンツ上で右クリックすると、編集・追加・並べ替え・削除のモードを切り替えるメニューが表示されます。',
+    scrollIntoViewOnPartEdit: 'パーツ選択時に該当箇所へスクロールする',
+    scrollIntoViewOnPartEditDescription:
+      'オンにすると、編集・追加・並べ替え・削除の各モードでパーツを選んだときや、追加完了・キャンセル・並べ替え完了・削除確認のキャンセルなどでプレビューが該当箇所へスクロールします。初期はオフです。',
     showSaveConfirm: '保存時の確認ダイアログを表示する',
     showSaveConfirmDescription:
       '保存ボタンをクリックした際に、保存対象を確認するダイアログを表示します。',
@@ -124,6 +128,8 @@ export default {
     outlinePosition: 'アウトラインの位置',
     outlinePositionOuter: '外側',
     outlinePositionInner: '内側',
+    slotOnly: 'スロット専用パーツ',
+    slotOnlyDescription: '通常の追加一覧には出ず、スロットからのみ追加できます。',
     deletePartConfirm: 'パーツ {number} を削除しますか？\n（タイプには他のパーツが残ります）',
     deleteTypeConfirm: 'このタイプを削除しますか？',
     deleteTypeWithUsagesConfirm: 'タイプ「{type}」は{count}箇所で使用されています。削除しますか？',

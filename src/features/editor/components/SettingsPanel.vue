@@ -19,7 +19,7 @@
               {{ $t('settings.language.en') }}
             </option>
           </select>
-          <button class="zcode-close-btn" aria-label="$t('common.close')" @click="$emit('close')">
+          <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('close')">
             <X :size="18" />
           </button>
         </div>
@@ -44,7 +44,7 @@
               <button
                 class="zcode-info-btn"
                 type="button"
-                :title="$t('common.select')"
+                :title="$t('common.toggleSettingHelp')"
                 @click.stop="showDynamicContentInfo = !showDynamicContentInfo"
               >
                 <HelpCircle :size="16" />
@@ -70,7 +70,7 @@
               <button
                 class="zcode-info-btn"
                 type="button"
-                :title="$t('common.select')"
+                :title="$t('common.toggleSettingHelp')"
                 @click.stop="showDevPaddingInfo = !showDevPaddingInfo"
               >
                 <HelpCircle :size="16" />
@@ -96,7 +96,7 @@
               <button
                 class="zcode-info-btn"
                 type="button"
-                :title="$t('common.select')"
+                :title="$t('common.toggleSettingHelp')"
                 @click.stop="showContextMenuInfo = !showContextMenuInfo"
               >
                 <HelpCircle :size="16" />
@@ -104,6 +104,34 @@
             </label>
             <div v-if="showContextMenuInfo" class="zcode-setting-description">
               {{ $t('settings.enableContextMenuDescription') }}
+            </div>
+          </div>
+
+          <div
+            v-if="props.mode === 'toolbar' || props.mode === undefined"
+            class="zcode-setting-item"
+          >
+            <label class="zcode-setting-label">
+              <input
+                type="checkbox"
+                :checked="scrollIntoViewOnPartEditValue"
+                class="zcode-setting-checkbox"
+                @change="
+                  $emit('toggle-scroll-on-part-edit', ($event.target as HTMLInputElement).checked)
+                "
+              />
+              <span>{{ $t('settings.scrollIntoViewOnPartEdit') }}</span>
+              <button
+                class="zcode-info-btn"
+                type="button"
+                :title="$t('common.toggleSettingHelp')"
+                @click.stop="showScrollPartEditInfo = !showScrollPartEditInfo"
+              >
+                <HelpCircle :size="16" />
+              </button>
+            </label>
+            <div v-if="showScrollPartEditInfo" class="zcode-setting-description">
+              {{ $t('settings.scrollIntoViewOnPartEditDescription') }}
             </div>
           </div>
 
@@ -119,7 +147,7 @@
               <button
                 class="zcode-info-btn"
                 type="button"
-                :title="$t('common.select')"
+                :title="$t('common.toggleSettingHelp')"
                 @click.stop="showSaveConfirmInfo = !showSaveConfirmInfo"
               >
                 <HelpCircle :size="16" />
@@ -157,6 +185,7 @@ const props = defineProps<{
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
+  scrollIntoViewOnPartEdit?: boolean;
   showSaveConfirm?: boolean;
 }>();
 
@@ -165,6 +194,7 @@ defineEmits<{
   'toggle-dynamic-content': [enabled: boolean];
   'toggle-dev-padding': [enabled: boolean];
   'toggle-context-menu': [enabled: boolean];
+  'toggle-scroll-on-part-edit': [enabled: boolean];
   'toggle-save-confirm': [enabled: boolean];
 }>();
 
@@ -185,10 +215,15 @@ function handleLocaleChange(event: Event) {
 const showDynamicContentInfo = ref(false);
 const showDevPaddingInfo = ref(false);
 const showContextMenuInfo = ref(false);
+const showScrollPartEditInfo = ref(false);
 const showSaveConfirmInfo = ref(false);
 
 const devRightPaddingValue = computed(() => {
   // デフォルトは余白なし（false）
   return props.devRightPadding !== undefined ? props.devRightPadding : false;
+});
+
+const scrollIntoViewOnPartEditValue = computed(() => {
+  return props.scrollIntoViewOnPartEdit !== undefined ? props.scrollIntoViewOnPartEdit : false;
 });
 </script>

@@ -61,6 +61,7 @@ export interface CMSSettings {
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
   showSaveConfirm?: boolean; // 保存時の確認ダイアログを表示する（デフォルト: true）
+  scrollIntoViewOnPartEdit?: boolean;
 }
 
 export interface DevSettings {

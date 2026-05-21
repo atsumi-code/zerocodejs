@@ -64,9 +64,7 @@
         :field-errors="fieldErrors"
         :current-mode="currentMode"
         :can-select-parent="canSelectParent"
-        :images-common="cmsData.images.common"
-        :images-individual="cmsData.images.individual"
-        :images-special="cmsData.images.special"
+        :cms-data="cmsData"
         @close="closeEditPanel"
         @select-parent="selectParentElement"
         @save-field="handleSaveFieldEdit"
@@ -125,11 +123,13 @@
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
       :dev-right-padding="devRightPaddingValue"
       :enable-context-menu="enableContextMenu"
+      :scroll-into-view-on-part-edit="scrollIntoViewOnPartEdit"
       :show-save-confirm="showSaveConfirm"
       @close="settingsPanelOpen = false"
       @toggle-dynamic-content="allowDynamicContentInteraction = $event"
       @toggle-dev-padding="devRightPadding = $event"
       @toggle-context-menu="enableContextMenu = $event"
+      @toggle-scroll-on-part-edit="scrollIntoViewOnPartEdit = $event"
       @toggle-save-confirm="showSaveConfirm = $event"
     />
 
@@ -167,11 +167,29 @@
         </div>
       </div>
     </div>
+
+    <!-- Teleport 用（Shadow DOM 内にモーダル向け。Editor 埋め込み時は provide なし） -->
+    <div
+      v-if="!skipTeleportTargetProvide"
+      ref="teleportTargetRef"
+      class="zcode-teleport-root"
+      aria-hidden="true"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue';
+import {
+  ref,
+  computed,
+  onMounted,
+  onUnmounted,
+  watch,
+  nextTick,
+  getCurrentInstance,
+  provide
+} from 'vue';
+import { zcodeTeleportTargetKey } from '../core/injectionKeys';
 import { Save } from 'lucide-vue-next';
 import ZeroCodePreview from './ZeroCodePreview.vue';
 import PreviewArea from '../features/preview/PreviewArea.vue';
@@ -220,7 +238,18 @@ const props = defineProps<{
   hideFixedSaveButton?: boolean;
   /** save-request の detail.source（埋め込み先が studio のときは 'studio'） */
   saveRequestSource?: 'cms' | 'studio';
+  /**
+   * true のとき Teleport 用の provide / マウント点を出さない（ZeroCodeEditor / Studio が上位で提供する場合）
+   */
+  skipTeleportTargetProvide?: boolean;
 }>();
+
+const skipTeleportTargetProvide = computed(() => props.skipTeleportTargetProvide === true);
+
+const teleportTargetRef = ref<HTMLElement | null>(null);
+if (props.skipTeleportTargetProvide !== true) {
+  provide(zcodeTeleportTargetKey, teleportTargetRef);
+}
 
 const viewMode = ref<'preview' | 'manage'>('manage');
 const settingsPanelOpen = ref(false);
@@ -238,7 +267,8 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 
 const config = parseConfig(props.config);
 
-const saveTargets = ['page'];
+/** ページ保存時はページ本体に加え、特別画像プールもホストが永続化できるよう含める */
+const saveTargets = ['page', 'images-special'];
 
 const hideFixedSaveButton = computed(() => props.hideFixedSaveButton === true);
 const saveRequestSource = computed(() => props.saveRequestSource ?? 'cms');
@@ -271,6 +301,9 @@ const enableContextMenu = ref(
 );
 const showSaveConfirm = ref(
   getInitialCMSValue('showSaveConfirm', true, config.cms?.showSaveConfirm)
+);
+const scrollIntoViewOnPartEdit = ref(
+  getInitialCMSValue('scrollIntoViewOnPartEdit', false, config.cms?.scrollIntoViewOnPartEdit)
 );
 const devRightPaddingValue = computed(() => devRightPadding.value);
 
@@ -345,7 +378,7 @@ const {
   handleEditClick,
   saveFieldEdit,
   closeEditPanel
-} = useEditMode(cmsData, previewArea);
+} = useEditMode(cmsData, previewArea, scrollIntoViewOnPartEdit);
 
 const fieldErrors = ref<Record<string, string>>({});
 
@@ -391,11 +424,12 @@ const {
   getClickedComponentPreviewHtml,
   confirmAddPart,
   cancelAdd
-} = useAddMode(cmsData, previewArea, renderComponentToHtml, config);
+} = useAddMode(cmsData, previewArea, renderComponentToHtml, config, scrollIntoViewOnPartEdit);
 
 const { reorderSourcePath, handleReorderClick, canReorderWith, cancelReorder } = useReorderMode(
   cmsData,
-  previewArea
+  previewArea,
+  scrollIntoViewOnPartEdit
 );
 
 const {
@@ -404,7 +438,7 @@ const {
   handleDeleteClick,
   confirmDelete,
   cancelDelete
-} = useDeleteMode(cmsData, previewArea, switchModeBase, nextTick);
+} = useDeleteMode(cmsData, previewArea, switchModeBase, nextTick, scrollIntoViewOnPartEdit);
 
 const { switchMode } = useModeSwitcher(
   previewArea,
@@ -785,6 +819,10 @@ watch(showSaveConfirm, (newValue) => {
   saveCMSSettings({ showSaveConfirm: newValue });
 });
 
+watch(scrollIntoViewOnPartEdit, (newValue) => {
+  saveCMSSettings({ scrollIntoViewOnPartEdit: newValue });
+});
+
 // 保存ボタンクリック時の処理
 function handleSave() {
   // 設定を確認
@@ -830,6 +868,7 @@ defineExpose({
   allowDynamicContentInteraction,
   devRightPadding,
   devRightPaddingValue,
+  scrollIntoViewOnPartEdit,
   settingsPanelOpen
 });
 </script>
