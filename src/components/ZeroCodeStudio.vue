@@ -77,6 +77,7 @@
       :config="props.config"
       :endpoints="props.endpoints"
       :backend-data="props.backendData"
+      :skip-teleport-target-provide="true"
     />
 
     <PartsManagerPanel
@@ -165,11 +166,14 @@
         </div>
       </div>
     </div>
+
+    <div ref="teleportTargetRef" class="zcode-teleport-root" aria-hidden="true" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, type Ref } from 'vue';
+import { ref, computed, watch, onMounted, provide, type Ref } from 'vue';
+import { zcodeTeleportTargetKey } from '../core/injectionKeys';
 import { useI18n } from 'vue-i18n';
 import ZeroCodeCMS from './ZeroCodeCMS.vue';
 import ZeroCodePreview from './ZeroCodePreview.vue';
@@ -203,6 +207,9 @@ const props = defineProps<{
   endpoints?: string;
   backendData?: string;
 }>();
+
+const teleportTargetRef = ref<HTMLElement | null>(null);
+provide(zcodeTeleportTargetKey, teleportTargetRef);
 
 const viewMode = ref<'preview' | 'manage'>('manage');
 const activeTab = ref<'edit' | 'parts' | 'images' | 'data'>('edit');
@@ -521,7 +528,7 @@ function calculateSaveTargets(): string[] {
 
   let targets: string[];
   if (primaryTarget === 'page') {
-    targets = ['page'];
+    targets = ['page', 'images-special'];
   } else if (primaryTarget === 'parts-common') {
     targets = [primaryTarget, 'parts-common-css'];
   } else if (primaryTarget === 'parts-individual') {

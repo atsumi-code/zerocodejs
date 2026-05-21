@@ -168,7 +168,7 @@
       </div>
 
       <!-- タイプ全体編集モーダル（新規作成・編集共通） -->
-      <Teleport to="body">
+      <Teleport :to="teleportTo">
         <div
           v-if="editingType && (editingLevel === 'type' || isCreatingNew)"
           class="zcode-part-modal"
@@ -234,7 +234,7 @@
       </Teleport>
 
       <!-- パーツ編集モーダル -->
-      <Teleport to="body">
+      <Teleport :to="teleportTo">
         <div
           v-if="editingPart && editingLevel === 'part'"
           class="zcode-part-modal"
@@ -284,6 +284,25 @@
                         <option value="outer">{{ $t('partsManager.outlinePositionOuter') }}</option>
                         <option value="inner">{{ $t('partsManager.outlinePositionInner') }}</option>
                       </select>
+                    </div>
+                    <div
+                      class="zcode-part-editor-options-row zcode-part-editor-options-row--column"
+                    >
+                      <label class="zcode-part-editor-options-check-label">
+                        <input
+                          type="checkbox"
+                          :checked="editingPart.part.slotOnly === true"
+                          @change="
+                            editingPart.part.slotOnly = ($event.target as HTMLInputElement).checked
+                              ? true
+                              : undefined
+                          "
+                        />
+                        <span>{{ $t('partsManager.slotOnly') }}</span>
+                      </label>
+                      <p class="zcode-part-editor-options-hint">
+                        {{ $t('partsManager.slotOnlyDescription') }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -605,9 +624,7 @@
                           :editing-available-fields="editPanelPreviewFields"
                           current-mode="edit"
                           :can-select-parent="false"
-                          :images-common="cmsData.images?.common ?? []"
-                          :images-individual="cmsData.images?.individual ?? []"
-                          :images-special="cmsData.images?.special ?? []"
+                          :cms-data="cmsData"
                           :preview-mode="true"
                           @save-field="handleEditPanelPreviewSaveField"
                           @close="() => {}"
@@ -645,7 +662,7 @@
       </Teleport>
 
       <!-- 拡大プレビューモーダル（パーツ編集用） -->
-      <Teleport to="body">
+      <Teleport :to="teleportTo">
         <div
           v-if="showPreviewModal && editingPart"
           class="zcode-preview-modal"
@@ -666,7 +683,7 @@
       </Teleport>
 
       <!-- CSS警告モーダル（共通・個別パーツ両方） -->
-      <Teleport to="body">
+      <Teleport :to="teleportTo">
         <div
           v-if="
             showCssWarningModal &&
@@ -730,7 +747,7 @@
       </Teleport>
 
       <!-- カテゴリ情報モーダル -->
-      <Teleport to="body">
+      <Teleport :to="teleportTo">
         <div
           v-if="showCategoryInfoModal"
           class="zcode-help-modal-overlay"
@@ -781,7 +798,7 @@
       </Teleport>
 
       <!-- テンプレート記法ヘルプモーダル -->
-      <Teleport to="body">
+      <Teleport :to="teleportTo">
         <div v-if="showTemplateHelp" class="zcode-help-modal-overlay" @click="closeTemplateHelp">
           <div class="zcode-help-modal" @click.stop>
             <div class="zcode-help-modal-header">
@@ -887,7 +904,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed, onBeforeUnmount, nextTick } from 'vue';
+import { ref, reactive, watch, computed, onBeforeUnmount, nextTick, inject, type Ref } from 'vue';
+import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
+import { zcodeTeleportTargetKey } from '../../../core/injectionKeys';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, TypeData, CMSConfig, ComponentData } from '../../../types';
 import { usePartsManager } from '../composables/usePartsManager';
@@ -915,6 +934,9 @@ import {
 } from '../../../core/utils/storage';
 
 const { t } = useI18n();
+
+const teleportTo = useZcodeTeleportTo();
+const zcodeTeleportTarget = inject<Ref<HTMLElement | null> | null>(zcodeTeleportTargetKey, null);
 
 const props = defineProps<{
   cmsData: ZeroCodeData;
@@ -976,7 +998,17 @@ function applyModalPreviewPageCSS(cssMap: {
       styleElement.setAttribute('data-zcode-css-parts-preview', 'true');
       styleElement.setAttribute('data-zcode-css-category', category);
       if (!styleElement.parentNode) {
-        document.head.appendChild(styleElement);
+        const host = zcodeTeleportTarget?.value;
+        if (host) {
+          const root = host.getRootNode();
+          if (root instanceof ShadowRoot) {
+            root.appendChild(styleElement);
+          } else {
+            document.head.appendChild(styleElement);
+          }
+        } else {
+          document.head.appendChild(styleElement);
+        }
       }
       modalPreviewCssStyleEls.set(category, styleElement);
     }

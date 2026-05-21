@@ -185,7 +185,7 @@
     </div>
 
     <!-- パーツ拡大プレビューモーダル（追加パネル用） -->
-    <Teleport to="body">
+    <Teleport :to="teleportTo">
       <div
         v-if="showPreviewModal && previewTarget"
         class="zcode-preview-modal"
@@ -219,6 +219,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import type { TypeData, PartData, ComponentData, CMSConfig } from '../../../types';
 import { X, ChevronUp, ZoomIn } from 'lucide-vue-next';
 
@@ -243,6 +244,8 @@ const props = defineProps<{
   hasSpecialParts: boolean;
   config?: Partial<CMSConfig>;
 }>();
+
+const teleportTo = useZcodeTeleportTo();
 
 const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 

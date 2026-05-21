@@ -83,7 +83,7 @@
     </div>
 
     <!-- 画像編集モーダル -->
-    <Teleport to="body">
+    <Teleport :to="teleportTo">
       <div v-if="editingImage" class="zcode-image-modal" @click.self="cancelEditing">
         <div class="zcode-image-modal-content" data-edit-mode @click.stop>
           <div class="zcode-image-editor-header">
@@ -151,7 +151,7 @@
     </Teleport>
 
     <!-- カテゴリ情報モーダル -->
-    <Teleport to="body">
+    <Teleport :to="teleportTo">
       <div
         v-if="showCategoryInfoModal"
         class="zcode-help-modal-overlay"
@@ -205,6 +205,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ImageData, CMSConfig } from '../../../types';
 import { useImagesManager } from '../composables/useImagesManager';
@@ -212,6 +213,8 @@ import { logger } from '../../../core/utils/logger';
 import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Info, Image } from 'lucide-vue-next';
 
 const { t } = useI18n();
+
+const teleportTo = useZcodeTeleportTo();
 
 const props = defineProps<{
   cmsData: ZeroCodeData;
