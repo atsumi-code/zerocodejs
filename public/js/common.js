@@ -1,9 +1,9 @@
 /**
  * ZeroCode.js - 共通JavaScript
- * サンプルデータとセッションストレージ管理
+ * サンプルデータとローカルストレージ管理
  */
 
-// セッションストレージのキー
+// ローカルストレージのキー（プレフィックス用・レガシー参照）
 const STORAGE_KEYS = {
   PAGE: 'zcode-page',
   CSS_COMMON: 'zcode-css-common',
@@ -811,6 +811,30 @@ const StorageManager = {
     }
   },
 
+  // ローカルストレージにキーが存在するか（値が [] でも true）
+  has(instanceIdOrComponentId, key) {
+    let instanceId = instanceIdOrComponentId;
+    if (instanceIdOrComponentId) {
+      const component = document.getElementById(instanceIdOrComponentId);
+      if (component) {
+        instanceId = getInstanceId(component);
+      } else {
+        instanceId = instanceIdOrComponentId;
+      }
+    } else {
+      instanceId = 'default';
+    }
+    return localStorage.getItem(getStorageKey(instanceId, key)) !== null;
+  },
+
+  // 未保存（page キーなし）のときだけサンプルデータを投入
+  ensureSampleDataIfNeeded(instanceIdOrComponentId) {
+    if (!this.has(instanceIdOrComponentId, 'page')) {
+      this.saveSampleData(instanceIdOrComponentId);
+    }
+    return true;
+  },
+
   // すべてのデータをクリア（インスタンスID対応）
   clear(instanceId) {
     const keys = [
@@ -833,7 +857,7 @@ const StorageManager = {
     });
   },
 
-  // サンプルデータをセッションストレージに保存（インスタンスID対応）
+  // サンプルデータをローカルストレージに保存（インスタンスID対応）
   saveSampleData(instanceIdOrComponentId) {
     // コンポーネントIDが渡された場合はインスタンスIDを取得
     let instanceId = instanceIdOrComponentId;
@@ -863,7 +887,7 @@ const StorageManager = {
     return true;
   },
 
-  // セッションストレージからデータを読み込み（インスタンスID対応）
+  // ローカルストレージからデータを読み込み（インスタンスID対応）
   loadData(instanceIdOrComponentId) {
     // コンポーネントIDが渡された場合はインスタンスIDを取得
     let instanceId = instanceIdOrComponentId;

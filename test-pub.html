@@ -44,13 +44,8 @@
       import { renderToHtml } from '/src/index.ts';
 
       function init() {
+        ZeroCodeCommon.StorageManager.ensureSampleDataIfNeeded('test-cms');
         const rawData = ZeroCodeCommon.StorageManager.loadData('test-cms');
-
-        if (rawData.page.length === 0) {
-          ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
-          const updatedData = ZeroCodeCommon.StorageManager.loadData('test-cms');
-          Object.assign(rawData, updatedData);
-        }
 
         const sampleData = {
           page: rawData.page,
@@ -75,7 +70,7 @@
           const html = renderToHtml(sampleData, {
             enableEditorAttributes: false
           });
-          
+
           // CSSを<style>タグとして追加（共通 → 個別 → 特別の順）
           let styleTags = '';
           if (sampleData.css.common) {
@@ -87,7 +82,7 @@
           if (sampleData.css.special) {
             styleTags += `<style id="zcode-css-style-special" data-zcode-css-category="special">${sampleData.css.special}</style>`;
           }
-          
+
           document.getElementById('cms-content').innerHTML = styleTags + html;
 
           const event = new CustomEvent('cms-content-updated');

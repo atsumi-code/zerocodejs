@@ -78,12 +78,8 @@
         setTimeout(() => {
           cms = document.getElementById('test-cms');
           if (cms) {
-            // ローカルストレージからデータを読み込んで適用
-            const data = ZeroCodeCommon.StorageManager.loadData('test-cms');
-            if (data.page.length === 0) {
-              // データがない場合はサンプルデータを読み込む
-              ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
-            }
+            // 未保存時のみサンプル投入し、保存済み（空配列含む）はそのまま適用
+            ZeroCodeCommon.StorageManager.ensureSampleDataIfNeeded('test-cms');
             ZeroCodeCommon.StorageManager.applyToComponent('test-cms');
 
             // コンテンツ更新イベントを発火（動的コンテンツ用フック）

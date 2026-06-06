@@ -126,17 +126,12 @@
     <script type="module" src="/src/index.ts"></script>
 
     <script type="module">
-      import { renderToHtml } from '/src/index.ts'
+      import { renderToHtml } from '/src/index.ts';
 
       async function init() {
         // サンプルデータを取得
-        const rawData = ZeroCodeCommon.StorageManager.loadData('test-cms')
-        if (rawData.page.length === 0) {
-          ZeroCodeCommon.StorageManager.saveSampleData('test-cms')
-          // 再読み込み
-          const updatedData = ZeroCodeCommon.StorageManager.loadData('test-cms')
-          Object.assign(rawData, updatedData)
-        }
+        ZeroCodeCommon.StorageManager.ensureSampleDataIfNeeded('test-cms');
+        const rawData = ZeroCodeCommon.StorageManager.loadData('test-cms');
 
         // StorageManagerのデータ構造をZeroCodeData形式に変換
         const sampleData = {
@@ -156,7 +151,7 @@
             individual: rawData.imagesIndividual || [],
             special: rawData.imagesSpecial || []
           }
-        }
+        };
 
         // CSSを<style>タグとして準備（共通 → 個別 → 特別の順）
         let styleTags = '';
@@ -174,65 +169,65 @@
         try {
           const ssrHtml = renderToHtml(sampleData, {
             enableEditorAttributes: false
-          })
+          });
 
-        document.getElementById('ssr-output').innerHTML = styleTags + ssrHtml
-        document.getElementById('ssr-status').textContent = 'レンダリング成功'
-          document.getElementById('ssr-status').className = 'status success'
+          document.getElementById('ssr-output').innerHTML = styleTags + ssrHtml;
+          document.getElementById('ssr-status').textContent = 'レンダリング成功';
+          document.getElementById('ssr-status').className = 'status success';
         } catch (error) {
-          console.error('SSR Error:', error)
+          console.error('SSR Error:', error);
           document.getElementById('ssr-output').innerHTML =
-            `<div class="error-message">エラー: ${error.message}</div>`
-          document.getElementById('ssr-status').textContent = `エラー: ${error.message}`
-          document.getElementById('ssr-status').className = 'status error'
+            `<div class="error-message">エラー: ${error.message}</div>`;
+          document.getElementById('ssr-status').textContent = `エラー: ${error.message}`;
+          document.getElementById('ssr-status').className = 'status error';
         }
 
         // クライアントサイドレンダリング（比較用 - renderToHtmlを使用）
         try {
           const clientHtml = renderToHtml(sampleData, {
             enableEditorAttributes: false
-          })
+          });
 
-        document.getElementById('client-output').innerHTML = styleTags + clientHtml
-        document.getElementById('client-status').textContent = 'レンダリング成功'
-          document.getElementById('client-status').className = 'status success'
+          document.getElementById('client-output').innerHTML = styleTags + clientHtml;
+          document.getElementById('client-status').textContent = 'レンダリング成功';
+          document.getElementById('client-status').className = 'status success';
 
           // 比較（styleTagsを除いて比較）
-          const ssrOutput = document.getElementById('ssr-output').innerHTML
-          const clientOutput = document.getElementById('client-output').innerHTML
+          const ssrOutput = document.getElementById('ssr-output').innerHTML;
+          const clientOutput = document.getElementById('client-output').innerHTML;
           // styleTagsを除いて比較
-          const ssrHtmlForCompare = ssrOutput.replace(styleTags, '')
-          const clientHtmlForCompare = clientOutput.replace(styleTags, '')
-          compareResults(ssrHtmlForCompare, clientHtmlForCompare)
+          const ssrHtmlForCompare = ssrOutput.replace(styleTags, '');
+          const clientHtmlForCompare = clientOutput.replace(styleTags, '');
+          compareResults(ssrHtmlForCompare, clientHtmlForCompare);
         } catch (error) {
-          console.error('Client rendering error:', error)
+          console.error('Client rendering error:', error);
           document.getElementById('client-output').innerHTML =
-            `<div class="error-message">エラー: ${error.message}</div>`
-          document.getElementById('client-status').textContent = `エラー: ${error.message}`
-          document.getElementById('client-status').className = 'status error'
+            `<div class="error-message">エラー: ${error.message}</div>`;
+          document.getElementById('client-status').textContent = `エラー: ${error.message}`;
+          document.getElementById('client-status').className = 'status error';
         }
       }
 
       function compareResults(ssrHtml, clientHtml) {
         // 空白と改行を正規化して比較
-        const normalize = (html) => html.replace(/\s+/g, ' ').trim()
-        const ssrNormalized = normalize(ssrHtml)
-        const clientNormalized = normalize(clientHtml)
+        const normalize = (html) => html.replace(/\s+/g, ' ').trim();
+        const ssrNormalized = normalize(ssrHtml);
+        const clientNormalized = normalize(clientHtml);
 
-        const isEqual = ssrNormalized === clientNormalized
-        const resultDiv = document.getElementById('comparison-result')
-        const detailsDiv = document.getElementById('comparison-details')
+        const isEqual = ssrNormalized === clientNormalized;
+        const resultDiv = document.getElementById('comparison-result');
+        const detailsDiv = document.getElementById('comparison-details');
 
-        resultDiv.style.display = 'block'
+        resultDiv.style.display = 'block';
 
         if (isEqual) {
-          resultDiv.style.background = '#d1fae5'
+          resultDiv.style.background = '#d1fae5';
           detailsDiv.innerHTML = `
             <p style="color: #065f46; font-weight: bold;">HTML構造は一致しています</p>
             <p style="color: #047857; margin-top: 8px;">SSRとクライアントサイドのレンダリング結果が一致しました。</p>
-          `
+          `;
         } else {
-          resultDiv.style.background = '#fee2e2'
+          resultDiv.style.background = '#fee2e2';
           detailsDiv.innerHTML = `
             <p style="color: #991b1b; font-weight: bold;">HTML構造に差異があります</p>
             <details style="margin-top: 12px;">
@@ -246,14 +241,14 @@
                 </p>
               </div>
             </details>
-          `
+          `;
         }
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init)
+        document.addEventListener('DOMContentLoaded', init);
       } else {
-        init()
+        init();
       }
     </script>
   </body>

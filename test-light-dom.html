@@ -71,12 +71,8 @@
         setTimeout(() => {
           cms = document.getElementById('test-light-dom');
           if (cms) {
-            // セッションストレージからデータを読み込んで適用
-            const data = ZeroCodeCommon.StorageManager.loadData('test-light-dom');
-            if (data.page.length === 0) {
-              // データがない場合はサンプルデータを読み込む
-              ZeroCodeCommon.StorageManager.saveSampleData('test-light-dom');
-            }
+            // 未保存時のみサンプル投入し、保存済み（空配列含む）はそのまま適用
+            ZeroCodeCommon.StorageManager.ensureSampleDataIfNeeded('test-light-dom');
             ZeroCodeCommon.StorageManager.applyToComponent('test-light-dom');
 
             // コンテンツ更新イベントを発火

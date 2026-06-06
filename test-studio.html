@@ -19,10 +19,7 @@
     </div>
 
     <div class="l-container">
-      <zcode-studio
-        id="test-cms"
-        locale="ja"
-      >
+      <zcode-studio id="test-cms" locale="ja">
         <!-- 共通CSS（リセットCSS含む） -->
         <link slot="css" rel="stylesheet" href="./css/common.css" />
         <!-- ページ専用CSS -->
@@ -80,10 +77,7 @@
         setTimeout(() => {
           studio = document.getElementById('test-cms');
           if (studio) {
-            const data = ZeroCodeCommon.StorageManager.loadData('test-cms');
-            if (data.page.length === 0) {
-              ZeroCodeCommon.StorageManager.saveSampleData('test-cms');
-            }
+            ZeroCodeCommon.StorageManager.ensureSampleDataIfNeeded('test-cms');
             ZeroCodeCommon.StorageManager.applyToComponent('test-cms');
 
             const resetBtn = document.getElementById('reset-data-btn');
