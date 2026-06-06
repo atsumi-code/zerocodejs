@@ -86,12 +86,19 @@ export function findPartById(
   partId: string,
   parts: { common: TypeData[]; individual: TypeData[]; special: TypeData[] }
 ): PartData | null {
-  // 検索順序（優先度の高い順）：common → individual → special
+  const found = findTypeAndPartByPartId(partId, parts);
+  return found?.part ?? null;
+}
+
+export function findTypeAndPartByPartId(
+  partId: string,
+  parts: { common: TypeData[]; individual: TypeData[]; special: TypeData[] }
+): { type: TypeData; part: PartData } | null {
   const allTypes = [...parts.common, ...parts.individual, ...parts.special];
   for (const type of allTypes) {
     const part = type.parts.find((p) => p.id === partId);
     if (part) {
-      return part;
+      return { type, part };
     }
   }
   return null;

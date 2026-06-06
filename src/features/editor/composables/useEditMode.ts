@@ -1,6 +1,6 @@
 import { ref, nextTick, unref, type Ref } from 'vue';
-import type { ZeroCodeData, ComponentData, PartData } from '../../../types';
-import { getComponentByPath } from '../../../core/utils/path-utils';
+import type { ZeroCodeData, ComponentData } from '../../../types';
+import { findPartById, getComponentByPath } from '../../../core/utils/path-utils';
 import {
   getAvailableFieldsFromPart,
   type EditPanelField
@@ -19,17 +19,7 @@ export function useEditMode(
   const editingAvailableFields = ref<EditPanelField[]>([]);
 
   function getAvailableFields(component: ComponentData): EditPanelField[] {
-    const partId = component.part_id;
-    const parts = cmsData.parts;
-    const allTypes = [...parts.common, ...parts.individual];
-    let part: PartData | null = null;
-    for (const type of allTypes) {
-      const foundPart = type.parts.find((p) => p.id === partId);
-      if (foundPart) {
-        part = foundPart;
-        break;
-      }
-    }
+    const part = findPartById(component.part_id, cmsData.parts);
     if (!part) return [];
     return getAvailableFieldsFromPart(part, component);
   }

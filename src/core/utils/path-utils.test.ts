@@ -4,7 +4,8 @@ import {
   generateId,
   getFieldLabel,
   getParentPath,
-  findPartById
+  findPartById,
+  findTypeAndPartByPartId
 } from './path-utils';
 import type { ZeroCodeData, PartData, TypeData } from '../../types';
 import { sampleZeroCodeData, sampleComponentData } from '../../__tests__/fixtures/sample-data';
@@ -218,5 +219,53 @@ describe('findPartById', () => {
     const result = findPartById('part-3', partsWithBoth);
     expect(result).toBeDefined();
     expect(result?.title).toBe('共通パーツ');
+  });
+
+  it('should find part in special parts', () => {
+    const specialType: TypeData = {
+      id: 'type-special',
+      type: 'hero',
+      description: '特別',
+      parts: [
+        {
+          id: 'part-special',
+          title: '特別パーツ',
+          description: '',
+          body: '<div z-if="show">{$title:Hello}</div>'
+        }
+      ]
+    };
+    const partsWithSpecial = {
+      common: [],
+      individual: [],
+      special: [specialType]
+    };
+    const result = findPartById('part-special', partsWithSpecial);
+    expect(result?.id).toBe('part-special');
+  });
+});
+
+describe('findTypeAndPartByPartId', () => {
+  it('should return type and part for special category', () => {
+    const specialType: TypeData = {
+      id: 'type-special',
+      type: 'hero',
+      description: '',
+      parts: [
+        {
+          id: 'part-special',
+          title: '特別パーツ',
+          description: '',
+          body: '<div>{$content:テスト}</div>'
+        }
+      ]
+    };
+    const result = findTypeAndPartByPartId('part-special', {
+      common: [],
+      individual: [],
+      special: [specialType]
+    });
+    expect(result?.type.type).toBe('hero');
+    expect(result?.part.id).toBe('part-special');
   });
 });

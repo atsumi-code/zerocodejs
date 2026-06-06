@@ -1,7 +1,7 @@
 import { ref, computed, reactive, toRaw, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, TypeData, PartData, ComponentData } from '../../../types';
-import { generateId } from '../../../core/utils/path-utils';
+import { findPartById, findTypeAndPartByPartId, generateId } from '../../../core/utils/path-utils';
 import { useZeroCodeRenderer } from '../../../core/composables/useZeroCodeRenderer';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { logger } from '../../../core/utils/logger';
@@ -370,16 +370,9 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
     const usages: Array<{ path: string; component: ComponentData }> = [];
 
     const checkComponent = (component: ComponentData, path: string) => {
-      // part_idからパーツを特定して、typeNameと一致するかチェック
-      const partId = component.part_id;
-      const parts = cmsData.parts;
-      const allTypes = [...parts.common, ...parts.individual];
-      for (const type of allTypes) {
-        const foundPart = type.parts.find((p) => p.id === partId);
-        if (foundPart && type.type === typeName) {
-          usages.push({ path, component });
-          break;
-        }
+      const found = findTypeAndPartByPartId(component.part_id, cmsData.parts);
+      if (found && found.type.type === typeName) {
+        usages.push({ path, component });
       }
 
       if (component.slots) {
@@ -427,27 +420,12 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
         if (allowedPartIds && allowedPartIds.length > 0) {
           // 複数選択されている場合は最後のパーツを表示
           const allowedPartId = allowedPartIds[allowedPartIds.length - 1];
-          // すべてのタイプから該当するパーツIDを含むタイプを探す
-          const parts = cmsData.parts;
-          const allTypes = [...parts.common, ...parts.individual];
-          let childType: TypeData | null = null;
-          let childPart: PartData | null = null;
+          const child = findTypeAndPartByPartId(allowedPartId, cmsData.parts);
 
-          for (const t of allTypes) {
-            const foundPart = t.parts.find((p) => p.id === allowedPartId);
-            if (foundPart) {
-              childType = t;
-              childPart = foundPart;
-              break;
-            }
-          }
-
-          if (childType && childPart) {
-            // 再帰的に子コンポーネントを作成（初期スロットも設定される）
-            // 指定されたパーツIDを渡す（循環参照を防ぐため、同じSetを共有）
+          if (child) {
             const childComponent = createTempComponentFromTypeRecursive(
-              childType,
-              childPart.id,
+              child.type,
+              child.part.id,
               processedParts
             );
             slots[slotName] = [childComponent];
@@ -513,27 +491,12 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
         if (allowedPartIds && allowedPartIds.length > 0) {
           // 複数選択されている場合は最後のパーツを表示
           const allowedPartId = allowedPartIds[allowedPartIds.length - 1];
-          // すべてのタイプから該当するパーツIDを含むタイプを探す
-          const parts = cmsData.parts;
-          const allTypes = [...parts.common, ...parts.individual];
-          let childType: TypeData | null = null;
-          let childPart: PartData | null = null;
+          const child = findTypeAndPartByPartId(allowedPartId, cmsData.parts);
 
-          for (const t of allTypes) {
-            const foundPart = t.parts.find((p) => p.id === allowedPartId);
-            if (foundPart) {
-              childType = t;
-              childPart = foundPart;
-              break;
-            }
-          }
-
-          if (childType && childPart) {
-            // 再帰的に子コンポーネントを作成（初期スロットも設定される）
-            // 指定されたパーツIDを渡す
+          if (child) {
             const childComponent = createTempComponentFromTypeRecursive(
-              childType,
-              childPart.id,
+              child.type,
+              child.part.id,
               processedParts
             );
             slots[slotName] = [childComponent];
@@ -554,13 +517,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
   }
 
   function findPartForPreview(partId: string): PartData | null {
-    const parts = cmsData.parts;
-    const allTypes = [...parts.common, ...parts.individual, ...parts.special];
-    for (const t of allTypes) {
-      const foundPart = t.parts.find((p) => p.id === partId);
-      if (foundPart) return foundPart;
-    }
-    return null;
+    return findPartById(partId, cmsData.parts);
   }
 
   function getPartPreviewHtml(type: TypeData, part: PartData): string {
@@ -831,9 +788,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
     if (!type.type || type.type.trim() === '') {
       errors.push('タイプ名は必須です');
     } else if (isCreatingNew.value) {
-      const parts = cmsData.parts;
-      const allTypes = [...parts.common, ...parts.individual];
-      const exists = allTypes.some((t) => t.type === type.type.trim());
+      const exists = getTargetArray().some((t) => t.type === type.type.trim());
       if (exists) {
         errors.push(`タイプ「${type.type}」は既に存在します`);
       }

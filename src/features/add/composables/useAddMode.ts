@@ -138,7 +138,7 @@ export function useAddMode(
       filteredTypes = filteredTypes.filter((t) => t.type === addTypeTab.value);
     }
 
-    const allTypes = [...parts.common, ...parts.individual];
+    const allTypes = [...parts.common, ...parts.individual, ...parts.special];
     const availableParts =
       addTargetPath.value && addTargetPath.value.includes('.slots.')
         ? getAvailablePartsForSlot(getSlotPath(addTargetPath.value), allTypes)

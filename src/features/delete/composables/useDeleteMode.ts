@@ -1,6 +1,10 @@
 import { ref, unref, type Ref } from 'vue';
-import type { ZeroCodeData, ComponentData, TypeData, PartData } from '../../../types';
-import { getComponentByPath, generateId } from '../../../core/utils/path-utils';
+import type { ZeroCodeData, ComponentData, TypeData } from '../../../types';
+import {
+  findTypeAndPartByPartId,
+  getComponentByPath,
+  generateId
+} from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { logger } from '../../../core/utils/logger';
 import { setActiveOutline, removeActiveOutline } from '../../editor/composables/useOutlineManager';
@@ -157,45 +161,20 @@ export function useDeleteMode(
     // スロットが空の場合のみ処理
     if (slotArray.length === 0) {
       // 親コンポーネントのタイプデータを取得（part_idから検索）
-      const partId = parentComponent.part_id;
-      const parts = cmsData.parts;
-      const allTypes = [...parts.common, ...parts.individual];
-      let parentType: TypeData | null = null;
-      let parentPart: PartData | null = null;
-      for (const type of allTypes) {
-        const foundPart = type.parts.find((p) => p.id === partId);
-        if (foundPart) {
-          parentType = type;
-          parentPart = foundPart;
-          break;
-        }
-      }
+      const parent = findTypeAndPartByPartId(parentComponent.part_id, cmsData.parts);
+      if (!parent) return;
 
-      if (!parentType || !parentPart) return;
-
-      // パーツのslots設定を使用
-      const slotConfig = parentPart?.slots?.[slotName];
+      const slotConfig = parent.part.slots?.[slotName];
 
       if (slotConfig) {
         // allowedPartsが1つだけの場合は、そのパーツの初期コンポーネントを1つ作成
         const allowedPartIds = slotConfig.allowedParts;
         if (allowedPartIds && allowedPartIds.length === 1) {
           const allowedPartId = allowedPartIds[0];
-          let childType: TypeData | null = null;
-          let childPart: PartData | null = null;
+          const child = findTypeAndPartByPartId(allowedPartId, cmsData.parts);
 
-          for (const type of allTypes) {
-            const foundPart = type.parts.find((p) => p.id === allowedPartId);
-            if (foundPart) {
-              childType = type;
-              childPart = foundPart;
-              break;
-            }
-          }
-
-          if (childType && childPart) {
-            // 初期コンポーネントを作成（再帰的）
-            const childComponent = createInitialComponentFromPart(childType, childPart.id);
+          if (child) {
+            const childComponent = createInitialComponentFromPart(child.type, child.part.id);
             slotArray.push(childComponent);
           }
         }
@@ -247,21 +226,11 @@ export function useDeleteMode(
         const allowedPartIds = slotConfig.allowedParts;
         if (allowedPartIds && allowedPartIds.length === 1) {
           const allowedPartId = allowedPartIds[0];
-          const parts = cmsData.parts;
-          const allTypes = [...parts.common, ...parts.individual];
-          let childType: TypeData | null = null;
-          let childPart: PartData | null = null;
+          const child = findTypeAndPartByPartId(allowedPartId, cmsData.parts);
 
-          for (const t of allTypes) {
-            const foundPart = t.parts.find((p) => p.id === allowedPartId);
-            if (foundPart) {
-              childType = t;
-              childPart = foundPart;
-              break;
-            }
-          }
-
-          if (childType && childPart) {
+          if (child) {
+            const childType = child.type;
+            const childPart = child.part;
             const childComponent = createInitialComponentFromPart(childType, childPart.id);
             slots[slotName] = [childComponent];
           } else {
