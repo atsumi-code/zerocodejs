@@ -60,7 +60,7 @@ export default {
     addPart: '+ Add Part'
   },
   addPanel: {
-    title: 'Add',
+    title: 'Add panel',
     selectParent: 'Select parent element',
     category: {
       common: 'Common',
@@ -84,7 +84,7 @@ export default {
     optionsPopoverTitle: 'Add options'
   },
   editPanel: {
-    title: 'Editing',
+    title: 'Edit panel',
     editing: 'Editing: {type}',
     id: 'ID: {id}',
     selectImage: 'Select image',
@@ -94,12 +94,12 @@ export default {
     noFields: 'No editable fields available'
   },
   deletePanel: {
-    title: 'Delete confirmation',
+    title: 'Delete panel',
     confirmMessage: 'Do you want to delete this part?',
     selectParent: 'Select parent element'
   },
   reorderPanel: {
-    title: 'Reorder: Source selected',
+    title: 'Reorder panel',
     instruction: 'Outlined parts are valid move targets. Click to reorder.',
     source: 'Source: {path}',
     selectParent: 'Select parent element'

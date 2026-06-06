@@ -6,7 +6,7 @@
   >
     <div v-if="!previewMode" class="zcode-edit-panel-header">
       <div class="zcode-panel-header-title" role="heading" aria-level="3">
-        {{ $t('editPanel.editing', { type: editingComponent.type }) }}
+        {{ $t('editPanel.title') }}
       </div>
       <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('close')">
         <X :size="18" />

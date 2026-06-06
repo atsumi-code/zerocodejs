@@ -60,7 +60,7 @@ export default {
     addPart: '+ パーツを追加'
   },
   addPanel: {
-    title: '追加',
+    title: '追加パネル',
     selectParent: '親要素を選択',
     category: {
       common: '共通',
@@ -84,7 +84,7 @@ export default {
     optionsPopoverTitle: '追加のオプション'
   },
   editPanel: {
-    title: '編集中',
+    title: '編集パネル',
     editing: '編集中: {type}',
     id: 'ID: {id}',
     selectImage: '画像を選択',
@@ -94,12 +94,12 @@ export default {
     noFields: '編集可能なフィールドがありません'
   },
   deletePanel: {
-    title: '削除確認',
+    title: '削除パネル',
     confirmMessage: 'このパーツを削除しますか？',
     selectParent: '親要素を選択'
   },
   reorderPanel: {
-    title: '並べ替え: 移動元を選択中',
+    title: '並べ替えパネル',
     instruction: '点線のパーツが移動可能です。クリックして並べ替えます',
     source: '移動元: {path}',
     selectParent: '親要素を選択'
