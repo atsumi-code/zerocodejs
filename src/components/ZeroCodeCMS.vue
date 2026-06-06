@@ -191,7 +191,8 @@ import {
   watch,
   nextTick,
   getCurrentInstance,
-  provide
+  provide,
+  type Ref
 } from 'vue';
 import { zcodeTeleportTargetKey } from '../core/injectionKeys';
 import { Save } from 'lucide-vue-next';
@@ -336,7 +337,17 @@ function getData(path?: string) {
 
 const containerRef = ref<HTMLElement | null>(null);
 const previewAreaRef = ref<InstanceType<typeof PreviewArea> | null>(null);
-const previewArea = computed(() => previewAreaRef.value?.previewArea || null);
+const previewArea = computed(() => {
+  const exposed = previewAreaRef.value?.previewArea;
+  if (exposed instanceof HTMLElement) {
+    return exposed;
+  }
+  if (exposed && typeof exposed === 'object' && 'value' in exposed) {
+    const unwrapped = (exposed as Ref<HTMLElement | null>).value;
+    return unwrapped instanceof HTMLElement ? unwrapped : null;
+  }
+  return null;
+});
 
 const {
   currentMode,
@@ -569,6 +580,7 @@ function syncManageOutlines() {
 const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   cmsData,
   previewArea,
+  containerRef,
   currentMode,
   editingComponentPath,
   addTargetPath,
@@ -581,6 +593,10 @@ const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   canReorderWith,
   switchMode,
   allowDynamicContentInteraction,
+  closeEditPanel,
+  cancelAdd,
+  cancelDelete,
+  cancelReorder,
   syncManageOutlines
 );
 
@@ -805,8 +821,8 @@ watch(
   { deep: true }
 );
 
-watch([viewMode, previewArea], ([newViewMode, newPreviewArea]) => {
-  if (newViewMode === 'manage' && newPreviewArea) {
+watch([viewMode, previewArea, containerRef], ([newViewMode, newPreviewArea, newContainerRef]) => {
+  if (newViewMode === 'manage' && newPreviewArea && newContainerRef) {
     nextTick(() => {
       setupClickHandlers();
       if (enableContextMenu.value) {

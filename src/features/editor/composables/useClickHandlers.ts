@@ -9,9 +9,81 @@ function findElementByZcodePath(root: HTMLElement, path: string): HTMLElement | 
   return root.querySelector(`[data-zcode-path="${path}"]`) as HTMLElement | null;
 }
 
+/** プレビュー内でパーツ／スロット／空スロット追加ボタン上のクリックか */
+export function isPreviewPartOrSlotClick(target: HTMLElement, root: HTMLElement): boolean {
+  if (!root.contains(target)) {
+    return false;
+  }
+  return !!(
+    target.closest('[data-zcode-path]') ||
+    target.closest('[data-zcode-slot-path]') ||
+    target.closest('[data-zcode-add-slot]')
+  );
+}
+
+/** パネル・ツールバーなど、選択解除の対象外 UI */
+export function isSelectionClearExcludedClick(target: HTMLElement): boolean {
+  return !!(
+    target.closest('.zcode-toolbar') ||
+    target.closest('.zcode-edit-panel') ||
+    target.closest('.zcode-add-panel') ||
+    target.closest('.zcode-reorder-panel') ||
+    target.closest('.zcode-delete-panel') ||
+    target.closest('.zcode-settings-panel-overlay') ||
+    target.closest('.zcode-save-controls-fixed') ||
+    target.closest('.zcode-save-banner') ||
+    target.closest('.zcode-context-menu') ||
+    target.closest('.zcode-save-confirm-dialog-overlay') ||
+    target.closest('.zcode-part-modal') ||
+    target.closest('.zcode-preview-modal') ||
+    target.closest('.zcode-help-modal-overlay') ||
+    target.closest('.zcode-image-modal')
+  );
+}
+
+export function isSelectionClearExcludedInComposedPath(event: Event): boolean {
+  for (const node of event.composedPath()) {
+    if (node instanceof HTMLElement && isSelectionClearExcludedClick(node)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** composedPath 上でプレビュー内のパーツ／スロットクリックか（Shadow DOM 対応） */
+export function isPreviewPartOrSlotClickInEvent(event: Event, preview: HTMLElement): boolean {
+  for (const node of event.composedPath()) {
+    if (!(node instanceof HTMLElement) || !preview.contains(node)) {
+      continue;
+    }
+    if (isPreviewPartOrSlotClick(node, preview)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function shouldClearSelectionOnClick(
+  event: Event,
+  preview: HTMLElement | null,
+  hasActiveSelection: boolean
+): boolean {
+  if (!hasActiveSelection || !preview) {
+    return false;
+  }
+  if (isSelectionClearExcludedInComposedPath(event)) {
+    return false;
+  }
+  if (isPreviewPartOrSlotClickInEvent(event, preview)) {
+    return false;
+  }
+  return true;
+}
+
 export function useClickHandlers(
   cmsData: ZeroCodeData,
   previewArea: Ref<HTMLElement | null>,
+  interactionRoot: Ref<HTMLElement | null>,
   currentMode: Ref<EditorMode>,
   editingComponentPath: Ref<string>,
   addTargetPath: Ref<string | null>,
@@ -24,15 +96,64 @@ export function useClickHandlers(
   canReorderWith: (sourcePath: string, targetPath: string) => boolean,
   switchMode: (mode: EditorMode) => void,
   allowDynamicContentInteraction: Ref<boolean>,
+  closeEditPanel: () => void,
+  cancelAdd: () => void,
+  cancelDelete: () => void,
+  cancelReorder: () => void,
   onAfterHandlersSetup?: () => void
 ) {
   const eventListeners = new Map<
     HTMLElement,
     Array<{ type: string; listener: EventListener; options?: boolean | AddEventListenerOptions }>
   >();
+  const documentListeners: Array<{
+    type: string;
+    listener: EventListener;
+    options?: boolean | AddEventListenerOptions;
+  }> = [];
+
+  function hasActiveSelection(): boolean {
+    switch (currentMode.value) {
+      case 'edit':
+        return !!editingComponentPath.value;
+      case 'add':
+        return addTargetPath.value !== null;
+      case 'delete':
+        return !!deleteConfirmPath.value;
+      case 'reorder':
+        return !!reorderSourcePath.value;
+      default:
+        return false;
+    }
+  }
+
+  function clearActiveSelection() {
+    switch (currentMode.value) {
+      case 'edit':
+        if (editingComponentPath.value) {
+          closeEditPanel();
+        }
+        break;
+      case 'add':
+        if (addTargetPath.value) {
+          cancelAdd();
+        }
+        break;
+      case 'delete':
+        if (deleteConfirmPath.value) {
+          cancelDelete();
+        }
+        break;
+      case 'reorder':
+        if (reorderSourcePath.value) {
+          cancelReorder();
+        }
+        break;
+    }
+  }
 
   function setupClickHandlers() {
-    if (!previewArea.value) return;
+    if (!previewArea.value || !interactionRoot.value) return;
 
     const clearAllHoverOutlines = () => {
       const allActive = previewArea.value?.querySelectorAll(
@@ -279,8 +400,22 @@ export function useClickHandlers(
       clearReorderTargetHover();
     };
 
+    const delegatedClearSelectionClick: EventListener = (e: Event) => {
+      const preview = previewArea.value;
+      if (!shouldClearSelectionOnClick(e, preview, hasActiveSelection())) {
+        return;
+      }
+      clearActiveSelection();
+    };
+
     previewArea.value.addEventListener('click', delegatedAddSlotClick, true);
     previewArea.value.addEventListener('click', delegatedReorderTargetClick, true);
+    document.addEventListener('click', delegatedClearSelectionClick, true);
+    documentListeners.push({
+      type: 'click',
+      listener: delegatedClearSelectionClick,
+      options: true
+    });
     previewArea.value.addEventListener('pointerdown', clearAllHoverOutlines, true);
     previewArea.value.addEventListener('pointerover', delegatedSlotMouseOver, true);
     previewArea.value.addEventListener('pointerover', delegatedReorderPointerOver, true);
@@ -295,7 +430,6 @@ export function useClickHandlers(
       { type: 'pointerout', listener: delegatedReorderPointerOut, options: true },
       { type: 'pointerdown', listener: clearAllHoverOutlines, options: true }
     ]);
-
     editableElements.forEach((element) => {
       const htmlElement = element as HTMLElement;
       const path = htmlElement.getAttribute('data-zcode-path');
@@ -485,6 +619,10 @@ export function useClickHandlers(
       });
     });
     eventListeners.clear();
+    documentListeners.forEach(({ type, listener, options }) => {
+      document.removeEventListener(type, listener, options as any);
+    });
+    documentListeners.length = 0;
   }
 
   return {
