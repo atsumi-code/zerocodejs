@@ -45,6 +45,9 @@ export default {
     scrollIntoViewOnPartEdit: 'パーツ選択時に該当箇所へスクロールする',
     scrollIntoViewOnPartEditDescription:
       'オンにすると、編集・追加・並べ替え・削除の各モードでパーツを選んだときや、追加完了・キャンセル・並べ替え完了・削除確認のキャンセルなどでプレビューが該当箇所へスクロールします。初期はオフです。',
+    showPartDiscoveryOutlines: '未選択時にパーツの枠を表示する',
+    showPartDiscoveryOutlinesDescription:
+      '編集・追加・並べ替え・削除モードで、まだパーツを選んでいないときにプレビュー上のパーツへ薄い点線を表示します。モードを切り替えた直後は約2秒だけ枠が点滅します。オフにすると、これまでどおりマウスを乗せたときだけ枠が表示されます。',
     showSaveConfirm: '保存時の確認ダイアログを表示する',
     showSaveConfirmDescription:
       '保存ボタンをクリックした際に、保存対象を確認するダイアログを表示します。',

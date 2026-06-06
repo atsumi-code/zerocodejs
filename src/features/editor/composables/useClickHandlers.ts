@@ -18,7 +18,8 @@ export function useClickHandlers(
   handleDeleteClick: (path: string, component: ComponentData) => void,
   canReorderWith: (sourcePath: string, targetPath: string) => boolean,
   switchMode: (mode: EditorMode) => void,
-  allowDynamicContentInteraction: Ref<boolean>
+  allowDynamicContentInteraction: Ref<boolean>,
+  onAfterHandlersSetup?: () => void
 ) {
   const eventListeners = new Map<
     HTMLElement,
@@ -381,6 +382,8 @@ export function useClickHandlers(
             setActiveOutline(deleteElement, 'delete');
           }
         }
+
+        onAfterHandlersSetup?.();
       });
     });
   }

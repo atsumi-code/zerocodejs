@@ -114,6 +114,37 @@
             <label class="zcode-setting-label">
               <input
                 type="checkbox"
+                :checked="showPartDiscoveryOutlinesValue"
+                class="zcode-setting-checkbox"
+                @change="
+                  $emit(
+                    'toggle-part-discovery-outlines',
+                    ($event.target as HTMLInputElement).checked
+                  )
+                "
+              />
+              <span>{{ $t('settings.showPartDiscoveryOutlines') }}</span>
+              <button
+                class="zcode-info-btn"
+                type="button"
+                :title="$t('common.toggleSettingHelp')"
+                @click.stop="showPartDiscoveryOutlinesInfo = !showPartDiscoveryOutlinesInfo"
+              >
+                <HelpCircle :size="16" />
+              </button>
+            </label>
+            <div v-if="showPartDiscoveryOutlinesInfo" class="zcode-setting-description">
+              {{ $t('settings.showPartDiscoveryOutlinesDescription') }}
+            </div>
+          </div>
+
+          <div
+            v-if="props.mode === 'toolbar' || props.mode === undefined"
+            class="zcode-setting-item"
+          >
+            <label class="zcode-setting-label">
+              <input
+                type="checkbox"
                 :checked="scrollIntoViewOnPartEditValue"
                 class="zcode-setting-checkbox"
                 @change="
@@ -185,6 +216,7 @@ const props = defineProps<{
   allowDynamicContentInteraction?: boolean;
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
+  showPartDiscoveryOutlines?: boolean;
   scrollIntoViewOnPartEdit?: boolean;
   showSaveConfirm?: boolean;
 }>();
@@ -194,6 +226,7 @@ defineEmits<{
   'toggle-dynamic-content': [enabled: boolean];
   'toggle-dev-padding': [enabled: boolean];
   'toggle-context-menu': [enabled: boolean];
+  'toggle-part-discovery-outlines': [enabled: boolean];
   'toggle-scroll-on-part-edit': [enabled: boolean];
   'toggle-save-confirm': [enabled: boolean];
 }>();
@@ -215,12 +248,17 @@ function handleLocaleChange(event: Event) {
 const showDynamicContentInfo = ref(false);
 const showDevPaddingInfo = ref(false);
 const showContextMenuInfo = ref(false);
+const showPartDiscoveryOutlinesInfo = ref(false);
 const showScrollPartEditInfo = ref(false);
 const showSaveConfirmInfo = ref(false);
 
 const devRightPaddingValue = computed(() => {
   // デフォルトは余白なし（false）
   return props.devRightPadding !== undefined ? props.devRightPadding : false;
+});
+
+const showPartDiscoveryOutlinesValue = computed(() => {
+  return props.showPartDiscoveryOutlines !== undefined ? props.showPartDiscoveryOutlines : true;
 });
 
 const scrollIntoViewOnPartEditValue = computed(() => {

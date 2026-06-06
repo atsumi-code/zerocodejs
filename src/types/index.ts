@@ -62,6 +62,8 @@ export interface CMSSettings {
   enableContextMenu?: boolean;
   showSaveConfirm?: boolean; // 保存時の確認ダイアログを表示する（デフォルト: true）
   scrollIntoViewOnPartEdit?: boolean;
+  /** 未選択時に全パーツへ薄い点線を表示（オフでホバー時のみ） */
+  showPartDiscoveryOutlines?: boolean;
 }
 
 export interface DevSettings {

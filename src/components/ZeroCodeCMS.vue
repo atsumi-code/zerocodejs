@@ -125,12 +125,14 @@
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
       :dev-right-padding="devRightPaddingValue"
       :enable-context-menu="enableContextMenu"
+      :show-part-discovery-outlines="showPartDiscoveryOutlines"
       :scroll-into-view-on-part-edit="scrollIntoViewOnPartEdit"
       :show-save-confirm="showSaveConfirm"
       @close="settingsPanelOpen = false"
       @toggle-dynamic-content="allowDynamicContentInteraction = $event"
       @toggle-dev-padding="devRightPadding = $event"
       @toggle-context-menu="enableContextMenu = $event"
+      @toggle-part-discovery-outlines="showPartDiscoveryOutlines = $event"
       @toggle-scroll-on-part-edit="scrollIntoViewOnPartEdit = $event"
       @toggle-save-confirm="showSaveConfirm = $event"
     />
@@ -211,6 +213,7 @@ import { useDeleteMode } from '../features/delete/composables/useDeleteMode';
 import { useReorderMode } from '../features/reorder/composables/useReorderMode';
 import { useParentSelector } from '../features/parent-selector/composables/useParentSelector';
 import { useClickHandlers } from '../features/editor/composables/useClickHandlers';
+import { useDiscoveryOutlines } from '../features/editor/composables/useDiscoveryOutlines';
 import { useModeSwitcher } from '../features/editor/composables/useModeSwitcher';
 import { useContextMenu } from '../features/editor/composables/useContextMenu';
 import { validateData as validateDataUtil } from '../core/utils/validation';
@@ -306,6 +309,9 @@ const showSaveConfirm = ref(
 );
 const scrollIntoViewOnPartEdit = ref(
   getInitialCMSValue('scrollIntoViewOnPartEdit', false, config.cms?.scrollIntoViewOnPartEdit)
+);
+const showPartDiscoveryOutlines = ref(
+  getInitialCMSValue('showPartDiscoveryOutlines', true, config.cms?.showPartDiscoveryOutlines)
 );
 const devRightPaddingValue = computed(() => devRightPadding.value);
 
@@ -534,6 +540,17 @@ const updateShadowDOMAllowDynamicContentInteraction = () => {
   }
 };
 
+const { syncDiscoveryOutlines } = useDiscoveryOutlines(
+  previewArea,
+  viewMode,
+  currentMode,
+  showPartDiscoveryOutlines,
+  editingComponentPath,
+  addTargetPath,
+  reorderSourcePath,
+  deleteConfirmPath
+);
+
 // クリックハンドラー
 const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   cmsData,
@@ -549,7 +566,8 @@ const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   handleDeleteClick,
   canReorderWith,
   switchMode,
-  allowDynamicContentInteraction
+  allowDynamicContentInteraction,
+  syncDiscoveryOutlines
 );
 
 // コンテキストメニュー
@@ -786,14 +804,33 @@ watch([viewMode, previewArea], ([newViewMode, newPreviewArea]) => {
     });
   } else {
     cleanupContextMenu();
+    nextTick(() => {
+      syncDiscoveryOutlines();
+    });
   }
 });
 
 watch(currentMode, () => {
   nextTick(() => {
+    syncDiscoveryOutlines({ pulse: true });
     dispatchEvent('zcode-dom-updated', {});
   });
 });
+
+watch(
+  [
+    editingComponentPath,
+    addTargetPath,
+    reorderSourcePath,
+    deleteConfirmPath,
+    showPartDiscoveryOutlines
+  ],
+  () => {
+    nextTick(() => {
+      syncDiscoveryOutlines();
+    });
+  }
+);
 
 // devRightPaddingの変更をlocalStorageに保存
 watch(devRightPadding, (newValue) => {
@@ -832,6 +869,13 @@ watch(showSaveConfirm, (newValue) => {
 
 watch(scrollIntoViewOnPartEdit, (newValue) => {
   saveCMSSettings({ scrollIntoViewOnPartEdit: newValue });
+});
+
+watch(showPartDiscoveryOutlines, (newValue) => {
+  saveCMSSettings({ showPartDiscoveryOutlines: newValue });
+  nextTick(() => {
+    syncDiscoveryOutlines();
+  });
 });
 
 // 保存ボタンクリック時の処理

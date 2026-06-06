@@ -1,5 +1,7 @@
 const ACTIVE_CLASS_PREFIX = 'zcode-outline-active-';
 const HOVER_CLASS_PREFIX = 'zcode-outline-hover-';
+const DISCOVER_CLASS_PREFIX = 'zcode-outline-discover-';
+export const DISCOVERY_PULSE_CLASS = 'zcode-outline-discover-pulse';
 
 function clearPrefixedClasses(element: HTMLElement, prefix: string) {
   const classesToRemove = Array.from(element.classList).filter((cls) => cls.startsWith(prefix));
@@ -30,4 +32,33 @@ export function setHoverOutline(element: HTMLElement, mode: string) {
 export function removeHoverOutline(element: HTMLElement) {
   element.classList.remove('zcode-outline-hover');
   clearPrefixedClasses(element, HOVER_CLASS_PREFIX);
+}
+
+// 未選択時のディスカバリー用アウトライン（薄い点線）
+export function setDiscoveryOutline(element: HTMLElement, mode: string, pulse = false) {
+  clearPrefixedClasses(element, DISCOVER_CLASS_PREFIX);
+  element.classList.remove(DISCOVERY_PULSE_CLASS);
+  element.classList.add('zcode-outline-discover');
+  element.classList.add(`${DISCOVER_CLASS_PREFIX}${mode}`);
+  if (pulse) {
+    element.classList.add(DISCOVERY_PULSE_CLASS);
+  }
+}
+
+export function removeDiscoveryOutline(element: HTMLElement) {
+  element.classList.remove('zcode-outline-discover');
+  element.classList.remove(DISCOVERY_PULSE_CLASS);
+  clearPrefixedClasses(element, DISCOVER_CLASS_PREFIX);
+}
+
+export function clearAllDiscoveryPulse(root: HTMLElement) {
+  root.querySelectorAll(`.${DISCOVERY_PULSE_CLASS}`).forEach((el) => {
+    (el as HTMLElement).classList.remove(DISCOVERY_PULSE_CLASS);
+  });
+}
+
+export function clearAllDiscoveryOutlines(root: HTMLElement) {
+  root.querySelectorAll('.zcode-outline-discover').forEach((el) => {
+    removeDiscoveryOutline(el as HTMLElement);
+  });
 }

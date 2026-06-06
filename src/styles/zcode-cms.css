@@ -500,6 +500,127 @@
   }
 }
 
+/* 未選択時のディスカバリー用アウトライン（全パーツ・薄い点線。設定でオフ可能） */
+[data-zcode-id].zcode-outline-discover,
+[data-zcode-slot-path].zcode-outline-discover {
+  outline-width: 1px;
+  outline-style: dashed;
+  outline-offset: 1px;
+}
+
+[data-zcode-id].zcode-outline-inner.zcode-outline-discover,
+[data-zcode-slot-path].zcode-outline-inner.zcode-outline-discover {
+  outline-offset: -1px;
+}
+
+[data-zcode-id].zcode-outline-discover-edit,
+[data-zcode-slot-path].zcode-outline-discover-edit {
+  outline-color: color-mix(in srgb, var(--zcode-color-edit) 50%, transparent);
+}
+
+[data-zcode-id].zcode-outline-discover-add,
+[data-zcode-slot-path].zcode-outline-discover-add {
+  outline-color: color-mix(in srgb, var(--zcode-color-add) 50%, transparent);
+}
+
+[data-zcode-id].zcode-outline-discover-reorder,
+[data-zcode-slot-path].zcode-outline-discover-reorder {
+  outline-color: color-mix(in srgb, var(--zcode-color-reorder) 50%, transparent);
+}
+
+[data-zcode-id].zcode-outline-discover-delete,
+[data-zcode-slot-path].zcode-outline-discover-delete {
+  outline-color: color-mix(in srgb, var(--zcode-color-delete) 50%, transparent);
+}
+
+/* モード切替直後のみ数秒間、ディスカバリー枠を点滅（静止時よりコントラスト強め） */
+@keyframes zcode-discovery-pulse-edit {
+  0%,
+  100% {
+    outline-width: 1px;
+    outline-color: color-mix(in srgb, var(--zcode-color-edit) 50%, transparent);
+  }
+
+  35%,
+  50%,
+  65% {
+    outline-width: 2px;
+    outline-color: color-mix(in srgb, var(--zcode-color-edit) 80%, transparent);
+  }
+}
+
+@keyframes zcode-discovery-pulse-add {
+  0%,
+  100% {
+    outline-width: 1px;
+    outline-color: color-mix(in srgb, var(--zcode-color-add) 50%, transparent);
+  }
+
+  35%,
+  50%,
+  65% {
+    outline-width: 2px;
+    outline-color: color-mix(in srgb, var(--zcode-color-add) 80%, transparent);
+  }
+}
+
+@keyframes zcode-discovery-pulse-reorder {
+  0%,
+  100% {
+    outline-width: 1px;
+    outline-color: color-mix(in srgb, var(--zcode-color-reorder) 50%, transparent);
+  }
+
+  35%,
+  50%,
+  65% {
+    outline-width: 2px;
+    outline-color: color-mix(in srgb, var(--zcode-color-reorder) 80%, transparent);
+  }
+}
+
+@keyframes zcode-discovery-pulse-delete {
+  0%,
+  100% {
+    outline-width: 1px;
+    outline-color: color-mix(in srgb, var(--zcode-color-delete) 50%, transparent);
+  }
+
+  35%,
+  50%,
+  65% {
+    outline-width: 2px;
+    outline-color: color-mix(in srgb, var(--zcode-color-delete) 80%, transparent);
+  }
+}
+
+[data-zcode-id].zcode-outline-discover-pulse.zcode-outline-discover-edit,
+[data-zcode-slot-path].zcode-outline-discover-pulse.zcode-outline-discover-edit {
+  animation: zcode-discovery-pulse-edit 1.2s ease-in-out 2 forwards;
+}
+
+[data-zcode-id].zcode-outline-discover-pulse.zcode-outline-discover-add,
+[data-zcode-slot-path].zcode-outline-discover-pulse.zcode-outline-discover-add {
+  animation: zcode-discovery-pulse-add 1.2s ease-in-out 2 forwards;
+}
+
+[data-zcode-id].zcode-outline-discover-pulse.zcode-outline-discover-reorder,
+[data-zcode-slot-path].zcode-outline-discover-pulse.zcode-outline-discover-reorder {
+  animation: zcode-discovery-pulse-reorder 1.2s ease-in-out 2 forwards;
+}
+
+[data-zcode-id].zcode-outline-discover-pulse.zcode-outline-discover-delete,
+[data-zcode-slot-path].zcode-outline-discover-pulse.zcode-outline-discover-delete {
+  animation: zcode-discovery-pulse-delete 1.2s ease-in-out 2 forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-zcode-id].zcode-outline-discover-pulse,
+  [data-zcode-slot-path].zcode-outline-discover-pulse {
+    animation: none !important;
+  }
+}
+
 /* ========================================
    5. ツールバー・モード切り替え
    ======================================== */
