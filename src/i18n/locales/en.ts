@@ -100,8 +100,7 @@ export default {
   },
   reorderPanel: {
     title: 'Reorder: Source selected',
-    instruction:
-      'Parts with an orange dashed outline are valid destinations. Outlines pulse briefly when you select the source, then stay static. Click one to reorder.',
+    instruction: 'Dashed outlines mark destinations. Click one to reorder.',
     source: 'Source: {path}',
     selectParent: 'Select parent element'
   },

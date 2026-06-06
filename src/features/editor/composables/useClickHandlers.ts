@@ -3,10 +3,11 @@ import type { ZeroCodeData, ComponentData } from '../../../types';
 import { getComponentByPath } from '../../../core/utils/path-utils';
 import { setActiveOutline, setHoverOutline, removeHoverOutline } from './useOutlineManager';
 import type { EditorMode } from './useEditorMode';
-import {
-  isValidReorderTarget,
-  resolveReorderTargetPath
-} from '../../reorder/utils/reorder-target-path';
+import { resolveReorderClickPath } from '../../reorder/utils/reorder-target-path';
+
+function findElementByZcodePath(root: HTMLElement, path: string): HTMLElement | null {
+  return root.querySelector(`[data-zcode-path="${path}"]`) as HTMLElement | null;
+}
 
 export function useClickHandlers(
   cmsData: ZeroCodeData,
@@ -171,14 +172,127 @@ export function useClickHandlers(
       }
     };
 
+    let hoveredReorderTargetPath: string | null = null;
+
+    const clearReorderTargetHover = () => {
+      if (!previewArea.value || !hoveredReorderTargetPath) {
+        hoveredReorderTargetPath = null;
+        previewArea.value?.style.removeProperty('cursor');
+        return;
+      }
+      const prevEl = findElementByZcodePath(previewArea.value, hoveredReorderTargetPath);
+      if (
+        prevEl &&
+        reorderSourcePath.value !== hoveredReorderTargetPath &&
+        editingComponentPath.value !== hoveredReorderTargetPath &&
+        addTargetPath.value !== hoveredReorderTargetPath &&
+        deleteConfirmPath.value !== hoveredReorderTargetPath
+      ) {
+        removeHoverOutline(prevEl);
+      }
+      hoveredReorderTargetPath = null;
+      previewArea.value.style.removeProperty('cursor');
+    };
+
+    const delegatedReorderTargetClick: EventListener = (e: Event) => {
+      if (currentMode.value !== 'reorder' || !reorderSourcePath.value || !previewArea.value) {
+        return;
+      }
+
+      const target = e.target as HTMLElement;
+      const resolved = resolveReorderClickPath(
+        reorderSourcePath.value,
+        target,
+        canReorderWith,
+        previewArea.value
+      );
+
+      if (!resolved) {
+        return;
+      }
+
+      if (!allowDynamicContentInteraction.value) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
+
+      handleReorderClick(resolved);
+    };
+
+    const delegatedReorderPointerOver: EventListener = (e: Event) => {
+      if (currentMode.value !== 'reorder' || !reorderSourcePath.value || !previewArea.value) {
+        return;
+      }
+
+      const me = e as PointerEvent;
+      if (me.pointerType !== 'mouse') {
+        return;
+      }
+
+      const resolved = resolveReorderClickPath(
+        reorderSourcePath.value,
+        me.target as HTMLElement,
+        canReorderWith,
+        previewArea.value
+      );
+
+      if (resolved === hoveredReorderTargetPath) {
+        return;
+      }
+
+      if (hoveredReorderTargetPath) {
+        const prevEl = findElementByZcodePath(previewArea.value, hoveredReorderTargetPath);
+        if (prevEl && reorderSourcePath.value !== hoveredReorderTargetPath) {
+          removeHoverOutline(prevEl);
+        }
+      }
+
+      hoveredReorderTargetPath = resolved;
+
+      if (resolved) {
+        const el = findElementByZcodePath(previewArea.value, resolved);
+        if (el) {
+          setHoverOutline(el, 'reorder');
+        }
+        previewArea.value.style.cursor = 'move';
+      } else {
+        previewArea.value.style.cursor = 'not-allowed';
+      }
+    };
+
+    const delegatedReorderPointerOut: EventListener = (e: Event) => {
+      if (currentMode.value !== 'reorder' || !reorderSourcePath.value || !previewArea.value) {
+        return;
+      }
+
+      const me = e as PointerEvent;
+      if (me.pointerType !== 'mouse') {
+        return;
+      }
+
+      const related = me.relatedTarget as HTMLElement | null;
+      if (related && previewArea.value.contains(related)) {
+        return;
+      }
+
+      clearReorderTargetHover();
+    };
+
     previewArea.value.addEventListener('click', delegatedAddSlotClick, true);
+    previewArea.value.addEventListener('click', delegatedReorderTargetClick, true);
     previewArea.value.addEventListener('pointerdown', clearAllHoverOutlines, true);
     previewArea.value.addEventListener('pointerover', delegatedSlotMouseOver, true);
+    previewArea.value.addEventListener('pointerover', delegatedReorderPointerOver, true);
     previewArea.value.addEventListener('pointerout', delegatedSlotMouseOut, true);
+    previewArea.value.addEventListener('pointerout', delegatedReorderPointerOut, true);
     eventListeners.set(previewArea.value, [
       { type: 'click', listener: delegatedAddSlotClick, options: true },
+      { type: 'click', listener: delegatedReorderTargetClick, options: true },
       { type: 'pointerover', listener: delegatedSlotMouseOver, options: true },
+      { type: 'pointerover', listener: delegatedReorderPointerOver, options: true },
       { type: 'pointerout', listener: delegatedSlotMouseOut, options: true },
+      { type: 'pointerout', listener: delegatedReorderPointerOut, options: true },
       { type: 'pointerdown', listener: clearAllHoverOutlines, options: true }
     ]);
 
@@ -224,19 +338,11 @@ export function useClickHandlers(
             handleAddClick(path);
             break;
           case 'reorder':
-            if (
-              reorderSourcePath.value &&
-              reorderSourcePath.value !== path &&
-              !isValidReorderTarget(reorderSourcePath.value, path, canReorderWith)
-            ) {
-              return;
-            }
             if (reorderSourcePath.value) {
-              const resolvedPath = resolveReorderTargetPath(reorderSourcePath.value, path);
-              if (resolvedPath !== path && canReorderWith(reorderSourcePath.value, resolvedPath)) {
-                handleReorderClick(resolvedPath);
-                return;
+              if (path === reorderSourcePath.value && clickedPath === path) {
+                handleReorderClick(path);
               }
+              return;
             }
             handleReorderClick(path);
             break;
@@ -285,23 +391,16 @@ export function useClickHandlers(
         if ('pointerType' in pointerEvent && pointerEvent.pointerType !== 'mouse') {
           return;
         }
+        if (currentMode.value === 'reorder' && reorderSourcePath.value) {
+          return;
+        }
+
         if (!isActive(path)) {
-          if (currentMode.value === 'reorder' && reorderSourcePath.value) {
-            if (canReorderWith(reorderSourcePath.value, path)) {
-              setHoverOutline(htmlElement, currentMode.value);
-            }
-          } else {
-            setHoverOutline(htmlElement, currentMode.value);
-          }
+          setHoverOutline(htmlElement, currentMode.value);
         }
 
         if (currentMode.value === 'reorder') {
-          htmlElement.style.cursor =
-            reorderSourcePath.value && canReorderWith(reorderSourcePath.value, path)
-              ? 'move'
-              : reorderSourcePath.value
-                ? 'not-allowed'
-                : 'move';
+          htmlElement.style.cursor = 'move';
         } else {
           htmlElement.style.cursor = 'pointer';
         }
