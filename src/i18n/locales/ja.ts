@@ -100,7 +100,7 @@ export default {
   },
   reorderPanel: {
     title: '並べ替え: 移動元を選択中',
-    instruction: '点線のパーツが移動先です。クリックして並べ替えます',
+    instruction: '点線のパーツが移動可能です。クリックして並べ替えます',
     source: '移動元: {path}',
     selectParent: '親要素を選択'
   },

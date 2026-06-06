@@ -100,7 +100,7 @@ export default {
   },
   reorderPanel: {
     title: 'Reorder: Source selected',
-    instruction: 'Dashed outlines mark destinations. Click one to reorder.',
+    instruction: 'Outlined parts are valid move targets. Click to reorder.',
     source: 'Source: {path}',
     selectParent: 'Select parent element'
   },
