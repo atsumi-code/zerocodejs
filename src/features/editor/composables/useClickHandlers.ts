@@ -3,6 +3,10 @@ import type { ZeroCodeData, ComponentData } from '../../../types';
 import { getComponentByPath } from '../../../core/utils/path-utils';
 import { setActiveOutline, setHoverOutline, removeHoverOutline } from './useOutlineManager';
 import type { EditorMode } from './useEditorMode';
+import {
+  isValidReorderTarget,
+  resolveReorderTargetPath
+} from '../../reorder/utils/reorder-target-path';
 
 export function useClickHandlers(
   cmsData: ZeroCodeData,
@@ -220,31 +224,18 @@ export function useClickHandlers(
             handleAddClick(path);
             break;
           case 'reorder':
+            if (
+              reorderSourcePath.value &&
+              reorderSourcePath.value !== path &&
+              !isValidReorderTarget(reorderSourcePath.value, path, canReorderWith)
+            ) {
+              return;
+            }
             if (reorderSourcePath.value) {
-              const sourceParts = reorderSourcePath.value.split('.');
-              const targetParts = path.split('.');
-
-              if (sourceParts.length !== targetParts.length) {
-                const sourceRowsIndex = sourceParts.indexOf('rows');
-                if (sourceRowsIndex !== -1) {
-                  const targetCellsIndex = targetParts.indexOf('cells');
-                  if (targetCellsIndex !== -1) {
-                    let slotsIndex = -1;
-                    for (let i = targetCellsIndex - 1; i >= 0; i--) {
-                      if (targetParts[i] === 'slots') {
-                        slotsIndex = i;
-                        break;
-                      }
-                    }
-                    if (slotsIndex !== -1) {
-                      const rowPath = targetParts.slice(0, slotsIndex).join('.');
-                      if (rowPath && canReorderWith(reorderSourcePath.value, rowPath)) {
-                        handleReorderClick(rowPath);
-                        return;
-                      }
-                    }
-                  }
-                }
+              const resolvedPath = resolveReorderTargetPath(reorderSourcePath.value, path);
+              if (resolvedPath !== path && canReorderWith(reorderSourcePath.value, resolvedPath)) {
+                handleReorderClick(resolvedPath);
+                return;
               }
             }
             handleReorderClick(path);

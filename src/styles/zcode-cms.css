@@ -533,6 +533,25 @@
   outline-color: color-mix(in srgb, var(--zcode-color-delete) 50%, transparent);
 }
 
+/* 並べ替え: 移動元選択後の有効な移動先（見た目はディスカバリー枠と同じ濃さ） */
+[data-zcode-id].zcode-outline-reorder-target,
+[data-zcode-slot-path].zcode-outline-reorder-target {
+  outline-width: 1px;
+  outline-style: dashed;
+  outline-offset: 1px;
+  outline-color: color-mix(in srgb, var(--zcode-color-reorder) 50%, transparent);
+}
+
+[data-zcode-id].zcode-outline-inner.zcode-outline-reorder-target,
+[data-zcode-slot-path].zcode-outline-inner.zcode-outline-reorder-target {
+  outline-offset: -1px;
+}
+
+[data-zcode-id].zcode-outline-reorder-target-pulse,
+[data-zcode-slot-path].zcode-outline-reorder-target-pulse {
+  animation: zcode-discovery-pulse-reorder 1.2s ease-in-out 2 forwards;
+}
+
 /* モード切替直後のみ数秒間、ディスカバリー枠を点滅（静止時よりコントラスト強め） */
 @keyframes zcode-discovery-pulse-edit {
   0%,
@@ -616,7 +635,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   [data-zcode-id].zcode-outline-discover-pulse,
-  [data-zcode-slot-path].zcode-outline-discover-pulse {
+  [data-zcode-slot-path].zcode-outline-discover-pulse,
+  [data-zcode-id].zcode-outline-reorder-target-pulse,
+  [data-zcode-slot-path].zcode-outline-reorder-target-pulse {
     animation: none !important;
   }
 }

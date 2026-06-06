@@ -11,6 +11,7 @@ import {
   removeHoverOutline
 } from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
+import { resolveReorderTargetPath } from '../utils/reorder-target-path';
 
 export function useReorderMode(
   cmsData: ZeroCodeData,
@@ -141,14 +142,13 @@ export function useReorderMode(
       return;
     }
 
-    if (!canReorderWith(reorderSourcePath.value, path)) {
-      alert('この要素とは並べ替えできません。同じ階層の要素を選択してください。');
-      cancelReorder();
+    const targetPath = resolveReorderTargetPath(reorderSourcePath.value, path);
+    if (!canReorderWith(reorderSourcePath.value, targetPath)) {
       return;
     }
 
     // 並べ替え実行
-    const success = reorderComponents(reorderSourcePath.value, path);
+    const success = reorderComponents(reorderSourcePath.value, targetPath);
     if (!success) {
       alert('並べ替えに失敗しました。同じ階層の要素を選択してください。');
     }

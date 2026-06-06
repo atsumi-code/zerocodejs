@@ -214,6 +214,7 @@ import { useReorderMode } from '../features/reorder/composables/useReorderMode';
 import { useParentSelector } from '../features/parent-selector/composables/useParentSelector';
 import { useClickHandlers } from '../features/editor/composables/useClickHandlers';
 import { useDiscoveryOutlines } from '../features/editor/composables/useDiscoveryOutlines';
+import { useReorderTargetOutlines } from '../features/editor/composables/useReorderTargetOutlines';
 import { useModeSwitcher } from '../features/editor/composables/useModeSwitcher';
 import { useContextMenu } from '../features/editor/composables/useContextMenu';
 import { validateData as validateDataUtil } from '../core/utils/validation';
@@ -551,6 +552,19 @@ const { syncDiscoveryOutlines } = useDiscoveryOutlines(
   deleteConfirmPath
 );
 
+const { syncReorderTargetOutlines } = useReorderTargetOutlines(
+  previewArea,
+  viewMode,
+  currentMode,
+  reorderSourcePath,
+  canReorderWith
+);
+
+function syncManageOutlines() {
+  syncDiscoveryOutlines();
+  syncReorderTargetOutlines();
+}
+
 // クリックハンドラー
 const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   cmsData,
@@ -567,7 +581,7 @@ const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   canReorderWith,
   switchMode,
   allowDynamicContentInteraction,
-  syncDiscoveryOutlines
+  syncManageOutlines
 );
 
 // コンテキストメニュー
@@ -805,7 +819,7 @@ watch([viewMode, previewArea], ([newViewMode, newPreviewArea]) => {
   } else {
     cleanupContextMenu();
     nextTick(() => {
-      syncDiscoveryOutlines();
+      syncManageOutlines();
     });
   }
 });
@@ -813,24 +827,23 @@ watch([viewMode, previewArea], ([newViewMode, newPreviewArea]) => {
 watch(currentMode, () => {
   nextTick(() => {
     syncDiscoveryOutlines({ pulse: true });
+    syncReorderTargetOutlines();
     dispatchEvent('zcode-dom-updated', {});
   });
 });
 
-watch(
-  [
-    editingComponentPath,
-    addTargetPath,
-    reorderSourcePath,
-    deleteConfirmPath,
-    showPartDiscoveryOutlines
-  ],
-  () => {
-    nextTick(() => {
-      syncDiscoveryOutlines();
-    });
-  }
-);
+watch(reorderSourcePath, (newPath, oldPath) => {
+  nextTick(() => {
+    syncDiscoveryOutlines();
+    syncReorderTargetOutlines({ pulse: Boolean(newPath && !oldPath) });
+  });
+});
+
+watch([editingComponentPath, addTargetPath, deleteConfirmPath, showPartDiscoveryOutlines], () => {
+  nextTick(() => {
+    syncManageOutlines();
+  });
+});
 
 // devRightPaddingの変更をlocalStorageに保存
 watch(devRightPadding, (newValue) => {
@@ -874,7 +887,7 @@ watch(scrollIntoViewOnPartEdit, (newValue) => {
 watch(showPartDiscoveryOutlines, (newValue) => {
   saveCMSSettings({ showPartDiscoveryOutlines: newValue });
   nextTick(() => {
-    syncDiscoveryOutlines();
+    syncManageOutlines();
   });
 });
 

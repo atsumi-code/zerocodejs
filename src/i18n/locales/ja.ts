@@ -100,7 +100,8 @@ export default {
   },
   reorderPanel: {
     title: '並べ替え: 移動元を選択中',
-    instruction: '移動先の要素をクリックしてください',
+    instruction:
+      'オレンジの点線のパーツが移動先です。選択直後は点線が点滅し、その後は静止した点線のままです。点線のパーツをクリックして並べ替えます',
     source: '移動元: {path}',
     selectParent: '親要素を選択'
   },
