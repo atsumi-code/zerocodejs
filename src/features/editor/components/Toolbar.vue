@@ -1,56 +1,61 @@
 <template>
   <div class="zcode-toolbar">
-    <button
-      :class="{ active: viewMode === 'preview' }"
-      class="zcode-view-mode-btn zcode-view-mode-preview"
-      @click="$emit('switch-view-mode', viewMode === 'preview' ? 'manage' : 'preview')"
-    >
-      <Eye :size="16" />
-      <span>{{ $t('toolbar.viewMode') }}</span>
-    </button>
-    <button
-      v-if="!availableModes || availableModes.includes('edit')"
-      :class="{ active: currentMode === 'edit' && viewMode === 'manage' }"
-      class="zcode-mode-btn zcode-mode-edit"
-      @click="handleModeClick('edit')"
-    >
-      <Pencil :size="16" />
-      <span>{{ $t('toolbar.editMode') }}</span>
-    </button>
-    <button
-      v-if="!availableModes || availableModes.includes('add')"
-      :class="{ active: currentMode === 'add' && viewMode === 'manage' }"
-      class="zcode-mode-btn zcode-mode-add"
-      @click="handleModeClick('add')"
-    >
-      <Plus :size="16" />
-      <span>{{ $t('toolbar.addMode') }}</span>
-    </button>
-    <button
-      v-if="!availableModes || availableModes.includes('reorder')"
-      :class="{ active: currentMode === 'reorder' && viewMode === 'manage' }"
-      class="zcode-mode-btn zcode-mode-reorder"
-      @click="handleModeClick('reorder')"
-    >
-      <ArrowUpDown :size="16" />
-      <span>{{ $t('toolbar.reorderMode') }}</span>
-    </button>
-    <button
-      v-if="!availableModes || availableModes.includes('delete')"
-      :class="{ active: currentMode === 'delete' && viewMode === 'manage' }"
-      class="zcode-mode-btn zcode-mode-delete"
-      @click="handleModeClick('delete')"
-    >
-      <Trash2 :size="16" />
-      <span>{{ $t('toolbar.deleteMode') }}</span>
-    </button>
-    <button
-      class="zcode-settings-btn"
-      :title="$t('toolbar.settings')"
-      @click="$emit('open-settings')"
-    >
-      <Settings :size="16" />
-    </button>
+    <div class="zcode-toolbar-mode-label" aria-hidden="true">
+      {{ $t('toolbar.modeLabel') }}
+    </div>
+    <div class="zcode-toolbar-controls">
+      <button
+        :class="{ active: viewMode === 'preview' }"
+        class="zcode-view-mode-btn zcode-view-mode-preview"
+        @click="$emit('switch-view-mode', viewMode === 'preview' ? 'manage' : 'preview')"
+      >
+        <Eye :size="16" />
+        <span>{{ $t('toolbar.viewMode') }}</span>
+      </button>
+      <button
+        v-if="!availableModes || availableModes.includes('edit')"
+        :class="{ active: currentMode === 'edit' && viewMode === 'manage' }"
+        class="zcode-mode-btn zcode-mode-edit"
+        @click="handleModeClick('edit')"
+      >
+        <Pencil :size="16" />
+        <span>{{ $t('toolbar.editMode') }}</span>
+      </button>
+      <button
+        v-if="!availableModes || availableModes.includes('add')"
+        :class="{ active: currentMode === 'add' && viewMode === 'manage' }"
+        class="zcode-mode-btn zcode-mode-add"
+        @click="handleModeClick('add')"
+      >
+        <Plus :size="16" />
+        <span>{{ $t('toolbar.addMode') }}</span>
+      </button>
+      <button
+        v-if="!availableModes || availableModes.includes('reorder')"
+        :class="{ active: currentMode === 'reorder' && viewMode === 'manage' }"
+        class="zcode-mode-btn zcode-mode-reorder"
+        @click="handleModeClick('reorder')"
+      >
+        <ArrowUpDown :size="16" />
+        <span>{{ $t('toolbar.reorderMode') }}</span>
+      </button>
+      <button
+        v-if="!availableModes || availableModes.includes('delete')"
+        :class="{ active: currentMode === 'delete' && viewMode === 'manage' }"
+        class="zcode-mode-btn zcode-mode-delete"
+        @click="handleModeClick('delete')"
+      >
+        <Trash2 :size="16" />
+        <span>{{ $t('toolbar.deleteMode') }}</span>
+      </button>
+      <button
+        class="zcode-settings-btn"
+        :title="$t('toolbar.settings')"
+        @click="$emit('open-settings')"
+      >
+        <Settings :size="16" />
+      </button>
+    </div>
   </div>
 </template>
 

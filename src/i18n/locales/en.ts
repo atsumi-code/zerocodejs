@@ -20,6 +20,7 @@ export default {
     copied: 'Copied'
   },
   toolbar: {
+    modeLabel: 'MODE',
     editMode: 'Edit',
     addMode: 'Add',
     reorderMode: 'Reorder',

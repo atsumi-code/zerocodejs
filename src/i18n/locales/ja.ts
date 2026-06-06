@@ -20,6 +20,7 @@ export default {
     copied: 'コピーしました'
   },
   toolbar: {
+    modeLabel: 'モード',
     editMode: '編集',
     addMode: '追加',
     reorderMode: '並べ替え',
