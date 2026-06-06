@@ -53,7 +53,7 @@
         ref="previewAreaRef"
         :cms-data="cmsData"
         :full-page-html="fullPageHtml"
-        :on-add-click="handleAddClick"
+        :on-add-click="handleEmptyStateAddClick"
         :allow-dynamic-content-interaction="allowDynamicContentInteraction"
       />
 
@@ -452,12 +452,20 @@ const { switchMode } = useModeSwitcher(
   reorderSourcePath,
   deleteConfirmPath,
   editingComponent,
-  addSelectedType,
-  addSelectedPart,
-  addPartCategory,
-  addTypeTab,
-  cancelDelete
+  cancelDelete,
+  cancelAdd
 );
+
+function handleEmptyStateAddClick(path: string) {
+  if (currentMode.value !== 'add') {
+    switchMode('add');
+    nextTick(() => {
+      handleAddClick(path);
+    });
+    return;
+  }
+  handleAddClick(path);
+}
 
 // 親要素選択機能
 const currentSelectedPath = computed(() => {
