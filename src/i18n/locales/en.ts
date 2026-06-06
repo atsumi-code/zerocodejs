@@ -44,7 +44,7 @@ export default {
       'Right-clicking on content displays a menu to switch between edit, add, reorder, and delete modes.',
     scrollIntoViewOnPartEdit: 'Scroll preview to selected part',
     scrollIntoViewOnPartEditDescription:
-      'When enabled, selecting a part in edit, add, reorder, or delete mode scrolls the preview to that element (including after add, cancel, reorder completion, and delete confirmation cancel). Off by default.',
+      'Scrolls the preview to the selected part in edit, add, reorder, or delete mode. On by default.',
     showPartDiscoveryOutlines: 'Show part outlines when none selected',
     showPartDiscoveryOutlinesDescription:
       'In edit, add, reorder, or delete mode, shows a light dashed outline on parts in the preview until you select one. Outlines pulse for about 2 seconds right after you switch modes. Turn off to show outlines on hover only.',

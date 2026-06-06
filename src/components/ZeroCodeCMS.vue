@@ -298,7 +298,7 @@ const getInitialCMSValue = <K extends keyof CMSSettings>(
   return defaultValue;
 };
 
-// 設定の初期化（デフォルト値は全てfalse、showSaveConfirmのみtrue）
+// 設定の初期化（デフォルト ON: showSaveConfirm, scrollIntoViewOnPartEdit, showPartDiscoveryOutlines）
 const devRightPadding = ref(
   getInitialCMSValue('devRightPadding', false, config.cms?.devRightPadding)
 );
@@ -309,7 +309,7 @@ const showSaveConfirm = ref(
   getInitialCMSValue('showSaveConfirm', true, config.cms?.showSaveConfirm)
 );
 const scrollIntoViewOnPartEdit = ref(
-  getInitialCMSValue('scrollIntoViewOnPartEdit', false, config.cms?.scrollIntoViewOnPartEdit)
+  getInitialCMSValue('scrollIntoViewOnPartEdit', true, config.cms?.scrollIntoViewOnPartEdit)
 );
 const showPartDiscoveryOutlines = ref(
   getInitialCMSValue('showPartDiscoveryOutlines', true, config.cms?.showPartDiscoveryOutlines)

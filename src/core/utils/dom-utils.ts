@@ -492,12 +492,18 @@ export function getToolbarHeight(): number {
   }
 }
 
+/** パーツ選択時スクロールでビューポート上端から確保する余白（px） */
+export const SCROLL_TO_ELEMENT_TOP_OFFSET = 8;
+
 /**
  * 要素までスクロール（toolbarの高さを考慮）
  * @param element - スクロール先の要素
- * @param offset - 追加のオフセット（デフォルト: 0）
+ * @param offset - 追加のオフセット（デフォルト: {@link SCROLL_TO_ELEMENT_TOP_OFFSET}）
  */
-export function scrollToElement(element: HTMLElement, offset: number = 0): void {
+export function scrollToElement(
+  element: HTMLElement,
+  offset: number = SCROLL_TO_ELEMENT_TOP_OFFSET
+): void {
   if (typeof window === 'undefined' || !element) {
     return;
   }
@@ -514,7 +520,7 @@ export function scrollToElement(element: HTMLElement, offset: number = 0): void 
     try {
       const rect = element.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const targetY = rect.top + scrollTop - 20;
+      const targetY = rect.top + scrollTop - 20 - SCROLL_TO_ELEMENT_TOP_OFFSET;
       window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
     } catch (fallbackError) {
       logger.error('Scroll fallback also failed:', fallbackError);

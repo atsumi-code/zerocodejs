@@ -262,6 +262,6 @@ const showPartDiscoveryOutlinesValue = computed(() => {
 });
 
 const scrollIntoViewOnPartEditValue = computed(() => {
-  return props.scrollIntoViewOnPartEdit !== undefined ? props.scrollIntoViewOnPartEdit : false;
+  return props.scrollIntoViewOnPartEdit !== undefined ? props.scrollIntoViewOnPartEdit : true;
 });
 </script>
