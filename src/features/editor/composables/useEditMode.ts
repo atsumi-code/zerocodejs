@@ -5,7 +5,11 @@ import {
   getAvailableFieldsFromPart,
   type EditPanelField
 } from '../../../core/utils/edit-panel-fields';
-import { setActiveOutline, removeActiveOutline } from './useOutlineManager';
+import {
+  setActiveOutlineForPath,
+  removeActiveOutlineForPath,
+  findElementsByZcodePath
+} from './useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
 export function useEditMode(
@@ -37,12 +41,7 @@ export function useEditMode(
       index = parseInt(pathParts[1]);
     }
     if (editingComponentPath.value && previewArea.value) {
-      const prevElement = previewArea.value.querySelector(
-        `[data-zcode-path="${editingComponentPath.value}"]`
-      ) as HTMLElement;
-      if (prevElement) {
-        removeActiveOutline(prevElement);
-      }
+      removeActiveOutlineForPath(previewArea.value, editingComponentPath.value);
     }
 
     editingComponent.value = component;
@@ -52,13 +51,11 @@ export function useEditMode(
 
     nextTick(() => {
       if (previewArea.value && editingComponentPath.value === path) {
-        const currentElement = previewArea.value.querySelector(
-          `[data-zcode-path="${path}"]`
-        ) as HTMLElement;
-        if (currentElement) {
-          setActiveOutline(currentElement, 'edit');
-          if (unref(scrollIntoViewOnPartEdit)) {
-            scrollToElement(currentElement);
+        setActiveOutlineForPath(previewArea.value, path, 'edit');
+        if (unref(scrollIntoViewOnPartEdit)) {
+          const firstElement = findElementsByZcodePath(previewArea.value, path)[0];
+          if (firstElement) {
+            scrollToElement(firstElement);
           }
         }
       }
@@ -93,13 +90,12 @@ export function useEditMode(
 
   function closeEditPanel() {
     if (editingComponentPath.value && previewArea.value) {
-      const editingElement = previewArea.value.querySelector(
-        `[data-zcode-path="${editingComponentPath.value}"]`
-      ) as HTMLElement;
-      if (editingElement) {
-        removeActiveOutline(editingElement);
-        if (unref(scrollIntoViewOnPartEdit)) {
-          scrollToElement(editingElement);
+      const path = editingComponentPath.value;
+      removeActiveOutlineForPath(previewArea.value, path);
+      if (unref(scrollIntoViewOnPartEdit)) {
+        const firstElement = findElementsByZcodePath(previewArea.value, path)[0];
+        if (firstElement) {
+          scrollToElement(firstElement);
         }
       }
     }

@@ -6,9 +6,10 @@ import {
   traverseComponents
 } from '../../../core/utils/path-utils';
 import {
-  setActiveOutline,
-  removeActiveOutline,
-  removeHoverOutline
+  setActiveOutlineForPath,
+  removeActiveOutlineForPath,
+  removeHoverOutlineForPath,
+  findElementsByZcodePath
 } from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 import { resolveReorderTargetPath } from '../utils/reorder-target-path';
@@ -109,27 +110,19 @@ export function useReorderMode(
       // 親要素のホバーアウトラインを削除
       const parentPath = getParentPath(path);
       if (parentPath && previewArea.value) {
-        const parentElement = previewArea.value.querySelector(
-          `[data-zcode-path="${parentPath}"]`
-        ) as HTMLElement;
-        if (parentElement) {
-          removeHoverOutline(parentElement);
-        }
+        removeHoverOutlineForPath(previewArea.value, parentPath);
       }
 
       reorderSourcePath.value = path;
       const component = getComponentByPath(path, cmsData);
       reorderSourceComponentId.value = component?.id ?? null;
 
-      // 選択した要素に太いアウトラインを表示
       if (previewArea.value) {
-        const element = previewArea.value.querySelector(
-          `[data-zcode-path="${path}"]`
-        ) as HTMLElement;
-        if (element) {
-          setActiveOutline(element, 'reorder');
-          if (unref(scrollIntoViewOnPartEdit)) {
-            scrollToElement(element);
+        setActiveOutlineForPath(previewArea.value, path, 'reorder');
+        if (unref(scrollIntoViewOnPartEdit)) {
+          const firstElement = findElementsByZcodePath(previewArea.value, path)[0];
+          if (firstElement) {
+            scrollToElement(firstElement);
           }
         }
       }
@@ -187,12 +180,7 @@ export function useReorderMode(
   function cancelReorder(options: { restoreScroll?: boolean } = {}) {
     const { restoreScroll = true } = options;
     if (reorderSourcePath.value && previewArea.value) {
-      const element = previewArea.value.querySelector(
-        `[data-zcode-path="${reorderSourcePath.value}"]`
-      ) as HTMLElement;
-      if (element) {
-        removeActiveOutline(element);
-      }
+      removeActiveOutlineForPath(previewArea.value, reorderSourcePath.value);
     }
     if (restoreScroll && typeof window !== 'undefined' && initialScrollTop !== null) {
       const target = Math.max(0, initialScrollTop);

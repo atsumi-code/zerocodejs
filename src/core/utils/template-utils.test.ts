@@ -52,6 +52,17 @@ describe('injectAttributesToRootElement', () => {
     // happy-domは無効なHTMLでもパースを試みるため、結果が変わる可能性がある
     expect(result).toBeDefined();
   });
+
+  it('should inject attributes into all top-level elements', () => {
+    const html = '<div>A</div><div>B</div>';
+    const result = injectAttributesToRootElement(html, {
+      'data-zcode-id': 'comp-1',
+      'data-zcode-path': 'page.0'
+    });
+
+    expect(result).toContain('<div data-zcode-id="comp-1" data-zcode-path="page.0">A</div>');
+    expect(result).toContain('<div data-zcode-id="comp-1" data-zcode-path="page.0">B</div>');
+  });
 });
 
 describe('processImageField', () => {

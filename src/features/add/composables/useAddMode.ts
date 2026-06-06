@@ -11,7 +11,13 @@ import type {
 import { getComponentByPath, generateId } from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { logger } from '../../../core/utils/logger';
-import { setActiveOutline, removeActiveOutline } from '../../editor/composables/useOutlineManager';
+import {
+  setActiveOutline,
+  removeActiveOutline,
+  setActiveOutlineForPath,
+  removeActiveOutlineForPath,
+  findElementsByZcodePath
+} from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
 export function useAddMode(
@@ -265,12 +271,7 @@ export function useAddMode(
     }
 
     if (addTargetPath.value && previewArea.value) {
-      const previousElement = previewArea.value.querySelector(
-        `[data-zcode-path="${addTargetPath.value}"]`
-      ) as HTMLElement;
-      if (previousElement) {
-        removeActiveOutline(previousElement);
-      }
+      removeActiveOutlineForPath(previewArea.value, addTargetPath.value);
 
       const previousSlotElement = previewArea.value.querySelector(
         `[data-zcode-slot-path="${addTargetPath.value}"]`
@@ -348,13 +349,11 @@ export function useAddMode(
 
     nextTick(() => {
       if (previewArea.value && addTargetPath.value === path) {
-        const currentElement = previewArea.value.querySelector(
-          `[data-zcode-path="${path}"]`
-        ) as HTMLElement;
-        if (currentElement) {
-          setActiveOutline(currentElement, 'add');
+        const elements = findElementsByZcodePath(previewArea.value, path);
+        if (elements.length > 0) {
+          setActiveOutlineForPath(previewArea.value, path, 'add');
           if (unref(scrollIntoViewOnPartEdit)) {
-            scrollToElement(currentElement);
+            scrollToElement(elements[0]);
           }
         } else {
           const slotPath = getSlotPath(path);
@@ -747,9 +746,7 @@ export function useAddMode(
     nextTick(() => {
       if (!previewArea.value) return;
 
-      const oldEl = previewArea.value.querySelector(
-        `[data-zcode-path="${anchorBeforeInsert}"]`
-      ) as HTMLElement | null;
+      const oldEl = findElementsByZcodePath(previewArea.value, anchorBeforeInsert)[0] ?? null;
       const oldSlot = previewArea.value.querySelector(
         `[data-zcode-slot-path="${anchorBeforeInsert}"]`
       ) as HTMLElement | null;
@@ -759,13 +756,11 @@ export function useAddMode(
       const nextPath = addTargetPath.value;
       if (!nextPath) return;
 
-      const newEl = previewArea.value.querySelector(
-        `[data-zcode-path="${nextPath}"]`
-      ) as HTMLElement | null;
-      if (newEl) {
-        setActiveOutline(newEl, 'add');
+      const newElements = findElementsByZcodePath(previewArea.value, nextPath);
+      if (newElements.length > 0) {
+        setActiveOutlineForPath(previewArea.value, nextPath, 'add');
         if (unref(scrollIntoViewOnPartEdit)) {
-          scrollToElement(newEl);
+          scrollToElement(newElements[0]);
         }
         return;
       }
@@ -785,13 +780,12 @@ export function useAddMode(
   function cancelAdd(options: { scrollBack?: boolean } = {}) {
     const { scrollBack = true } = options;
     if (addTargetPath.value && previewArea.value) {
-      const element = previewArea.value.querySelector(
-        `[data-zcode-path="${addTargetPath.value}"]`
-      ) as HTMLElement;
-      if (element) {
-        removeActiveOutline(element);
-        if (scrollBack && unref(scrollIntoViewOnPartEdit)) {
-          scrollToElement(element);
+      const path = addTargetPath.value;
+      removeActiveOutlineForPath(previewArea.value, path);
+      if (scrollBack && unref(scrollIntoViewOnPartEdit)) {
+        const firstElement = findElementsByZcodePath(previewArea.value, path)[0];
+        if (firstElement) {
+          scrollToElement(firstElement);
         }
       }
       const slotElement = previewArea.value.querySelector(

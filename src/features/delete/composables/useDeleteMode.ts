@@ -7,7 +7,11 @@ import {
 } from '../../../core/utils/path-utils';
 import { extractFieldsFromTemplate } from '../../../core/utils/field-extractor';
 import { logger } from '../../../core/utils/logger';
-import { setActiveOutline, removeActiveOutline } from '../../editor/composables/useOutlineManager';
+import {
+  setActiveOutlineForPath,
+  removeActiveOutlineForPath,
+  findElementsByZcodePath
+} from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
 
 export function useDeleteMode(
@@ -31,12 +35,7 @@ export function useDeleteMode(
 
     // 前回選択していた要素のアウトラインを削除
     if (deleteConfirmPath.value && previewArea.value) {
-      const prevElement = previewArea.value.querySelector(
-        `[data-zcode-path="${deleteConfirmPath.value}"]`
-      ) as HTMLElement;
-      if (prevElement) {
-        removeActiveOutline(prevElement);
-      }
+      removeActiveOutlineForPath(previewArea.value, deleteConfirmPath.value);
     }
 
     deleteConfirmComponent.value = component;
@@ -46,13 +45,11 @@ export function useDeleteMode(
     // nextTickで確実にDOMが更新された後にアウトラインを設定
     nextTick(() => {
       if (previewArea.value && deleteConfirmPath.value === path) {
-        const currentElement = previewArea.value.querySelector(
-          `[data-zcode-path="${path}"]`
-        ) as HTMLElement;
-        if (currentElement) {
-          setActiveOutline(currentElement, 'delete');
-          if (unref(scrollIntoViewOnPartEdit)) {
-            scrollToElement(currentElement);
+        setActiveOutlineForPath(previewArea.value, path, 'delete');
+        if (unref(scrollIntoViewOnPartEdit)) {
+          const firstElement = findElementsByZcodePath(previewArea.value, path)[0];
+          if (firstElement) {
+            scrollToElement(firstElement);
           }
         }
       }
@@ -253,13 +250,12 @@ export function useDeleteMode(
   function cancelDelete() {
     // アウトラインを削除
     if (deleteConfirmPath.value && previewArea.value) {
-      const element = previewArea.value.querySelector(
-        `[data-zcode-path="${deleteConfirmPath.value}"]`
-      ) as HTMLElement;
-      if (element) {
-        removeActiveOutline(element);
-        if (unref(scrollIntoViewOnPartEdit)) {
-          scrollToElement(element);
+      const path = deleteConfirmPath.value;
+      removeActiveOutlineForPath(previewArea.value, path);
+      if (unref(scrollIntoViewOnPartEdit)) {
+        const firstElement = findElementsByZcodePath(previewArea.value, path)[0];
+        if (firstElement) {
+          scrollToElement(firstElement);
         }
       }
     }

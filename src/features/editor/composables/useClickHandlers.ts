@@ -1,7 +1,12 @@
 import { nextTick, type Ref } from 'vue';
 import type { ZeroCodeData, ComponentData } from '../../../types';
 import { getComponentByPath } from '../../../core/utils/path-utils';
-import { setActiveOutline, setHoverOutline, removeHoverOutline } from './useOutlineManager';
+import {
+  setActiveOutline,
+  setHoverOutline,
+  removeHoverOutline,
+  setActiveOutlineForPath
+} from './useOutlineManager';
 import type { EditorMode } from './useEditorMode';
 import { resolveReorderClickPath } from '../../reorder/utils/reorder-target-path';
 
@@ -565,20 +570,15 @@ export function useClickHandlers(
     nextTick(() => {
       nextTick(() => {
         if (currentMode.value === 'edit' && editingComponentPath.value && previewArea.value) {
-          const editingElement = previewArea.value.querySelector(
-            `[data-zcode-path="${editingComponentPath.value}"]`
-          ) as HTMLElement;
-          if (editingElement) {
-            setActiveOutline(editingElement, 'edit');
-          }
+          setActiveOutlineForPath(previewArea.value, editingComponentPath.value, 'edit');
         }
 
         if (currentMode.value === 'add' && addTargetPath.value && previewArea.value) {
-          const addElement = previewArea.value.querySelector(
+          const addElements = previewArea.value.querySelectorAll(
             `[data-zcode-path="${addTargetPath.value}"]`
-          ) as HTMLElement;
-          if (addElement) {
-            setActiveOutline(addElement, 'add');
+          );
+          if (addElements.length > 0) {
+            setActiveOutlineForPath(previewArea.value, addTargetPath.value, 'add');
           } else {
             const slotElement = previewArea.value.querySelector(
               `[data-zcode-slot-path="${addTargetPath.value}"]`
@@ -590,21 +590,11 @@ export function useClickHandlers(
         }
 
         if (currentMode.value === 'reorder' && reorderSourcePath.value && previewArea.value) {
-          const reorderElement = previewArea.value.querySelector(
-            `[data-zcode-path="${reorderSourcePath.value}"]`
-          ) as HTMLElement;
-          if (reorderElement) {
-            setActiveOutline(reorderElement, 'reorder');
-          }
+          setActiveOutlineForPath(previewArea.value, reorderSourcePath.value, 'reorder');
         }
 
         if (currentMode.value === 'delete' && deleteConfirmPath.value && previewArea.value) {
-          const deleteElement = previewArea.value.querySelector(
-            `[data-zcode-path="${deleteConfirmPath.value}"]`
-          ) as HTMLElement;
-          if (deleteElement) {
-            setActiveOutline(deleteElement, 'delete');
-          }
+          setActiveOutlineForPath(previewArea.value, deleteConfirmPath.value, 'delete');
         }
 
         onAfterHandlersSetup?.();

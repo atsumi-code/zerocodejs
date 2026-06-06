@@ -2,8 +2,8 @@ import { computed, type Ref } from 'vue';
 import type { ZeroCodeData, ComponentData } from '../../../types';
 import { getComponentByPath, getParentPath } from '../../../core/utils/path-utils';
 import {
-  removeHoverOutline,
-  removeActiveOutline
+  removeActiveOutlineForPath,
+  removeHoverOutlineForPath
 } from '../../editor/composables/useOutlineManager';
 import type { EditorMode } from '../../editor/composables/useEditorMode';
 
@@ -51,12 +51,7 @@ export function useParentSelector(
 
     // クリック時にホバーアウトラインを削除（現在の要素から）
     if (currentSelectedPath.value && previewArea.value) {
-      const currentElement = previewArea.value.querySelector(
-        `[data-zcode-path="${currentSelectedPath.value}"]`
-      ) as HTMLElement;
-      if (currentElement) {
-        removeHoverOutline(currentElement);
-      }
+      removeHoverOutlineForPath(previewArea.value, currentSelectedPath.value);
     }
 
     // 親要素をクリックしたのと同じ処理
@@ -70,14 +65,7 @@ export function useParentSelector(
       case 'reorder':
         // 並べ替えモードの場合、既存の選択をリセットしてから親要素を選択
         if (reorderSourcePath.value) {
-          // 既存の選択のアウトラインを削除
-          const currentElement = previewArea.value.querySelector(
-            `[data-zcode-path="${reorderSourcePath.value}"]`
-          ) as HTMLElement;
-          if (currentElement) {
-            removeActiveOutline(currentElement);
-          }
-          // 選択をリセット
+          removeActiveOutlineForPath(previewArea.value, reorderSourcePath.value);
           reorderSourcePath.value = '';
         }
         // 親要素を移動元として選択（保存したパスを使用）

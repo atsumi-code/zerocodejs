@@ -78,6 +78,22 @@ export function removeReorderTargetOutline(element: HTMLElement) {
   element.classList.remove(REORDER_TARGET_PULSE_CLASS);
 }
 
+export function findElementsByZcodePath(root: HTMLElement, path: string): HTMLElement[] {
+  return Array.from(root.querySelectorAll(`[data-zcode-path="${path}"]`)) as HTMLElement[];
+}
+
+export function setActiveOutlineForPath(root: HTMLElement, path: string, mode: string): void {
+  findElementsByZcodePath(root, path).forEach((element) => setActiveOutline(element, mode));
+}
+
+export function removeActiveOutlineForPath(root: HTMLElement, path: string): void {
+  findElementsByZcodePath(root, path).forEach((element) => removeActiveOutline(element));
+}
+
+export function removeHoverOutlineForPath(root: HTMLElement, path: string): void {
+  findElementsByZcodePath(root, path).forEach((element) => removeHoverOutline(element));
+}
+
 export function clearAllReorderTargetPulse(root: HTMLElement) {
   root.querySelectorAll(`.${REORDER_TARGET_PULSE_CLASS}`).forEach((el) => {
     (el as HTMLElement).classList.remove(REORDER_TARGET_PULSE_CLASS);

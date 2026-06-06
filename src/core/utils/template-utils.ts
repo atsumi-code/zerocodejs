@@ -16,19 +16,28 @@ export function injectAttributesToRootElement(
     return html;
   }
 
-  const rootElement = template.content.firstElementChild as HTMLElement;
+  const rootElements = Array.from(template.content.children).filter(
+    (node): node is HTMLElement => node instanceof HTMLElement
+  );
 
-  Object.entries(attrs).forEach(([key, value]) => {
-    rootElement.setAttribute(key, value);
-  });
-
-  if (options?.addClass) {
-    const existing = rootElement.getAttribute('class')?.trim() || '';
-    const merged = existing ? `${existing} ${options.addClass}` : options.addClass;
-    rootElement.setAttribute('class', merged);
+  if (rootElements.length === 0) {
+    logger.warn('Failed to parse HTML:', html);
+    return html;
   }
 
-  return rootElement.outerHTML;
+  rootElements.forEach((rootElement) => {
+    Object.entries(attrs).forEach(([key, value]) => {
+      rootElement.setAttribute(key, value);
+    });
+
+    if (options?.addClass) {
+      const existing = rootElement.getAttribute('class')?.trim() || '';
+      const merged = existing ? `${existing} ${options.addClass}` : options.addClass;
+      rootElement.setAttribute('class', merged);
+    }
+  });
+
+  return template.innerHTML;
 }
 
 export function processImageField(
