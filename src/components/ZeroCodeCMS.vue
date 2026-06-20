@@ -324,7 +324,7 @@ const parseConfig = (configString?: string): Partial<CMSConfig> => {
 
 const config = parseConfig(props.config);
 
-/** ページ保存時はページ本体に加え、特別画像プールもホストが永続化できるよう含める */
+/** ページ保存時はページ本体に加え、専用画像プール（images-special）もホストが永続化できるよう含める */
 const saveTargets = ['page', 'images-special'];
 
 const hideFixedSaveButton = computed(() => props.hideFixedSaveButton === true);

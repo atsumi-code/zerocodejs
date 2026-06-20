@@ -71,7 +71,7 @@
             enableEditorAttributes: false
           });
 
-          // CSSを<style>タグとして追加（共通 → 個別 → 特別の順）
+          // CSSを<style>タグとして追加（共通 → 個別 → 専用の順）
           let styleTags = '';
           if (sampleData.css.common) {
             styleTags += `<style id="zcode-css-style-common" data-zcode-css-category="common">${sampleData.css.common}</style>`;

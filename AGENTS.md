@@ -227,7 +227,7 @@ interface ZeroCodeData {
   css: {
     common?: string; // 共通パーツ用CSS
     individual?: string; // 個別パーツ用CSS
-    special?: string; // 特別パーツ用CSS
+    special?: string; // 専用パーツ用CSS（内部キー special）
   };
   parts: {
     common: TypeData[];
@@ -242,6 +242,11 @@ interface ZeroCodeData {
   backendData?: Record<string, any>; // バックエンドデータ
 }
 ```
+
+### カテゴリ名（UI と内部キー）
+
+- **UI 表示**: 共通 / 個別 / **専用**
+- **内部キー**（JSON・属性・`save-request` の target）: `common` / `individual` / **`special`**（例: `parts.special`, `images-special`, `parts-special-css`）
 
 ### ComponentData
 
@@ -404,9 +409,9 @@ interface ImageData {
 
 **targets配列の仕様:**
 
-- **zcode-cms の編集モード**: `['page', 'images-special']`（ページと特別画像をまとめて保存対象として通知。ホストは `getData()` と `targets` に応じて永続化を決定）
-- **zcode-editor のページ管理タブ**: `['page', 'images-special']`（ページ本体と特別画像プール。編集内の画像選択モーダルで特別画像を変更した場合もホストが永続化できる）
-- **zcode-studio**: `zcode-editor` と同型のタブ・保存ルール。ページ管理: `['page', 'images-special']`、特別パーツ管理: `['parts-special', 'parts-special-css']`、特別画像管理: `['images-special']`、データビューアは表示中がページ／特別パーツ／特別画像に応じて `page`+`images-special` または `parts-special`+CSS または `images-special`（共通・個別のデータビュー切替はなし）
+- **zcode-cms の編集モード**: `['page', 'images-special']`（ページと専用画像をまとめて保存対象として通知。ホストは `getData()` と `targets` に応じて永続化を決定）
+- **zcode-editor のページ管理タブ**: `['page', 'images-special']`（ページ本体と専用画像プール。編集内の画像選択モーダルで専用画像を変更した場合もホストが永続化できる）
+- **zcode-studio**: `zcode-editor` と同型のタブ・保存ルール。ページ管理: `['page', 'images-special']`、専用パーツ管理: `['parts-special', 'parts-special-css']`、専用画像管理: `['images-special']`、データビューアは表示中がページ／専用パーツ／専用画像に応じて `page`+`images-special` または `parts-special`+CSS または `images-special`（共通・個別のデータビュー切替はなし）
 - **パーツ管理（`primaryTarget: 'parts-common'` 等）**: `[primaryTarget, 'parts-*-css']`（カテゴリに応じたCSSターゲット）
 - **画像管理**: `['images-common']` / `['images-individual']` / `['images-special']`
 - **データビューア**: 選択中のタブとカテゴリに応じて決定
@@ -417,7 +422,7 @@ interface ImageData {
 
 - `change`イベントは削除済み（保存ボタン以外での自動保存は行わない）
 - 画像追加時の自動保存は行わない
-- 編集モードのUIでは共通・個別のパーツ用CSSは編集できない（パーツ管理で編集）。特別パーツの編集は `zcode-studio` で行う
+- 編集モードのUIでは共通・個別のパーツ用CSSは編集できない（パーツ管理で編集）。専用パーツの編集は `zcode-studio` で行う
 
 ### save-result
 
@@ -451,7 +456,7 @@ interface ImageData {
 
 - `src/components/ZeroCodeCMS.vue`: ユーザー用管理画面
 - `src/components/ZeroCodeEditor.vue`: エンジニア用管理画面（ZeroCodeCMS + パーツ管理・画像管理・データビューア）
-- `src/components/ZeroCodeStudio.vue`: 制作会社向け管理画面（特別パーツ・特別CSS・特別画像のみ編集可、それ以外は読み取り専用プレビュー）
+- `src/components/ZeroCodeStudio.vue`: 制作会社向け管理画面（専用パーツ・専用CSS・専用画像のみ編集可、それ以外は読み取り専用プレビュー）
 - `src/components/ZeroCodePreview.vue`: プレビュー表示用コンポーネント
 
 ### コアコンポーザブル
@@ -522,9 +527,9 @@ interface ImageData {
 14. ✅ **データ永続化の改善**（2025年1月）
     - `sessionStorage`から`localStorage`に変更（別窓でのデータ連動のため）
     - 呼び出し側でリセットボタンを実装（本番環境では不要のため、ZeroCode側には実装しない）
-15. ✅ **特別パーツ・画像管理の統一**（2025年1月→2026年3月改修）
-    - `zcode-cms` / `zcode-editor` から特別パーツ管理モーダル（`enableSpecialParts`）を削除
-    - 特別パーツ・特別CSS・特別画像の編集は `zcode-studio` に一元化
+15. ✅ **専用パーツ・画像管理の統一**（2025年1月→2026年3月改修）
+    - `zcode-cms` / `zcode-editor` から専用パーツ管理モーダル（`enableSpecialParts`）を削除
+    - 専用パーツ・専用CSS・専用画像の編集は `zcode-studio` に一元化
     - 画像選択モーダル（`ImageSelectModal`）は純粋な選択UIに簡素化
 16. ✅ **パーツ管理の編集パネルプレビューと表示プレビューの連動**（2025年2月）
     - 編集パネルでフィールドを変更すると「表示プレビュー」タブ・拡大モーダルに同一内容を表示
@@ -539,7 +544,7 @@ interface ImageData {
     - 入力のたびに発生していた「Image not found」警告の連発を抑制
 
 19. ✅ **ZeroCodeStudio（制作会社向けコンポーネント）**（2026年3月）
-    - `<zcode-studio>` Web Component（シェルは `zcode-editor` と同型、ページ管理は CMS 同等、パーツ/画像/データは特別系に限定）
+    - `<zcode-studio>` Web Component（シェルは `zcode-editor` と同型、ページ管理は CMS 同等、パーツ/画像/データは専用系に限定）
     - `save-request` の `source: 'studio'` を追加（サーバー側での権限チェック用）
     - パーツテンプレート用サニタイズ関数 `sanitizePartTemplate` を追加（DOMPurify ベース、z-\* 属性許可）
     - `beforeSavePart` フック、`sanitizePartTemplate` オプトインを config から設定可能

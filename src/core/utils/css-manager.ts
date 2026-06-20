@@ -37,7 +37,7 @@ export class PageCSSManager {
   }
 
   /**
-   * 複数のCSSを順に適用（共通 → 個別 → 特別）
+   * 複数のCSSを順に適用（共通 → 個別 → 専用）
    */
   applyMultipleCSS(cssMap: { common?: string; individual?: string; special?: string }): void {
     if (!this.container) {

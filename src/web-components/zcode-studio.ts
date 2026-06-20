@@ -9,7 +9,7 @@ setupI18nErrorHandler();
 
 /**
  * Web Component for ZeroCode.js Studio (制作会社・信頼ユーザー向け管理画面)
- * シェルは zcode-editor と同型。ページ管理は CMS 同等。パーツ/画像管理とデータビューのパーツ・画像は特別のみ。
+ * シェルは zcode-editor と同型。ページ管理は CMS 同等。パーツ/画像管理とデータビューのパーツ・画像は専用（special）のみ。
  */
 class ZeroCodeStudioElement extends HTMLElement {
   private app: App | null = null;

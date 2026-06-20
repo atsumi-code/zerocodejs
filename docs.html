@@ -371,7 +371,7 @@
             <tr>
               <td><code>&lt;zcode-studio&gt;</code></td>
               <td>制作会社など信頼できるユーザー</td>
-              <td><code>zcode-editor</code> 同等 UI。特別パーツ・特別 CSS・特別画像の編集に限定</td>
+              <td><code>zcode-editor</code> 同等 UI。専用パーツ・専用 CSS・専用画像の編集に限定</td>
             </tr>
           </tbody>
         </table>
@@ -1214,12 +1214,12 @@
           <li><strong>パーツ（Part）</strong>: 実際のコンポーネントテンプレート</li>
         </ul>
 
-        <h3 id="common-and-individual-parts">共通パーツ、個別パーツ、特別パーツ</h3>
+        <h3 id="common-and-individual-parts">共通パーツ、個別パーツ、専用パーツ</h3>
         <ul>
           <li><strong>共通パーツ</strong>: すべてのページで使用可能なパーツ</li>
           <li><strong>個別パーツ</strong>: 特定のページでのみ使用可能なパーツ</li>
           <li>
-            <strong>特別パーツ</strong>:
+            <strong>専用パーツ</strong>:
             動的ページ（動的ルートやURLパラメータに応じて生成されるページ）で使用可能なパーツ
           </li>
         </ul>
@@ -1499,7 +1499,7 @@
         <h4>categoryOrder</h4>
         <p>デフォルト: <code>"common"</code></p>
         <p>
-          パーツ管理、画像管理、データビューア、追加パネルにおける「共通」「個別」「特別」タブの表示順序と初期選択を制御します。
+          パーツ管理、画像管理、データビューア、追加パネルにおける「共通」「個別」「専用」タブの表示順序と初期選択を制御します。
         </p>
         <p>設定可能な値:</p>
         <ul>
@@ -1509,7 +1509,7 @@
           <li><code>"individual"</code>: 個別タブを先に表示し、初期状態で個別タブを選択</li>
           <li>
             <code>"special"</code>:
-            特別タブを先に表示し、初期状態で特別タブを選択（特別データが存在する場合のみ表示）
+            専用タブを先に表示し、初期状態で専用タブを選択（専用データが存在する場合のみ表示）
           </li>
         </ul>
         <p>この設定は以下の画面に適用されます:</p>
@@ -1575,7 +1575,7 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
             <tr>
               <td><code>parts-special</code></td>
               <td>string</td>
-              <td>特別パーツデータ（JSON文字列）</td>
+              <td>専用パーツデータ（JSON文字列）</td>
             </tr>
             <tr>
               <td><code>images-common</code></td>
@@ -1590,7 +1590,7 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
             <tr>
               <td><code>images-special</code></td>
               <td>string</td>
-              <td>特別画像データ（JSON文字列）</td>
+              <td>専用画像データ（JSON文字列）</td>
             </tr>
             <tr>
               <td><code>config</code></td>
@@ -2274,7 +2274,7 @@ cms.addEventListener('save-request', (event) => {
               <td>
                 <code>['page', 'images-special']</code>
               </td>
-              <td>ページデータと特別画像プールを保存対象として通知（ホストが永続化方針を決定）</td>
+              <td>ページデータと専用画像プールを保存対象として通知（ホストが永続化方針を決定）</td>
             </tr>
             <tr>
               <td>パーツ管理</td>

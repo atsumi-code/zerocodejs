@@ -1416,7 +1416,7 @@ watch(
   }
 );
 
-// すべてのパーツを取得（共通+個別+特別）
+// すべてのパーツを取得（共通+個別+専用）
 const allParts = computed(() => {
   const parts: Array<{ id: string; title: string; typeName: string; description?: string }> = [];
   const partsData = props.cmsData.parts;

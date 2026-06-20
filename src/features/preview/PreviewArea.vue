@@ -88,7 +88,7 @@ watch(
   { deep: true }
 );
 
-// CSSを適用（共通 → 個別 → 特別の順）
+// CSSを適用（共通 → 個別 → 専用の順）
 function applyPageCSS() {
   if (!previewArea.value) return;
 

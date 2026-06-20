@@ -41,7 +41,7 @@ interface ZeroCodeData {
   css: {
     common?: string; // 共通パーツ用CSS
     individual?: string; // 個別パーツ用CSS
-    special?: string; // 特別パーツ用CSS
+    special?: string; // 専用パーツ用CSS（内部キー special）
   };
   parts: {
     common: TypeData[];
@@ -56,6 +56,11 @@ interface ZeroCodeData {
   backendData?: Record<string, any>; // バックエンドデータ
 }
 ```
+
+#### カテゴリ名（UI と内部キー）
+
+- **UI 表示**: 共通 / 個別 / **専用**
+- **内部キー**（JSON・Web Component 属性・`save-request` の target）: `common` / `individual` / **`special`**（例: `parts.special`, `images-special`, `parts-special-css`）
 
 #### ComponentData
 
@@ -127,10 +132,10 @@ interface ImageData {
 - `parts-individual`: 個別パーツデータ（JSON文字列）
 - `images-common`: 共通画像データ（JSON文字列）
 - `images-individual`: 個別画像データ（JSON文字列）
-- `images-special`: 特別画像データ（JSON文字列）
+- `images-special`: 専用画像データ（JSON文字列）
 - `css-common`: 共通パーツ用CSS（文字列）
 - `css-individual`: 個別パーツ用CSS（文字列）
-- `css-special`: 特別パーツ用CSS（文字列）
+- `css-special`: 専用パーツ用CSS（文字列）
 - `backend-data`: バックエンドデータ（JSON文字列）
 - `config`: 初期設定データ（JSON文字列）。`{"cms": {...}, "dev": {...}}`の形式で指定。詳細は「設定オプション」セクションを参照
 - `endpoints`: エンドポイント設定（JSON文字列）
@@ -177,10 +182,10 @@ interface ImageData {
 - `parts-individual`: 個別パーツデータ（JSON文字列）
 - `images-common`: 共通画像データ（JSON文字列）
 - `images-individual`: 個別画像データ（JSON文字列）
-- `images-special`: 特別画像データ（JSON文字列）
+- `images-special`: 専用画像データ（JSON文字列）
 - `css-common`: 共通パーツ用CSS（文字列）
 - `css-individual`: 個別パーツ用CSS（文字列）
-- `css-special`: 特別パーツ用CSS（文字列）
+- `css-special`: 専用パーツ用CSS（文字列）
 - `backend-data`: バックエンドデータ（JSON文字列）
 - `config`: 初期設定データ（JSON文字列）。`{"cms": {...}, "dev": {...}}`の形式で指定。詳細は「設定オプション」セクションを参照
 - `endpoints`: エンドポイント設定（JSON文字列）
@@ -213,7 +218,7 @@ interface ImageData {
 
 ### zcode-studio
 
-制作会社・信頼ユーザー向け管理画面のWebコンポーネント。**UI は `zcode-editor` と同型**（タブ: ページ管理・パーツ管理・画像管理・データビューア、ページ管理内の表示/管理トグルとツールバー）。**ページ管理**は `ZeroCodeCMS` と同一の編集体験（共通/個別/特別のパーツ利用を含む）。**パーツ管理・画像管理**は特別カテゴリのみ編集（共通/個別の切り替え UI なし）。**データビューア**はページ／特別パーツ／特別画像の表示と JSON/HTML 切替（共通・個別のカテゴリタブなし）。`view-mode-changed` イベントは `zcode-editor` と同様に発火する。
+制作会社・信頼ユーザー向け管理画面のWebコンポーネント。**UI は `zcode-editor` と同型**（タブ: ページ管理・パーツ管理・画像管理・データビューア、ページ管理内の表示/管理トグルとツールバー）。**ページ管理**は `ZeroCodeCMS` と同一の編集体験（共通/個別/専用のパーツ利用を含む）。**パーツ管理・画像管理**は専用カテゴリのみ編集（共通/個別の切り替え UI なし）。**データビューア**はページ／専用パーツ／専用画像の表示と JSON/HTML 切替（共通・個別のカテゴリタブなし）。`view-mode-changed` イベントは `zcode-editor` と同様に発火する。
 
 **属性**:
 
@@ -221,13 +226,13 @@ interface ImageData {
 - `page`: ページデータ（JSON文字列、**ページ編集タブで編集可能**）
 - `parts-common`: 共通パーツデータ（JSON文字列、読み取り専用）
 - `parts-individual`: 個別パーツデータ（JSON文字列、読み取り専用）
-- `parts-special`: 特別パーツデータ（JSON文字列、**編集可能**）
+- `parts-special`: 専用パーツデータ（JSON文字列、**編集可能**）
 - `images-common`: 共通画像データ（JSON文字列、読み取り専用）
 - `images-individual`: 個別画像データ（JSON文字列、読み取り専用）
-- `images-special`: 特別画像データ（JSON文字列、**編集可能**）
+- `images-special`: 専用画像データ（JSON文字列、**編集可能**）
 - `css-common`: 共通パーツ用CSS（文字列、読み取り専用）
 - `css-individual`: 個別パーツ用CSS（文字列、読み取り専用）
-- `css-special`: 特別パーツ用CSS（文字列、**編集可能**）
+- `css-special`: 専用パーツ用CSS（文字列、**編集可能**）
 - `backend-data`: バックエンドデータ（JSON文字列）
 - `config`: 初期設定データ（JSON文字列）。`{"studio": {...}}`の形式で指定
 - `endpoints`: エンドポイント設定（JSON文字列）
@@ -245,7 +250,7 @@ interface ImageData {
 
 **イベント**:
 
-- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`。`targets` は `zcode-editor` と同様にアクティブなタブとデータビューアの表示に応じて決まる（ページ管理 → `['page', 'images-special']`、特別パーツ → `['parts-special', 'parts-special-css']`、特別画像 → `['images-special']`、データビューアはページ／特別パーツ／特別画像のいずれを表示中かに応じて `page`+`images-special` または `parts-special`+CSS または `images-special`）
+- `save-request`: 保存ボタンクリック時に発火。`source: 'studio'`。`targets` は `zcode-editor` と同様にアクティブなタブとデータビューアの表示に応じて決まる（ページ管理 → `['page', 'images-special']`、専用パーツ → `['parts-special', 'parts-special-css']`、専用画像 → `['images-special']`、データビューアはページ／専用パーツ／専用画像のいずれを表示中かに応じて `page`+`images-special` または `parts-special`+CSS または `images-special`）
 
 **config.studio オプション**:
 
@@ -826,7 +831,7 @@ watch(enableContextMenu, (newValue) => {
     - zcode-studio: `['parts-special', 'parts-special-css']` または `['images-special']`（編集中のタブに依存）
     - パーツ管理: `[primaryTarget, 'parts-*-css']`
     - 画像管理: `['images-common']` / `['images-individual']` / `['images-special']`
-    - ページ編集の保存バンドルには `parts-*-css` は含まれない（パーツ管理で保存）。特別系の編集・保存は `zcode-studio` で行う
+    - ページ編集の保存バンドルには `parts-*-css` は含まれない（パーツ管理で保存）。専用系の編集・保存は `zcode-studio` で行う
   - `detail.timestamp`: タイムスタンプ
   - `detail` に `data` は含まれない。受信側で `getData()` を呼んで取得する。
   - ⚠️ **セキュリティ注意**: `source`を確認し、CMSからのパーツ保存をサーバー側で拒否すること。
@@ -909,7 +914,7 @@ ZeroCode.jsはフロントエンドライブラリのため、クライアント
 
 - **データ保存前の検証**: すべてのデータをサーバー側で検証してください
 - **パーツテンプレートの検証**: パーツテンプレート（`part.body`）が信頼できるソースからのみ来ることを確認してください
-- **送信元の検証**: `save-request`イベントの`source`フィールド（`'cms'` / `'editor'` / `'studio'`）を確認し、送信元に応じたアクセス制御を実装してください。例: `source: 'cms'` からのパーツデータ保存を拒否、`source: 'studio'` は特別系データのみ許可
+- **送信元の検証**: `save-request`イベントの`source`フィールド（`'cms'` / `'editor'` / `'studio'`）を確認し、送信元に応じたアクセス制御を実装してください。例: `source: 'cms'` からのパーツデータ保存を拒否、`source: 'studio'` は専用系データのみ許可
 
 #### 2. 属性値のセキュリティ
 

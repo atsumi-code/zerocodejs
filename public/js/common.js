@@ -696,12 +696,12 @@ const SAMPLE_DATA = {
     {
       id: 'zcode-special-banner',
       type: 'banner',
-      description: 'バナー（特別ページ向け）',
+      description: 'バナー（専用ページ向け）',
       parts: [
         {
           id: 'zcode-part-special-banner',
           title: 'special_banner',
-          description: '特別バナー（店舗ごとなど）',
+          description: '専用バナー（店舗ごとなど）',
           body: `<div class="banner">
   <img src="{$banner_image.image:img-special-banner:image}" alt="{$banner_alt.image:バナー}">
   <div class="banner__text">{$banner_text.content:バナーテキスト}</div>

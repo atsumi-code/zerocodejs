@@ -44,7 +44,7 @@
             {{ $t('dataViewer.html') }}
           </button>
         </template>
-        <!-- パーツ・画像用: 共通/個別/特別（fixedCategory 時は非表示で固定） -->
+        <!-- パーツ・画像用: 共通/個別/専用（fixedCategory 時は非表示で固定） -->
         <template v-else-if="!fixedCategory">
           <button
             v-for="category in categoryTabs"

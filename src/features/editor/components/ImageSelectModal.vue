@@ -163,7 +163,7 @@
       </div>
     </div>
 
-    <!-- 特別画像の編集（画像管理と同様） -->
+    <!-- 専用画像の編集（画像管理と同様） -->
     <Teleport :to="teleportTo">
       <div
         v-if="editingImage"

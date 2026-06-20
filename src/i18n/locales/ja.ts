@@ -137,13 +137,13 @@ export default {
       page: 'ページデータ',
       'parts-common': 'パーツ（共通）',
       'parts-individual': 'パーツ（個別）',
-      'parts-special': 'パーツ（特別）',
+      'parts-special': 'パーツ（専用）',
       'parts-common-css': 'CSS（共通）',
       'parts-individual-css': 'CSS（個別）',
-      'parts-special-css': 'CSS（特別）',
+      'parts-special-css': 'CSS（専用）',
       'images-common': '画像（共通）',
       'images-individual': '画像（個別）',
-      'images-special': '画像（特別）'
+      'images-special': '画像（専用）'
     },
     saveButton: '保存する'
   },
@@ -246,7 +246,7 @@ export default {
     currentlySelected: '現在選択中',
     select: '選択',
     tabAll: '全て',
-    addSpecialImage: '特別画像を追加'
+    addSpecialImage: '専用画像を追加'
   },
   dataViewer: {
     page: 'ページ',
@@ -254,7 +254,7 @@ export default {
     images: '画像',
     common: '共通',
     individual: '個別',
-    special: '特別',
+    special: '専用',
     json: 'JSON',
     html: 'HTML',
     categoryInfo: {
@@ -270,9 +270,9 @@ export default {
           'ページタイプごとに共有されるパーツ・画像を想定しています。同じページタイプのすべてのページで使用できる想定です。'
       },
       special: {
-        title: '特別',
+        title: '専用',
         description:
-          'ここで編集するパーツ・画像は、公開したあとのサイトで、条件によって表示が変わるページ向けを想定しています。例：まとまりごとに、専用のページを用意する場合など。'
+          'ページや用途に専用のパーツ・画像を想定しています。公開後のサイトで条件によって表示が変わるページ向けなどに使います。'
       }
     }
   },

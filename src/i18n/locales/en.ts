@@ -137,13 +137,13 @@ export default {
       page: 'Page data',
       'parts-common': 'Parts (Common)',
       'parts-individual': 'Parts (Individual)',
-      'parts-special': 'Parts (Special)',
+      'parts-special': 'Parts (Dedicated)',
       'images-common': 'Images (Common)',
       'images-individual': 'Images (Individual)',
-      'images-special': 'Images (Special)',
+      'images-special': 'Images (Dedicated)',
       'parts-common-css': 'CSS (Common)',
       'parts-individual-css': 'CSS (Individual)',
-      'parts-special-css': 'CSS (Special)'
+      'parts-special-css': 'CSS (Dedicated)'
     },
     saveButton: 'Save'
   },
@@ -252,7 +252,7 @@ export default {
     currentlySelected: 'Currently selected',
     select: 'Select',
     tabAll: 'All',
-    addSpecialImage: 'Add special image'
+    addSpecialImage: 'Add dedicated image'
   },
   dataViewer: {
     page: 'Page',
@@ -260,7 +260,7 @@ export default {
     images: 'Images',
     common: 'Common',
     individual: 'Individual',
-    special: 'Special',
+    special: 'Dedicated',
     json: 'JSON',
     html: 'HTML',
     categoryInfo: {
@@ -276,9 +276,9 @@ export default {
           'Intended for parts and images shared per page type. Assumed to be usable on all pages of the same page type.'
       },
       special: {
-        title: 'Special',
+        title: 'Dedicated',
         description:
-          'The parts and images you edit here are intended for pages on your published site whose content changes depending on the conditions. Example: Such as creating a dedicated page for each content grouping, among other cases.'
+          'Intended for parts and images dedicated to a page or use case, such as pages whose content changes depending on conditions after the site is published.'
       }
     }
   },

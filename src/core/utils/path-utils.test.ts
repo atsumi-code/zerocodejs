@@ -225,11 +225,11 @@ describe('findPartById', () => {
     const specialType: TypeData = {
       id: 'type-special',
       type: 'hero',
-      description: '特別',
+      description: '専用',
       parts: [
         {
           id: 'part-special',
-          title: '特別パーツ',
+          title: '専用パーツ',
           description: '',
           body: '<div z-if="show">{$title:Hello}</div>'
         }
@@ -254,7 +254,7 @@ describe('findTypeAndPartByPartId', () => {
       parts: [
         {
           id: 'part-special',
-          title: '特別パーツ',
+          title: '専用パーツ',
           description: '',
           body: '<div>{$content:テスト}</div>'
         }

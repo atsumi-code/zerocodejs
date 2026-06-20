@@ -4,7 +4,7 @@ export interface ZeroCodeData {
   css: {
     common?: string; // 共通パーツ用CSS
     individual?: string; // 個別パーツ用CSS
-    special?: string; // 特別パーツ用CSS
+    special?: string; // 専用パーツ用CSS（内部キー special）
   };
   parts: {
     common: TypeData[];
