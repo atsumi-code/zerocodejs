@@ -163,8 +163,8 @@ editor.setAttribute('images-common', JSON.stringify(imagesData));
 ## ドキュメント
 
 - [ドキュメント（ZeroCode.js とは）](./docs.html#about)
+- [実装TODO](./TODO.md)（[Phase 5: ユーザーテスト反映 Issue 分割](./TODO.md#phase-5-ユーザーテスト反映zerocodejs-issue-分割)）
 - [技術仕様書](./TECHNICAL_SPECIFICATION.md)
-- [実装TODO](./TODO.md)
 - [AI向けガイドライン](./AGENTS.md)
 
 ## なぜ ZeroCode.js？

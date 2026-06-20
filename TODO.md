@@ -314,6 +314,7 @@
   - `processTemplateWithDOM` で `z-tag` 属性を処理してタグ名を動的に変更
   - フィールドタイプは `tag` として扱い、編集パネルでタグ選択UIを表示
 - **使用例**:
+
   ```html
   <!-- 見出しタグを動的に変更（h2をデフォルト） -->
   <h2 z-tag="$headingTag:h1|h2|h3" class="title">{$title:タイトル}</h2>
@@ -325,6 +326,7 @@
   <!-- itemTagが"li"の場合 → <li class="list-item">項目</li> -->
   <!-- itemTagが"div"の場合 → <div class="list-item">項目</div> -->
   ```
+
 - **実装済み**: 2025年1月
   - `src/core/utils/template-processor.ts`: `z-tag` 属性の検出と処理を実装
   - `src/features/editor/components/EditPanel.vue`: タグ選択UIを実装
@@ -428,6 +430,139 @@
 
 ---
 
+## Phase 5: ユーザーテスト反映（ZeroCode.js Issue 分割）
+
+> **背景**: 社内ユーザーテスト（2026年）で得られたフィードバックのうち、**ZeroCode.js の編集 UI に限定**して対応する項目。埋め込み先プロダクト固有（公開画面・スタッフ紐付け・下書きフロー等）は本 Phase の対象外。
+>
+> **進め方**: 下記 Issue を **ZC-1 → ZC-5 の順** に1件ずつ解消する。GitHub Issue 作成時は ID（`ZC-n`）をタイトルに含めると追いやすい。
+
+### 実装順序と依存関係
+
+| 順  | ID   | タイトル                                          | 優先理由                                            |
+| --- | ---- | ------------------------------------------------- | --------------------------------------------------- |
+| 1   | ZC-1 | 編集プレビューで z-empty によりパーツ内容が消える | 信頼を損なうバグ。ZC-2 と同根                       |
+| 2   | ZC-2 | リッチテキスト空値の正規化                        | ZC-1 の補完。EditPanel と template-processor の整合 |
+| 3   | ZC-3 | RichTextEditor のドラッグで内容が消える           | 再現確認後。ZC-1/2 と独立しうる                     |
+| 4   | ZC-4 | パーツ間の追加ボタン                              | UX 改善。空スロットの `+` パターン拡張              |
+| 5   | ZC-5 | 並べ替え D&D（page 直下 Phase A）                 | 工数大。既存 `reorderComponents` を流用             |
+
+```
+ZC-1 / ZC-2 ──→ ZC-4 ──→ ZC-5
+ZC-3（並行可）
+```
+
+---
+
+### ZC-1. 編集プレビューで z-empty によりパーツ内容が消える【未着手】
+
+- **複雑度**: 低〜中
+- **症状**: リッチテキストのプレースホルダーを削除してパネルを閉じると、プレビュー上はパーツ枠だけ残り再入力しづらい
+- **原因（仮説）**: `processZEmpty` が `enableEditorAttributes: true`（編集プレビュー）でも空フィールド時に要素を DOM から削除している
+- **実装方針**:
+  - 編集プレビュー（`enableEditorAttributes: true`）では `z-empty` 対象要素を **削除せず** 属性のみ除去、またはプレースホルダー構造を維持
+  - 公開レンダリング（`enableEditorAttributes: false`）では従来どおり空要素を削除
+  - `template-processor.test.ts` に編集モード用ケースを追加
+- **主な変更箇所**:
+  - `src/core/utils/template-processor.ts`（`processZEmpty`, `isEmptyForZEmpty`）
+- **受け入れ条件**:
+  - `z-empty="$content"` + 空リッチテキストでも、編集プレビュー上でパーツ内に入力可能な構造が残る
+  - 公開 HTML では空のとき要素が出力されない（従来どおり）
+
+---
+
+### ZC-2. リッチテキスト空値の正規化【未着手】
+
+- **複雑度**: 低
+- **症状**: ZC-1 と同系。TipTap が返す `<p></p>` が「空」と扱われず optional フィールド等で不整合
+- **原因（仮説）**: `EditPanel` の `handleRichTextUpdate` が `value === ''` のみ optional 空判定。`isEmptyForZEmpty` と判定基準が不一致
+- **実装方針**:
+  - 空リッチテキスト判定を共通化（`<p></p>`, `<p> </p>`, `<p><br></p>` 等）
+  - `handleRichTextUpdate` / `saveFieldEdit`（useEditMode）で optional 時は `undefined` に正規化
+  - `isEmptyForZEmpty` と同じ関数を import して DRY に
+- **主な変更箇所**:
+  - `src/core/utils/template-processor.ts` または `src/core/utils/validation.ts`（空判定ユーティリティ）
+  - `src/features/editor/components/EditPanel.vue`
+  - `src/features/editor/composables/useEditMode.ts`
+- **受け入れ条件**:
+  - リッチテキストを全削除したとき、optional フィールドは `undefined`、必須は `<p></p>` または空として一貫処理
+  - ZC-1 のテストと合わせて回帰なし
+
+---
+
+### ZC-3. RichTextEditor のドラッグで内容が消える【未着手】
+
+- **複雑度**: 低
+- **症状**: 編集パネル内のリッチテキストで、テキストを選択して枠外へドラッグすると内容やエディタの扱いがおかしくなる
+- **原因（仮説）**: TipTap / ブラウザ既定の drag & drop がエディタ外に抜ける
+- **実装方針**:
+  - 再現手順をテストまたは手動確認で固定
+  - `RichTextEditor.vue` の `editorProps.handleDOMEvents` 等で、意図しない drag/drop を抑制
+  - 必要なら `dragstart` / `drop` をエディタ内に閉じる
+- **主な変更箇所**:
+  - `src/features/editor/components/RichTextEditor.vue`
+- **受け入れ条件**:
+  - テキスト選択をエディタ外へドラッグしても、フィールド内容が意図せず消えない
+- **備考**: 再現しない場合は ホスト側のパーツテンプレート依存の可能性あり。Issue クローズ前に再現有無を記録
+
+---
+
+### ZC-4. パーツ間の追加ボタン【未着手】
+
+- **複雑度**: 中
+- **症状**: 1つ目追加後、2つ目以降の追加方法が分からない。既存パーツクリックが前提で直感的でない
+- **実装方針**:
+  - 空スロットの `data-zcode-add-slot` と同型で、各 `[data-zcode-path]` の直後（または間）に「+ パーツを追加」を注入
+  - `enableEditorAttributes: true` かつ追加モード（または常時表示は設定で切替）のときのみ表示
+  - クリック時: `switchMode('add')` → `addTargetPath` 設定 → `confirmAddPart('after')` 相当
+  - `useClickHandlers` でイベント委譲（`v-html` 再描画後も有効）
+- **参考実装**:
+  - `src/core/utils/template-processor.ts`（空スロットボタン）
+  - `src/features/preview/PreviewArea.vue`（空ページの `zcode-add-btn`）
+  - `src/features/editor/composables/useClickHandlers.ts`（`data-zcode-add-slot` 委譲）
+- **主な変更箇所**:
+  - 新規: プレビュー DOM 注入ユーティリティ、または renderer 後処理
+  - `src/features/add/composables/useAddMode.ts`
+  - `src/styles/zcode-cms.css`
+  - `src/i18n/locales/ja.ts`, `en.ts`
+- **受け入れ条件**:
+  - ページ直下のパーツ間から、既存パーツを選ばずに追加位置を指定できる
+  - 追加後も AddPanel が開いたまま連続追加しやすい（`continueAdding` 連携）
+
+---
+
+### ZC-5. 並べ替え D&D（page 直下 Phase A）【未着手】
+
+- **複雑度**: 中〜高
+- **症状**: クリック2回の並べ替えが分かりにくい。D&D を期待する
+- **実装方針**:
+  - **Phase A**: `page.0`, `page.1`, … 同階層のみ D&D（並べ替えモード中）
+  - SortableJS 等で `[data-zcode-path]` を draggable 化
+  - `onEnd` で from/to インデックス → 既存 `reorderComponents()` / `canReorderWith()` を呼ぶ
+  - クリック式並べ替えはフォールバックとして残す（設定で D&D のみにすることも検討）
+  - **Phase B（別 Issue）**: スロット内 D&D
+- **主な変更箇所**:
+  - `src/features/reorder/composables/useReorderMode.ts`
+  - `src/features/editor/composables/useClickHandlers.ts`（D&D とクリックの競合回避）
+  - `src/features/preview/PreviewArea.vue` または reorder 専用 composable
+- **受け入れ条件**:
+  - 並べ替えモードで page 直下パーツをドラッグして順序変更できる
+  - スロット内・異階層への誤 D&D は拒否（既存 `canReorderWith` 準拠）
+  - `zcode-dom-updated` 後も D&D が再初期化される
+
+---
+
+### 本 Phase の対象外（ホスト側）
+
+以下は ZeroCode.js では対応しない。埋め込み先（ホスト）で別管理する。
+
+- 執筆スタッフ表示、いいね・シェア、ハッシュタグ、記事ナビ
+- 基本情報/本文の2画面構成、下書き・公開状態 UI、公開後の画面遷移
+- 画像反映バグのうち **ホストの `save-request` / `images-special` 永続化** 側
+- 店舗ごとのパーツ編集権限、CSS 編集の露出制御
+- ブログ一覧・公開ページのデザイン
+
+---
+
 ## 実装順序の推奨
 
 ### 短期（1-2週間）
@@ -458,6 +593,10 @@
 15. ~~アクセシビリティ対応~~（検討事項）
 16. ~~バージョン管理~~（検討事項）
 17. z-for ループ記法
+
+### ユーザーテスト反映（2026年〜）
+
+18. [Phase 5: ZC-1 〜 ZC-5](./TODO.md#phase-5-ユーザーテスト反映zerocodejs-issue-分割) — ユーザーテスト に基づく ZeroCode.js 編集 UX（順次対応）
 
 ---
 
