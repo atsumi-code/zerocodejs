@@ -250,7 +250,9 @@ export default {
     replaceImage: 'Replace',
     selectImage: 'Select image',
     currentlySelected: 'Currently selected',
-    select: 'Select'
+    select: 'Select',
+    tabAll: 'All',
+    addSpecialImage: 'Add special image'
   },
   dataViewer: {
     page: 'Page',

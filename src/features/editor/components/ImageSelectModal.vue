@@ -27,44 +27,54 @@
         </div>
       </div>
 
-      <!-- タブ: 共通 / 個別 / 特別 -->
-      <div class="zcode-image-tabs">
-        <button
-          :class="{ active: activeTab === 'common' }"
-          class="zcode-image-tab"
-          @click="activeTab = 'common'"
-        >
-          {{ $t('dataViewer.common') }}
-        </button>
-        <button
-          :class="{ active: activeTab === 'individual' }"
-          class="zcode-image-tab"
-          @click="activeTab = 'individual'"
-        >
-          {{ $t('dataViewer.individual') }}
-        </button>
-        <button
-          :class="{ active: activeTab === 'special' }"
-          class="zcode-image-tab"
-          @click="activeTab = 'special'"
-        >
-          {{ $t('dataViewer.special') }}
-        </button>
-      </div>
-
-      <!-- 特別: 画像追加（0枚でもタブから追加可能） -->
-      <div v-if="activeTab === 'special'" class="zcode-image-add">
-        <input
-          ref="fileInputRef"
-          type="file"
-          accept="image/*"
-          style="display: none"
-          @change="handleFileSelect"
-        />
-        <button type="button" class="zcode-image-add-btn" @click="fileInputRef?.click()">
-          <Plus :size="16" />
-          <span>{{ $t('imagesManager.addImage') }}</span>
-        </button>
+      <div class="zcode-image-select-toolbar">
+        <div class="zcode-image-tabs">
+          <button
+            :class="{ active: activeTab === 'all' }"
+            class="zcode-image-tab"
+            @click="activeTab = 'all'"
+          >
+            {{ $t('imagesManager.tabAll') }}
+          </button>
+          <button
+            :class="{ active: activeTab === 'common' }"
+            class="zcode-image-tab"
+            @click="activeTab = 'common'"
+          >
+            {{ $t('dataViewer.common') }}
+          </button>
+          <button
+            :class="{ active: activeTab === 'individual' }"
+            class="zcode-image-tab"
+            @click="activeTab = 'individual'"
+          >
+            {{ $t('dataViewer.individual') }}
+          </button>
+          <button
+            :class="{ active: activeTab === 'special' }"
+            class="zcode-image-tab"
+            @click="activeTab = 'special'"
+          >
+            {{ $t('dataViewer.special') }}
+          </button>
+        </div>
+        <div class="zcode-image-select-add-wrapper">
+          <input
+            ref="fileInputRef"
+            type="file"
+            accept="image/*"
+            style="display: none"
+            @change="handleFileSelect"
+          />
+          <button
+            type="button"
+            class="zcode-btn-primary zcode-image-select-add-btn"
+            @click="openSpecialImageFilePicker"
+          >
+            <Plus :size="14" />
+            <span>{{ $t('imagesManager.addSpecialImage') }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- 画像一覧 -->
@@ -116,16 +126,26 @@
         </template>
         <template v-else>
           <div
-            v-for="image in currentImages"
-            :key="image.id"
-            :class="{ selected: selectedImageId === image.id }"
+            v-for="entry in displayImages"
+            :key="entry.image.id"
+            :class="{ selected: selectedImageId === entry.image.id }"
             class="zcode-image-item"
-            @click="selectImage(image)"
+            @click="selectImage(entry.image)"
           >
-            <img :src="image.url" :alt="image.name" class="zcode-image-item-img" />
+            <span
+              v-if="activeTab === 'all'"
+              class="zcode-image-item-category-badge"
+              :class="`zcode-image-item-category-badge--${entry.category}`"
+            >
+              {{ getCategoryLabel(entry.category) }}
+            </span>
+            <img :src="entry.image.url" :alt="entry.image.name" class="zcode-image-item-img" />
             <div class="zcode-image-name">
-              {{ image.name }}
+              {{ entry.image.name }}
             </div>
+          </div>
+          <div v-if="displayImages.length === 0" class="zcode-image-select-modal-empty">
+            {{ $t('partsManager.noImagesRegistered') }}
           </div>
         </template>
       </div>
@@ -218,13 +238,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import type { ZeroCodeData, ImageData } from '../../../types';
 import { useImagesManager } from '../../images-manager/composables/useImagesManager';
 import { logger } from '../../../core/utils/logger';
 import { X, Check, Plus, Pencil, ArrowUpDown, Trash2, Image as ImageIcon } from 'lucide-vue-next';
+
+type ImageCategory = 'common' | 'individual' | 'special';
+type ImageSelectTab = 'all' | ImageCategory;
+
+type DisplayImageEntry = {
+  image: ImageData;
+  category: ImageCategory;
+};
 
 const { t } = useI18n();
 const teleportTo = useZcodeTeleportTo();
@@ -243,7 +271,7 @@ const emit = defineEmits<{
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const replaceFileInputRef = ref<HTMLInputElement | null>(null);
 
-const activeTab = ref<'common' | 'individual' | 'special'>('common');
+const activeTab = ref<ImageSelectTab>('all');
 const selectedImageId = ref<string | null>(props.currentValue || null);
 
 const {
@@ -261,10 +289,34 @@ const {
   checkImageUsage
 } = useImagesManager(props.cmsData);
 
+const displayImages = computed((): DisplayImageEntry[] => {
+  const { common, individual, special } = props.cmsData.images;
+
+  if (activeTab.value === 'all') {
+    return [
+      ...common.map((image) => ({ image, category: 'common' as const })),
+      ...individual.map((image) => ({ image, category: 'individual' as const })),
+      ...special.map((image) => ({ image, category: 'special' as const }))
+    ];
+  }
+
+  if (activeTab.value === 'common') {
+    return common.map((image) => ({ image, category: 'common' as const }));
+  }
+
+  if (activeTab.value === 'individual') {
+    return individual.map((image) => ({ image, category: 'individual' as const }));
+  }
+
+  return [];
+});
+
 watch(
   activeTab,
   (tab) => {
-    activeCategory.value = tab;
+    if (tab !== 'all') {
+      activeCategory.value = tab;
+    }
     cancelReorder();
   },
   { immediate: true }
@@ -275,8 +327,7 @@ watch(
   (open) => {
     if (open) {
       selectedImageId.value = props.currentValue ?? null;
-      activeTab.value = 'common';
-      activeCategory.value = 'common';
+      activeTab.value = 'all';
       cancelEditing();
       cancelReorder();
     } else {
@@ -294,6 +345,16 @@ watch(
     }
   }
 );
+
+function getCategoryLabel(category: ImageCategory): string {
+  if (category === 'common') {
+    return t('dataViewer.common');
+  }
+  if (category === 'individual') {
+    return t('dataViewer.individual');
+  }
+  return t('dataViewer.special');
+}
 
 const getCurrentImage = (): ImageData | null => {
   if (!props.currentValue) return null;
@@ -319,13 +380,21 @@ const close = () => {
   emit('close');
 };
 
+function openSpecialImageFilePicker() {
+  activeCategory.value = 'special';
+  fileInputRef.value?.click();
+}
+
 async function handleFileSelect(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
   if (!file) return;
 
+  activeCategory.value = 'special';
+
   try {
-    await addImage(file);
+    const newImage = await addImage(file);
+    selectedImageId.value = newImage.id;
     if (input) input.value = '';
   } catch (error) {
     logger.error('画像追加エラー:', error);

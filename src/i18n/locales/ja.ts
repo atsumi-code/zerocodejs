@@ -244,7 +244,9 @@ export default {
     replaceImage: '差し替え',
     selectImage: '画像を選択',
     currentlySelected: '現在選択中',
-    select: '選択'
+    select: '選択',
+    tabAll: '全て',
+    addSpecialImage: '特別画像を追加'
   },
   dataViewer: {
     page: 'ページ',
