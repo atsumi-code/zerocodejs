@@ -6,7 +6,7 @@
     @click.stop
   >
     <button
-      class="zcode-context-menu-item"
+      class="zcode-context-menu-item zcode-context-menu-edit"
       :class="{ active: currentMode === 'edit' }"
       @click="handleModeSelect('edit')"
     >
@@ -14,7 +14,7 @@
       <span>{{ $t('contextMenu.edit') }}</span>
     </button>
     <button
-      class="zcode-context-menu-item"
+      class="zcode-context-menu-item zcode-context-menu-add"
       :class="{ active: currentMode === 'add' }"
       @click="handleModeSelect('add')"
     >
@@ -22,7 +22,7 @@
       <span>{{ $t('contextMenu.add') }}</span>
     </button>
     <button
-      class="zcode-context-menu-item"
+      class="zcode-context-menu-item zcode-context-menu-reorder"
       :class="{ active: currentMode === 'reorder' }"
       @click="handleModeSelect('reorder')"
     >
@@ -30,7 +30,7 @@
       <span>{{ $t('contextMenu.reorder') }}</span>
     </button>
     <button
-      class="zcode-context-menu-item"
+      class="zcode-context-menu-item zcode-context-menu-delete"
       :class="{ active: currentMode === 'delete' }"
       @click="handleModeSelect('delete')"
     >

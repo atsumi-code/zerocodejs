@@ -1544,6 +1544,7 @@
   background: var(--zcode-color-edit-hover);
 }
 
+.zcode-add-panel-header-actions,
 .zcode-reorder-panel-header-actions {
   display: flex;
   align-items: center;
@@ -2063,7 +2064,6 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding-right: 8px;
 }
 
 .zcode-add-panel-options-trigger {
@@ -5291,9 +5291,47 @@
 }
 
 .zcode-context-menu-item.active {
-  background: var(--zcode-color-edit-bg);
+  font-weight: 600;
+}
+
+.zcode-context-menu-edit.active {
+  background: var(--zcode-color-edit-bg-active);
   color: var(--zcode-color-edit);
-  font-weight: 500;
+}
+
+.zcode-context-menu-add.active {
+  background: var(--zcode-color-add-bg-active);
+  color: var(--zcode-color-add);
+}
+
+.zcode-context-menu-reorder.active {
+  background: var(--zcode-color-reorder-bg-active);
+  color: var(--zcode-color-reorder);
+}
+
+.zcode-context-menu-delete.active {
+  background: var(--zcode-color-delete-bg-active);
+  color: var(--zcode-color-delete);
+}
+
+.zcode-context-menu-edit.active:hover {
+  background: var(--zcode-color-edit-bg-active);
+  color: var(--zcode-color-edit);
+}
+
+.zcode-context-menu-add.active:hover {
+  background: var(--zcode-color-add-bg-active);
+  color: var(--zcode-color-add);
+}
+
+.zcode-context-menu-reorder.active:hover {
+  background: var(--zcode-color-reorder-bg-active);
+  color: var(--zcode-color-reorder);
+}
+
+.zcode-context-menu-delete.active:hover {
+  background: var(--zcode-color-delete-bg-active);
+  color: var(--zcode-color-delete);
 }
 
 .zcode-context-menu-divider {

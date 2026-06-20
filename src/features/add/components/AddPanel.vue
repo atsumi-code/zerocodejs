@@ -4,9 +4,71 @@
       <div class="zcode-panel-header-title" role="heading" aria-level="3">
         {{ $t('addPanel.title') }}
       </div>
-      <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
-        <X :size="18" />
-      </button>
+      <div class="zcode-add-panel-header-actions">
+        <div ref="addOptionsAnchorRef" class="zcode-add-panel-options-anchor">
+          <button
+            type="button"
+            class="zcode-add-panel-options-trigger"
+            :class="{ 'is-active': optionsPopoverOpen }"
+            :aria-expanded="optionsPopoverOpen"
+            :aria-label="$t('addPanel.optionsAriaLabel')"
+            :title="$t('addPanel.optionsAriaLabel')"
+            @click.stop="toggleOptionsPopover"
+          >
+            <Settings :size="18" />
+          </button>
+          <div
+            v-show="optionsPopoverOpen"
+            class="zcode-add-panel-options-popover"
+            role="region"
+            :aria-label="$t('addPanel.optionsPopoverTitle')"
+            tabindex="-1"
+          >
+            <div class="zcode-add-panel-options-popover-title">
+              {{ $t('addPanel.optionsPopoverTitle') }}
+            </div>
+            <label class="zcode-add-option-label">
+              <input
+                type="checkbox"
+                :checked="addInsertBefore"
+                class="zcode-keep-adding-checkbox"
+                @change="
+                  $emit('update:add-insert-before', ($event.target as HTMLInputElement).checked)
+                "
+              />
+              <span>{{ $t('addPanel.insertBefore') }}</span>
+            </label>
+            <label class="zcode-add-option-label">
+              <input
+                type="checkbox"
+                :checked="editAfterAdd"
+                class="zcode-keep-adding-checkbox"
+                @change="
+                  $emit('update:edit-after-add', ($event.target as HTMLInputElement).checked)
+                "
+              />
+              <span>{{ $t('addPanel.editAfterAdd') }}</span>
+            </label>
+            <label class="zcode-add-option-label">
+              <input
+                type="checkbox"
+                :checked="showAddBetweenButtons"
+                class="zcode-keep-adding-checkbox"
+                @change="
+                  $emit(
+                    'update:show-add-between-buttons',
+                    ($event.target as HTMLInputElement).checked
+                  )
+                "
+              />
+              <span>{{ $t('addPanel.showInsertMarkers') }}</span>
+            </label>
+          </div>
+        </div>
+        <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
+          <X :size="18" />
+        </button>
+      </div>
     </div>
 
     <!-- 親要素選択ボタン -->
@@ -41,64 +103,6 @@
         >
           {{ $t('addPanel.category.selected') }}
         </button>
-      </div>
-      <div ref="addOptionsAnchorRef" class="zcode-add-panel-options-anchor">
-        <button
-          type="button"
-          class="zcode-add-panel-options-trigger"
-          :class="{ 'is-active': optionsPopoverOpen }"
-          :aria-expanded="optionsPopoverOpen"
-          :aria-label="$t('addPanel.optionsAriaLabel')"
-          :title="$t('addPanel.optionsAriaLabel')"
-          @click.stop="toggleOptionsPopover"
-        >
-          <Settings :size="18" />
-        </button>
-        <div
-          v-show="optionsPopoverOpen"
-          class="zcode-add-panel-options-popover"
-          role="region"
-          :aria-label="$t('addPanel.optionsPopoverTitle')"
-          tabindex="-1"
-        >
-          <div class="zcode-add-panel-options-popover-title">
-            {{ $t('addPanel.optionsPopoverTitle') }}
-          </div>
-          <label class="zcode-add-option-label">
-            <input
-              type="checkbox"
-              :checked="addInsertBefore"
-              class="zcode-keep-adding-checkbox"
-              @change="
-                $emit('update:add-insert-before', ($event.target as HTMLInputElement).checked)
-              "
-            />
-            <span>{{ $t('addPanel.insertBefore') }}</span>
-          </label>
-          <label class="zcode-add-option-label">
-            <input
-              type="checkbox"
-              :checked="editAfterAdd"
-              class="zcode-keep-adding-checkbox"
-              @change="$emit('update:edit-after-add', ($event.target as HTMLInputElement).checked)"
-            />
-            <span>{{ $t('addPanel.editAfterAdd') }}</span>
-          </label>
-          <label class="zcode-add-option-label">
-            <input
-              type="checkbox"
-              :checked="showAddBetweenButtons"
-              class="zcode-keep-adding-checkbox"
-              @change="
-                $emit(
-                  'update:show-add-between-buttons',
-                  ($event.target as HTMLInputElement).checked
-                )
-              "
-            />
-            <span>{{ $t('addPanel.showInsertMarkers') }}</span>
-          </label>
-        </div>
       </div>
     </div>
 
@@ -256,8 +260,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
+import { usePanelOptionsPopover } from '../../editor/composables/usePanelOptionsPopover';
 import type { TypeData, PartData, ComponentData, CMSConfig } from '../../../types';
 import { X, ChevronUp, ZoomIn, Settings } from 'lucide-vue-next';
 
@@ -317,60 +322,8 @@ defineEmits<{
 const showPreviewModal = ref(false);
 const previewTarget = ref<{ type: TypeData; part: PartData; isActiveParts?: boolean } | null>(null);
 
-const optionsPopoverOpen = ref(false);
 const addOptionsAnchorRef = ref<HTMLElement | null>(null);
-let outsideClickCleanup: (() => void) | null = null;
-let outsideClickTimer: number | null = null;
-
-function toggleOptionsPopover() {
-  optionsPopoverOpen.value = !optionsPopoverOpen.value;
-}
-
-function closeOptionsPopover() {
-  optionsPopoverOpen.value = false;
-}
-
-function clearOutsideListeners() {
-  if (outsideClickTimer !== null) {
-    clearTimeout(outsideClickTimer);
-    outsideClickTimer = null;
-  }
-  outsideClickCleanup?.();
-  outsideClickCleanup = null;
-}
-
-watch(optionsPopoverOpen, (open) => {
-  clearOutsideListeners();
-  if (!open) return;
-
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      closeOptionsPopover();
-    }
-  };
-  const onDocClick = (e: MouseEvent) => {
-    const anchor = addOptionsAnchorRef.value;
-    if (anchor && !anchor.contains(e.target as Node)) {
-      closeOptionsPopover();
-    }
-  };
-
-  document.addEventListener('keydown', onKeyDown);
-
-  outsideClickTimer = window.setTimeout(() => {
-    outsideClickTimer = null;
-    document.addEventListener('click', onDocClick);
-  }, 0);
-
-  outsideClickCleanup = () => {
-    document.removeEventListener('keydown', onKeyDown);
-    document.removeEventListener('click', onDocClick);
-  };
-});
-
-onUnmounted(() => {
-  clearOutsideListeners();
-});
+const { optionsPopoverOpen, toggleOptionsPopover } = usePanelOptionsPopover(addOptionsAnchorRef);
 
 function openPreviewModal(type: TypeData, part: PartData) {
   previewTarget.value = { type, part, isActiveParts: false };

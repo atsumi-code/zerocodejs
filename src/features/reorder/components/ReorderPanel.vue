@@ -100,9 +100,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { ChevronUp, Settings, X } from 'lucide-vue-next';
 import type { ZeroCodeData } from '../../../types';
+import { usePanelOptionsPopover } from '../../editor/composables/usePanelOptionsPopover';
 import { buildStructureGroupViewByGroupId, buildStructureTreeKey } from '../utils/page-reorder';
 import { useReorderStructureSortables } from '../composables/useReorderStructureSortables';
 import ReorderStructureTreeRows from './ReorderStructureTreeRows.vue';
@@ -128,62 +129,8 @@ const emit = defineEmits<{
 }>();
 
 const structureRootRef = ref<HTMLElement | null>(null);
-const optionsPopoverOpen = ref(false);
 const optionsAnchorRef = ref<HTMLElement | null>(null);
-let outsideClickCleanup: (() => void) | null = null;
-let outsideClickTimer: number | null = null;
-
-function toggleOptionsPopover() {
-  optionsPopoverOpen.value = !optionsPopoverOpen.value;
-}
-
-function closeOptionsPopover() {
-  optionsPopoverOpen.value = false;
-}
-
-function clearOutsideListeners() {
-  if (outsideClickTimer !== null) {
-    clearTimeout(outsideClickTimer);
-    outsideClickTimer = null;
-  }
-  outsideClickCleanup?.();
-  outsideClickCleanup = null;
-}
-
-watch(optionsPopoverOpen, (open) => {
-  clearOutsideListeners();
-  if (!open) {
-    return;
-  }
-
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      closeOptionsPopover();
-    }
-  };
-  const onDocClick = (e: MouseEvent) => {
-    const anchor = optionsAnchorRef.value;
-    if (anchor && !anchor.contains(e.target as Node)) {
-      closeOptionsPopover();
-    }
-  };
-
-  document.addEventListener('keydown', onKeyDown);
-
-  outsideClickTimer = window.setTimeout(() => {
-    outsideClickTimer = null;
-    document.addEventListener('click', onDocClick);
-  }, 0);
-
-  outsideClickCleanup = () => {
-    document.removeEventListener('keydown', onKeyDown);
-    document.removeEventListener('click', onDocClick);
-  };
-});
-
-onUnmounted(() => {
-  clearOutsideListeners();
-});
+const { optionsPopoverOpen, toggleOptionsPopover } = usePanelOptionsPopover(optionsAnchorRef);
 
 const structureView = computed(() => {
   if (!props.structureListGroupId) {
