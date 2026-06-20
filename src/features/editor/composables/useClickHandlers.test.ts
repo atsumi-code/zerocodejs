@@ -102,4 +102,23 @@ describe('shouldClearSelectionOnClick', () => {
     preview.remove();
     toolbar.remove();
   });
+
+  it('除外 UI 内で開始したジェスチャーの click は false', () => {
+    const preview = document.createElement('div');
+    const outside = document.createElement('div');
+    document.body.appendChild(preview);
+    document.body.appendChild(outside);
+
+    const event = new MouseEvent('click', { bubbles: true, composed: true });
+    Object.defineProperty(event, 'composedPath', {
+      value: () => [outside, document.body, document]
+    });
+
+    expect(
+      shouldClearSelectionOnClick(event, preview, true, { gestureStartedInExcludedUi: true })
+    ).toBe(false);
+
+    preview.remove();
+    outside.remove();
+  });
 });

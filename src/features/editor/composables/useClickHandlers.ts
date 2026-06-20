@@ -71,9 +71,13 @@ export function isPreviewPartOrSlotClickInEvent(event: Event, preview: HTMLEleme
 export function shouldClearSelectionOnClick(
   event: Event,
   preview: HTMLElement | null,
-  hasActiveSelection: boolean
+  hasActiveSelection: boolean,
+  options?: { gestureStartedInExcludedUi?: boolean }
 ): boolean {
   if (!hasActiveSelection || !preview) {
+    return false;
+  }
+  if (options?.gestureStartedInExcludedUi) {
     return false;
   }
   if (isSelectionClearExcludedInComposedPath(event)) {
@@ -116,6 +120,11 @@ export function useClickHandlers(
     listener: EventListener;
     options?: boolean | AddEventListenerOptions;
   }> = [];
+  let pointerGestureStartedInExcludedUi = false;
+
+  function resetPointerGestureFlag() {
+    pointerGestureStartedInExcludedUi = false;
+  }
 
   function hasActiveSelection(): boolean {
     switch (currentMode.value) {
@@ -407,19 +416,49 @@ export function useClickHandlers(
 
     const delegatedClearSelectionClick: EventListener = (e: Event) => {
       const preview = previewArea.value;
-      if (!shouldClearSelectionOnClick(e, preview, hasActiveSelection())) {
+      if (
+        !shouldClearSelectionOnClick(e, preview, hasActiveSelection(), {
+          gestureStartedInExcludedUi: pointerGestureStartedInExcludedUi
+        })
+      ) {
         return;
       }
       clearActiveSelection();
     };
 
+    const trackPointerGestureStart: EventListener = (e: Event) => {
+      pointerGestureStartedInExcludedUi = isSelectionClearExcludedInComposedPath(e);
+    };
+
+    const resetPointerGestureAfterClick: EventListener = () => {
+      resetPointerGestureFlag();
+    };
+
     previewArea.value.addEventListener('click', delegatedAddSlotClick, true);
     previewArea.value.addEventListener('click', delegatedReorderTargetClick, true);
     document.addEventListener('click', delegatedClearSelectionClick, true);
+    document.addEventListener('pointerdown', trackPointerGestureStart, true);
+    document.addEventListener('mousedown', trackPointerGestureStart, true);
+    document.addEventListener('click', resetPointerGestureAfterClick, false);
     documentListeners.push({
       type: 'click',
       listener: delegatedClearSelectionClick,
       options: true
+    });
+    documentListeners.push({
+      type: 'pointerdown',
+      listener: trackPointerGestureStart,
+      options: true
+    });
+    documentListeners.push({
+      type: 'mousedown',
+      listener: trackPointerGestureStart,
+      options: true
+    });
+    documentListeners.push({
+      type: 'click',
+      listener: resetPointerGestureAfterClick,
+      options: false
     });
     previewArea.value.addEventListener('pointerdown', clearAllHoverOutlines, true);
     previewArea.value.addEventListener('pointerover', delegatedSlotMouseOver, true);
@@ -442,6 +481,10 @@ export function useClickHandlers(
       if (!path) return;
 
       const clickListener = (e: Event) => {
+        if (pointerGestureStartedInExcludedUi) {
+          return;
+        }
+
         const target = e.target as HTMLElement;
 
         const clickedElement = target?.closest('[data-zcode-path]') as HTMLElement;
@@ -613,6 +656,7 @@ export function useClickHandlers(
       document.removeEventListener(type, listener, options as any);
     });
     documentListeners.length = 0;
+    resetPointerGestureFlag();
   }
 
   return {
