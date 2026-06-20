@@ -76,7 +76,7 @@ export default {
     noPartsAvailable: 'No parts available',
     addBefore: 'Add before',
     addAfter: 'Add after',
-    showInsertMarkers: 'Show insert markers',
+    showInsertMarkers: 'Show + buttons on preview',
     continueAdding: 'Continue adding parts',
     insertBefore: 'Insert before the selected element',
     editAfterAdd: 'Switch to edit after adding',

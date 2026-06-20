@@ -76,7 +76,7 @@ export default {
     noPartsAvailable: '利用可能なパーツがありません',
     addBefore: '前に追加',
     addAfter: '後に追加',
-    showInsertMarkers: '挿入位置を表示',
+    showInsertMarkers: 'プレビューに＋ボタンを表示',
     continueAdding: 'パーツ追加を続ける',
     insertBefore: '選択した要素の前に追加する',
     editAfterAdd: '追加後に編集に移動',
