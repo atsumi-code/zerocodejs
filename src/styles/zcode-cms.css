@@ -811,8 +811,8 @@
   cursor: pointer;
 }
 
-/* ZeroCodeDev内ではZeroCodeCMSのツールバーを非表示（ZeroCodeDevのツールバーを使用するため） */
-.zcode-dev-container .zcode-cms-container .zcode-toolbar {
+/* ZeroCodeDev: hideToolbar 未指定のフォールバック（内蔵ツールバーのみ非表示） */
+.zcode-dev-container .zcode-cms-container > .zcode-toolbar {
   display: none;
 }
 
@@ -2230,6 +2230,17 @@
 }
 
 /* 空のスロット */
+.zcode-add-between {
+  display: none;
+  justify-content: center;
+  padding: 2px 0;
+  margin: 0;
+}
+
+.zcode-cms-container.zcode-editor-mode-add.zcode-show-add-between-buttons .zcode-add-between {
+  display: flex;
+}
+
 .zcode-empty-slot {
   padding: 20px;
   text-align: center;
@@ -2250,8 +2261,42 @@
   transition: background 0.2s;
 }
 
-.zcode-add-slot-btn:hover {
+.zcode-add-slot-btn:not(.zcode-add-between-btn):hover {
   background: var(--zcode-color-add-hover);
+}
+
+.zcode-add-slot-btn.zcode-add-between-btn {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  max-width: 24px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--zcode-color-add);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.zcode-add-slot-btn.zcode-add-between-btn::before {
+  content: '＋';
+  display: block;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--zcode-color-add);
+}
+
+.zcode-add-slot-btn.zcode-add-between-btn.is-current {
+  background: var(--zcode-color-add);
+}
+
+.zcode-add-slot-btn.zcode-add-between-btn.is-current::before {
+  color: #fff;
 }
 
 .zcode-add-btn {

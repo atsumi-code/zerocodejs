@@ -9,6 +9,7 @@ import {
 } from './useOutlineManager';
 import type { EditorMode } from './useEditorMode';
 import { resolveReorderClickPath } from '../../reorder/utils/reorder-target-path';
+import { syncAddBetweenButtonCurrentState } from '../../../core/utils/page-add-buttons';
 
 function findElementByZcodePath(root: HTMLElement, path: string): HTMLElement | null {
   return root.querySelector(`[data-zcode-path="${path}"]`) as HTMLElement | null;
@@ -22,7 +23,10 @@ export function isPreviewPartOrSlotClick(target: HTMLElement, root: HTMLElement)
   return !!(
     target.closest('[data-zcode-path]') ||
     target.closest('[data-zcode-slot-path]') ||
-    target.closest('[data-zcode-add-slot]')
+    target.closest('[data-zcode-add-slot]') ||
+    target.closest('[data-zcode-add-after]') ||
+    target.closest('[data-zcode-add-before]') ||
+    target.closest('[data-zcode-add-between]')
   );
 }
 
@@ -96,10 +100,16 @@ export function useClickHandlers(
   currentMode: Ref<EditorMode>,
   editingComponentPath: Ref<string>,
   addTargetPath: Ref<string | null>,
+  insertBeforeActive: Ref<boolean>,
   reorderSourcePath: Ref<string>,
   deleteConfirmPath: Ref<string>,
   handleEditClick: (path: string, component: ComponentData) => void,
-  handleAddClick: (path: string) => void,
+  handleAddClick: (
+    path: string,
+    options?:
+      | boolean
+      | { isParentSelection?: boolean; insertBefore?: boolean; fromInsertMarker?: boolean }
+  ) => void,
   handleReorderClick: (path: string) => void,
   handleDeleteClick: (path: string, component: ComponentData) => void,
   canReorderWith: (sourcePath: string, targetPath: string) => boolean,
@@ -183,11 +193,91 @@ export function useClickHandlers(
 
     const editableElements = previewArea.value.querySelectorAll('[data-zcode-id]');
 
-    // 空スロットの「+ パーツを追加」ボタンは、z-slot処理で後からDOMに注入されることがあるため
-    // 個別にクリックを付けず、previewAreaでイベント委譲して常に拾う（captureで親要素より先に処理）
-    const delegatedAddSlotClick: EventListener = (e: Event) => {
+    // 空スロット・パーツ間の「+ パーツを追加」は DOM 注入後も previewArea で委譲（capture）
+    const runDelegatedAddTargetClick = (
+      e: Event,
+      targetPath: string,
+      highlightTarget: () => void,
+      addOptions?: { insertBefore?: boolean; fromInsertMarker?: boolean }
+    ) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      const invokeAddClick = () => {
+        if (addOptions?.fromInsertMarker) {
+          handleAddClick(targetPath, {
+            insertBefore: addOptions.insertBefore ?? false,
+            fromInsertMarker: true
+          });
+          return;
+        }
+        handleAddClick(targetPath);
+      };
+
+      const syncAfterAddClick = () => {
+        if (previewArea.value && addTargetPath.value) {
+          syncAddBetweenButtonCurrentState(
+            previewArea.value,
+            addTargetPath.value,
+            insertBeforeActive.value
+          );
+        }
+      };
+
+      if (currentMode.value !== 'add') {
+        switchMode('add');
+        nextTick(() => {
+          invokeAddClick();
+          syncAfterAddClick();
+          nextTick(highlightTarget);
+        });
+        return;
+      }
+
+      highlightTarget();
+      invokeAddClick();
+      syncAfterAddClick();
+      nextTick(highlightTarget);
+    };
+
+    const delegatedAddTargetClick: EventListener = (e: Event) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
+
+      const addBeforeButton = target.closest('[data-zcode-add-before]') as HTMLElement | null;
+      if (addBeforeButton) {
+        const path = addBeforeButton.getAttribute('data-zcode-path');
+        if (!path) return;
+
+        const highlightPart = () => {
+          if (!previewArea.value) return;
+          setActiveOutlineForPath(previewArea.value, path, 'add');
+        };
+
+        runDelegatedAddTargetClick(e, path, highlightPart, {
+          insertBefore: true,
+          fromInsertMarker: true
+        });
+        return;
+      }
+
+      const addAfterButton = target.closest('[data-zcode-add-after]') as HTMLElement | null;
+      if (addAfterButton) {
+        const path = addAfterButton.getAttribute('data-zcode-path');
+        if (!path) return;
+
+        const highlightPart = () => {
+          if (!previewArea.value) return;
+          setActiveOutlineForPath(previewArea.value, path, 'add');
+        };
+
+        runDelegatedAddTargetClick(e, path, highlightPart, {
+          insertBefore: false,
+          fromInsertMarker: true
+        });
+        return;
+      }
 
       const addSlotButton = target.closest('[data-zcode-add-slot]') as HTMLElement | null;
       if (!addSlotButton) return;
@@ -196,14 +286,6 @@ export function useClickHandlers(
       const slotPath = slotElement?.getAttribute('data-zcode-slot-path');
       if (!slotPath) return;
 
-      // 親の[data-zcode-id]クリックより確実に優先させる
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-
-      // 追加対象スロットを強調表示
-      // ※ モード切替が発生するとプレビューDOMが差し替えられて、直前に付けたアウトラインが消えることがあるため
-      //    DOM更新後にも再度アウトラインを付ける
       const highlightSlot = () => {
         const currentSlotEl = previewArea.value?.querySelector(
           `[data-zcode-slot-path="${slotPath}"]`
@@ -218,25 +300,7 @@ export function useClickHandlers(
         removeHoverOutline(slotElement);
       }
 
-      if (currentMode.value !== 'add') {
-        switchMode('add');
-        nextTick(() => {
-          handleAddClick(slotPath);
-          nextTick(() => {
-            highlightSlot();
-          });
-        });
-        return;
-      }
-
-      // addモード中はDOM差し替えが少ないので即時+次tickで強調
-      highlightSlot();
-      nextTick(() => {
-        handleAddClick(slotPath);
-        nextTick(() => {
-          highlightSlot();
-        });
-      });
+      runDelegatedAddTargetClick(e, slotPath, highlightSlot);
     };
 
     // スロット要素のホバーもイベント委譲にする（z-slotで後から生成されても必ず効く）
@@ -434,7 +498,7 @@ export function useClickHandlers(
       resetPointerGestureFlag();
     };
 
-    previewArea.value.addEventListener('click', delegatedAddSlotClick, true);
+    previewArea.value.addEventListener('click', delegatedAddTargetClick, true);
     previewArea.value.addEventListener('click', delegatedReorderTargetClick, true);
     document.addEventListener('click', delegatedClearSelectionClick, true);
     document.addEventListener('pointerdown', trackPointerGestureStart, true);
@@ -466,7 +530,7 @@ export function useClickHandlers(
     previewArea.value.addEventListener('pointerout', delegatedSlotMouseOut, true);
     previewArea.value.addEventListener('pointerout', delegatedReorderPointerOut, true);
     eventListeners.set(previewArea.value, [
-      { type: 'click', listener: delegatedAddSlotClick, options: true },
+      { type: 'click', listener: delegatedAddTargetClick, options: true },
       { type: 'click', listener: delegatedReorderTargetClick, options: true },
       { type: 'pointerover', listener: delegatedSlotMouseOver, options: true },
       { type: 'pointerover', listener: delegatedReorderPointerOver, options: true },
@@ -630,6 +694,11 @@ export function useClickHandlers(
               setActiveOutline(slotElement, 'add');
             }
           }
+          syncAddBetweenButtonCurrentState(
+            previewArea.value,
+            addTargetPath.value,
+            insertBeforeActive.value
+          );
         }
 
         if (currentMode.value === 'reorder' && reorderSourcePath.value && previewArea.value) {

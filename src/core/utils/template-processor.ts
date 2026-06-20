@@ -6,6 +6,7 @@ import { splitDefaultAndValidation } from './field-extractor';
 import { firstChoiceValueFromRaw, rawChoiceValues } from './choice-options';
 import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from './template-utils';
 import { logger } from './logger';
+import { joinSiblingHtmlWithAddButtons, type AddBetweenButtonLabels } from './page-add-buttons';
 
 function selectionSingleFromComponent(
   component: ComponentData,
@@ -149,6 +150,8 @@ function processZEmpty(
 export interface ProcessTemplateOptions {
   translations?: {
     addSlotButton?: string;
+    addBeforeButton?: string;
+    addAfterButton?: string;
   };
 }
 
@@ -1297,15 +1300,22 @@ export function processTemplateWithDOM(
 
       // 子コンポーネントをレンダリング
       // renderComponentToHtmlは既に属性を注入しているので、追加の処理は不要
-      const childrenHtml = children
-        .map((child: ComponentData, childIndex: number) => {
-          const childPath = path
-            ? `${path}.slots.${slotName}.${childIndex}`
-            : `slots.${slotName}.${childIndex}`;
-          // renderComponentToHtmlが既に属性を注入している
-          return renderComponentToHtml(child, childPath);
-        })
-        .join('');
+      const childPaths = children.map((_, childIndex) =>
+        path ? `${path}.slots.${slotName}.${childIndex}` : `slots.${slotName}.${childIndex}`
+      );
+      const childHtmlParts = children.map((child: ComponentData, childIndex: number) =>
+        renderComponentToHtml(child, childPaths[childIndex])
+      );
+      const addBetweenLabels: AddBetweenButtonLabels = {
+        before: options?.translations?.addBeforeButton ?? 'Add before',
+        after: options?.translations?.addAfterButton ?? 'Add after'
+      };
+      const childrenHtml = joinSiblingHtmlWithAddButtons(
+        childHtmlParts,
+        (index) => childPaths[index],
+        enableEditorAttributes,
+        addBetweenLabels
+      );
 
       // z-slot属性を削除してから子要素を挿入
       slotEl.removeAttribute('z-slot');

@@ -2,6 +2,7 @@ import type { ZeroCodeData, ComponentData, PartData } from '../../types';
 import { processTemplateWithDOM, type ProcessTemplateOptions } from '../utils/template-processor';
 import { injectAttributesToRootElement } from '../utils/template-utils';
 import { findPartById } from '../utils/path-utils';
+import { joinPageHtmlWithAddButtons, type AddBetweenButtonLabels } from '../utils/page-add-buttons';
 
 /**
  * レンダリングエラー
@@ -104,9 +105,13 @@ export function renderToHtml(
   data: ZeroCodeData,
   options: {
     enableEditorAttributes?: boolean;
+    addBetweenButtonLabels?: AddBetweenButtonLabels;
   } = {}
 ): string {
-  const { enableEditorAttributes = false } = options;
+  const {
+    enableEditorAttributes = false,
+    addBetweenButtonLabels = { before: 'Add before', after: 'Add after' }
+  } = options;
   const backendData = data.backendData;
 
   if (!data) {
@@ -144,16 +149,16 @@ export function renderToHtml(
     );
   }
 
-  return page
-    .map((component, index) => {
-      try {
-        return renderComponent(component, `page.${index}`, new Set());
-      } catch (error) {
-        if (error instanceof RenderError) {
-          return `<div class="zcode-error-message" data-error-code="${error.code}">${error.message}</div>`;
-        }
-        throw error;
+  const pageHtmlParts = page.map((component, index) => {
+    try {
+      return renderComponent(component, `page.${index}`, new Set());
+    } catch (error) {
+      if (error instanceof RenderError) {
+        return `<div class="zcode-error-message" data-error-code="${error.code}">${error.message}</div>`;
       }
-    })
-    .join('');
+      throw error;
+    }
+  });
+
+  return joinPageHtmlWithAddButtons(pageHtmlParts, enableEditorAttributes, addBetweenButtonLabels);
 }

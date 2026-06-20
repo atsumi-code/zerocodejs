@@ -518,7 +518,7 @@ ZC-3（並行可）
 
 ---
 
-### ZC-4. パーツ間の追加ボタン【未着手】
+### ZC-4. パーツ間の追加ボタン【完了】
 
 - **複雑度**: 中
 - **症状**: 1つ目追加後、2つ目以降の追加方法が分からない。既存パーツクリックが前提で直感的でない
@@ -539,6 +539,14 @@ ZC-3（並行可）
 - **受け入れ条件**:
   - ページ直下のパーツ間から、既存パーツを選ばずに追加位置を指定できる
   - 追加後も AddPanel が開いたまま連続追加しやすい（`continueAdding` 連携）
+- **実装済み**: 2026年6月
+  - `page-add-buttons.ts` で page 直下・スロット内の兄弟間に挿入ボタンを注入（`enableEditorAttributes: true` 時）
+  - 表示は **追加モード + 挿入位置トグル ON**（`.zcode-editor-mode-add.zcode-show-add-between-buttons`）
+  - トグル・「追加後に編集に移動」等は追加パネルのオプション（歯車アイコン）内。挿入位置トグルは `CMSSettings.showAddBetweenButtons` で localStorage 永続化
+  - 挿入ボタンは 24px 角形・白背景＋緑「＋」、選択中（`is-current`）は緑背景＋白「＋」。`aria-label` に i18n `addPanel.addBefore` / `addPanel.addAfter`
+  - 先頭（`page.0` の前）と入れ子スロット内にも対応。追加パネル内プレビューは `renderComponentPreviewHtml`（編集 UI 非注入）
+  - `syncAddBetweenButtonCurrentState` / `resolveAddBetweenButtonTarget` で選択中ボタンを同期（`useAddMode` / `useClickHandlers`）。`addInsertBefore`（チェック）と `insertBeforeActive`（実際の挿入方向）を分離
+  - `useClickHandlers` で `data-zcode-add-before` / `data-zcode-add-after` を委譲クリック
 
 ---
 

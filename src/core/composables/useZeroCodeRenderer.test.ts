@@ -88,4 +88,24 @@ describe('useZeroCodeRenderer', () => {
 
     expect(wrapper.html()).toContain('サンプルタイトル');
   });
+
+  it('should inject add-after buttons when editor attributes are enabled', () => {
+    const EditorComponent = defineComponent({
+      setup() {
+        const { fullPageHtml } = useZeroCodeRenderer(sampleZeroCodeData, true);
+        return () => h('div', { 'data-fullpage': fullPageHtml.value });
+      }
+    });
+
+    const wrapper = mount(EditorComponent, {
+      global: {
+        plugins: [i18n]
+      }
+    });
+
+    const html = wrapper.element.getAttribute('data-fullpage');
+    expect(html).toContain('data-zcode-add-before');
+    expect(html).toContain('data-zcode-add-after');
+    expect(html).toContain('data-zcode-path="page.0"');
+  });
 });

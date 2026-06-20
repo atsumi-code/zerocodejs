@@ -78,13 +78,25 @@
           <label class="zcode-add-option-label">
             <input
               type="checkbox"
-              :checked="closePanelAfterAdd"
+              :checked="editAfterAdd"
+              class="zcode-keep-adding-checkbox"
+              @change="$emit('update:edit-after-add', ($event.target as HTMLInputElement).checked)"
+            />
+            <span>{{ $t('addPanel.editAfterAdd') }}</span>
+          </label>
+          <label class="zcode-add-option-label">
+            <input
+              type="checkbox"
+              :checked="showAddBetweenButtons"
               class="zcode-keep-adding-checkbox"
               @change="
-                $emit('update:close-panel-after-add', ($event.target as HTMLInputElement).checked)
+                $emit(
+                  'update:show-add-between-buttons',
+                  ($event.target as HTMLInputElement).checked
+                )
               "
             />
-            <span>{{ $t('addPanel.closePanelAfterAdd') }}</span>
+            <span>{{ $t('addPanel.showInsertMarkers') }}</span>
           </label>
         </div>
       </div>
@@ -267,7 +279,8 @@ const props = defineProps<{
   getPartPreviewHtml: (type: TypeData, part: PartData) => string;
   getClickedComponentPreviewHtml: () => string;
   addInsertBefore: boolean;
-  closePanelAfterAdd: boolean;
+  editAfterAdd: boolean;
+  showAddBetweenButtons: boolean;
   hasSpecialParts: boolean;
   config?: Partial<CMSConfig>;
 }>();
@@ -297,7 +310,8 @@ defineEmits<{
   'select-part': [type: TypeData, part: PartData];
   'duplicate-selected': [];
   'update:add-insert-before': [value: boolean];
-  'update:close-panel-after-add': [value: boolean];
+  'update:edit-after-add': [value: boolean];
+  'update:show-add-between-buttons': [value: boolean];
 }>();
 
 const showPreviewModal = ref(false);

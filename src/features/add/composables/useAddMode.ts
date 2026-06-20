@@ -1,4 +1,4 @@
-import { ref, computed, nextTick, unref, type Ref } from 'vue';
+import { ref, computed, nextTick, unref, watch, type Ref } from 'vue';
 
 import type {
   ZeroCodeData,
@@ -19,13 +19,21 @@ import {
   findElementsByZcodePath
 } from '../../editor/composables/useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
+import { syncAddBetweenButtonCurrentState } from '../../../core/utils/page-add-buttons';
+import type { EditorMode } from '../../editor/composables/useEditorMode';
+
+export interface AddModeActions {
+  switchMode?: (mode: EditorMode) => void;
+  handleEditClick?: (path: string, component: ComponentData) => void;
+}
 
 export function useAddMode(
   cmsData: ZeroCodeData,
   previewArea: Ref<HTMLElement | null>,
-  renderComponentToHtml: (component: ComponentData, path: string) => string,
+  renderComponentPreviewHtml: (component: ComponentData, path?: string) => string,
   config?: Partial<CMSConfig>,
-  scrollIntoViewOnPartEdit: Ref<boolean> = ref(false)
+  scrollIntoViewOnPartEdit: Ref<boolean> = ref(false),
+  actions: AddModeActions = {}
 ) {
   const addTargetPath = ref<string | null>(null);
   const addSelectedType = ref<TypeData | null>(null);
@@ -40,7 +48,28 @@ export function useAddMode(
   const addTypeTab = ref<string | 'all' | 'selected' | null>('all');
   const clickedComponent = ref<ComponentData | null>(null);
   const addInsertBefore = ref<boolean>(false);
-  const closePanelAfterAdd = ref<boolean>(false);
+  const insertBeforeActive = ref<boolean>(false);
+  const editAfterAdd = ref<boolean>(false);
+
+  function syncBetweenButtonHighlight() {
+    syncAddBetweenButtonCurrentState(
+      previewArea.value,
+      addTargetPath.value,
+      insertBeforeActive.value
+    );
+  }
+
+  watch([addTargetPath, insertBeforeActive], () => {
+    nextTick(syncBetweenButtonHighlight);
+  });
+
+  function setAddInsertBeforeUserOption(value: boolean) {
+    addInsertBefore.value = value;
+    if (addTargetPath.value) {
+      insertBeforeActive.value = value;
+      nextTick(syncBetweenButtonHighlight);
+    }
+  }
 
   function getSlotPath(path: string): string {
     if (path.includes('.slots.')) {
@@ -263,9 +292,28 @@ export function useAddMode(
     return [...new Set(filteredTypes.map((t) => t.type))];
   }
 
-  function handleAddClick(path: string, isParentSelection: boolean = false) {
+  function handleAddClick(
+    path: string,
+    optionsOrIsParentSelection?:
+      | boolean
+      | { isParentSelection?: boolean; insertBefore?: boolean; fromInsertMarker?: boolean }
+  ) {
+    let isParentSelection = false;
+    let fromInsertMarker = false;
+    let insertBefore = addInsertBefore.value;
+
+    if (typeof optionsOrIsParentSelection === 'boolean') {
+      isParentSelection = optionsOrIsParentSelection;
+    } else if (optionsOrIsParentSelection) {
+      isParentSelection = optionsOrIsParentSelection.isParentSelection ?? false;
+      fromInsertMarker = optionsOrIsParentSelection.fromInsertMarker === true;
+      if (fromInsertMarker) {
+        insertBefore = optionsOrIsParentSelection.insertBefore ?? false;
+      }
+    }
+
     void isParentSelection;
-    if (addTargetPath.value === path) {
+    if (addTargetPath.value === path && insertBeforeActive.value === insertBefore) {
       cancelAdd();
       return;
     }
@@ -287,8 +335,8 @@ export function useAddMode(
     addPartCategory.value = 'common';
     addSelectedType.value = null;
     addSelectedPart.value = null;
-    addInsertBefore.value = false;
-    closePanelAfterAdd.value = false;
+    insertBeforeActive.value = insertBefore;
+    syncBetweenButtonHighlight();
 
     const component = getComponentByPath(path, cmsData);
     if (component && component.part_id) {
@@ -369,6 +417,7 @@ export function useAddMode(
             }
           }
         }
+        syncBetweenButtonHighlight();
       }
     });
   }
@@ -401,14 +450,14 @@ export function useAddMode(
 
   function getPartPreviewHtml(type: TypeData, part: PartData): string {
     const tempComponent = createTempComponentFromType(type, part);
-    return renderComponentToHtml(tempComponent, '');
+    return renderComponentPreviewHtml(tempComponent, '');
   }
 
   function getClickedComponentPreviewHtml(): string {
     if (!clickedComponent.value) {
       return '';
     }
-    return renderComponentToHtml(clickedComponent.value, '');
+    return renderComponentPreviewHtml(clickedComponent.value, '');
   }
 
   function createTempComponentFromType(type: TypeData, part: PartData): ComponentData {
@@ -423,7 +472,7 @@ export function useAddMode(
     if (addTypeTab.value === 'selected') {
       addTypeTab.value = 'all';
     }
-    confirmAddPart(addInsertBefore.value ? 'before' : 'after');
+    confirmAddPart(insertBeforeActive.value ? 'before' : 'after');
   }
 
   function duplicateSelectedPart() {
@@ -436,7 +485,7 @@ export function useAddMode(
     ) {
       return;
     }
-    confirmAddPart(addInsertBefore.value ? 'before' : 'after');
+    confirmAddPart(insertBeforeActive.value ? 'before' : 'after');
   }
 
   function createComponentFromTypeRecursive(
@@ -696,21 +745,19 @@ export function useAddMode(
       }
     }
 
-    const stayOpen = !closePanelAfterAdd.value;
-
-    if (!stayOpen) {
-      cancelAdd({ scrollBack: false });
-      if (newComponentPath) {
-        nextTick(() => {
-          if (!previewArea.value) return;
-          const newElement = previewArea.value.querySelector(
-            `[data-zcode-path="${newComponentPath}"]`
-          ) as HTMLElement | null;
-          if (newElement && unref(scrollIntoViewOnPartEdit)) {
-            scrollToElement(newElement);
-          }
-        });
+    if (editAfterAdd.value && newComponentPath) {
+      const addedComponent = getComponentByPath(newComponentPath, cmsData);
+      if (!addedComponent) {
+        return;
       }
+
+      cancelAdd({ scrollBack: false });
+      nextTick(() => {
+        actions.switchMode?.('edit');
+        nextTick(() => {
+          actions.handleEditClick?.(newComponentPath, addedComponent);
+        });
+      });
       return;
     }
 
@@ -719,6 +766,7 @@ export function useAddMode(
 
     if (newComponentPath) {
       addTargetPath.value = newComponentPath;
+      insertBeforeActive.value = false;
       const nc = getComponentByPath(newComponentPath, cmsData);
       if (nc) {
         clickedComponent.value = nc;
@@ -762,6 +810,7 @@ export function useAddMode(
         if (unref(scrollIntoViewOnPartEdit)) {
           scrollToElement(newElements[0]);
         }
+        syncBetweenButtonHighlight();
         return;
       }
 
@@ -774,6 +823,7 @@ export function useAddMode(
           setActiveOutline(slotEl, 'add');
         }
       }
+      syncBetweenButtonHighlight();
     });
   }
 
@@ -805,6 +855,8 @@ export function useAddMode(
     clickedComponent.value = null;
     addPartCategory.value = 'common';
     addTypeTab.value = 'all';
+    insertBeforeActive.value = false;
+    syncBetweenButtonHighlight();
   }
 
   const hasSpecialParts = computed(() => cmsData.parts.special.length > 0);
@@ -817,7 +869,9 @@ export function useAddMode(
     addPartCategory,
     addTypeTab,
     addInsertBefore,
-    closePanelAfterAdd,
+    insertBeforeActive,
+    setAddInsertBeforeUserOption,
+    editAfterAdd,
     availablePartTypes,
     groupedPartsByType,
     hasSpecialParts,

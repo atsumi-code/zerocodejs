@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   isPreviewPartOrSlotClick,
   isPreviewPartOrSlotClickInEvent,
-  isSelectionClearExcludedClick,
   isSelectionClearExcludedInComposedPath,
   shouldClearSelectionOnClick
 } from './useClickHandlers';
@@ -36,13 +35,33 @@ describe('isPreviewPartOrSlotClick', () => {
     expect(isPreviewPartOrSlotClick(gap, root)).toBe(false);
   });
 
-  it('ツールバークリックは選択解除対象外', () => {
-    const toolbar = document.createElement('div');
-    toolbar.className = 'zcode-toolbar';
+  it('空スロット追加ボタン上は true', () => {
+    const root = document.createElement('div');
     const button = document.createElement('button');
-    toolbar.appendChild(button);
+    button.setAttribute('data-zcode-add-slot', '');
+    root.appendChild(button);
 
-    expect(isSelectionClearExcludedClick(button)).toBe(true);
+    expect(isPreviewPartOrSlotClick(button, root)).toBe(true);
+  });
+
+  it('パーツ間追加ボタン上は true', () => {
+    const root = document.createElement('div');
+    const button = document.createElement('button');
+    button.setAttribute('data-zcode-add-after', '');
+    button.setAttribute('data-zcode-path', 'page.0');
+    root.appendChild(button);
+
+    expect(isPreviewPartOrSlotClick(button, root)).toBe(true);
+  });
+
+  it('前に追加ボタン上は true', () => {
+    const root = document.createElement('div');
+    const button = document.createElement('button');
+    button.setAttribute('data-zcode-add-before', '');
+    button.setAttribute('data-zcode-path', 'page.0');
+    root.appendChild(button);
+
+    expect(isPreviewPartOrSlotClick(button, root)).toBe(true);
   });
 });
 

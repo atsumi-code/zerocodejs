@@ -78,6 +78,7 @@
       :endpoints="props.endpoints"
       :backend-data="props.backendData"
       :skip-teleport-target-provide="true"
+      hide-toolbar
     />
 
     <PartsManagerPanel
@@ -244,6 +245,7 @@ type ZeroCodeCMSApi = {
   cmsData: ZeroCodeData;
   currentMode: Ref<EditorMode>;
   switchMode: (mode: EditorMode) => void;
+  addTargetPath: Ref<string | null>;
   allowDynamicContentInteraction: Ref<boolean>;
   settingsPanelOpen: Ref<boolean>;
   setData: (pathOrData: string | Record<string, unknown>, value?: unknown) => unknown;
@@ -267,18 +269,22 @@ function unwrapRefValue(maybeRef: unknown): unknown {
   return (maybeRef as Record<string, unknown>).value;
 }
 
-function readBooleanValue(maybeRef: unknown): boolean | undefined {
+function readExposedRef<T>(maybeRef: unknown): T | undefined {
   const unwrapped = unwrapRefValue(maybeRef);
-  if (typeof unwrapped === 'boolean') return unwrapped;
-  if (typeof maybeRef === 'boolean') return maybeRef;
-  return undefined;
+  if (unwrapped !== undefined) {
+    return unwrapped as T;
+  }
+  return maybeRef as T;
+}
+
+function readBooleanValue(maybeRef: unknown): boolean | undefined {
+  const value = readExposedRef<boolean>(maybeRef);
+  return typeof value === 'boolean' ? value : undefined;
 }
 
 function readStringValue(maybeRef: unknown): string | undefined {
-  const unwrapped = unwrapRefValue(maybeRef);
-  if (typeof unwrapped === 'string') return unwrapped;
-  if (typeof maybeRef === 'string') return maybeRef;
-  return undefined;
+  const value = readExposedRef<string>(maybeRef);
+  return typeof value === 'string' ? value : undefined;
 }
 
 function setBooleanValue(maybeRef: unknown, value: boolean): boolean {

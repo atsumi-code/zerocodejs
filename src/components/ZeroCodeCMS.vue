@@ -2,10 +2,24 @@
   <div
     ref="containerRef"
     class="zcode-cms-container"
-    :class="{ 'zcode-dev-padding': devRightPadding && isPanelVisible }"
+    :class="{
+      'zcode-dev-padding': devRightPadding && isPanelVisible,
+      'zcode-editor-mode-add': currentMode === 'add' && viewMode === 'manage',
+      'zcode-show-add-between-buttons': showAddBetweenButtons
+    }"
   >
-    <!-- ツールバー（固定） -->
     <Toolbar
+      v-if="viewMode === 'manage' && !hideToolbar"
+      :current-mode="currentMode"
+      :view-mode="viewMode"
+      :allow-dynamic-content-interaction="allowDynamicContentInteraction"
+      @switch-mode="switchMode"
+      @switch-view-mode="(mode) => (viewMode = mode)"
+      @open-settings="settingsPanelOpen = true"
+    />
+
+    <Toolbar
+      v-else-if="viewMode !== 'manage'"
       :current-mode="currentMode"
       :view-mode="viewMode"
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
@@ -105,15 +119,17 @@
         :get-part-preview-html="getPartPreviewHtml"
         :get-clicked-component-preview-html="getClickedComponentPreviewHtml"
         :add-insert-before="addInsertBefore"
-        :close-panel-after-add="closePanelAfterAdd"
+        :edit-after-add="editAfterAdd"
+        :show-add-between-buttons="showAddBetweenButtons"
         @cancel="cancelAdd"
         @select-parent="selectParentElement"
         @category-tab-click="handleCategoryTabClick"
         @type-tab-click="handleTypeTabClick"
         @select-part="selectPart"
         @duplicate-selected="duplicateSelectedPart"
-        @update:add-insert-before="addInsertBefore = $event"
-        @update:close-panel-after-add="closePanelAfterAdd = $event"
+        @update:add-insert-before="setAddInsertBeforeUserOption"
+        @update:edit-after-add="editAfterAdd = $event"
+        @update:show-add-between-buttons="showAddBetweenButtons = $event"
       />
     </template>
 
@@ -209,7 +225,7 @@ import { useZeroCodeData } from '../core/composables/useZeroCodeData';
 import { useZeroCodeRenderer } from '../core/composables/useZeroCodeRenderer';
 import { useEditorMode } from '../features/editor/composables/useEditorMode';
 import { useEditMode } from '../features/editor/composables/useEditMode';
-import { useAddMode } from '../features/add/composables/useAddMode';
+import { useAddMode, type AddModeActions } from '../features/add/composables/useAddMode';
 import { useDeleteMode } from '../features/delete/composables/useDeleteMode';
 import { useReorderMode } from '../features/reorder/composables/useReorderMode';
 import { useParentSelector } from '../features/parent-selector/composables/useParentSelector';
@@ -249,7 +265,11 @@ const props = defineProps<{
    * true のとき Teleport 用の provide / マウント点を出さない（ZeroCodeEditor / Studio が上位で提供する場合）
    */
   skipTeleportTargetProvide?: boolean;
+  /** true のとき内蔵ツールバーを出さない（ZeroCodeEditor / Studio が外側で表示する場合） */
+  hideToolbar?: boolean;
 }>();
+
+const hideToolbar = computed(() => props.hideToolbar === true);
 
 const skipTeleportTargetProvide = computed(() => props.skipTeleportTargetProvide === true);
 
@@ -315,13 +335,16 @@ const scrollIntoViewOnPartEdit = ref(
 const showPartDiscoveryOutlines = ref(
   getInitialCMSValue('showPartDiscoveryOutlines', true, config.cms?.showPartDiscoveryOutlines)
 );
+const showAddBetweenButtons = ref(
+  getInitialCMSValue('showAddBetweenButtons', true, config.cms?.showAddBetweenButtons)
+);
 const devRightPaddingValue = computed(() => devRightPadding.value);
 
 // 保存確認ダイアログの状態
 const showSaveConfirmDialog = ref(false);
 
 const { cmsData, loadDataFromProps, getData: getDataBase, setData } = useZeroCodeData(props);
-const { fullPageHtml, renderComponentToHtml } = useZeroCodeRenderer(cmsData, true);
+const { fullPageHtml, renderComponentPreviewHtml } = useZeroCodeRenderer(cmsData, true);
 
 function getData(path?: string) {
   if (path === 'css') {
@@ -391,6 +414,8 @@ watch(viewMode, (newMode, oldMode) => {
   });
 });
 
+const addModeActions: AddModeActions = {};
+
 const {
   editingComponent,
   editingComponentPath,
@@ -399,6 +424,8 @@ const {
   saveFieldEdit,
   closeEditPanel
 } = useEditMode(cmsData, previewArea, scrollIntoViewOnPartEdit);
+
+addModeActions.handleEditClick = handleEditClick;
 
 const fieldErrors = ref<Record<string, string>>({});
 
@@ -433,7 +460,9 @@ const {
   addPartCategory,
   addTypeTab,
   addInsertBefore,
-  closePanelAfterAdd,
+  insertBeforeActive,
+  setAddInsertBeforeUserOption,
+  editAfterAdd,
   availablePartTypes,
   groupedPartsByType,
   hasSpecialParts,
@@ -445,7 +474,14 @@ const {
   getPartPreviewHtml,
   getClickedComponentPreviewHtml,
   cancelAdd
-} = useAddMode(cmsData, previewArea, renderComponentToHtml, config, scrollIntoViewOnPartEdit);
+} = useAddMode(
+  cmsData,
+  previewArea,
+  renderComponentPreviewHtml,
+  config,
+  scrollIntoViewOnPartEdit,
+  addModeActions
+);
 
 const { reorderSourcePath, handleReorderClick, canReorderWith, cancelReorder } = useReorderMode(
   cmsData,
@@ -473,6 +509,8 @@ const { switchMode } = useModeSwitcher(
   cancelDelete,
   cancelAdd
 );
+
+addModeActions.switchMode = switchMode;
 
 function handleEmptyStateAddClick(path: string) {
   if (currentMode.value !== 'add') {
@@ -584,6 +622,7 @@ const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   currentMode,
   editingComponentPath,
   addTargetPath,
+  insertBeforeActive,
   reorderSourcePath,
   deleteConfirmPath,
   handleEditClick,
@@ -907,6 +946,10 @@ watch(showPartDiscoveryOutlines, (newValue) => {
   });
 });
 
+watch(showAddBetweenButtons, (newValue) => {
+  saveCMSSettings({ showAddBetweenButtons: newValue });
+});
+
 // 保存ボタンクリック時の処理
 function handleSave() {
   // 設定を確認
@@ -949,6 +992,8 @@ defineExpose({
   cmsData,
   currentMode,
   switchMode,
+  addTargetPath,
+  showAddBetweenButtons,
   allowDynamicContentInteraction,
   devRightPadding,
   devRightPaddingValue,

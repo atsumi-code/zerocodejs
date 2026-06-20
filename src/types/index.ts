@@ -64,6 +64,8 @@ export interface CMSSettings {
   scrollIntoViewOnPartEdit?: boolean;
   /** 未選択時に全パーツへ薄い点線を表示（オフでホバー時のみ） */
   showPartDiscoveryOutlines?: boolean;
+  /** 追加モードでプレビュー上の挿入位置ボタン（前に追加/後に追加）を表示する */
+  showAddBetweenButtons?: boolean;
 }
 
 export interface DevSettings {
