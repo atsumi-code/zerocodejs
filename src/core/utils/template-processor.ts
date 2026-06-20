@@ -96,7 +96,7 @@ function processZTag(content: DocumentFragment, component: ComponentData, doc: D
   });
 }
 
-function isEmptyForZEmpty(value: unknown): boolean {
+export function isEmptyForZEmpty(value: unknown): boolean {
   if (value === undefined || value === null || value === '') {
     return true;
   }
@@ -115,7 +115,11 @@ function isEmptyForZEmpty(value: unknown): boolean {
   return false;
 }
 
-function processZEmpty(content: DocumentFragment, component: ComponentData): void {
+function processZEmpty(
+  content: DocumentFragment,
+  component: ComponentData,
+  enableEditorAttributes: boolean
+): void {
   content.querySelectorAll('[z-empty]').forEach((el) => {
     const condition = el.getAttribute('z-empty');
     if (condition) {
@@ -125,7 +129,11 @@ function processZEmpty(content: DocumentFragment, component: ComponentData): voi
         const fieldValue = component[fieldName];
 
         if (isEmptyForZEmpty(fieldValue)) {
-          el.remove();
+          if (enableEditorAttributes) {
+            el.removeAttribute('z-empty');
+          } else {
+            el.remove();
+          }
         } else {
           el.removeAttribute('z-empty');
         }
@@ -1008,7 +1016,7 @@ export function processTemplateWithDOM(
 
   processZIf(template.content, component);
   processZTag(template.content, component, doc);
-  processZEmpty(template.content, component);
+  processZEmpty(template.content, component, enableEditorAttributes);
 
   // 4. z-for ループ処理（シンプル版: バックエンドデータのみ）
   const processLoops = () => {

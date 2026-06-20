@@ -342,6 +342,44 @@ describe('processTemplateWithDOM', () => {
       );
       expect(result).not.toContain('z-empty');
     });
+
+    it('should keep element in editor mode when rich text is empty', () => {
+      const template = '<div z-empty="$content">{$content?:デフォルト:rich}</div>';
+      const component: ComponentData = {
+        id: '1',
+        part_id: 'part1',
+        content: '<p></p>'
+      };
+      const result = processTemplateWithDOM(
+        template,
+        component,
+        'page.0',
+        mockFindPart,
+        mockRenderComponentToHtml,
+        true
+      );
+      expect(result).not.toContain('z-empty');
+      expect(result).toMatch(/<div[^>]*>/);
+    });
+
+    it('should remove element in public mode when subtitle is empty', () => {
+      const template = '<div z-empty="$subtitle">サブタイトル: {$subtitle:デフォルト}</div>';
+      const component: ComponentData = {
+        id: '1',
+        part_id: 'part1',
+        subtitle: ''
+      };
+      const result = processTemplateWithDOM(
+        template,
+        component,
+        'page.0',
+        mockFindPart,
+        mockRenderComponentToHtml,
+        true
+      );
+      expect(result).toContain('サブタイトル');
+      expect(result).not.toContain('z-empty');
+    });
   });
 
   describe('z-tag attribute', () => {
