@@ -6,6 +6,7 @@ import {
   loadCMSSettings,
   saveCMSSettings,
   getCMSSetting,
+  replaceCMSSettings,
   loadDevSettings,
   saveDevSettings,
   getDevSetting,
@@ -163,6 +164,21 @@ describe('storage', () => {
       );
       const value = getCMSSetting('allowDynamicContentInteraction', false);
       expect(value).toBe(true);
+    });
+
+    it('should replace CMS settings without merging removed keys', () => {
+      localStorageMock.setItem(
+        'zcode-user-settings',
+        JSON.stringify({
+          cms: { devRightPadding: true, showAddBetweenButtons: false },
+          locale: 'ja'
+        })
+      );
+      replaceCMSSettings({ showAddBetweenButtons: false });
+      const stored = JSON.parse(localStorageMock.getItem('zcode-user-settings')!);
+      expect(stored.cms.devRightPadding).toBeUndefined();
+      expect(stored.cms.showAddBetweenButtons).toBe(false);
+      expect(stored.locale).toBe('ja');
     });
   });
 

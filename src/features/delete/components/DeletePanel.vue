@@ -42,6 +42,9 @@
               />
               <span>{{ $t('deletePanel.continueDeleteAfter') }}</span>
             </label>
+            <button type="button" class="zcode-panel-options-reset" @click="$emit('reset-options')">
+              {{ $t('deletePanel.resetOptions') }}
+            </button>
           </div>
         </div>
         <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
@@ -97,6 +100,7 @@ defineEmits<{
   cancel: [];
   'select-parent': [];
   'update:continue-delete-after': [value: boolean];
+  'reset-options': [];
 }>();
 
 const deleteOptionsAnchorRef = ref<HTMLElement | null>(null);

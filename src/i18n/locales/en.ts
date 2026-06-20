@@ -54,7 +54,10 @@ export default {
       'Displays a dialog to confirm save targets when clicking the save button.',
     previewModeInfo:
       'Dynamic content (accordions, tabs, modals, links, etc.) is always enabled in preview mode.',
-    noSettings: 'No settings available.'
+    noSettings: 'No settings available.',
+    resetToolbarSettings: 'Reset these settings to defaults',
+    resetToolbarSettingsConfirm:
+      'Reset toolbar settings to their defaults. Language and panel options will not change. Continue?'
   },
   emptyState: {
     message: 'Please add a part',
@@ -83,7 +86,8 @@ export default {
     duplicateSelectedHint: 'Click to duplicate and add (see tab row gear icon for options)',
     duplicateSelectedAria: 'Duplicate selected part and add',
     optionsAriaLabel: 'Open add options',
-    optionsPopoverTitle: 'Add options'
+    optionsPopoverTitle: 'Add options',
+    resetOptions: 'Reset this panel’s options to defaults'
   },
   editPanel: {
     title: 'Edit panel',
@@ -101,7 +105,8 @@ export default {
     selectParent: 'Select parent element',
     continueDeleteAfter: 'Select next part after delete',
     optionsAriaLabel: 'Open delete options',
-    optionsPopoverTitle: 'Delete options'
+    optionsPopoverTitle: 'Delete options',
+    resetOptions: 'Reset this panel’s options to defaults'
   },
   reorderPanel: {
     title: 'Reorder panel',
@@ -121,6 +126,7 @@ export default {
       'Parts cannot be dragged here. Click source then destination—or drag a row in the reorder panel.',
     optionsAriaLabel: 'Reorder options',
     optionsPopoverTitle: 'Reorder options',
+    resetOptions: 'Reset this panel’s options to defaults',
     showStructureLabels: 'Show labels on parts'
   },
   saveConfirm: {

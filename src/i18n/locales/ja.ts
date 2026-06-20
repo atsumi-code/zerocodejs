@@ -54,7 +54,10 @@ export default {
       '保存ボタンをクリックした際に、保存対象を確認するダイアログを表示します。',
     previewModeInfo:
       '表示モードでは動的コンテンツ（アコーディオン、タブ、モーダル、リンクなど）は常に有効です。',
-    noSettings: '設定項目はありません。'
+    noSettings: '設定項目はありません。',
+    resetToolbarSettings: 'この設定を初期値に戻す',
+    resetToolbarSettingsConfirm:
+      'ツールバーの設定を初期値に戻します。言語設定と各パネルのオプションは変更されません。よろしいですか？'
   },
   emptyState: {
     message: 'パーツを追加してください',
@@ -83,7 +86,8 @@ export default {
     duplicateSelectedHint: 'クリックして複製で追加（詳細はタブ右の設定アイコン）',
     duplicateSelectedAria: '選択中のパーツを複製して追加',
     optionsAriaLabel: '追加のオプションを開く',
-    optionsPopoverTitle: '追加のオプション'
+    optionsPopoverTitle: '追加のオプション',
+    resetOptions: 'このパネルのオプションを初期値に戻す'
   },
   editPanel: {
     title: '編集パネル',
@@ -101,7 +105,8 @@ export default {
     selectParent: '親要素を選択',
     continueDeleteAfter: '削除後に次のパーツを選ぶ',
     optionsAriaLabel: '削除のオプションを開く',
-    optionsPopoverTitle: '削除のオプション'
+    optionsPopoverTitle: '削除のオプション',
+    resetOptions: 'このパネルのオプションを初期値に戻す'
   },
   reorderPanel: {
     title: '並べ替えパネル',
@@ -121,6 +126,7 @@ export default {
       'パーツをドラッグすることはできません。移動元と移動先を順にクリックするか、並べ替えパネルで行をドラッグしてください。',
     optionsAriaLabel: '並べ替えオプション',
     optionsPopoverTitle: '並べ替えオプション',
+    resetOptions: 'このパネルのオプションを初期値に戻す',
     showStructureLabels: 'パーツにラベルを表示する'
   },
   saveConfirm: {

@@ -63,6 +63,9 @@
               />
               <span>{{ $t('addPanel.showInsertMarkers') }}</span>
             </label>
+            <button type="button" class="zcode-panel-options-reset" @click="$emit('reset-options')">
+              {{ $t('addPanel.resetOptions') }}
+            </button>
           </div>
         </div>
         <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
@@ -317,6 +320,7 @@ defineEmits<{
   'update:add-insert-before': [value: boolean];
   'update:edit-after-add': [value: boolean];
   'update:show-add-between-buttons': [value: boolean];
+  'reset-options': [];
 }>();
 
 const showPreviewModal = ref(false);

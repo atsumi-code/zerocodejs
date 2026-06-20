@@ -196,6 +196,15 @@
           </div>
         </div>
       </div>
+
+      <div
+        v-if="viewMode === 'manage' && (props.mode === 'toolbar' || props.mode === undefined)"
+        class="zcode-settings-panel-footer"
+      >
+        <button type="button" class="zcode-settings-reset-btn" @click="handleResetToolbarSettings">
+          {{ $t('settings.resetToolbarSettings') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -221,7 +230,7 @@ const props = defineProps<{
   showSaveConfirm?: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   close: [];
   'toggle-dynamic-content': [enabled: boolean];
   'toggle-dev-padding': [enabled: boolean];
@@ -229,9 +238,10 @@ defineEmits<{
   'toggle-part-discovery-outlines': [enabled: boolean];
   'toggle-scroll-on-part-edit': [enabled: boolean];
   'toggle-save-confirm': [enabled: boolean];
+  'reset-toolbar-settings': [];
 }>();
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
 const currentLocale = computed(() => {
   return (locale.value as SupportedLocale) || 'ja';
@@ -264,4 +274,11 @@ const showPartDiscoveryOutlinesValue = computed(() => {
 const scrollIntoViewOnPartEditValue = computed(() => {
   return props.scrollIntoViewOnPartEdit !== undefined ? props.scrollIntoViewOnPartEdit : true;
 });
+
+function handleResetToolbarSettings() {
+  if (!confirm(t('settings.resetToolbarSettingsConfirm'))) {
+    return;
+  }
+  emit('reset-toolbar-settings');
+}
 </script>

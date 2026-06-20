@@ -38,6 +38,9 @@
               />
               <span>{{ $t('reorderPanel.showStructureLabels') }}</span>
             </label>
+            <button type="button" class="zcode-panel-options-reset" @click="emit('reset-options')">
+              {{ $t('reorderPanel.resetOptions') }}
+            </button>
           </div>
         </div>
         <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
@@ -128,6 +131,7 @@ const emit = defineEmits<{
   'reorder-click': [path: string];
   'drag-state-change': [dragging: boolean];
   'update:show-structure-labels': [value: boolean];
+  'reset-options': [];
 }>();
 
 const structureRootRef = ref<HTMLElement | null>(null);

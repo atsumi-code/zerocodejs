@@ -53,6 +53,20 @@ export function saveCMSSettings(cmsSettings: Partial<CMSSettings>): void {
   });
 }
 
+export function replaceCMSSettings(cmsSettings: CMSSettings): void {
+  try {
+    const current = loadUserSettings();
+    const merged: UserSettings = {
+      locale: current.locale,
+      cms: cmsSettings,
+      dev: current.dev
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  } catch (e) {
+    logger.warn('Failed to replace CMS settings:', e);
+  }
+}
+
 export function getCMSSetting<K extends keyof CMSSettings>(
   key: K,
   defaultValue: NonNullable<CMSSettings[K]>

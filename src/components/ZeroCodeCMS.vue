@@ -94,6 +94,7 @@
         @cancel="cancelDelete"
         @select-parent="selectParentElement"
         @update:continue-delete-after="continueDeleteAfter = $event"
+        @reset-options="resetDeletePanelOptions"
       />
 
       <!-- 並べ替えパネル -->
@@ -114,6 +115,7 @@
         @reorder-click="onStructureListReorderClick"
         @drag-state-change="reorderListDragging = $event"
         @update:show-structure-labels="showReorderStructureLabels = $event"
+        @reset-options="resetReorderPanelOptions"
       />
 
       <!-- パーツ選択パネル -->
@@ -143,6 +145,7 @@
         @update:add-insert-before="setAddInsertBeforeUserOption"
         @update:edit-after-add="editAfterAdd = $event"
         @update:show-add-between-buttons="showAddBetweenButtons = $event"
+        @reset-options="resetAddPanelOptions"
       />
     </template>
 
@@ -164,6 +167,7 @@
       @toggle-part-discovery-outlines="showPartDiscoveryOutlines = $event"
       @toggle-scroll-on-part-edit="scrollIntoViewOnPartEdit = $event"
       @toggle-save-confirm="showSaveConfirm = $event"
+      @reset-toolbar-settings="resetToolbarSettings"
     />
 
     <!-- コンテキストメニュー -->
@@ -254,7 +258,14 @@ import {
 import { getComponentByPath } from '../core/utils/path-utils';
 import { useContextMenu } from '../features/editor/composables/useContextMenu';
 import { validateData as validateDataUtil } from '../core/utils/validation';
-import { saveCMSSettings, loadCMSSettings } from '../core/utils/storage';
+import { saveCMSSettings } from '../core/utils/storage';
+import {
+  resolveCmsSettingDefault,
+  resolveCmsSettingsDefaultsAfterClear,
+  TOOLBAR_CMS_SETTING_KEYS,
+  ADD_PANEL_CMS_SETTING_KEYS,
+  REORDER_PANEL_CMS_SETTING_KEYS
+} from '../core/utils/cms-settings-reset';
 import { logger } from '../core/utils/logger';
 import { useI18n } from 'vue-i18n';
 import type { CMSConfig, CMSSettings } from '../types';
@@ -319,47 +330,18 @@ const saveTargets = ['page', 'images-special'];
 const hideFixedSaveButton = computed(() => props.hideFixedSaveButton === true);
 const saveRequestSource = computed(() => props.saveRequestSource ?? 'cms');
 
-// 初期値の読み込みロジック（優先順位: localStorage > config.cms > デフォルト値）
-const getInitialCMSValue = <K extends keyof CMSSettings>(
-  key: K,
-  defaultValue: NonNullable<CMSSettings[K]>,
-  configValue?: boolean
-): NonNullable<CMSSettings[K]> => {
-  const stored = loadCMSSettings();
-  // localStorageに値があればそれを使用（ユーザーが変更した値）
-  if (stored[key] !== undefined) {
-    return stored[key] as NonNullable<CMSSettings[K]>;
-  }
-  // localStorageに値がなければ、config.cmsの値を使用（初期設定）
-  if (configValue !== undefined) {
-    return configValue as NonNullable<CMSSettings[K]>;
-  }
-  // それもなければデフォルト値
-  return defaultValue;
-};
+// 初期値の読み込み（優先順位: localStorage > config.cms > コードデフォルト）
+const getInitialCMSValue = <K extends keyof CMSSettings>(key: K): NonNullable<CMSSettings[K]> =>
+  resolveCmsSettingDefault(key, config);
 
 // 設定の初期化（デフォルト ON: showSaveConfirm, scrollIntoViewOnPartEdit, showPartDiscoveryOutlines）
-const devRightPadding = ref(
-  getInitialCMSValue('devRightPadding', false, config.cms?.devRightPadding)
-);
-const enableContextMenu = ref(
-  getInitialCMSValue('enableContextMenu', false, config.cms?.enableContextMenu)
-);
-const showSaveConfirm = ref(
-  getInitialCMSValue('showSaveConfirm', true, config.cms?.showSaveConfirm)
-);
-const scrollIntoViewOnPartEdit = ref(
-  getInitialCMSValue('scrollIntoViewOnPartEdit', true, config.cms?.scrollIntoViewOnPartEdit)
-);
-const showPartDiscoveryOutlines = ref(
-  getInitialCMSValue('showPartDiscoveryOutlines', true, config.cms?.showPartDiscoveryOutlines)
-);
-const showAddBetweenButtons = ref(
-  getInitialCMSValue('showAddBetweenButtons', true, config.cms?.showAddBetweenButtons)
-);
-const showReorderStructureLabels = ref(
-  getInitialCMSValue('showReorderStructureLabels', true, config.cms?.showReorderStructureLabels)
-);
+const devRightPadding = ref(getInitialCMSValue('devRightPadding'));
+const enableContextMenu = ref(getInitialCMSValue('enableContextMenu'));
+const showSaveConfirm = ref(getInitialCMSValue('showSaveConfirm'));
+const scrollIntoViewOnPartEdit = ref(getInitialCMSValue('scrollIntoViewOnPartEdit'));
+const showPartDiscoveryOutlines = ref(getInitialCMSValue('showPartDiscoveryOutlines'));
+const showAddBetweenButtons = ref(getInitialCMSValue('showAddBetweenButtons'));
+const showReorderStructureLabels = ref(getInitialCMSValue('showReorderStructureLabels'));
 const devRightPaddingValue = computed(() => devRightPadding.value);
 
 // 保存確認ダイアログの状態
@@ -401,11 +383,7 @@ const {
 } = useEditorMode();
 
 // localStorageからallowDynamicContentInteractionを読み込み（デフォルトはfalse）
-const savedAllowDynamicContentInteraction = getInitialCMSValue(
-  'allowDynamicContentInteraction',
-  false,
-  config.cms?.allowDynamicContentInteraction
-);
+const savedAllowDynamicContentInteraction = getInitialCMSValue('allowDynamicContentInteraction');
 const allowDynamicContentInteraction = ref(savedAllowDynamicContentInteraction);
 allowDynamicContentInteractionBase.value = savedAllowDynamicContentInteraction;
 
@@ -1083,6 +1061,32 @@ watch(showReorderStructureLabels, (newValue) => {
     syncStructureLabels();
   });
 });
+
+function resetToolbarSettings() {
+  const defaults = resolveCmsSettingsDefaultsAfterClear(TOOLBAR_CMS_SETTING_KEYS, config);
+  devRightPadding.value = defaults.devRightPadding!;
+  enableContextMenu.value = defaults.enableContextMenu!;
+  showPartDiscoveryOutlines.value = defaults.showPartDiscoveryOutlines!;
+  scrollIntoViewOnPartEdit.value = defaults.scrollIntoViewOnPartEdit!;
+  allowDynamicContentInteraction.value = defaults.allowDynamicContentInteraction!;
+  savedAllowDynamicContentInteractionForPreview = defaults.allowDynamicContentInteraction!;
+}
+
+function resetAddPanelOptions() {
+  setAddInsertBeforeUserOption(false);
+  editAfterAdd.value = false;
+  const defaults = resolveCmsSettingsDefaultsAfterClear(ADD_PANEL_CMS_SETTING_KEYS, config);
+  showAddBetweenButtons.value = defaults.showAddBetweenButtons!;
+}
+
+function resetReorderPanelOptions() {
+  const defaults = resolveCmsSettingsDefaultsAfterClear(REORDER_PANEL_CMS_SETTING_KEYS, config);
+  showReorderStructureLabels.value = defaults.showReorderStructureLabels!;
+}
+
+function resetDeletePanelOptions() {
+  continueDeleteAfter.value = false;
+}
 
 // 保存ボタンクリック時の処理
 function handleSave() {
