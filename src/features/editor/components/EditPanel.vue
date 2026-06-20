@@ -268,6 +268,7 @@ import RichTextEditor from './RichTextEditor.vue';
 import ImageSelectModal from './ImageSelectModal.vue';
 import { X, ChevronUp, Image } from 'lucide-vue-next';
 import type { FieldChoiceOption } from '../../../core/utils/template-regex';
+import { isEmptyForZEmpty } from '../../../core/utils/template-processor';
 
 const props = defineProps<{
   editingComponent: ComponentData | null;
@@ -386,8 +387,7 @@ function validateField(field: any) {
   const label = field.label || field.fieldName;
 
   const raw = field.currentValue;
-  const value =
-    field.type === 'rich' && typeof raw === 'string' && raw.trim() === '<p></p>' ? '' : (raw ?? '');
+  const value = field.type === 'rich' && isEmptyForZEmpty(raw) ? '' : (raw ?? '');
 
   if (field.required) {
     if (value === '' || value === undefined || value === null) {
@@ -458,8 +458,7 @@ const handleTextInput = (field: any, event: Event) => {
 };
 
 const handleRichTextUpdate = (field: any, value: string) => {
-  // オプショナルフィールドで空文字列の場合はundefinedに変換
-  if (field.optional && value === '') {
+  if (field.optional && isEmptyForZEmpty(value)) {
     field.currentValue = undefined;
   } else {
     field.currentValue = value;

@@ -11,6 +11,7 @@ import {
   findElementsByZcodePath
 } from './useOutlineManager';
 import { scrollToElement } from '../../../core/utils/dom-utils';
+import { isEmptyForZEmpty } from '../../../core/utils/template-processor';
 
 export function useEditMode(
   cmsData: ZeroCodeData,
@@ -79,7 +80,13 @@ export function useEditMode(
     if (editingComponent.value && editingComponentPath.value) {
       const component = getComponentByPath(editingComponentPath.value, cmsData);
       if (component) {
-        if (field.optional && (field.currentValue === '' || field.currentValue === null)) {
+        const isEmptyOptional =
+          field.optional &&
+          (field.currentValue === '' ||
+            field.currentValue === null ||
+            (field.type === 'rich' && isEmptyForZEmpty(field.currentValue)));
+
+        if (isEmptyOptional) {
           component[field.fieldName] = undefined;
         } else {
           component[field.fieldName] = field.currentValue;

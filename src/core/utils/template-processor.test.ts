@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { processTemplateWithDOM } from './template-processor';
+import { processTemplateWithDOM, isEmptyForZEmpty } from './template-processor';
 import type { ComponentData, PartData } from '../../types';
 import { sampleImageData, sampleBackendData } from '../../__tests__/fixtures/sample-data';
 
@@ -600,5 +600,18 @@ describe('processTemplateWithDOM', () => {
       );
       expect(result).toContain('通常のHTML');
     });
+  });
+});
+
+describe('isEmptyForZEmpty', () => {
+  it('treats empty rich text html as empty', () => {
+    expect(isEmptyForZEmpty('<p></p>')).toBe(true);
+    expect(isEmptyForZEmpty('<p> </p>')).toBe(true);
+    expect(isEmptyForZEmpty('<p><br></p>')).toBe(true);
+    expect(isEmptyForZEmpty('<p><br/></p>')).toBe(true);
+  });
+
+  it('treats non-empty rich text as not empty', () => {
+    expect(isEmptyForZEmpty('<p>hello</p>')).toBe(false);
   });
 });
