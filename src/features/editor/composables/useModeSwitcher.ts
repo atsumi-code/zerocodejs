@@ -1,7 +1,11 @@
-import { type Ref } from 'vue';
+import { nextTick, type Ref } from 'vue';
 import type { EditorMode } from './useEditorMode';
 import { removeActiveOutline, removeHoverOutline } from './useOutlineManager';
-import type { ComponentData } from '../../../types';
+import { getSelectedPathForMode } from './mode-selection-handoff';
+
+export interface ModeSelectionHandoffHandlers {
+  applyForMode: (mode: EditorMode, path: string) => void;
+}
 
 export function useModeSwitcher(
   previewArea: Ref<HTMLElement | null>,
@@ -11,40 +15,69 @@ export function useModeSwitcher(
   addTargetPath: Ref<string | null>,
   reorderSourcePath: Ref<string>,
   deleteConfirmPath: Ref<string>,
-  editingComponent: Ref<ComponentData | null>,
+  closeEditPanel: () => void,
   cancelDelete: () => void,
-  cancelAdd: (options?: { scrollBack?: boolean }) => void
+  cancelAdd: (options?: { scrollBack?: boolean }) => void,
+  cancelReorder: (options?: { restoreScroll?: boolean }) => void,
+  handoffHandlers: ModeSelectionHandoffHandlers
 ) {
-  // モード切り替え（拡張版）
-  function switchMode(mode: EditorMode) {
-    // すべてのアクティブアウトラインを削除
-    if (previewArea.value) {
-      const allElements = previewArea.value.querySelectorAll(
-        '[data-zcode-path], [data-zcode-slot-path]'
-      );
-      allElements.forEach((element) => {
+  function clearAllActiveOutlines() {
+    if (!previewArea.value) {
+      return;
+    }
+
+    previewArea.value
+      .querySelectorAll('[data-zcode-path], [data-zcode-slot-path]')
+      .forEach((element) => {
         removeActiveOutline(element as HTMLElement);
         removeHoverOutline(element as HTMLElement);
       });
+  }
+
+  function clearPreviousModeState(fromMode: EditorMode, toMode: EditorMode) {
+    if (fromMode === 'edit' && editingComponentPath.value) {
+      closeEditPanel();
+      return;
     }
 
-    // add 以外へ切り替えるときは追加パネルを閉じる（空ページからの追加など currentMode が add でない場合も含む）
-    if (mode !== 'add' && addTargetPath.value) {
+    if (fromMode === 'add' && toMode !== 'add' && addTargetPath.value) {
       cancelAdd({ scrollBack: false });
+      return;
     }
 
-    // 前のモードの状態をクリーンアップ
-    if (currentMode.value === 'edit' && editingComponentPath.value) {
-      editingComponent.value = null;
-      editingComponentPath.value = '';
-    } else if (currentMode.value === 'reorder' && reorderSourcePath.value) {
-      reorderSourcePath.value = '';
-    } else if (currentMode.value === 'delete' && deleteConfirmPath.value) {
+    if (fromMode === 'reorder' && reorderSourcePath.value) {
+      cancelReorder({ restoreScroll: false });
+      return;
+    }
+
+    if (fromMode === 'delete' && deleteConfirmPath.value) {
       cancelDelete();
     }
+  }
 
-    // ベースのswitchModeを呼び出す
+  function switchMode(mode: EditorMode) {
+    if (mode === currentMode.value) {
+      return;
+    }
+
+    const handoffPath = getSelectedPathForMode(currentMode.value, {
+      edit: editingComponentPath.value,
+      add: addTargetPath.value,
+      reorder: reorderSourcePath.value,
+      delete: deleteConfirmPath.value
+    });
+
+    clearAllActiveOutlines();
+    clearPreviousModeState(currentMode.value, mode);
     switchModeBase(mode);
+
+    if (!handoffPath) {
+      return;
+    }
+
+    nextTick(() => {
+      handoffHandlers.applyForMode(mode, handoffPath);
+    });
   }
 
   return {

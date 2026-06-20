@@ -233,6 +233,11 @@ import { useClickHandlers } from '../features/editor/composables/useClickHandler
 import { useDiscoveryOutlines } from '../features/editor/composables/useDiscoveryOutlines';
 import { useReorderTargetOutlines } from '../features/editor/composables/useReorderTargetOutlines';
 import { useModeSwitcher } from '../features/editor/composables/useModeSwitcher';
+import {
+  canHandoffPathToAddMode,
+  resolveComponentPathForMode
+} from '../features/editor/composables/mode-selection-handoff';
+import { getComponentByPath } from '../core/utils/path-utils';
 import { useContextMenu } from '../features/editor/composables/useContextMenu';
 import { validateData as validateDataUtil } from '../core/utils/validation';
 import { saveCMSSettings, loadCMSSettings } from '../core/utils/storage';
@@ -505,9 +510,52 @@ const { switchMode } = useModeSwitcher(
   addTargetPath,
   reorderSourcePath,
   deleteConfirmPath,
-  editingComponent,
+  closeEditPanel,
   cancelDelete,
-  cancelAdd
+  cancelAdd,
+  cancelReorder,
+  {
+    applyForMode(mode, path) {
+      switch (mode) {
+        case 'edit': {
+          const resolved = resolveComponentPathForMode(path, cmsData);
+          if (!resolved) {
+            return;
+          }
+          const component = getComponentByPath(resolved, cmsData);
+          if (component) {
+            handleEditClick(resolved, component);
+          }
+          break;
+        }
+        case 'add': {
+          if (!canHandoffPathToAddMode(path, cmsData)) {
+            return;
+          }
+          handleAddClick(path);
+          break;
+        }
+        case 'reorder': {
+          const resolved = resolveComponentPathForMode(path, cmsData);
+          if (resolved) {
+            handleReorderClick(resolved);
+          }
+          break;
+        }
+        case 'delete': {
+          const resolved = resolveComponentPathForMode(path, cmsData);
+          if (!resolved) {
+            return;
+          }
+          const component = getComponentByPath(resolved, cmsData);
+          if (component) {
+            handleDeleteClick(resolved, component);
+          }
+          break;
+        }
+      }
+    }
+  }
 );
 
 addModeActions.switchMode = switchMode;
