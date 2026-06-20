@@ -3,7 +3,9 @@ import {
   isPreviewPartOrSlotClick,
   isPreviewPartOrSlotClickInEvent,
   isSelectionClearExcludedInComposedPath,
-  shouldClearSelectionOnClick
+  shouldClearSelectionOnClick,
+  isReorderPreviewDragTarget,
+  hasExceededPreviewReorderDragThreshold
 } from './useClickHandlers';
 
 describe('isPreviewPartOrSlotClick', () => {
@@ -139,5 +141,37 @@ describe('shouldClearSelectionOnClick', () => {
 
     preview.remove();
     outside.remove();
+  });
+});
+
+describe('isReorderPreviewDragTarget', () => {
+  it('パーツ本体上は true', () => {
+    const root = document.createElement('div');
+    const part = document.createElement('section');
+    part.setAttribute('data-zcode-id', 'a');
+    part.setAttribute('data-zcode-path', 'page.0');
+    const inner = document.createElement('span');
+    part.appendChild(inner);
+    root.appendChild(part);
+
+    expect(isReorderPreviewDragTarget(inner, root)).toBe(true);
+  });
+
+  it('追加ボタン上は false', () => {
+    const root = document.createElement('div');
+    const button = document.createElement('button');
+    button.className = 'zcode-add-between-btn';
+    button.setAttribute('data-zcode-add-before', '');
+    button.setAttribute('data-zcode-path', 'page.0');
+    root.appendChild(button);
+
+    expect(isReorderPreviewDragTarget(button, root)).toBe(false);
+  });
+});
+
+describe('hasExceededPreviewReorderDragThreshold', () => {
+  it('閾値以上の移動で true', () => {
+    expect(hasExceededPreviewReorderDragThreshold(0, 0, 6, 0)).toBe(true);
+    expect(hasExceededPreviewReorderDragThreshold(0, 0, 2, 2)).toBe(false);
   });
 });

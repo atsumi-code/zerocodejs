@@ -66,6 +66,8 @@ export interface CMSSettings {
   showPartDiscoveryOutlines?: boolean;
   /** 追加モードでプレビュー上の挿入位置ボタン（前に追加/後に追加）を表示する */
   showAddBetweenButtons?: boolean;
+  /** 並べ替えモードで同階層パーツのラベルを表示する */
+  showReorderStructureLabels?: boolean;
 }
 
 export interface DevSettings {

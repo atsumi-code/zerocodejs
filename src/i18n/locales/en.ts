@@ -102,9 +102,21 @@ export default {
   },
   reorderPanel: {
     title: 'Reorder panel',
-    instruction: 'Outlined parts are valid move targets. Click to reorder.',
-    source: 'Source: {path}',
-    selectParent: 'Select parent element'
+    panelHelp:
+      'Drag a row to reorder, or click to scroll to that part. On the page, click source then destination to reorder.',
+    pageGroup: 'Page level',
+    emptyGroup: 'No reorderable parts at this level',
+    slotGroup: 'Slot: {name}',
+    dragHandleAria: 'Reorder {label}',
+    pageClickSourceAria: 'Move source selected: {label}',
+    emptyPage: 'No parts to reorder',
+    reorderFailed: 'Reorder failed. Select elements at the same level.',
+    selectParent: 'Select parent element',
+    previewDragAlert:
+      'Parts cannot be dragged here. Click source then destination—or drag a row in the reorder panel.',
+    optionsAriaLabel: 'Reorder options',
+    optionsPopoverTitle: 'Reorder options',
+    showStructureLabels: 'Show labels on parts'
   },
   saveConfirm: {
     title: 'Save confirmation',

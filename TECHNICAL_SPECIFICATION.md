@@ -386,6 +386,9 @@ interface CMSSettings {
   devRightPadding?: boolean;
   enableContextMenu?: boolean;
   scrollIntoViewOnPartEdit?: boolean;
+  showPartDiscoveryOutlines?: boolean;
+  showAddBetweenButtons?: boolean;
+  showReorderStructureLabels?: boolean;
 }
 
 interface DevSettings {
@@ -516,8 +519,12 @@ watch(enableContextMenu, (newValue) => {
 
 **機能**:
 
-- 移動元を選択
-- 移動先をクリックして並べ替え
+- **並べ替えパネル（構造リスト / ミニマップ）**: パーツクリックまたは他モードからの handoff で表示。SortableJS による行 D&D（`page` 直下・各スロットの `[data-reorder-group]`）
+- **プレビュー click-click**: 移動元 → 移動先の順クリック（`reorderSiblingsByPath` / insert 移動。D&D と同一ロジック）
+- **プレビュー直接 D&D**: 不可（アラート表示）。パネル D&D または click-click を使用
+- **構造ラベル**: `showReorderStructureLabels`（ReorderPanel 内オプション、localStorage 永続化）
+- **移動先ハイライト**: 移動元選択後、有効な移動先に reorder target outline
+- **モード handoff**: 編集・追加・削除から切り替え時、選択パーツを `applyReorderHandoff` で移動元に設定
 - 親要素への移動（「親要素を選択」ボタン）
 
 ## 親要素選択
@@ -1169,6 +1176,7 @@ cms.addEventListener('save-request', async (event) => {
 - **Vue 3**: UIフレームワーク
 - **Monaco Editor**: コードエディター
 - **TipTap**: リッチテキストエディター
+- **SortableJS**: 並べ替えパネル内 D&D
 - **lucide-vue-next**: アイコンライブラリ
 
 ### 開発依存関係

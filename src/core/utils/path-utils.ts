@@ -104,7 +104,7 @@ export function findTypeAndPartByPartId(
   return null;
 }
 
-function getSlotChildren(slotValue: ComponentData[] | SlotConfig): ComponentData[] {
+export function getSlotChildren(slotValue: ComponentData[] | SlotConfig): ComponentData[] {
   if (Array.isArray(slotValue)) return slotValue;
   return (slotValue as SlotConfig).children ?? [];
 }

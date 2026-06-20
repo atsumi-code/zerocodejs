@@ -102,9 +102,21 @@ export default {
   },
   reorderPanel: {
     title: '並べ替えパネル',
-    instruction: '点線のパーツが移動可能です。クリックして並べ替えます',
-    source: '移動元: {path}',
-    selectParent: '親要素を選択'
+    panelHelp:
+      '行をドラッグして並べ替え、クリックで該当パーツへ移動。ページ上では移動元→移動先の順にクリックでも並べ替えできます。',
+    pageGroup: 'ページ直下',
+    emptyGroup: 'この階層に並べ替え可能なパーツがありません',
+    slotGroup: 'スロット: {name}',
+    dragHandleAria: '{label} の並べ替え',
+    pageClickSourceAria: '選択中の移動元: {label}',
+    emptyPage: '並べ替えるパーツがありません',
+    reorderFailed: '並べ替えに失敗しました。同じ階層の要素を選択してください。',
+    selectParent: '親要素を選択',
+    previewDragAlert:
+      'パーツをドラッグすることはできません。移動元と移動先を順にクリックするか、並べ替えパネルで行をドラッグしてください。',
+    optionsAriaLabel: '並べ替えオプション',
+    optionsPopoverTitle: '並べ替えオプション',
+    showStructureLabels: 'パーツにラベルを表示する'
   },
   saveConfirm: {
     title: '保存の確認',

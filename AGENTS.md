@@ -546,8 +546,16 @@ interface ImageData {
     - サニタイズ関数を npm パッケージから export（サーバーとルール共有用）
 
 20. ✅ **Husky + lint-staged（pre-commit）**（2026年3月）
-    - `git commit` 時に staged ファイルへ ESLint --fix / Prettier を実行
-    - `eslint-config-prettier` で ESLint と Prettier の競合を回避
+
+- `git commit` 時に staged ファイルへ ESLint --fix / Prettier を実行
+- `eslint-config-prettier` で ESLint と Prettier の競合を回避
+
+21. ✅ **並べ替え D&D・構造リスト（ZC-5）**（2026年6月）
+
+- ReorderPanel 内 SortableJS D&D（page 直下・スロット内）
+- プレビュー click-click フォールバック（`reorderSiblingsByPath` で D&D と insert 統一）
+- 構造ラベル（`showReorderStructureLabels`）、モード handoff、ミニマップ locate UX
+- `page-reorder.ts` に group 解決・移動 API を集約
 
 ### 保留・スキップ機能
 

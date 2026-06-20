@@ -421,14 +421,14 @@
 /* 編集可能要素のホバー効果 */
 [data-zcode-id] {
   transition: outline 0.2s;
-  cursor: pointer;
+  cursor: default;
   position: relative;
 }
 
 /* スロット要素もアウトライン対象にする（空スロットの視認性向上） */
 [data-zcode-slot-path] {
   transition: outline 0.2s;
-  cursor: pointer;
+  cursor: default;
   position: relative;
 }
 
@@ -1544,21 +1544,254 @@
   background: var(--zcode-color-edit-hover);
 }
 
+.zcode-reorder-panel-header-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.zcode-reorder-panel-options-anchor {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.zcode-reorder-panel-options-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.zcode-reorder-panel-options-trigger:hover,
+.zcode-reorder-panel-options-trigger.is-active {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.zcode-reorder-panel-options-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  min-width: 260px;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.zcode-reorder-panel-options-popover-title {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.zcode-reorder-panel-options-popover .zcode-reorder-option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  color: #374151;
+}
+
 .zcode-reorder-panel-content {
-  padding: 16px;
+  padding: 12px 14px 14px;
   flex: 1;
   overflow-y: auto;
 }
 
-.zcode-reorder-panel-content-text {
-  margin: 8px 0;
-  color: #374151;
+.zcode-reorder-panel-help {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #9ca3af;
 }
 
-.zcode-reorder-source {
-  font-family: monospace;
-  font-size: 12px;
-  color: #1f2937;
+.zcode-reorder-panel-footnotes {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zcode-reorder-structure-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zcode-reorder-structure-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  position: relative;
+}
+
+.zcode-reorder-structure-item--source-selected {
+  border-color: var(--zcode-color-reorder);
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.zcode-reorder-structure-item--source-selected.zcode-reorder-structure-item--hovered {
+  border-color: var(--zcode-color-reorder);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.zcode-reorder-structure-item--hovered {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.zcode-reorder-structure-item[role='button'] {
+  cursor: grab;
+}
+
+.zcode-reorder-structure-item[role='button']:active {
+  cursor: grabbing;
+}
+
+.zcode-reorder-structure-group-label {
+  margin-top: 0;
+  padding: 0 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.04em;
+}
+
+.zcode-reorder-structure-handle {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #6b7280;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.zcode-reorder-structure-handle:active {
+  cursor: grabbing;
+}
+
+.zcode-reorder-structure-item-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.zcode-reorder-structure-item-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zcode-reorder-structure-item-meta {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zcode-reorder-structure-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  max-width: 100%;
+  padding: 1px 5px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 2px;
+  background: rgba(75, 85, 99, 0.88);
+  color: #e5e7eb;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+.zcode-reorder-structure-empty {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  color: #9ca3af;
+  font-size: 11px;
+  text-align: center;
+}
+
+.zcode-reorder-structure-block {
+  list-style: none;
+}
+
+.zcode-reorder-structure-list--nested {
+  margin-top: 4px;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.zcode-reorder-structure-slot-section {
+  margin-top: 4px;
+}
+
+.zcode-reorder-structure-slot-header {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.04em;
+}
+
+.zcode-reorder-structure-ghost {
+  opacity: 0.5;
+}
+
+.zcode-reorder-structure-chosen {
+  border-color: var(--zcode-color-reorder);
+}
+
+.zcode-reorder-structure-drag {
+  opacity: 0.9;
 }
 
 /* フィールド編集項目 */

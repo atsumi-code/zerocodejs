@@ -450,8 +450,8 @@
             <tr>
               <td>5</td>
               <td>ZC-5</td>
-              <td>並べ替え D&amp;D（page 直下 Phase A）</td>
-              <td>未着手</td>
+              <td>並べ替え D&amp;D（構造リスト・スロット含む）</td>
+              <td>完了</td>
             </tr>
           </tbody>
         </table>
@@ -1181,9 +1181,20 @@
         <h3 id="reorder-mode">reorder（並べ替えモード）</h3>
         <p>コンポーネントの順序を変更するモードです。</p>
         <ul>
-          <li>移動元を選択</li>
-          <li>移動先をクリックして並べ替え</li>
+          <li>
+            <strong>並べ替えパネル（構造リスト）</strong>: パーツをクリックするとパネルが開き、行の
+            D&amp;D または行クリックで操作できます（page 直下・スロット内）
+          </li>
+          <li>
+            <strong>プレビュー click-click</strong>: 移動元 → 移動先の順にクリック（D&amp;D と同じ
+            insert 移動）
+          </li>
+          <li>プレビュー上の直接 D&amp;D は不可（パネル D&amp;D または click-click を利用）</li>
+          <li>
+            オプション「パーツにラベルを表示」（<code>showReorderStructureLabels</code>）で同階層ラベルを表示
+          </li>
           <li>親要素への移動（「親要素を選択」ボタン）</li>
+          <li>他モードから切り替えた際、選択中パーツを移動元として引き継ぎ</li>
         </ul>
 
         <h3 id="parent-selection">親要素選択</h3>

@@ -444,7 +444,7 @@
 | 2   | ZC-2 | リッチテキスト空値の正規化                         | ZC-1 の補完。EditPanel と template-processor の整合 |
 | 3   | ZC-3 | 編集パネル内ドラッグでパネルが閉じる／内容が消える | 再現確認後。ZC-1/2 と独立しうる                     |
 | 4   | ZC-4 | パーツ間の追加ボタン                               | UX 改善。空スロットの `+` パターン拡張              |
-| 5   | ZC-5 | 並べ替え D&D（page 直下 Phase A）                  | 工数大。既存 `reorderComponents` を流用             |
+| 5   | ZC-5 | 並べ替え D&D（構造リスト・スロット含む）           | 工数大。既存 `reorderComponents` を流用             |
 
 ```
 ZC-1 / ZC-2 ──→ ZC-4 ──→ ZC-5
@@ -550,24 +550,38 @@ ZC-3（並行可）
 
 ---
 
-### ZC-5. 並べ替え D&D（page 直下 Phase A）【未着手】
+### ZC-5. 並べ替え D&D（構造リスト）【完了】
 
 - **複雑度**: 中〜高
 - **症状**: クリック2回の並べ替えが分かりにくい。D&D を期待する
-- **実装方針**:
-  - **Phase A**: `page.0`, `page.1`, … 同階層のみ D&D（並べ替えモード中）
-  - SortableJS 等で `[data-zcode-path]` を draggable 化
-  - `onEnd` で from/to インデックス → 既存 `reorderComponents()` / `canReorderWith()` を呼ぶ
-  - クリック式並べ替えはフォールバックとして残す（設定で D&D のみにすることも検討）
-  - **Phase B（別 Issue）**: スロット内 D&D
+- **実装方針（採用）**:
+  - **ReorderPanel 内の構造リスト**（ミニマップ）で SortableJS D&D
+  - **Phase A**: page 直下
+  - **Phase B**: スロット内も同階層 D&D（各 `[data-reorder-group]` に Sortable。スロット group は別階層クリックでパネル切替）
+  - 移動元選択後 → プレビュー側で reorder target outline。リスト行 hover はパネル内ハイライト
+  - drop 確定時に `moveStructureGroupByIndex` → `cmsData` 更新 → プレビュー再描画
+  - **クリック式**も `reorderSiblingsByPath`（insert）で D&D と同一ロジック
+  - プレビュー上の直接 D&D は見送り（アラート）
 - **主な変更箇所**:
+  - `src/features/reorder/utils/page-reorder.ts`
+  - `src/features/reorder/composables/useReorderStructureSortables.ts`
+  - `src/features/reorder/components/ReorderStructureTreeRows.vue`
   - `src/features/reorder/composables/useReorderMode.ts`
-  - `src/features/editor/composables/useClickHandlers.ts`（D&D とクリックの競合回避）
-  - `src/features/preview/PreviewArea.vue` または reorder 専用 composable
+  - `src/features/reorder/components/ReorderPanel.vue`
+  - `src/features/editor/composables/useClickHandlers.ts`（リスト D&D 中の click 抑制）
+  - `src/components/ZeroCodeCMS.vue`
 - **受け入れ条件**:
-  - 並べ替えモードで page 直下パーツをドラッグして順序変更できる
-  - スロット内・異階層への誤 D&D は拒否（既存 `canReorderWith` 準拠）
-  - `zcode-dom-updated` 後も D&D が再初期化される
+  - 並べ替えモードで page 直下・スロット内をパネル内 D&D して順序変更できる
+  - プレビューが drop 後に正しい順序になる
+  - 移動元選択後、有効な移動先がプレビューで分かる（target outline）
+  - クリック２回も D&D と同じ insert 移動で使える
+  - 他モードからの切り替えで選択パーツを移動元として引き継ぐ
+- **実装済み**: 2026年6月
+  - SortableJS + 構造リスト（パーツ title / part_id / スロット名表示）
+  - `reorderSiblingsByPath` / `moveStructureGroupByIndex` / `canReorderSiblingPaths`（page-reorder.ts）
+  - ミニマップ locate（未選択時カレント化・選択中行再クリックで解除・D&D 後選択解除）
+  - `applyReorderHandoff`（モード切替時の移動元引き継ぎ）
+  - リスト D&D 中は `reorderListDragging` で preview click を抑制
 
 ---
 

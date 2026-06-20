@@ -1,4 +1,5 @@
 import { nextTick, type Ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ComponentData } from '../../../types';
 import { getComponentByPath } from '../../../core/utils/path-utils';
 import {
@@ -93,6 +94,33 @@ export function shouldClearSelectionOnClick(
   return true;
 }
 
+const PREVIEW_REORDER_DRAG_THRESHOLD_PX = 5;
+
+export function isReorderPreviewDragTarget(target: HTMLElement, root: HTMLElement): boolean {
+  if (!root.contains(target)) {
+    return false;
+  }
+  if (
+    target.closest('.zcode-add-between') ||
+    target.closest('[data-zcode-add-slot]') ||
+    target.closest('[data-zcode-add-after]') ||
+    target.closest('[data-zcode-add-before]')
+  ) {
+    return false;
+  }
+  return !!target.closest('[data-zcode-id][data-zcode-path]');
+}
+
+export function hasExceededPreviewReorderDragThreshold(
+  startX: number,
+  startY: number,
+  currentX: number,
+  currentY: number,
+  threshold = PREVIEW_REORDER_DRAG_THRESHOLD_PX
+): boolean {
+  return Math.hypot(currentX - startX, currentY - startY) >= threshold;
+}
+
 export function useClickHandlers(
   cmsData: ZeroCodeData,
   previewArea: Ref<HTMLElement | null>,
@@ -102,6 +130,7 @@ export function useClickHandlers(
   addTargetPath: Ref<string | null>,
   insertBeforeActive: Ref<boolean>,
   reorderSourcePath: Ref<string>,
+  reorderListDragging: Ref<boolean>,
   deleteConfirmPath: Ref<string>,
   handleEditClick: (path: string, component: ComponentData) => void,
   handleAddClick: (
@@ -121,6 +150,7 @@ export function useClickHandlers(
   cancelReorder: () => void,
   onAfterHandlersSetup?: () => void
 ) {
+  const { t } = useI18n();
   const eventListeners = new Map<
     HTMLElement,
     Array<{ type: string; listener: EventListener; options?: boolean | AddEventListenerOptions }>
@@ -131,6 +161,13 @@ export function useClickHandlers(
     options?: boolean | AddEventListenerOptions;
   }> = [];
   let pointerGestureStartedInExcludedUi = false;
+  let reorderPreviewDragState: {
+    pointerId: number;
+    startX: number;
+    startY: number;
+    alerted: boolean;
+  } | null = null;
+  let reorderPreviewDragAlertShown = false;
 
   function resetPointerGestureFlag() {
     pointerGestureStartedInExcludedUi = false;
@@ -376,7 +413,6 @@ export function useClickHandlers(
     const clearReorderTargetHover = () => {
       if (!previewArea.value || !hoveredReorderTargetPath) {
         hoveredReorderTargetPath = null;
-        previewArea.value?.style.removeProperty('cursor');
         return;
       }
       const prevEl = findElementByZcodePath(previewArea.value, hoveredReorderTargetPath);
@@ -390,7 +426,6 @@ export function useClickHandlers(
         removeHoverOutline(prevEl);
       }
       hoveredReorderTargetPath = null;
-      previewArea.value.style.removeProperty('cursor');
     };
 
     const delegatedReorderTargetClick: EventListener = (e: Event) => {
@@ -454,9 +489,6 @@ export function useClickHandlers(
         if (el) {
           setHoverOutline(el, 'reorder');
         }
-        previewArea.value.style.cursor = 'move';
-      } else {
-        previewArea.value.style.cursor = 'not-allowed';
       }
     };
 
@@ -498,6 +530,84 @@ export function useClickHandlers(
       resetPointerGestureFlag();
     };
 
+    const showPreviewReorderDragAlert = () => {
+      if (reorderPreviewDragAlertShown) {
+        return;
+      }
+      reorderPreviewDragAlertShown = true;
+      if (reorderPreviewDragState) {
+        reorderPreviewDragState.alerted = true;
+      }
+      alert(t('reorderPanel.previewDragAlert'));
+    };
+
+    const clearReorderPreviewDragState: EventListener = () => {
+      reorderPreviewDragState = null;
+      reorderPreviewDragAlertShown = false;
+    };
+
+    const delegatedReorderPreviewPointerDown: EventListener = (e: Event) => {
+      if (currentMode.value !== 'reorder' || reorderListDragging.value || !previewArea.value) {
+        return;
+      }
+
+      const me = e as PointerEvent;
+      if (me.pointerType !== 'mouse' || me.button !== 0) {
+        return;
+      }
+
+      const target = me.target as HTMLElement;
+      if (!isReorderPreviewDragTarget(target, previewArea.value)) {
+        return;
+      }
+
+      reorderPreviewDragAlertShown = false;
+      reorderPreviewDragState = {
+        pointerId: me.pointerId,
+        startX: me.clientX,
+        startY: me.clientY,
+        alerted: false
+      };
+    };
+
+    const delegatedReorderPreviewPointerMove: EventListener = (e: Event) => {
+      if (currentMode.value !== 'reorder' || !previewArea.value || !reorderPreviewDragState) {
+        return;
+      }
+
+      const me = e as PointerEvent;
+      if (me.pointerId !== reorderPreviewDragState.pointerId || reorderPreviewDragState.alerted) {
+        return;
+      }
+
+      if (
+        !hasExceededPreviewReorderDragThreshold(
+          reorderPreviewDragState.startX,
+          reorderPreviewDragState.startY,
+          me.clientX,
+          me.clientY
+        )
+      ) {
+        return;
+      }
+
+      showPreviewReorderDragAlert();
+    };
+
+    const delegatedReorderPreviewDragStart: EventListener = (e: Event) => {
+      if (currentMode.value !== 'reorder' || !previewArea.value) {
+        return;
+      }
+
+      const target = e.target as HTMLElement;
+      if (!isReorderPreviewDragTarget(target, previewArea.value)) {
+        return;
+      }
+
+      e.preventDefault();
+      showPreviewReorderDragAlert();
+    };
+
     previewArea.value.addEventListener('click', delegatedAddTargetClick, true);
     previewArea.value.addEventListener('click', delegatedReorderTargetClick, true);
     document.addEventListener('click', delegatedClearSelectionClick, true);
@@ -529,6 +639,11 @@ export function useClickHandlers(
     previewArea.value.addEventListener('pointerover', delegatedReorderPointerOver, true);
     previewArea.value.addEventListener('pointerout', delegatedSlotMouseOut, true);
     previewArea.value.addEventListener('pointerout', delegatedReorderPointerOut, true);
+    previewArea.value.addEventListener('pointerdown', delegatedReorderPreviewPointerDown, true);
+    previewArea.value.addEventListener('pointermove', delegatedReorderPreviewPointerMove, true);
+    previewArea.value.addEventListener('dragstart', delegatedReorderPreviewDragStart, true);
+    document.addEventListener('pointerup', clearReorderPreviewDragState, true);
+    document.addEventListener('pointercancel', clearReorderPreviewDragState, true);
     eventListeners.set(previewArea.value, [
       { type: 'click', listener: delegatedAddTargetClick, options: true },
       { type: 'click', listener: delegatedReorderTargetClick, options: true },
@@ -536,8 +651,21 @@ export function useClickHandlers(
       { type: 'pointerover', listener: delegatedReorderPointerOver, options: true },
       { type: 'pointerout', listener: delegatedSlotMouseOut, options: true },
       { type: 'pointerout', listener: delegatedReorderPointerOut, options: true },
-      { type: 'pointerdown', listener: clearAllHoverOutlines, options: true }
+      { type: 'pointerdown', listener: clearAllHoverOutlines, options: true },
+      { type: 'pointerdown', listener: delegatedReorderPreviewPointerDown, options: true },
+      { type: 'pointermove', listener: delegatedReorderPreviewPointerMove, options: true },
+      { type: 'dragstart', listener: delegatedReorderPreviewDragStart, options: true }
     ]);
+    documentListeners.push({
+      type: 'pointerup',
+      listener: clearReorderPreviewDragState,
+      options: true
+    });
+    documentListeners.push({
+      type: 'pointercancel',
+      listener: clearReorderPreviewDragState,
+      options: true
+    });
     editableElements.forEach((element) => {
       const htmlElement = element as HTMLElement;
       const path = htmlElement.getAttribute('data-zcode-path');
@@ -584,10 +712,7 @@ export function useClickHandlers(
             handleAddClick(path);
             break;
           case 'reorder':
-            if (reorderSourcePath.value) {
-              if (path === reorderSourcePath.value && clickedPath === path) {
-                handleReorderClick(path);
-              }
+            if (reorderListDragging.value) {
               return;
             }
             handleReorderClick(path);
@@ -644,12 +769,6 @@ export function useClickHandlers(
         if (!isActive(path)) {
           setHoverOutline(htmlElement, currentMode.value);
         }
-
-        if (currentMode.value === 'reorder') {
-          htmlElement.style.cursor = 'move';
-        } else {
-          htmlElement.style.cursor = 'pointer';
-        }
       };
 
       const mouseleaveListener = (event: Event) => {
@@ -660,7 +779,6 @@ export function useClickHandlers(
         if (!isActive(path)) {
           removeHoverOutline(htmlElement);
         }
-        htmlElement.style.cursor = '';
       };
 
       htmlElement.addEventListener('click', clickListener, true);
@@ -725,6 +843,8 @@ export function useClickHandlers(
       document.removeEventListener(type, listener, options as any);
     });
     documentListeners.length = 0;
+    reorderPreviewDragState = null;
+    reorderPreviewDragAlertShown = false;
     resetPointerGestureFlag();
   }
 

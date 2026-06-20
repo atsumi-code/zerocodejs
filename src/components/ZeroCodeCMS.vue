@@ -96,11 +96,21 @@
 
       <!-- 並べ替えパネル -->
       <ReorderPanel
+        v-if="currentMode === 'reorder' && structureListGroupId"
+        :cms-data="cmsData"
         :reorder-source-path="reorderSourcePath"
+        :structure-list-group-id="structureListGroupId"
+        :hovered-path="structureListHoveredPath"
         :current-mode="currentMode"
         :can-select-parent="canSelectParent"
-        @cancel="cancelReorder"
+        :show-structure-labels="showReorderStructureLabels"
+        @cancel="handleReorderPanelClose"
         @select-parent="selectParentElement"
+        @structure-reorder="reorderStructureByDragIndices"
+        @highlight-path="setStructureListHoveredPath"
+        @locate-path="onStructureListLocate"
+        @drag-state-change="reorderListDragging = $event"
+        @update:show-structure-labels="showReorderStructureLabels = $event"
       />
 
       <!-- パーツ選択パネル -->
@@ -223,7 +233,7 @@ import AddPanel from '../features/add/components/AddPanel.vue';
 import ContextMenu from '../features/editor/components/ContextMenu.vue';
 import { useZeroCodeData } from '../core/composables/useZeroCodeData';
 import { useZeroCodeRenderer } from '../core/composables/useZeroCodeRenderer';
-import { useEditorMode } from '../features/editor/composables/useEditorMode';
+import { useEditorMode, type EditorMode } from '../features/editor/composables/useEditorMode';
 import { useEditMode } from '../features/editor/composables/useEditMode';
 import { useAddMode, type AddModeActions } from '../features/add/composables/useAddMode';
 import { useDeleteMode } from '../features/delete/composables/useDeleteMode';
@@ -232,6 +242,7 @@ import { useParentSelector } from '../features/parent-selector/composables/usePa
 import { useClickHandlers } from '../features/editor/composables/useClickHandlers';
 import { useDiscoveryOutlines } from '../features/editor/composables/useDiscoveryOutlines';
 import { useReorderTargetOutlines } from '../features/editor/composables/useReorderTargetOutlines';
+import { useReorderStructureLabels } from '../features/reorder/composables/useReorderStructureLabels';
 import { useModeSwitcher } from '../features/editor/composables/useModeSwitcher';
 import {
   canHandoffPathToAddMode,
@@ -342,6 +353,9 @@ const showPartDiscoveryOutlines = ref(
 );
 const showAddBetweenButtons = ref(
   getInitialCMSValue('showAddBetweenButtons', true, config.cms?.showAddBetweenButtons)
+);
+const showReorderStructureLabels = ref(
+  getInitialCMSValue('showReorderStructureLabels', true, config.cms?.showReorderStructureLabels)
 );
 const devRightPaddingValue = computed(() => devRightPadding.value);
 
@@ -488,11 +502,33 @@ const {
   addModeActions
 );
 
-const { reorderSourcePath, handleReorderClick, canReorderWith, cancelReorder } = useReorderMode(
-  cmsData,
-  previewArea,
-  scrollIntoViewOnPartEdit
-);
+const {
+  reorderSourcePath,
+  handleReorderClick,
+  canReorderWith,
+  cancelReorder,
+  reorderStructureByDragIndices,
+  setStructureListHoveredPath,
+  structureListHoveredPath,
+  structureListGroupId,
+  applyReorderHandoff,
+  leaveReorderStructureList,
+  closeReorderPanel,
+  handleStructureListLocate
+} = useReorderMode(cmsData, previewArea, scrollIntoViewOnPartEdit);
+
+const reorderListDragging = ref(false);
+
+function onStructureListLocate(path: string) {
+  if (reorderListDragging.value) {
+    return;
+  }
+  handleStructureListLocate(path);
+}
+
+function handleReorderPanelClose() {
+  closeReorderPanel();
+}
 
 const {
   deleteConfirmComponent,
@@ -502,7 +538,7 @@ const {
   cancelDelete
 } = useDeleteMode(cmsData, previewArea, switchModeBase, nextTick, scrollIntoViewOnPartEdit);
 
-const { switchMode } = useModeSwitcher(
+const { switchMode: switchModeWithHandoff } = useModeSwitcher(
   previewArea,
   currentMode,
   switchModeBase,
@@ -538,7 +574,7 @@ const { switchMode } = useModeSwitcher(
         case 'reorder': {
           const resolved = resolveComponentPathForMode(path, cmsData);
           if (resolved) {
-            handleReorderClick(resolved);
+            applyReorderHandoff(resolved);
           }
           break;
         }
@@ -557,6 +593,13 @@ const { switchMode } = useModeSwitcher(
     }
   }
 );
+
+function switchMode(mode: EditorMode) {
+  if (mode === currentMode.value) {
+    return;
+  }
+  switchModeWithHandoff(mode);
+}
 
 addModeActions.switchMode = switchMode;
 
@@ -605,7 +648,7 @@ const isPanelVisible = computed(() => {
   return !!(
     editingComponent.value ||
     addTargetPath.value ||
-    reorderSourcePath.value ||
+    (currentMode.value === 'reorder' && structureListGroupId.value) ||
     deleteConfirmComponent.value
   );
 });
@@ -657,9 +700,19 @@ const { syncReorderTargetOutlines } = useReorderTargetOutlines(
   canReorderWith
 );
 
+const { syncStructureLabels, clearStructureLabels } = useReorderStructureLabels(
+  previewArea,
+  viewMode,
+  currentMode,
+  structureListGroupId,
+  showReorderStructureLabels,
+  cmsData
+);
+
 function syncManageOutlines() {
   syncDiscoveryOutlines();
   syncReorderTargetOutlines();
+  syncStructureLabels();
 }
 
 // クリックハンドラー
@@ -672,6 +725,7 @@ const { setupClickHandlers, cleanupEventListeners } = useClickHandlers(
   addTargetPath,
   insertBeforeActive,
   reorderSourcePath,
+  reorderListDragging,
   deleteConfirmPath,
   handleEditClick,
   handleAddClick,
@@ -902,6 +956,7 @@ watch(
   () => {
     nextTick(() => {
       setupClickHandlers();
+      syncStructureLabels();
       dispatchEvent('zcode-dom-updated', {});
     });
   },
@@ -915,8 +970,8 @@ watch([viewMode, previewArea, containerRef], ([newViewMode, newPreviewArea, newC
       if (enableContextMenu.value) {
         setupContextMenu();
       }
-      // Shadow DOM内の値を更新（previewAreaが利用可能になった時）
       updateShadowDOMAllowDynamicContentInteraction();
+      syncStructureLabels();
       dispatchEvent('zcode-dom-updated', {});
     });
   } else {
@@ -927,11 +982,23 @@ watch([viewMode, previewArea, containerRef], ([newViewMode, newPreviewArea, newC
   }
 });
 
-watch(currentMode, () => {
+watch(currentMode, (mode, oldMode) => {
+  if (oldMode === 'reorder') {
+    leaveReorderStructureList();
+    clearStructureLabels();
+  }
+
   nextTick(() => {
     syncDiscoveryOutlines({ pulse: true });
     syncReorderTargetOutlines();
+    syncStructureLabels();
     dispatchEvent('zcode-dom-updated', {});
+  });
+});
+
+watch(structureListGroupId, () => {
+  nextTick(() => {
+    syncStructureLabels();
   });
 });
 
@@ -996,6 +1063,13 @@ watch(showPartDiscoveryOutlines, (newValue) => {
 
 watch(showAddBetweenButtons, (newValue) => {
   saveCMSSettings({ showAddBetweenButtons: newValue });
+});
+
+watch(showReorderStructureLabels, (newValue) => {
+  saveCMSSettings({ showReorderStructureLabels: newValue });
+  nextTick(() => {
+    syncStructureLabels();
+  });
 });
 
 // 保存ボタンクリック時の処理
