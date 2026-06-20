@@ -120,6 +120,10 @@
   overflow: visible;
 }
 
+.zcode-delete-panel {
+  overflow: visible;
+}
+
 /* 共通パネルヘッダースタイル */
 .zcode-edit-panel-header,
 .zcode-add-panel-header,
@@ -1545,7 +1549,8 @@
 }
 
 .zcode-add-panel-header-actions,
-.zcode-reorder-panel-header-actions {
+.zcode-reorder-panel-header-actions,
+.zcode-delete-panel-header-actions {
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -2063,14 +2068,16 @@
   flex-shrink: 0;
 }
 
-.zcode-add-panel-options-anchor {
+.zcode-add-panel-options-anchor,
+.zcode-delete-panel-options-anchor {
   position: relative;
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
 
-.zcode-add-panel-options-trigger {
+.zcode-add-panel-options-trigger,
+.zcode-delete-panel-options-trigger {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2088,12 +2095,15 @@
 }
 
 .zcode-add-panel-options-trigger:hover,
-.zcode-add-panel-options-trigger.is-active {
+.zcode-add-panel-options-trigger.is-active,
+.zcode-delete-panel-options-trigger:hover,
+.zcode-delete-panel-options-trigger.is-active {
   background: #e5e7eb;
   color: #374151;
 }
 
-.zcode-add-panel-options-popover {
+.zcode-add-panel-options-popover,
+.zcode-delete-panel-options-popover {
   position: absolute;
   right: 0;
   top: calc(100% + 4px);
@@ -2107,7 +2117,8 @@
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
 }
 
-.zcode-add-panel-options-popover-title {
+.zcode-add-panel-options-popover-title,
+.zcode-delete-panel-options-popover-title {
   margin: 0 0 10px 0;
   font-size: 12px;
   font-weight: 600;
@@ -2438,6 +2449,16 @@
 }
 
 .zcode-add-panel-options-popover .zcode-add-option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  color: #374151;
+}
+
+.zcode-delete-panel-options-popover .zcode-delete-option-label {
   display: flex;
   align-items: flex-start;
   gap: 8px;

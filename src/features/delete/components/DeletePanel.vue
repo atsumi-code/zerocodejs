@@ -8,12 +8,48 @@
       <div class="zcode-panel-header-title" role="heading" aria-level="3">
         {{ $t('deletePanel.title') }}
       </div>
-      <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
-        <X :size="18" />
-      </button>
+      <div class="zcode-delete-panel-header-actions">
+        <div ref="deleteOptionsAnchorRef" class="zcode-delete-panel-options-anchor">
+          <button
+            type="button"
+            class="zcode-delete-panel-options-trigger"
+            :class="{ 'is-active': optionsPopoverOpen }"
+            :aria-expanded="optionsPopoverOpen"
+            :aria-label="$t('deletePanel.optionsAriaLabel')"
+            :title="$t('deletePanel.optionsAriaLabel')"
+            @click.stop="toggleOptionsPopover"
+          >
+            <Settings :size="18" />
+          </button>
+          <div
+            v-show="optionsPopoverOpen"
+            class="zcode-delete-panel-options-popover"
+            role="region"
+            :aria-label="$t('deletePanel.optionsPopoverTitle')"
+            tabindex="-1"
+          >
+            <div class="zcode-delete-panel-options-popover-title">
+              {{ $t('deletePanel.optionsPopoverTitle') }}
+            </div>
+            <label class="zcode-delete-option-label">
+              <input
+                type="checkbox"
+                :checked="continueDeleteAfter"
+                class="zcode-keep-adding-checkbox"
+                @change="
+                  $emit('update:continue-delete-after', ($event.target as HTMLInputElement).checked)
+                "
+              />
+              <span>{{ $t('deletePanel.continueDeleteAfter') }}</span>
+            </label>
+          </div>
+        </div>
+        <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('cancel')">
+          <X :size="18" />
+        </button>
+      </div>
     </div>
 
-    <!-- 親要素選択ボタン -->
     <div v-if="canSelectParent" class="zcode-parent-selector">
       <button class="zcode-parent-select-btn" @click="$emit('select-parent')">
         <ChevronUp :size="16" />
@@ -44,18 +80,25 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { ComponentData } from '../../../types';
-import { ChevronUp, AlertTriangle, Trash2, X } from 'lucide-vue-next';
+import { usePanelOptionsPopover } from '../../editor/composables/usePanelOptionsPopover';
+import { ChevronUp, AlertTriangle, Trash2, X, Settings } from 'lucide-vue-next';
 
 defineProps<{
   deleteConfirmComponent: ComponentData | null;
   currentMode: 'edit' | 'add' | 'reorder' | 'delete';
   canSelectParent: boolean;
+  continueDeleteAfter: boolean;
 }>();
 
 defineEmits<{
   confirm: [];
   cancel: [];
   'select-parent': [];
+  'update:continue-delete-after': [value: boolean];
 }>();
+
+const deleteOptionsAnchorRef = ref<HTMLElement | null>(null);
+const { optionsPopoverOpen, toggleOptionsPopover } = usePanelOptionsPopover(deleteOptionsAnchorRef);
 </script>

@@ -98,7 +98,10 @@ export default {
   deletePanel: {
     title: 'Delete panel',
     confirmMessage: 'Do you want to delete this part?',
-    selectParent: 'Select parent element'
+    selectParent: 'Select parent element',
+    continueDeleteAfter: 'Select next part after delete',
+    optionsAriaLabel: 'Open delete options',
+    optionsPopoverTitle: 'Delete options'
   },
   reorderPanel: {
     title: 'Reorder panel',

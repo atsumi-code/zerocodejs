@@ -89,9 +89,11 @@
         :delete-confirm-component="deleteConfirmComponent"
         :current-mode="currentMode"
         :can-select-parent="canSelectParent"
+        :continue-delete-after="continueDeleteAfter"
         @confirm="confirmDelete"
         @cancel="cancelDelete"
         @select-parent="selectParentElement"
+        @update:continue-delete-after="continueDeleteAfter = $event"
       />
 
       <!-- 並べ替えパネル -->
@@ -542,6 +544,7 @@ function handleReorderPanelClose() {
 const {
   deleteConfirmComponent,
   deleteConfirmPath,
+  continueDeleteAfter,
   handleDeleteClick,
   confirmDelete,
   cancelDelete

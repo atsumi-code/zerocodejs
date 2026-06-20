@@ -98,7 +98,10 @@ export default {
   deletePanel: {
     title: '削除パネル',
     confirmMessage: 'このパーツを削除しますか？',
-    selectParent: '親要素を選択'
+    selectParent: '親要素を選択',
+    continueDeleteAfter: '削除後に次のパーツを選ぶ',
+    optionsAriaLabel: '削除のオプションを開く',
+    optionsPopoverTitle: '削除のオプション'
   },
   reorderPanel: {
     title: '並べ替えパネル',
