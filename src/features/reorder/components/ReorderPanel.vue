@@ -78,6 +78,7 @@
             :suppress-locate-click="suppressLocateClick"
             @highlight-path="handleHighlightPath"
             @locate-path="(path) => emit('locate-path', path)"
+            @reorder-click="(path) => emit('reorder-click', path)"
           />
         </ul>
 
@@ -124,6 +125,7 @@ const emit = defineEmits<{
   'structure-reorder': [groupId: string, oldIndex: number, newIndex: number];
   'highlight-path': [path: string | null];
   'locate-path': [path: string];
+  'reorder-click': [path: string];
   'drag-state-change': [dragging: boolean];
   'update:show-structure-labels': [value: boolean];
 }>();

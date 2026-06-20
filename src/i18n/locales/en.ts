@@ -103,11 +103,13 @@ export default {
   reorderPanel: {
     title: 'Reorder panel',
     panelHelp:
-      'Drag a row to reorder, or click to scroll to that part. On the page, click source then destination to reorder.',
+      'Click a row to scroll the preview. Use the ↕ button to pick source then destination, or drag a row. On the page, click source then destination to reorder.',
     pageGroup: 'Page level',
     emptyGroup: 'No reorderable parts at this level',
     slotGroup: 'Slot: {name}',
     dragHandleAria: 'Reorder {label}',
+    reorderPartButton: 'Reorder',
+    reorderPartButtonAria: 'Reorder {label}',
     pageClickSourceAria: 'Move source selected: {label}',
     emptyPage: 'No parts to reorder',
     reorderFailed: 'Reorder failed. Select elements at the same level.',

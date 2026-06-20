@@ -103,11 +103,13 @@ export default {
   reorderPanel: {
     title: '並べ替えパネル',
     panelHelp:
-      '行をドラッグして並べ替え、クリックで該当パーツへ移動。ページ上では移動元→移動先の順にクリックでも並べ替えできます。',
+      '行クリックでプレビューへ移動。↕ ボタンで移動元→移動先を選んで並べ替え。行ドラッグでも並べ替えできます。ページ上でも移動元→移動先の順にクリックできます。',
     pageGroup: 'ページ直下',
     emptyGroup: 'この階層に並べ替え可能なパーツがありません',
     slotGroup: 'スロット: {name}',
     dragHandleAria: '{label} の並べ替え',
+    reorderPartButton: '並べ替え',
+    reorderPartButtonAria: '{label} を並べ替え',
     pageClickSourceAria: '選択中の移動元: {label}',
     emptyPage: '並べ替えるパーツがありません',
     reorderFailed: '並べ替えに失敗しました。同じ階層の要素を選択してください。',

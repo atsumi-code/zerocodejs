@@ -109,6 +109,7 @@
         @structure-reorder="reorderStructureByDragIndices"
         @highlight-path="setStructureListHoveredPath"
         @locate-path="onStructureListLocate"
+        @reorder-click="onStructureListReorderClick"
         @drag-state-change="reorderListDragging = $event"
         @update:show-structure-labels="showReorderStructureLabels = $event"
       />
@@ -514,7 +515,8 @@ const {
   applyReorderHandoff,
   leaveReorderStructureList,
   closeReorderPanel,
-  handleStructureListLocate
+  handleStructureListLocate,
+  handleStructureListReorderClick
 } = useReorderMode(cmsData, previewArea, scrollIntoViewOnPartEdit);
 
 const reorderListDragging = ref(false);
@@ -524,6 +526,13 @@ function onStructureListLocate(path: string) {
     return;
   }
   handleStructureListLocate(path);
+}
+
+function onStructureListReorderClick(path: string) {
+  if (reorderListDragging.value) {
+    return;
+  }
+  handleStructureListReorderClick(path);
 }
 
 function handleReorderPanelClose() {

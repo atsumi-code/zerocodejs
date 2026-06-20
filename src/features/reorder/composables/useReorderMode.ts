@@ -105,14 +105,92 @@ export function useReorderMode(
     if (!path) {
       return;
     }
-    if (reorderSourcePath.value === path) {
-      cancelReorder({ restoreScroll: false });
+    scrollPreviewFromStructureList(path);
+  }
+
+  function finishReorderMove(sourceId: string | null) {
+    let targetScrollPath: string | null = null;
+    if (sourceId) {
+      const found = traverseComponents<string | undefined>(
+        cmsData.page,
+        'page',
+        (component, componentPath) => {
+          if (component.id === sourceId) {
+            return componentPath;
+          }
+          return undefined;
+        }
+      );
+      if (typeof found === 'string') {
+        targetScrollPath = found;
+      }
+    }
+    cancelReorder({ restoreScroll: false });
+    if (targetScrollPath) {
+      nextTick(() => {
+        const element = findPreviewComponentElement(targetScrollPath);
+        if (element && unref(scrollIntoViewOnPartEdit)) {
+          scrollToElement(element);
+        }
+      });
+    }
+  }
+
+  function handleReorderPathClick(
+    path: string,
+    options: { clearStructureListOnSamePathCancel?: boolean } = {}
+  ) {
+    if (!path) {
       return;
     }
-    if (!reorderSourcePath.value) {
-      selectReorderSource(path);
+
+    const { clearStructureListOnSamePathCancel = false } = options;
+
+    if (reorderSourcePath.value === path) {
+      cancelReorder();
+      if (clearStructureListOnSamePathCancel) {
+        structureListGroupId.value = null;
+      }
+      return;
     }
-    scrollPreviewFromStructureList(path);
+
+    setStructureListGroupFromPath(path);
+
+    if (reorderSourcePath.value) {
+      const sourceGroup = resolveStructureSortableGroupFromPath(reorderSourcePath.value);
+      const clickedGroup = resolveStructureSortableGroupFromPath(path);
+      if (!sourceGroup || !clickedGroup || sourceGroup.groupId !== clickedGroup.groupId) {
+        cancelReorder({ restoreScroll: false });
+        return;
+      }
+
+      const targetPath = resolveReorderTargetPath(reorderSourcePath.value, path);
+      if (!canReorderWith(reorderSourcePath.value, targetPath)) {
+        return;
+      }
+
+      const sourceId = reorderSourceComponentId.value;
+      const success = reorderComponents(reorderSourcePath.value, targetPath);
+      if (!success) {
+        alert(t('reorderPanel.reorderFailed'));
+        return;
+      }
+      finishReorderMove(sourceId);
+      return;
+    }
+
+    selectReorderSource(path, { recordInitialScroll: true });
+
+    if (unref(scrollIntoViewOnPartEdit)) {
+      const element = findPreviewComponentElement(path);
+      if (element) {
+        scrollToElement(element);
+      }
+    }
+  }
+
+  function handleStructureListReorderClick(path: string) {
+    handleReorderPathClick(path);
   }
 
   function scrollPreviewToPath(path: string) {
@@ -158,73 +236,7 @@ export function useReorderMode(
 
   // 並べ替えモード: クリック処理
   function handleReorderClick(path: string) {
-    if (!path) {
-      return;
-    }
-
-    if (reorderSourcePath.value === path) {
-      cancelReorder();
-      structureListGroupId.value = null;
-      return;
-    }
-
-    setStructureListGroupFromPath(path);
-
-    if (reorderSourcePath.value) {
-      const sourceGroup = resolveStructureSortableGroupFromPath(reorderSourcePath.value);
-      const clickedGroup = resolveStructureSortableGroupFromPath(path);
-      if (!sourceGroup || !clickedGroup || sourceGroup.groupId !== clickedGroup.groupId) {
-        cancelReorder({ restoreScroll: false });
-        return;
-      }
-
-      const targetPath = resolveReorderTargetPath(reorderSourcePath.value, path);
-      if (!canReorderWith(reorderSourcePath.value, targetPath)) {
-        return;
-      }
-
-      const success = reorderComponents(reorderSourcePath.value, targetPath);
-      if (!success) {
-        alert(t('reorderPanel.reorderFailed'));
-      }
-      let targetScrollPath: string | null = null;
-      const sourceId = reorderSourceComponentId.value;
-      if (sourceId) {
-        const found = traverseComponents<string | undefined>(
-          cmsData.page,
-          'page',
-          (component, componentPath) => {
-            if (component.id === sourceId) {
-              return componentPath;
-            }
-            return undefined;
-          }
-        );
-        if (typeof found === 'string') {
-          targetScrollPath = found;
-        }
-      }
-      cancelReorder({ restoreScroll: false });
-      if (targetScrollPath) {
-        nextTick(() => {
-          const element = findPreviewComponentElement(targetScrollPath);
-          if (element && unref(scrollIntoViewOnPartEdit)) {
-            scrollToElement(element);
-          }
-        });
-      }
-      return;
-    }
-
-    // 1回目のクリック: 移動元を選択
-    selectReorderSource(path, { recordInitialScroll: true });
-
-    if (unref(scrollIntoViewOnPartEdit)) {
-      const element = findPreviewComponentElement(path);
-      if (element) {
-        scrollToElement(element);
-      }
-    }
+    handleReorderPathClick(path, { clearStructureListOnSamePathCancel: true });
   }
 
   // 並べ替えをキャンセル
@@ -257,6 +269,7 @@ export function useReorderMode(
     applyReorderHandoff,
     leaveReorderStructureList,
     closeReorderPanel,
-    handleStructureListLocate
+    handleStructureListLocate,
+    handleStructureListReorderClick
   };
 }

@@ -12,13 +12,6 @@
           hoveredPath === node.entry.path && reorderSourcePath !== node.entry.path,
         'zcode-reorder-structure-item--source-selected': reorderSourcePath === node.entry.path
       }"
-      :aria-label="
-        reorderSourcePath === node.entry.path
-          ? $t('reorderPanel.pageClickSourceAria', {
-              label: getStructureEntryPreviewLabel(node.entry)
-            })
-          : undefined
-      "
       :data-zcode-structure-path="node.entry.path"
       :style="{ paddingLeft: `${node.entry.depth * 16 + 10}px` }"
       role="button"
@@ -46,12 +39,26 @@
           {{ getStructureEntryPreviewLabel(node.entry) }}
         </div>
       </div>
+      <button
+        type="button"
+        class="zcode-action-btn zcode-reorder-structure-action-btn"
+        :class="{ active: reorderSourcePath === node.entry.path }"
+        :title="$t('reorderPanel.reorderPartButton')"
+        :aria-label="
+          $t('reorderPanel.reorderPartButtonAria', {
+            label: getStructureEntryPreviewLabel(node.entry)
+          })
+        "
+        @click.stop="emit('reorder-click', node.entry.path)"
+      >
+        <ArrowUpDown :size="14" />
+      </button>
     </div>
   </li>
 </template>
 
 <script setup lang="ts">
-import { GripVertical } from 'lucide-vue-next';
+import { ArrowUpDown, GripVertical } from 'lucide-vue-next';
 import type { StructureTreeNode } from '../utils/page-reorder';
 import { getStructureEntryPreviewLabel } from '../utils/page-reorder';
 
@@ -66,6 +73,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'highlight-path': [path: string | null];
   'locate-path': [path: string];
+  'reorder-click': [path: string];
 }>();
 
 function handleItemClick(path: string, event?: MouseEvent) {
@@ -76,6 +84,12 @@ function handleItemClick(path: string, event?: MouseEvent) {
     return;
   }
   if (event?.target instanceof Element && event.target.closest('.zcode-reorder-structure-handle')) {
+    return;
+  }
+  if (
+    event?.target instanceof Element &&
+    event.target.closest('.zcode-reorder-structure-action-btn')
+  ) {
     return;
   }
   emit('locate-path', path);

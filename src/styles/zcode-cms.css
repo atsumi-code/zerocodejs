@@ -1670,11 +1670,15 @@
 }
 
 .zcode-reorder-structure-item[role='button'] {
-  cursor: grab;
+  cursor: pointer;
 }
 
 .zcode-reorder-structure-item[role='button']:active {
-  cursor: grabbing;
+  cursor: pointer;
+}
+
+.zcode-reorder-structure-action-btn {
+  flex-shrink: 0;
 }
 
 .zcode-reorder-structure-group-label {
