@@ -89,6 +89,13 @@
             <div v-if="reorderSourceImage === image.id" class="zcode-reorder-source-indicator">
               {{ $t('partsManager.source') }}
             </div>
+            <span
+              v-if="pageId && getScopeBadgeLabel(image)"
+              class="zcode-image-item-category-badge zcode-image-item-scope-badge"
+              :class="getScopeBadgeClass(image)"
+            >
+              {{ getScopeBadgeLabel(image) }}
+            </span>
             <img :src="image.url" :alt="image.name" class="zcode-image-item-img" />
             <div class="zcode-image-item-overlay">
               <div class="zcode-image-item-actions">
@@ -138,6 +145,13 @@
               :class="`zcode-image-item-category-badge--${entry.category}`"
             >
               {{ getCategoryLabel(entry.category) }}
+            </span>
+            <span
+              v-if="entry.category === 'special' && pageId && getScopeBadgeLabel(entry.image)"
+              class="zcode-image-item-category-badge zcode-image-item-scope-badge"
+              :class="getScopeBadgeClass(entry.image)"
+            >
+              {{ getScopeBadgeLabel(entry.image) }}
             </span>
             <img :src="entry.image.url" :alt="entry.image.name" class="zcode-image-item-img" />
             <div class="zcode-image-name">
@@ -243,6 +257,10 @@ import { useI18n } from 'vue-i18n';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import type { ZeroCodeData, ImageData } from '../../../types';
 import { useImagesManager } from '../../images-manager/composables/useImagesManager';
+import {
+  isLegacySharedSpecialImage,
+  filterSpecialImagesForPage
+} from '../../../core/utils/image-scope';
 import { logger } from '../../../core/utils/logger';
 import { X, Check, Plus, Pencil, ArrowUpDown, Trash2, Image as ImageIcon } from 'lucide-vue-next';
 
@@ -261,6 +279,8 @@ const props = defineProps<{
   isOpen: boolean;
   cmsData: ZeroCodeData;
   currentValue?: string;
+  /** 指定時、専用画像は shared + 当該ページのみ表示・追加時は page スコープ */
+  pageId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -287,16 +307,17 @@ const {
   saveImage,
   cancelEditing,
   checkImageUsage
-} = useImagesManager(props.cmsData);
+} = useImagesManager(props.cmsData, { pageId: props.pageId });
 
 const displayImages = computed((): DisplayImageEntry[] => {
   const { common, individual, special } = props.cmsData.images;
+  const visibleSpecial = filterSpecialImagesForPage(special, props.pageId);
 
   if (activeTab.value === 'all') {
     return [
       ...common.map((image) => ({ image, category: 'common' as const })),
       ...individual.map((image) => ({ image, category: 'individual' as const })),
-      ...special.map((image) => ({ image, category: 'special' as const }))
+      ...visibleSpecial.map((image) => ({ image, category: 'special' as const }))
     ];
   }
 
@@ -354,6 +375,26 @@ function getCategoryLabel(category: ImageCategory): string {
     return t('dataViewer.individual');
   }
   return t('dataViewer.special');
+}
+
+function getScopeBadgeLabel(image: ImageData): string | null {
+  if (!props.pageId) {
+    return null;
+  }
+  if (image.scope === 'page') {
+    return t('imagesManager.scopePage');
+  }
+  if (isLegacySharedSpecialImage(image)) {
+    return t('imagesManager.scopeShared');
+  }
+  return null;
+}
+
+function getScopeBadgeClass(image: ImageData): string {
+  if (image.scope === 'page') {
+    return 'zcode-image-item-scope-badge--page';
+  }
+  return 'zcode-image-item-scope-badge--shared';
 }
 
 const getCurrentImage = (): ImageData | null => {

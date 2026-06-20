@@ -254,6 +254,7 @@
     <ImageSelectModal
       :is-open="imageModalOpen"
       :cms-data="cmsData"
+      :page-id="pageId"
       :current-value="currentImageField?.currentValue || undefined"
       @update:model-value="handleImageSelect"
       @close="closeImageModal"
@@ -300,6 +301,7 @@ const props = defineProps<{
   currentMode: 'edit' | 'add' | 'reorder' | 'delete';
   canSelectParent: boolean;
   cmsData: ZeroCodeData;
+  pageId?: string;
   previewMode?: boolean;
 }>();
 

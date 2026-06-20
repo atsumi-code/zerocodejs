@@ -301,8 +301,19 @@ interface ImageData {
   url: string;
   mimeType?: string; // MIMEタイプ（base64画像の場合）
   needsUpload?: boolean; // アップロードが必要かどうか
+  scope?: 'shared' | 'page'; // 専用画像のみ。未指定または shared は全ページで選択可能
+  pageId?: string; // scope が page のとき、当該 page-id の編集画面でのみ選択可能
 }
 ```
+
+#### 専用画像のスコープ（`page-id`）
+
+- **Web Component 属性**: `page-id`（`zcode-cms` / `zcode-editor` / `zcode-studio`）
+- **`ImageData.scope`**: `'shared'`（全ページで選択可能）または `'page'`（`pageId` が一致する編集画面のみ）
+- **既存データ**: `scope` 未指定は `shared` として扱う
+- **CMS 画像選択モーダル**: `page-id` 指定時は shared + 当該 page の専用画像のみ表示。追加時は `scope: 'page'` + `pageId`
+- **保存 target**: 従来どおり `images-special`（スコープ付き JSON をホストが永続化）
+- **レンダリング**: 画像 ID 解決は従来どおり（プール内の全専用画像を参照可能）
 
 ## テンプレート記法
 
@@ -561,6 +572,13 @@ interface ImageData {
 - プレビュー click-click フォールバック（`reorderSiblingsByPath` で D&D と insert 統一）
 - 構造ラベル（`showReorderStructureLabels`）、モード handoff、ミニマップ locate UX
 - `page-reorder.ts` に group 解決・移動 API を集約
+
+22. ✅ **専用画像のページスコープ（Phase 1）**（2026年6月）
+
+- `ImageData` に `scope` / `pageId` を追加
+- `page-id` 属性（`zcode-cms` / `zcode-editor` / `zcode-studio`）
+- CMS 画像選択モーダルで shared + 当該 page のみ表示、追加時は page スコープ
+- `src/core/utils/image-scope.ts` でフィルタ・追加デフォルトを共通化
 
 ### 保留・スキップ機能
 

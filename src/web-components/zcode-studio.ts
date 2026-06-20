@@ -40,6 +40,7 @@ class ZeroCodeStudioElement extends HTMLElement {
   private getCommonProps() {
     return {
       page: this.getAttribute('page') || '[]',
+      pageId: this.getAttribute('page-id') || undefined,
       cssCommon: this.getAttribute('css-common'),
       cssIndividual: this.getAttribute('css-individual'),
       cssSpecial: this.getAttribute('css-special'),
@@ -370,6 +371,7 @@ class ZeroCodeStudioElement extends HTMLElement {
     return [
       'locale',
       'page',
+      'page-id',
       'css-common',
       'css-individual',
       'css-special',

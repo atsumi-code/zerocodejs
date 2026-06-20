@@ -54,6 +54,10 @@ export interface ImageData {
   url: string;
   mimeType?: string;
   needsUpload?: boolean;
+  /** 専用画像のみ。未指定または shared は全ページで選択可能 */
+  scope?: 'shared' | 'page';
+  /** scope が page のとき、このページ ID の編集画面でのみ選択可能 */
+  pageId?: string;
 }
 
 export interface CMSSettings {

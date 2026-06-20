@@ -79,6 +79,7 @@
         :current-mode="currentMode"
         :can-select-parent="canSelectParent"
         :cms-data="cmsData"
+        :page-id="pageId"
         @close="closeEditPanel"
         @select-parent="selectParentElement"
         @save-field="handleSaveFieldEdit"
@@ -275,6 +276,8 @@ const { t } = useI18n();
 const props = defineProps<{
   locale?: string;
   page?: string;
+  /** 専用画像のページスコープ用 ID（記事 ID など）。ホストが `<zcode-cms page-id="...">` で渡す */
+  pageId?: string;
   cssCommon?: string;
   cssIndividual?: string;
   cssSpecial?: string;

@@ -252,7 +252,9 @@ export default {
     currentlySelected: 'Currently selected',
     select: 'Select',
     tabAll: 'All',
-    addSpecialImage: 'Add dedicated image'
+    addSpecialImage: 'Add dedicated image',
+    scopeShared: 'All pages',
+    scopePage: 'This page'
   },
   dataViewer: {
     page: 'Page',
@@ -278,7 +280,7 @@ export default {
       special: {
         title: 'Dedicated',
         description:
-          'Intended for parts and images dedicated to a page or use case, such as pages whose content changes depending on conditions after the site is published.'
+          'Intended for parts and images dedicated to a page or use case. When page-id is set on the CMS, dedicated images can be scoped to all pages or the current page only.'
       }
     }
   },

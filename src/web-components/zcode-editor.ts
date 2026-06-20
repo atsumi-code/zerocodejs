@@ -56,6 +56,7 @@ class ZeroCodeEditorElement extends HTMLElement {
     this.app = createApp(ZeroCodeEditor, {
       locale: locale,
       page: pageAttr,
+      pageId: this.getAttribute('page-id') || undefined,
       cssCommon: cssCommonAttr,
       cssIndividual: cssIndividualAttr,
       cssSpecial: cssSpecialAttr,
@@ -109,6 +110,7 @@ class ZeroCodeEditorElement extends HTMLElement {
     this.app = createApp(ZeroCodeEditor, {
       locale: locale,
       page: pageAttr,
+      pageId: this.getAttribute('page-id') || undefined,
       cssCommon: cssCommonAttr,
       cssIndividual: cssIndividualAttr,
       cssSpecial: cssSpecialAttr,
@@ -451,6 +453,7 @@ class ZeroCodeEditorElement extends HTMLElement {
     return [
       'locale',
       'page',
+      'page-id',
       'css-common',
       'css-individual',
       'css-special',

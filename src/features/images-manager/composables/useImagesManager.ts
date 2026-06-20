@@ -1,8 +1,17 @@
 import { ref, computed } from 'vue';
 import type { ZeroCodeData, ImageData } from '../../../types';
 import { findImageReferences } from '../../../core/utils/image-utils';
+import {
+  filterSpecialImagesForPage,
+  getSpecialImageAddDefaults
+} from '../../../core/utils/image-scope';
 
-export function useImagesManager(cmsData: ZeroCodeData) {
+export interface UseImagesManagerOptions {
+  /** 指定時は専用画像を shared + 当該 pageId のみ表示し、追加時は page スコープにする */
+  pageId?: string;
+}
+
+export function useImagesManager(cmsData: ZeroCodeData, options: UseImagesManagerOptions = {}) {
   // 状態管理
   const activeCategory = ref<'common' | 'individual' | 'special'>('common');
   const selectedImage = ref<ImageData | null>(null);
@@ -19,7 +28,7 @@ export function useImagesManager(cmsData: ZeroCodeData) {
     } else if (activeCategory.value === 'individual') {
       return cmsData.images.individual;
     } else {
-      return cmsData.images.special;
+      return filterSpecialImagesForPage(cmsData.images.special, options.pageId);
     }
   });
 
@@ -36,12 +45,15 @@ export function useImagesManager(cmsData: ZeroCodeData) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64 = e.target?.result as string;
+        const scopeDefaults =
+          activeCategory.value === 'special' ? getSpecialImageAddDefaults(options.pageId) : {};
         const newImage: ImageData = {
           id: `img-${Date.now()}`,
           name: file.name,
           url: base64,
           mimeType: file.type,
-          needsUpload: true
+          needsUpload: true,
+          ...scopeDefaults
         };
 
         if (activeCategory.value === 'common') {

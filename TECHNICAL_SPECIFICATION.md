@@ -115,8 +115,23 @@ interface ImageData {
   url: string;
   mimeType?: string; // MIMEタイプ（base64画像の場合）
   needsUpload?: boolean; // アップロードが必要かどうか
+  scope?: 'shared' | 'page'; // 専用画像のみ
+  pageId?: string; // scope が page のときのページ識別子
 }
 ```
+
+#### 専用画像のスコープ
+
+`page-id` 属性を CMS に渡すと、専用画像（`images.special`）をページ単位で区別できます。
+
+| `scope`           | 意味                        | 選択モーダル（page-id 指定時） |
+| ----------------- | --------------------------- | ------------------------------ |
+| 未指定 / `shared` | 全ページで選択可能          | 表示される                     |
+| `page` + `pageId` | 当該 page-id の編集画面のみ | 一致する pageId のみ表示       |
+
+- CMS から専用画像を追加すると、`page-id` 指定時は `{ scope: 'page', pageId }` が付与されます
+- 画像管理タブ（Editor/Studio）からの追加は `scope: 'shared'`（page-id 未指定コンテキスト）
+- 保存 target は従来どおり `images-special`
 
 ## Web Components
 
@@ -128,6 +143,7 @@ interface ImageData {
 
 - `locale`: ロケール設定（デフォルト: `'ja'`）
 - `page`: ページデータ（JSON文字列）
+- `page-id`: 専用画像のページスコープ用 ID（記事 ID など）。指定時、画像選択モーダルでは shared + 当該 page-id の専用画像のみ表示し、追加時は `scope: 'page'` を付与
 - `parts-common`: 共通パーツデータ（JSON文字列）
 - `parts-individual`: 個別パーツデータ（JSON文字列）
 - `images-common`: 共通画像データ（JSON文字列）
@@ -178,6 +194,7 @@ interface ImageData {
 
 - `locale`: ロケール設定（デフォルト: `'ja'`）
 - `page`: ページデータ（JSON文字列）
+- `page-id`: ページ管理タブの CMS に渡す専用画像スコープ ID（`zcode-cms` と同義）
 - `parts-common`: 共通パーツデータ（JSON文字列）
 - `parts-individual`: 個別パーツデータ（JSON文字列）
 - `images-common`: 共通画像データ（JSON文字列）
@@ -224,6 +241,7 @@ interface ImageData {
 
 - `locale`: ロケール設定（デフォルト: `'ja'`）
 - `page`: ページデータ（JSON文字列、**ページ編集タブで編集可能**）
+- `page-id`: ページ管理タブの CMS に渡す専用画像スコープ ID
 - `parts-common`: 共通パーツデータ（JSON文字列、読み取り専用）
 - `parts-individual`: 個別パーツデータ（JSON文字列、読み取り専用）
 - `parts-special`: 専用パーツデータ（JSON文字列、**編集可能**）

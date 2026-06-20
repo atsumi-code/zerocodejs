@@ -65,6 +65,7 @@
       ref="cmsRef"
       :locale="props.locale"
       :page="props.page"
+      :page-id="props.pageId"
       :css-common="props.cssCommon"
       :css-individual="props.cssIndividual"
       :css-special="props.cssSpecial"
@@ -195,6 +196,7 @@ const { t } = useI18n();
 const props = defineProps<{
   locale?: string;
   page?: string;
+  pageId?: string;
   cssCommon?: string;
   cssIndividual?: string;
   cssSpecial?: string;

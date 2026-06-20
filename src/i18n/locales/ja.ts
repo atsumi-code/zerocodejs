@@ -246,7 +246,9 @@ export default {
     currentlySelected: '現在選択中',
     select: '選択',
     tabAll: '全て',
-    addSpecialImage: '専用画像を追加'
+    addSpecialImage: '専用画像を追加',
+    scopeShared: '全ページ',
+    scopePage: 'このページ'
   },
   dataViewer: {
     page: 'ページ',
@@ -272,7 +274,7 @@ export default {
       special: {
         title: '専用',
         description:
-          'ページや用途に専用のパーツ・画像を想定しています。公開後のサイトで条件によって表示が変わるページ向けなどに使います。'
+          'ページや用途に専用のパーツ・画像を想定しています。page-id を指定した CMS では、専用画像を「全ページ」と「このページ」に分けて管理できます。'
       }
     }
   },
