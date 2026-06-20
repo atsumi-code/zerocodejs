@@ -9,6 +9,8 @@
 
 **Simple editing UI. Framework-agnostic CMS frontend library.**
 
+ZeroCode.js is an embeddable CMS library for existing web services. Authentication and persistence stay on the host; editing UI is provided via Web Components such as `<zcode-cms>`. Public HTML is generated from developer-defined part templates without CMS-specific wrapper markup. Editor-only `data-zcode-*` attributes are stripped on public render. [Learn more in the docs](./docs.html#about)
+
 > **Status: Beta**
 >
 > ZeroCode.js is currently in beta. APIs, specifications, and data formats may change without notice (including breaking changes).
@@ -153,6 +155,7 @@ editor.setAttribute('images-common', JSON.stringify(imagesData));
 
 ## Documentation
 
+- [Documentation – About ZeroCode.js](./docs.html#about)
 - [Technical Specification](./TECHNICAL_SPECIFICATION.md)
 - [日本語ドキュメント](./README.ja.md)
 

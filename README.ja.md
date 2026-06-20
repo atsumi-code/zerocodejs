@@ -9,6 +9,8 @@
 
 シンプルに編集画面を。フレームワーク非依存のCMSフロントエンドライブラリ
 
+ZeroCode.js は、既存 Web サービスに後付けできる埋め込み型 CMS ライブラリです。認証・永続化はホスト側、編集 UI は `<zcode-cms>` 等の Web Components。公開 HTML は開発者定義のパーツテンプレートから生成し、CMS 都合の DOM は挟みません。編集時のみ `data-zcode-*` を付与し、公開時は除去します。[詳細はドキュメント](./docs.html#about)
+
 > **Status: Beta**
 >
 > ZeroCode.js は現在ベータ版です。仕様・API・データ形式は予告なく変更される可能性があります（破壊的変更を含む）。
@@ -160,6 +162,7 @@ editor.setAttribute('images-common', JSON.stringify(imagesData));
 
 ## ドキュメント
 
+- [ドキュメント（ZeroCode.js とは）](./docs.html#about)
 - [技術仕様書](./TECHNICAL_SPECIFICATION.md)
 - [実装TODO](./TODO.md)
 - [AI向けガイドライン](./AGENTS.md)
