@@ -11,20 +11,31 @@
           </button>
         </div>
 
-        <!-- 現在選択中の画像 -->
-        <div v-if="currentValue && getCurrentImage()" class="zcode-image-current">
+        <!-- 現在選択中 / 変更プレビュー -->
+        <div v-if="selectionPreviewVisible" class="zcode-image-current">
           <div class="zcode-image-current-title" role="heading" aria-level="4">
             {{ $t('imagesManager.currentlySelected') }}
           </div>
           <div class="zcode-image-current-item">
             <img
-              :src="getCurrentImage()?.url"
-              :alt="getCurrentImage()?.name || ''"
+              v-if="currentImage"
+              :src="currentImage.url"
+              :alt="currentImage.name"
               class="zcode-image-current-item-img"
             />
-            <div class="zcode-image-current-name">
-              {{ getCurrentImage()?.name }}
-            </div>
+            <ArrowRight
+              v-if="showSelectionArrow"
+              class="zcode-image-current-arrow"
+              :size="16"
+              aria-hidden="true"
+            />
+            <img
+              v-if="selectedPreviewImage"
+              :src="selectedPreviewImage.url"
+              :alt="selectedPreviewImage.name"
+              class="zcode-image-current-item-img"
+              :class="{ 'zcode-image-current-item-img--pending': showSelectionArrow }"
+            />
           </div>
         </div>
 
@@ -244,7 +255,16 @@ import type { ZeroCodeData, ImageData } from '../../../types';
 import { useImagesManager } from '../../images-manager/composables/useImagesManager';
 import { filterSpecialImagesForPage } from '../../../core/utils/image-scope';
 import { logger } from '../../../core/utils/logger';
-import { X, Check, Plus, Pencil, ArrowUpDown, Trash2, Image as ImageIcon } from 'lucide-vue-next';
+import {
+  X,
+  Check,
+  Plus,
+  Pencil,
+  ArrowUpDown,
+  ArrowRight,
+  Trash2,
+  Image as ImageIcon
+} from 'lucide-vue-next';
 
 type ImageCategory = 'common' | 'individual' | 'special';
 type ImageSelectTab = 'all' | ImageCategory;
@@ -359,12 +379,31 @@ function getCategoryLabel(category: ImageCategory): string {
   return t('dataViewer.special');
 }
 
-const getCurrentImage = (): ImageData | null => {
-  if (!props.currentValue) return null;
+function findImageById(id: string | null | undefined): ImageData | null {
+  if (!id) return null;
   const { common, individual, special } = props.cmsData.images;
-  const allImages = [...common, ...individual, ...special];
-  return allImages.find((img) => img.id === props.currentValue) || null;
-};
+  return [...common, ...individual, ...special].find((img) => img.id === id) ?? null;
+}
+
+const currentImage = computed(() => findImageById(props.currentValue));
+
+const selectedImage = computed(() => findImageById(selectedImageId.value));
+
+const showSelectionArrow = computed(() => {
+  const current = currentImage.value;
+  const selected = selectedImage.value;
+  return !!current && !!selected && current.id !== selected.id;
+});
+
+const selectedPreviewImage = computed(() => {
+  if (!selectedImage.value) return null;
+  if (currentImage.value && !showSelectionArrow.value) return null;
+  return selectedImage.value;
+});
+
+const selectionPreviewVisible = computed(
+  () => !!currentImage.value || !!selectedPreviewImage.value
+);
 
 const selectImage = (image: ImageData) => {
   selectedImageId.value = image.id;
