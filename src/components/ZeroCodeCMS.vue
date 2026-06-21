@@ -976,7 +976,7 @@ watch([viewMode, previewArea, containerRef], ([newViewMode, newPreviewArea, newC
   }
 });
 
-watch(currentMode, (mode, oldMode) => {
+watch(currentMode, (_mode, oldMode) => {
   if (oldMode === 'reorder') {
     leaveReorderStructureList();
     clearStructureLabels();
