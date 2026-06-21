@@ -8,9 +8,11 @@
       <div class="zcode-panel-header-title" role="heading" aria-level="3">
         {{ $t('editPanel.title') }}
       </div>
-      <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('close')">
-        <X :size="18" />
-      </button>
+      <div class="zcode-edit-panel-header-actions">
+        <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="$emit('close')">
+          <X :size="18" />
+        </button>
+      </div>
     </div>
 
     <!-- 親要素選択ボタン -->

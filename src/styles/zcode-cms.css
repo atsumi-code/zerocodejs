@@ -132,7 +132,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 8px 12px;
+  min-height: 48px;
   border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
   flex-shrink: 0;
@@ -1594,10 +1596,43 @@
 
 .zcode-add-panel-header-actions,
 .zcode-reorder-panel-header-actions,
-.zcode-delete-panel-header-actions {
+.zcode-delete-panel-header-actions,
+.zcode-edit-panel-header-actions {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+}
+
+.zcode-edit-panel-header-actions .zcode-close-btn,
+.zcode-add-panel-header-actions .zcode-close-btn,
+.zcode-reorder-panel-header-actions .zcode-close-btn,
+.zcode-delete-panel-header-actions .zcode-close-btn,
+.zcode-add-panel-options-trigger,
+.zcode-reorder-panel-options-trigger,
+.zcode-delete-panel-options-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.zcode-edit-panel-header-actions .zcode-close-btn,
+.zcode-add-panel-header-actions .zcode-close-btn,
+.zcode-reorder-panel-header-actions .zcode-close-btn,
+.zcode-delete-panel-header-actions .zcode-close-btn {
+  border: none;
+  background: transparent;
+}
+
+.zcode-edit-panel-header-actions .zcode-close-btn:hover,
+.zcode-add-panel-header-actions .zcode-close-btn:hover,
+.zcode-reorder-panel-header-actions .zcode-close-btn:hover,
+.zcode-delete-panel-header-actions .zcode-close-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
 }
 
 .zcode-reorder-panel-options-anchor {
@@ -1608,14 +1643,7 @@
 }
 
 .zcode-reorder-panel-options-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
-  padding: 8px;
   border: none;
-  border-radius: 8px;
   background: transparent;
   color: #6b7280;
   cursor: pointer;
@@ -2059,7 +2087,8 @@
   .zcode-add-panel-header,
   .zcode-reorder-panel-header,
   .zcode-delete-panel-header {
-    padding: 10px 12px;
+    padding: 8px 10px;
+    min-height: 44px;
   }
 
   .zcode-edit-fields {
@@ -2122,14 +2151,7 @@
 
 .zcode-add-panel-options-trigger,
 .zcode-delete-panel-options-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
-  padding: 8px;
   border: none;
-  border-radius: 8px;
   background: transparent;
   color: #6b7280;
   cursor: pointer;
