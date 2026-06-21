@@ -4996,24 +4996,6 @@
   border-color: #fcd34d;
 }
 
-.zcode-image-item-scope-badge {
-  top: auto;
-  bottom: 36px;
-  left: 8px;
-}
-
-.zcode-image-item-scope-badge--shared {
-  color: #1e40af;
-  background: rgba(219, 234, 254, 0.95);
-  border-color: #93c5fd;
-}
-
-.zcode-image-item-scope-badge--page {
-  color: #166534;
-  background: rgba(220, 252, 231, 0.95);
-  border-color: #86efac;
-}
-
 .zcode-image-item-img {
   width: 100%;
   height: 150px;

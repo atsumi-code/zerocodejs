@@ -246,9 +246,7 @@ export default {
     currentlySelected: '現在選択中',
     select: '選択',
     tabAll: '全て',
-    addSpecialImage: '専用画像を追加',
-    scopeShared: '全ページ',
-    scopePage: 'このページ'
+    addSpecialImage: '専用画像を追加'
   },
   dataViewer: {
     page: 'ページ',

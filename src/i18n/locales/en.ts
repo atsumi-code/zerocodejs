@@ -252,9 +252,7 @@ export default {
     currentlySelected: 'Currently selected',
     select: 'Select',
     tabAll: 'All',
-    addSpecialImage: 'Add dedicated image',
-    scopeShared: 'All pages',
-    scopePage: 'This page'
+    addSpecialImage: 'Add dedicated image'
   },
   dataViewer: {
     page: 'Page',

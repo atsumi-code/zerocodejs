@@ -308,12 +308,9 @@ interface ImageData {
 
 #### 専用画像のスコープ（`page-id`）
 
-- **Web Component 属性**: `page-id`（`zcode-cms` / `zcode-editor` / `zcode-studio`）
-- **`ImageData.scope`**: `'shared'`（全ページで選択可能）または `'page'`（`pageId` が一致する編集画面のみ）
-- **既存データ**: `scope` 未指定は `shared` として扱う
-- **CMS 画像選択モーダル**: `page-id` 指定時は shared + 当該 page の専用画像のみ表示。追加時は `scope: 'page'` + `pageId`
-- **保存 target**: 従来どおり `images-special`（スコープ付き JSON をホストが永続化）
-- **レンダリング**: 画像 ID 解決は従来どおり（プール内の全専用画像を参照可能）
+- 詳細仕様: [TECHNICAL_SPECIFICATION.md](./TECHNICAL_SPECIFICATION.md) の「専用画像のスコープ」
+- ローカル検証: [test-cms-scope.html](./test-cms-scope.html)（`npm run dev` → `/test-cms-scope.html`）
+- 実装: [image-scope.ts](./src/core/utils/image-scope.ts)
 
 ## テンプレート記法
 
@@ -507,6 +504,7 @@ interface ImageData {
 - `src/core/utils/sanitize.ts`: サニタイズ処理（リッチテキスト、URL、属性値、パーツテンプレート）
 - `src/core/utils/path-utils.ts`: パス操作ユーティリティ
 - `src/core/utils/image-utils.ts`: 画像処理ユーティリティ
+- `src/core/utils/image-scope.ts`: 専用画像の page-id スコープ（フィルタ・追加デフォルト）
 - `src/core/utils/css-manager.ts`: CSS管理
 - `src/core/utils/validation.ts`: バリデーション処理
 
@@ -517,6 +515,18 @@ interface ImageData {
 ### SSR 用エントリ（npm）
 
 - `src/ssr-entry.ts`: `zerocodejs/ssr` の公開エントリ（`renderToHtml`、`renderCssToHtml`、`RenderError` のみ。`vite.ssr.config.ts` で `dist/zerocode-ssr.es.js` を生成）
+
+### 検証用 HTML（ルート）
+
+| ファイル                          | 用途                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| `test-cms.html`                   | CMS 基本デモ（インスタンス ID: `test-cms`）                            |
+| `test-cms-scope.html`             | 専用画像の `page-id` スコープ検証（インスタンス ID: `test-cms-scope`） |
+| `test-dev.html`                   | Editor 全機能デモ                                                      |
+| `test-studio.html`                | Studio デモ                                                            |
+| `test-pub.html` / `test-ssr.html` | 公開 HTML / SSR 確認                                                   |
+
+起動: `npm run dev` → 各 HTML をブラウザで開く。永続化のモックは `public/js/common.js` の `StorageManager`。
 
 ## 実装済み機能
 
@@ -579,6 +589,12 @@ interface ImageData {
 - `page-id` 属性（`zcode-cms` / `zcode-editor` / `zcode-studio`）
 - CMS 画像選択モーダルで shared + 当該 page のみ表示、追加時は page スコープ
 - `src/core/utils/image-scope.ts` でフィルタ・追加デフォルトを共通化
+- 検証用 `test-cms-scope.html` を追加
+
+### 未実装（スコープ関連）
+
+- **専用パーツのページスコープ**: Phase 2 以降で検討（画像 Phase 1 完了後）
+- **Studio / Editor 画像管理でのスコープ編集 UI**: 現状は全件表示・追加時 `shared`（CMS モーダルが主戦場）
 
 ### 保留・スキップ機能
 
@@ -999,4 +1015,4 @@ const expensiveValue = computed(() => {
 
 ---
 
-**最終更新日**: 2026年3月
+**最終更新日**: 2026年6月

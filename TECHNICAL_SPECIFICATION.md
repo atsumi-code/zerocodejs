@@ -132,6 +132,15 @@ interface ImageData {
 - CMS から専用画像を追加すると、`page-id` 指定時は `{ scope: 'page', pageId }` が付与されます
 - 画像管理タブ（Editor/Studio）からの追加は `scope: 'shared'`（page-id 未指定コンテキスト）
 - 保存 target は従来どおり `images-special`
+- レンダリング: 画像 ID 解決はプール全体を参照（スコープは選択 UI のみに効く）
+
+**ホスト側の例**:
+
+```html
+<zcode-cms id="cms" page-id="post-123" page="..." images-special="..."></zcode-cms>
+```
+
+`save-request` の `images-special` には `scope` / `pageId` 付き JSON がそのまま含まれます。ホストはユーザー単位で1プールとして永続化してください。
 
 ## Web Components
 
@@ -1216,6 +1225,18 @@ cms.addEventListener('save-request', async (event) => {
 npm run dev
 ```
 
+#### ローカル検証用 HTML
+
+| ファイル                          | 内容                                                                       |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| `test-cms.html`                   | CMS 基本操作                                                               |
+| `test-cms-scope.html`             | 専用画像の `page-id` スコープ（記事 A/B 切替・`images-special` JSON 表示） |
+| `test-dev.html`                   | Editor（パーツ/画像管理・データビューア含む）                              |
+| `test-studio.html`                | Studio                                                                     |
+| `test-pub.html` / `test-ssr.html` | 公開出力 / SSR                                                             |
+
+デモの永続化は `public/js/common.js` の `StorageManager`（localStorage）。`test-cms-scope.html` のインスタンス ID は `test-cms-scope`（`test-cms.html` とは別データ）。
+
 ### ビルド
 
 ```bash
@@ -1247,4 +1268,4 @@ MIT License
 
 ---
 
-**最終更新日**: 2026年2月
+**最終更新日**: 2026年6月

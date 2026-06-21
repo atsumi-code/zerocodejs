@@ -432,7 +432,7 @@
 
 ## Phase 5: ユーザーテスト反映（ZeroCode.js Issue 分割）
 
-> **背景**: 社内ユーザーテスト（2026年）で得られたフィードバックのうち、**ZeroCode.js の編集 UI に限定**して対応する項目。埋め込み先プロダクト固有（公開画面・スタッフ紐付け・下書きフロー等）は本 Phase の対象外。
+> **背景**: 社内ユーザーテスト（2026年）等で得られたフィードバックのうち、**ZeroCode.js の編集 UI に限定**して対応する項目。埋め込み先プロダクト固有（公開画面・スタッフ紐付け・下書きフロー等）は本 Phase の対象外。
 >
 > **進め方**: 下記 Issue を **ZC-1 → ZC-5 の順** に1件ずつ解消する。GitHub Issue 作成時は ID（`ZC-n`）をタイトルに含めると追いやすい。
 
@@ -585,6 +585,28 @@ ZC-3（並行可）
 
 ---
 
+### 専用画像のページスコープ（Phase 1）【完了】
+
+- **複雑度**: 中
+- **背景**: 専用画像（`images.special`）が CMS インスタンス全体で1プールのため、記事ごとに分けられない
+- **実装方針**:
+  - `ImageData` に `scope: 'shared' | 'page'` と `pageId` を追加
+  - Web Component 属性 `page-id`（`zcode-cms` / `zcode-editor` / `zcode-studio`）
+  - CMS 画像選択モーダル: `page-id` 指定時は shared + 当該 page のみ表示、追加時は `scope: 'page'`
+  - 保存 target は従来どおり `images-special`
+  - レンダリングの ID 解決は変更なし
+- **主な変更箇所**:
+  - `src/core/utils/image-scope.ts`
+  - `src/features/images-manager/composables/useImagesManager.ts`
+  - `src/features/editor/components/ImageSelectModal.vue`
+  - `src/components/ZeroCodeCMS.vue`、Web Components
+- **検証**:
+  - `npm run dev` → [test-cms-scope.html](./test-cms-scope.html)（page-id 切替・JSON パネル）
+- **Phase 2（未着手）**: 専用パーツのスコープ、Studio/Editor 画像管理でのスコープ編集 UI
+- **実装済み**: 2026年6月
+
+---
+
 ### 本 Phase の対象外（ホスト側）
 
 以下は ZeroCode.js では対応しない。埋め込み先（ホスト）で別管理する。
@@ -630,7 +652,8 @@ ZC-3（並行可）
 
 ### ユーザーテスト反映（2026年〜）
 
-18. [Phase 5: ZC-1 〜 ZC-5](./TODO.md#phase-5-ユーザーテスト反映zerocodejs-issue-分割) — ユーザーテスト に基づく ZeroCode.js 編集 UX（順次対応）
+18. [Phase 5: ZC-1 〜 ZC-5](./TODO.md#phase-5-ユーザーテスト反映zerocodejs-issue-分割) — ユーザーテスト反映に基づく ZeroCode.js 編集 UX（**ZC-1 〜 ZC-5 完了**）
+19. [専用画像のページスコープ（Phase 1）](./TODO.md#専用画像のページスコープphase-1完了) — **完了**（Phase 2: 専用パーツスコープは未着手）
 
 ---
 
@@ -706,6 +729,12 @@ ZC-3（並行可）
 - ループ: `z-for="item in {@items}"` ✅ 実装済み
 - スロット: `z-slot="slotName"` ✅ 実装済み
 
+### ImageData（専用画像スコープ）
+
+- `scope?: 'shared' | 'page'` — 未指定は shared（全 page-id で選択可能）
+- `pageId?: string` — `scope: 'page'` のときのみ
+- ホストは `<zcode-cms page-id="記事ID">` を渡す。詳細は [TECHNICAL_SPECIFICATION.md](./TECHNICAL_SPECIFICATION.md)
+
 ### 今後追加予定の記法
 
 - インデックス付きループ: `z-for="(item, index) in {@items}"`（検討中）
@@ -715,11 +744,15 @@ ZC-3（並行可）
 ## 参考リンク
 
 - [プロジェクトルート](.)
+- [技術仕様書](./TECHNICAL_SPECIFICATION.md)
+- [AGENTS.md](./AGENTS.md) — AI 向け実装ガイド
 - [テンプレートプロセッサー](./src/core/utils/template-processor.ts)
+- [image-scope](./src/core/utils/image-scope.ts) — 専用画像スコープ
 - [ZeroCodeCMS](./src/components/ZeroCodeCMS.vue)
 - [ZeroCodeEditor](./src/components/ZeroCodeEditor.vue)
-- [共通JS](./public/js/common.js)
+- [共通JS](./public/js/common.js) — デモ用 StorageManager
+- 検証 HTML: [test-cms.html](./test-cms.html), [test-cms-scope.html](./test-cms-scope.html), [test-dev.html](./test-dev.html)
 
 ---
 
-**最終更新日**: 2025年1月
+**最終更新日**: 2026年6月

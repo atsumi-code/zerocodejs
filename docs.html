@@ -403,8 +403,8 @@
 
         <h3 id="roadmap">編集体験改善ロードマップ</h3>
         <p>
-          社内ユーザーテスト（2026年）を踏まえ、ZeroCode.js
-          本体で対応予定の項目を Issue 分割しています。埋め込み先プロダクト
+          社内ユーザーテスト（2026年）を踏まえ、ZeroCode.js 本体で対応した項目を Issue
+          分割しています。埋め込み先プロダクト
           固有の機能（公開画面・下書きフロー・スタッフ表示等）は含みません。
         </p>
         <p>
@@ -1394,14 +1394,20 @@
         </div>
 
         <h2 id="images-management">画像管理</h2>
-        <p>画像管理は、<code>zcode-editor</code>でのみ利用可能な機能です。</p>
+        <p>
+          画像の一覧管理（アップロード・ID 編集・削除）は <code>zcode-editor</code> /
+          <code>zcode-studio</code>
+          の画像管理タブで行います。ページ編集時の画像<strong>選択</strong>は
+          <code>zcode-cms</code>（および Editor のページ管理）の編集パネルから行います。
+        </p>
 
         <h3 id="images-management-features">画像管理機能</h3>
         <ul>
           <li>画像のアップロード</li>
           <li>画像の編集（ID、名前、URL）</li>
           <li>画像の削除</li>
-          <li>共通画像と個別画像の管理</li>
+          <li>共通・個別・専用カテゴリの管理（Editor / Studio）</li>
+          <li>専用画像の page-id スコープ（CMS 画像選択モーダル。詳細は下記）</li>
         </ul>
 
         <h3 id="image-data-structure">画像データ構造</h3>
@@ -1411,7 +1417,59 @@
   url: string;
   mimeType?: string;
   needsUpload?: boolean;
+  scope?: 'shared' | 'page';  // 専用画像（images-special）のみ
+  pageId?: string;            // scope が 'page' のとき
 }</code></pre>
+
+        <h4 id="dedicated-image-scope">専用画像のスコープ（page-id）</h4>
+        <p>
+          ブログの記事編集など、<strong>同一ユーザーが複数ページを編集する</strong>場合、<code
+            >page-id</code
+          >
+          属性で専用画像をページ単位に区別できます。内部キーは従来どおり
+          <code>images-special</code> です。
+        </p>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th><code>scope</code></th>
+              <th>意味</th>
+              <th>CMS 画像選択（page-id 指定時）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>未指定 / <code>shared</code></td>
+              <td>全ページで選択可能</td>
+              <td>表示される</td>
+            </tr>
+            <tr>
+              <td><code>page</code> + <code>pageId</code></td>
+              <td>当該 page-id の編集画面のみ</td>
+              <td>一致する pageId のみ</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>
+            <code>zcode-cms</code> / <code>zcode-editor</code> / <code>zcode-studio</code> の
+            <code>page-id</code> 属性に記事 ID 等を渡す
+          </li>
+          <li>CMS 編集画面から追加した専用画像は <code>{ scope: 'page', pageId }</code> になる</li>
+          <li>
+            Editor / Studio の画像管理タブから追加した専用画像は
+            <code>scope: 'shared'</code>（管理者向け）
+          </li>
+          <li>
+            保存は従来どおり <code>images-special</code> ターゲット（スコープ付き JSON
+            をホストが永続化）
+          </li>
+        </ul>
+        <pre><code>&lt;zcode-cms
+  page-id="post-123"
+  page="..."
+  images-special="..."
+&gt;&lt;/zcode-cms&gt;</code></pre>
 
         <h4>mimeType</h4>
         <p>
@@ -1428,11 +1486,17 @@
         </p>
 
         <h3 id="image-selection-modal">画像選択モーダル</h3>
-        <p>編集パネルから画像を選択する際に表示されるモーダルです。</p>
+        <p>
+          編集パネルから画像を選択する際に表示されるモーダルです（<code>zcode-cms</code> および
+          Editor のページ管理）。
+        </p>
         <ul>
-          <li>共通画像と個別画像の切り替え</li>
-          <li>画像のプレビュー表示</li>
-          <li>画像の追加・削除</li>
+          <li>タブ: 全て / 共通 / 個別 / 専用</li>
+          <li>専用タブおよび「全て」タブで、専用画像の追加・並べ替え・削除が可能</li>
+          <li>ツールバー右の「専用画像を追加」は常時表示（追加後は自動選択）</li>
+          <li>
+            <code>page-id</code> 指定時は、他 page の専用画像は一覧から除外（UI バッジは表示しない）
+          </li>
         </ul>
 
         <h2 id="configuration">設定オプション</h2>
@@ -1563,6 +1627,16 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
               <td>ページデータ（JSON文字列）</td>
             </tr>
             <tr>
+              <td><code>page-id</code></td>
+              <td>string</td>
+              <td>
+                専用画像のページスコープ用 ID（記事 ID
+                など）。指定時、画像選択モーダルでは「全ページ」(<code>shared</code>) と当該 page-id
+                の「このページ」(<code>scope: 'page'</code>) のみ表示。CMS から専用画像を追加すると
+                <code>scope: 'page'</code> が付与される
+              </td>
+            </tr>
+            <tr>
               <td><code>parts-common</code></td>
               <td>string</td>
               <td>共通パーツデータ（JSON文字列）</td>
@@ -1616,7 +1690,10 @@ cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
         <p>ZeroCodeCMSの機能に加えて、パーツ管理・画像管理・データビューアが利用できます。</p>
 
         <h4>属性</h4>
-        <p><code>zcode-cms</code>の属性に加えて、以下の属性が利用できます：</p>
+        <p>
+          <code>zcode-cms</code>の属性（<code>page-id</code>
+          含む）に加えて、以下の属性が利用できます：
+        </p>
         <table class="docs-table">
           <thead>
             <tr>

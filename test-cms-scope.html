@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js - 専用画像スコープ検証</title>
+
+    <link rel="stylesheet" href="./css/reset-host-test.css" />
+    <link rel="stylesheet" href="./css/common-core.css" />
+    <link rel="stylesheet" href="./css/page.css" />
+    <link rel="stylesheet" href="./css/sample.css" />
+    <style>
+      .scope-demo-toolbar {
+        max-width: 1200px;
+        margin: 0 auto 16px;
+        padding: 16px 20px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #334155;
+      }
+
+      .scope-demo-toolbar h2 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .scope-demo-toolbar p {
+        margin: 0 0 12px;
+      }
+
+      .scope-demo-toolbar ol {
+        margin: 0 0 16px;
+        padding-left: 20px;
+      }
+
+      .scope-demo-page-id {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        margin-bottom: 16px;
+      }
+
+      .scope-demo-page-id-label {
+        font-weight: 600;
+      }
+
+      .scope-demo-page-id-btn {
+        padding: 6px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .scope-demo-page-id-btn:hover {
+        border-color: #94a3b8;
+      }
+
+      .scope-demo-page-id-btn.is-active {
+        border-color: #2563eb;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-weight: 600;
+      }
+
+      .scope-demo-panel {
+        padding: 12px 14px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+      }
+
+      .scope-demo-panel-title {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      .scope-demo-panel-meta {
+        margin: 0 0 8px;
+        font-size: 13px;
+        color: #64748b;
+      }
+
+      .scope-demo-panel pre {
+        margin: 0;
+        padding: 10px 12px;
+        overflow: auto;
+        max-height: 220px;
+        background: #0f172a;
+        color: #e2e8f0;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .scope-demo-refresh-btn {
+        margin-top: 8px;
+        padding: 4px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #fff;
+        font-size: 12px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="l-header l-header--cms">
+      <h1>ZeroCodeCMS - 専用画像スコープ検証</h1>
+      <p>page-id 切替で、専用画像の「全ページ / このページ」を確認できます</p>
+    </div>
+
+    <div class="scope-demo-toolbar">
+      <h2>検証手順</h2>
+      <p>
+        ストレージ ID は <code>test-cms-scope</code> 固定です（通常の test-cms とは別データ）。
+        <code>images-special</code> プールは page-id を切り替えても共有されます。
+      </p>
+      <ol>
+        <li><strong>記事 A</strong> を選び、画像フィールドから「専用画像を追加」する</li>
+        <li><strong>記事 B</strong> に切り替え、画像選択モーダルで A 専用画像が出ないことを確認</li>
+        <li>
+          記事 B でも専用画像を追加し、保存後に下の JSON で <code>scope</code> /
+          <code>pageId</code> を確認
+        </li>
+      </ol>
+
+      <div class="scope-demo-page-id">
+        <span class="scope-demo-page-id-label">page-id:</span>
+        <button type="button" class="scope-demo-page-id-btn is-active" data-page-id="demo-page-a">
+          demo-page-a（記事 A）
+        </button>
+        <button type="button" class="scope-demo-page-id-btn" data-page-id="demo-page-b">
+          demo-page-b（記事 B）
+        </button>
+        <button type="button" class="scope-demo-page-id-btn" data-page-id="">
+          なし（フィルタなし）
+        </button>
+      </div>
+
+      <div class="scope-demo-panel">
+        <div class="scope-demo-panel-title">images.special（モーダル表示対象）</div>
+        <p id="scope-demo-summary" class="scope-demo-panel-meta"></p>
+        <pre id="scope-demo-json"></pre>
+        <button type="button" id="scope-demo-refresh-btn" class="scope-demo-refresh-btn">
+          JSON を更新
+        </button>
+      </div>
+    </div>
+
+    <div class="l-container">
+      <zcode-cms id="test-cms-scope" locale="ja" page-id="demo-page-a">
+        <link slot="css" rel="stylesheet" href="./css/common.css" />
+        <link slot="css" rel="stylesheet" href="./css/page.css" />
+        <link slot="css" rel="stylesheet" href="./css/sample.css" />
+        <script
+          slot="script"
+          src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+          crossorigin="anonymous"
+        ></script>
+        <script slot="script" src="./js/accordion.js"></script>
+      </zcode-cms>
+    </div>
+
+    <div class="l-footer l-footer--cms">
+      <h1>ZeroCodeCMS - 専用画像スコープ検証</h1>
+      <p><a href="./test-cms.html">通常の CMS デモ</a> · <a href="./index.html">トップ</a></p>
+    </div>
+
+    <div id="reset-controls-fixed" class="reset-controls-fixed">
+      <button id="reset-data-btn" class="reset-btn">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+          <path d="M21 3v5h-5" />
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+          <path d="M3 21v-5h5" />
+        </svg>
+        <span>リセット</span>
+      </button>
+    </div>
+
+    <script src="./js/common.js"></script>
+    <script type="module" src="/src/index.ts"></script>
+
+    <script>
+      const INSTANCE_ID = 'test-cms-scope';
+      let cms = null;
+      let currentPageId = 'demo-page-a';
+
+      function isSpecialImageVisibleForPage(image, pageId) {
+        if (!image || typeof image !== 'object') return false;
+        if (!image.scope || image.scope === 'shared') return true;
+        if (image.scope === 'page') {
+          if (!pageId) return true;
+          return image.pageId === pageId;
+        }
+        return true;
+      }
+
+      function getCmsElement() {
+        return document.getElementById(INSTANCE_ID);
+      }
+
+      function updateScopePanel() {
+        const el = getCmsElement();
+        const summaryEl = document.getElementById('scope-demo-summary');
+        const jsonEl = document.getElementById('scope-demo-json');
+        if (!el || !summaryEl || !jsonEl) return;
+
+        const pageIdLabel = currentPageId ? `"${currentPageId}"` : '（なし）';
+        let allSpecial = [];
+        try {
+          const data = el.getData();
+          allSpecial = Array.isArray(data?.images?.special) ? data.images.special : [];
+        } catch (e) {
+          summaryEl.textContent = `page-id: ${pageIdLabel} — getData() 失敗`;
+          jsonEl.textContent = String(e);
+          return;
+        }
+
+        const visible = allSpecial.filter((img) =>
+          isSpecialImageVisibleForPage(img, currentPageId || undefined)
+        );
+
+        summaryEl.textContent = `page-id: ${pageIdLabel} — 専用画像 ${allSpecial.length} 件中、モーダル表示 ${visible.length} 件`;
+        jsonEl.textContent = JSON.stringify(visible, null, 2);
+      }
+
+      function applyStorageToCms() {
+        ZeroCodeCommon.StorageManager.applyToComponent(INSTANCE_ID);
+        updateScopePanel();
+      }
+
+      function switchPageId(pageId) {
+        currentPageId = pageId;
+        const el = getCmsElement();
+        if (!el) return;
+
+        document.querySelectorAll('.scope-demo-page-id-btn').forEach((btn) => {
+          btn.classList.toggle('is-active', btn.getAttribute('data-page-id') === pageId);
+        });
+
+        if (pageId) {
+          el.setAttribute('page-id', pageId);
+        } else {
+          el.removeAttribute('page-id');
+        }
+
+        setTimeout(() => {
+          applyStorageToCms();
+        }, 250);
+      }
+
+      function setupPageIdButtons() {
+        document.querySelectorAll('.scope-demo-page-id-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            switchPageId(btn.getAttribute('data-page-id') || '');
+          });
+        });
+      }
+
+      function setupResetButton() {
+        const resetBtn = document.getElementById('reset-data-btn');
+        const resetControls = document.getElementById('reset-controls-fixed');
+        if (!resetBtn || !resetControls) return;
+
+        resetBtn.addEventListener('click', () => {
+          if (confirm('すべてのデータをリセットしますか？この操作は取り消せません。')) {
+            ZeroCodeCommon.StorageManager.clear(INSTANCE_ID);
+            ZeroCodeCommon.StorageManager.saveSampleData(INSTANCE_ID);
+            window.location.reload();
+          }
+        });
+
+        cms = getCmsElement();
+        if (cms) {
+          cms.addEventListener('view-mode-changed', (event) => {
+            resetControls.style.display = event.detail.mode === 'preview' ? 'none' : 'flex';
+          });
+
+          cms.addEventListener('save-request', () => {
+            setTimeout(updateScopePanel, 100);
+          });
+        }
+      }
+
+      async function init() {
+        await waitForCMS();
+        setTimeout(() => {
+          cms = getCmsElement();
+          if (!cms) return;
+
+          ZeroCodeCommon.StorageManager.ensureSampleDataIfNeeded(INSTANCE_ID);
+          applyStorageToCms();
+
+          const event = new CustomEvent('cms-content-updated');
+          window.dispatchEvent(event);
+          if (typeof jQuery !== 'undefined') {
+            jQuery(document).trigger('cms-content-updated');
+          }
+
+          setupPageIdButtons();
+          setupResetButton();
+
+          document
+            .getElementById('scope-demo-refresh-btn')
+            ?.addEventListener('click', updateScopePanel);
+        }, 100);
+      }
+
+      function waitForCMS() {
+        return new Promise((resolve) => {
+          if (customElements.get('zcode-cms')) {
+            resolve();
+          } else {
+            customElements.whenDefined('zcode-cms').then(resolve);
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>
