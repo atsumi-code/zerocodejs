@@ -60,13 +60,12 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick } from 'vue';
 import { Pencil, Plus, ArrowUpDown, Trash2, Eye, Settings } from 'lucide-vue-next';
 
 type ModeType = 'edit' | 'add' | 'reorder' | 'delete';
 type ViewModeType = 'preview' | 'manage';
 
-const props = defineProps<{
+defineProps<{
   currentMode: ModeType;
   viewMode: ViewModeType;
   availableModes?: ModeType[];
@@ -81,13 +80,6 @@ const emit = defineEmits<{
 }>();
 
 const handleModeClick = (mode: ModeType) => {
-  if (props.viewMode === 'preview') {
-    emit('switch-view-mode', 'manage');
-    nextTick(() => {
-      emit('switch-mode', mode);
-    });
-  } else {
-    emit('switch-mode', mode);
-  }
+  emit('switch-mode', mode);
 };
 </script>

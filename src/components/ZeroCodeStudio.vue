@@ -174,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, provide, type Ref } from 'vue';
+import { ref, computed, watch, onMounted, provide, nextTick, type Ref } from 'vue';
 import { zcodeTeleportTargetKey } from '../core/injectionKeys';
 import { useI18n } from 'vue-i18n';
 import ZeroCodeCMS from './ZeroCodeCMS.vue';
@@ -349,9 +349,14 @@ const currentMode = computed(() => {
 });
 
 const switchMode = (mode: 'edit' | 'add' | 'reorder' | 'delete') => {
-  if (cmsRef.value?.switchMode) {
-    cmsRef.value.switchMode(mode);
+  if (viewMode.value === 'preview') {
+    viewMode.value = 'manage';
+    nextTick(() => {
+      cmsRef.value?.switchMode?.(mode);
+    });
+    return;
   }
+  cmsRef.value?.switchMode?.(mode);
 };
 
 function handleTabClick(tab: 'edit' | 'parts' | 'images' | 'data') {

@@ -9,21 +9,11 @@
     }"
   >
     <Toolbar
-      v-if="viewMode === 'manage' && !hideToolbar"
+      v-if="!hideToolbar"
       :current-mode="currentMode"
       :view-mode="viewMode"
       :allow-dynamic-content-interaction="allowDynamicContentInteraction"
-      @switch-mode="switchMode"
-      @switch-view-mode="(mode) => (viewMode = mode)"
-      @open-settings="settingsPanelOpen = true"
-    />
-
-    <Toolbar
-      v-else-if="viewMode !== 'manage'"
-      :current-mode="currentMode"
-      :view-mode="viewMode"
-      :allow-dynamic-content-interaction="allowDynamicContentInteraction"
-      @switch-mode="switchMode"
+      @switch-mode="handleToolbarSwitchMode"
       @switch-view-mode="(mode) => (viewMode = mode)"
       @open-settings="settingsPanelOpen = true"
     />
@@ -592,6 +582,17 @@ function switchMode(mode: EditorMode) {
     return;
   }
   switchModeWithHandoff(mode);
+}
+
+function handleToolbarSwitchMode(mode: EditorMode) {
+  if (viewMode.value === 'preview') {
+    viewMode.value = 'manage';
+    nextTick(() => {
+      switchMode(mode);
+    });
+    return;
+  }
+  switchMode(mode);
 }
 
 addModeActions.switchMode = switchMode;
