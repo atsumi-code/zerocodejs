@@ -1,240 +1,239 @@
 <template>
-  <div v-if="isOpen" class="zcode-image-modal" @click.self="close">
-    <div class="zcode-image-modal-content" @click.stop>
-      <div class="zcode-image-modal-header">
-        <div class="zcode-image-modal-header-title" role="heading" aria-level="3">
-          {{ $t('imagesManager.selectImage') }}
+  <Teleport :to="teleportTo">
+    <div v-if="isOpen" class="zcode-image-modal" @click.self="close">
+      <div class="zcode-image-modal-content" @click.stop>
+        <div class="zcode-image-modal-header">
+          <div class="zcode-image-modal-header-title" role="heading" aria-level="3">
+            {{ $t('imagesManager.selectImage') }}
+          </div>
+          <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="close">
+            <X :size="18" />
+          </button>
         </div>
-        <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="close">
-          <X :size="18" />
-        </button>
-      </div>
 
-      <!-- 現在選択中の画像 -->
-      <div v-if="currentValue && getCurrentImage()" class="zcode-image-current">
-        <div class="zcode-image-current-title" role="heading" aria-level="4">
-          {{ $t('imagesManager.currentlySelected') }}
-        </div>
-        <div class="zcode-image-current-item">
-          <img
-            :src="getCurrentImage()?.url"
-            :alt="getCurrentImage()?.name || ''"
-            class="zcode-image-current-item-img"
-          />
-          <div class="zcode-image-current-name">
-            {{ getCurrentImage()?.name }}
+        <!-- 現在選択中の画像 -->
+        <div v-if="currentValue && getCurrentImage()" class="zcode-image-current">
+          <div class="zcode-image-current-title" role="heading" aria-level="4">
+            {{ $t('imagesManager.currentlySelected') }}
+          </div>
+          <div class="zcode-image-current-item">
+            <img
+              :src="getCurrentImage()?.url"
+              :alt="getCurrentImage()?.name || ''"
+              class="zcode-image-current-item-img"
+            />
+            <div class="zcode-image-current-name">
+              {{ getCurrentImage()?.name }}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="zcode-image-select-toolbar">
-        <div class="zcode-image-tabs">
-          <button
-            :class="{ active: activeTab === 'all' }"
-            class="zcode-image-tab"
-            @click="activeTab = 'all'"
-          >
-            {{ $t('imagesManager.tabAll') }}
-          </button>
-          <button
-            :class="{ active: activeTab === 'common' }"
-            class="zcode-image-tab"
-            @click="activeTab = 'common'"
-          >
-            {{ $t('dataViewer.common') }}
-          </button>
-          <button
-            :class="{ active: activeTab === 'individual' }"
-            class="zcode-image-tab"
-            @click="activeTab = 'individual'"
-          >
-            {{ $t('dataViewer.individual') }}
-          </button>
-          <button
-            :class="{ active: activeTab === 'special' }"
-            class="zcode-image-tab"
-            @click="activeTab = 'special'"
-          >
-            {{ $t('dataViewer.special') }}
-          </button>
+        <div class="zcode-image-select-toolbar">
+          <div class="zcode-image-tabs">
+            <button
+              :class="{ active: activeTab === 'all' }"
+              class="zcode-image-tab"
+              @click="activeTab = 'all'"
+            >
+              {{ $t('imagesManager.tabAll') }}
+            </button>
+            <button
+              :class="{ active: activeTab === 'common' }"
+              class="zcode-image-tab"
+              @click="activeTab = 'common'"
+            >
+              {{ $t('dataViewer.common') }}
+            </button>
+            <button
+              :class="{ active: activeTab === 'individual' }"
+              class="zcode-image-tab"
+              @click="activeTab = 'individual'"
+            >
+              {{ $t('dataViewer.individual') }}
+            </button>
+            <button
+              :class="{ active: activeTab === 'special' }"
+              class="zcode-image-tab"
+              @click="activeTab = 'special'"
+            >
+              {{ $t('dataViewer.special') }}
+            </button>
+          </div>
+          <div class="zcode-image-select-add-wrapper">
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/*"
+              style="display: none"
+              @change="handleFileSelect"
+            />
+            <button
+              type="button"
+              class="zcode-btn-primary zcode-image-select-add-btn"
+              @click="openSpecialImageFilePicker"
+            >
+              <Plus :size="14" />
+              <span>{{ $t('imagesManager.addSpecialImage') }}</span>
+            </button>
+          </div>
         </div>
-        <div class="zcode-image-select-add-wrapper">
-          <input
-            ref="fileInputRef"
-            type="file"
-            accept="image/*"
-            style="display: none"
-            @change="handleFileSelect"
-          />
-          <button
-            type="button"
-            class="zcode-btn-primary zcode-image-select-add-btn"
-            @click="openSpecialImageFilePicker"
-          >
-            <Plus :size="14" />
-            <span>{{ $t('imagesManager.addSpecialImage') }}</span>
-          </button>
-        </div>
-      </div>
 
-      <!-- 画像一覧 -->
-      <div class="zcode-image-grid">
-        <template v-if="activeTab === 'special'">
-          <div
-            v-for="image in currentImages"
-            :key="image.id"
-            :class="getSpecialItemClass(image)"
-            @click="selectImage(image)"
-          >
-            <div v-if="reorderSourceImage === image.id" class="zcode-reorder-source-indicator">
-              {{ $t('partsManager.source') }}
-            </div>
-            <img :src="image.url" :alt="image.name" class="zcode-image-item-img" />
-            <div class="zcode-image-item-overlay">
-              <div class="zcode-image-item-actions">
-                <button
-                  class="zcode-action-btn"
-                  :title="$t('imagesManager.editImage')"
-                  @click.stop="startEditing(image)"
-                >
-                  <Pencil :size="16" />
-                </button>
-                <button
-                  class="zcode-action-btn"
-                  :class="{ active: reorderSourceImage === image.id }"
-                  :title="$t('partsManager.reorderPart')"
-                  @click.stop="handleReorderClick(image.id)"
-                >
-                  <ArrowUpDown :size="16" />
-                </button>
-                <button
-                  class="zcode-action-btn zcode-delete-btn"
-                  :title="$t('partsManager.deletePartButton')"
-                  @click.stop="handleDelete(image)"
-                >
-                  <Trash2 :size="16" />
-                </button>
+        <!-- 画像一覧 -->
+        <div class="zcode-image-grid">
+          <template v-if="activeTab === 'special'">
+            <div
+              v-for="image in currentImages"
+              :key="image.id"
+              :class="getSpecialItemClass(image)"
+              @click="selectImage(image)"
+            >
+              <div v-if="reorderSourceImage === image.id" class="zcode-reorder-source-indicator">
+                {{ $t('partsManager.source') }}
+              </div>
+              <img :src="image.url" :alt="image.name" class="zcode-image-item-img" />
+              <div class="zcode-image-item-overlay">
+                <div class="zcode-image-item-actions">
+                  <button
+                    class="zcode-action-btn"
+                    :title="$t('imagesManager.editImage')"
+                    @click.stop="startEditing(image)"
+                  >
+                    <Pencil :size="16" />
+                  </button>
+                  <button
+                    class="zcode-action-btn"
+                    :class="{ active: reorderSourceImage === image.id }"
+                    :title="$t('partsManager.reorderPart')"
+                    @click.stop="handleReorderClick(image.id)"
+                  >
+                    <ArrowUpDown :size="16" />
+                  </button>
+                  <button
+                    class="zcode-action-btn zcode-delete-btn"
+                    :title="$t('partsManager.deletePartButton')"
+                    @click.stop="handleDelete(image)"
+                  >
+                    <Trash2 :size="16" />
+                  </button>
+                </div>
+              </div>
+              <div class="zcode-image-name">
+                {{ image.name }}
               </div>
             </div>
-            <div class="zcode-image-name">
-              {{ image.name }}
+            <div v-if="currentImages.length === 0" class="zcode-image-select-modal-empty">
+              {{ $t('partsManager.noImagesRegistered') }}
             </div>
-          </div>
-          <div v-if="currentImages.length === 0" class="zcode-image-select-modal-empty">
-            {{ $t('partsManager.noImagesRegistered') }}
-          </div>
-        </template>
-        <template v-else>
-          <div
-            v-for="entry in displayImages"
-            :key="entry.image.id"
-            :class="{ selected: selectedImageId === entry.image.id }"
-            class="zcode-image-item"
-            @click="selectImage(entry.image)"
-          >
-            <span
-              v-if="activeTab === 'all'"
-              class="zcode-image-item-category-badge"
-              :class="`zcode-image-item-category-badge--${entry.category}`"
+          </template>
+          <template v-else>
+            <div
+              v-for="entry in displayImages"
+              :key="entry.image.id"
+              :class="{ selected: selectedImageId === entry.image.id }"
+              class="zcode-image-item"
+              @click="selectImage(entry.image)"
             >
-              {{ getCategoryLabel(entry.category) }}
-            </span>
-            <img :src="entry.image.url" :alt="entry.image.name" class="zcode-image-item-img" />
-            <div class="zcode-image-name">
-              {{ entry.image.name }}
+              <span
+                v-if="activeTab === 'all'"
+                class="zcode-image-item-category-badge"
+                :class="`zcode-image-item-category-badge--${entry.category}`"
+              >
+                {{ getCategoryLabel(entry.category) }}
+              </span>
+              <img :src="entry.image.url" :alt="entry.image.name" class="zcode-image-item-img" />
+              <div class="zcode-image-name">
+                {{ entry.image.name }}
+              </div>
             </div>
-          </div>
-          <div v-if="displayImages.length === 0" class="zcode-image-select-modal-empty">
-            {{ $t('partsManager.noImagesRegistered') }}
-          </div>
-        </template>
-      </div>
+            <div v-if="displayImages.length === 0" class="zcode-image-select-modal-empty">
+              {{ $t('partsManager.noImagesRegistered') }}
+            </div>
+          </template>
+        </div>
 
-      <!-- アクションボタン -->
-      <div class="zcode-image-modal-actions">
-        <button
-          v-if="selectedImageId"
-          class="zcode-btn-primary zcode-image-modal-actions-btn"
-          @click="handleConfirm"
-        >
-          <Check :size="16" />
-          <span>{{ $t('imagesManager.select') }}</span>
-        </button>
+        <!-- アクションボタン -->
+        <div class="zcode-image-modal-actions">
+          <button
+            v-if="selectedImageId"
+            class="zcode-btn-primary zcode-image-modal-actions-btn"
+            @click="handleConfirm"
+          >
+            <Check :size="16" />
+            <span>{{ $t('imagesManager.select') }}</span>
+          </button>
+        </div>
       </div>
     </div>
+  </Teleport>
 
-    <!-- 専用画像の編集（画像管理と同様） -->
-    <Teleport :to="teleportTo">
-      <div
-        v-if="editingImage"
-        class="zcode-image-modal zcode-image-select-edit-overlay"
-        @click.self="cancelEditing"
-      >
-        <div class="zcode-image-modal-content" data-edit-mode @click.stop>
-          <div class="zcode-image-editor-header">
-            <div class="zcode-image-editor-header-title" role="heading" aria-level="4">
-              {{ $t('imagesManager.editImage') }}
-            </div>
-            <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="cancelEditing">
-              <X :size="18" />
+  <!-- 専用画像の編集（画像管理と同様） -->
+  <Teleport :to="teleportTo">
+    <div
+      v-if="editingImage"
+      class="zcode-image-modal zcode-image-select-edit-overlay"
+      @click.self="cancelEditing"
+    >
+      <div class="zcode-image-modal-content" data-edit-mode @click.stop>
+        <div class="zcode-image-editor-header">
+          <div class="zcode-image-editor-header-title" role="heading" aria-level="4">
+            {{ $t('imagesManager.editImage') }}
+          </div>
+          <button class="zcode-close-btn" :aria-label="$t('common.close')" @click="cancelEditing">
+            <X :size="18" />
+          </button>
+        </div>
+
+        <div class="zcode-image-editor-form">
+          <div class="zcode-image-preview-large">
+            <img
+              :src="editingImage.url"
+              :alt="editingImage.name"
+              class="zcode-image-preview-large-img"
+            />
+          </div>
+
+          <div class="zcode-image-editor-replace">
+            <input
+              ref="replaceFileInputRef"
+              type="file"
+              accept="image/*"
+              class="zcode-image-replace-input"
+              @change="handleReplaceFile"
+            />
+            <button
+              type="button"
+              class="zcode-image-select-btn"
+              @click="replaceFileInputRef?.click()"
+            >
+              <ImageIcon :size="16" />
+              <span>{{ $t('imagesManager.replaceImage') }}</span>
             </button>
           </div>
 
-          <div class="zcode-image-editor-form">
-            <div class="zcode-image-preview-large">
-              <img
-                :src="editingImage.url"
-                :alt="editingImage.name"
-                class="zcode-image-preview-large-img"
-              />
-            </div>
+          <div class="zcode-form-field">
+            <label>{{ $t('imagesManager.imageId') }}</label>
+            <input v-model="editingImage.id" type="text" class="zcode-text-input" disabled />
+          </div>
 
-            <div class="zcode-image-editor-replace">
-              <input
-                ref="replaceFileInputRef"
-                type="file"
-                accept="image/*"
-                class="zcode-image-replace-input"
-                @change="handleReplaceFile"
-              />
-              <button
-                type="button"
-                class="zcode-image-select-btn"
-                @click="replaceFileInputRef?.click()"
-              >
-                <ImageIcon :size="16" />
-                <span>{{ $t('imagesManager.replaceImage') }}</span>
-              </button>
-            </div>
+          <div class="zcode-form-field">
+            <label>{{ $t('imagesManager.imageName') }}</label>
+            <input v-model="editingImage.name" type="text" class="zcode-text-input" />
+          </div>
 
-            <div class="zcode-form-field">
-              <label>{{ $t('imagesManager.imageId') }}</label>
-              <input v-model="editingImage.id" type="text" class="zcode-text-input" disabled />
-            </div>
-
-            <div class="zcode-form-field">
-              <label>{{ $t('imagesManager.imageName') }}</label>
-              <input v-model="editingImage.name" type="text" class="zcode-text-input" />
-            </div>
-
-            <div class="zcode-image-editor-actions">
-              <button class="zcode-btn-primary zcode-image-editor-actions-btn" @click="saveImage">
-                <Check :size="16" />
-                <span>{{ $t('common.confirm') }}</span>
-              </button>
-              <button
-                class="zcode-btn-cancel zcode-image-editor-actions-btn"
-                @click="cancelEditing"
-              >
-                <X :size="16" />
-                <span>{{ $t('common.cancel') }}</span>
-              </button>
-            </div>
+          <div class="zcode-image-editor-actions">
+            <button class="zcode-btn-primary zcode-image-editor-actions-btn" @click="saveImage">
+              <Check :size="16" />
+              <span>{{ $t('common.confirm') }}</span>
+            </button>
+            <button class="zcode-btn-cancel zcode-image-editor-actions-btn" @click="cancelEditing">
+              <X :size="16" />
+              <span>{{ $t('common.cancel') }}</span>
+            </button>
           </div>
         </div>
       </div>
-    </Teleport>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
