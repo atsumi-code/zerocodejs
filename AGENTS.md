@@ -345,6 +345,7 @@ interface ImageData {
 #### バックエンドデータ
 
 - **基本参照**: `{@fieldName}`
+- **デフォルト付き参照**: `{@fieldName:defaultValue}`（データ未取得・パス不存在・null/undefined/空文字のときフォールバック）
 - **ネスト参照**: `{@user.name}`
 - **配列参照**: `{@items[0]}`, `{@items[0].name}`
 - **配列のlength**: `{@items.length}`

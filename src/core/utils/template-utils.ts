@@ -73,6 +73,16 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+export function resolveBackendDataWithDefault(
+  backendData: Record<string, unknown> | undefined,
+  path: string,
+  defaultValue: string
+): string {
+  if (!backendData) return defaultValue;
+  const resolved = resolveBackendDataPath(backendData, path);
+  return resolved === '' ? defaultValue : resolved;
+}
+
 export function resolveBackendDataPath(backendData: Record<string, unknown>, path: string): string {
   if (!backendData || !path) return '';
 

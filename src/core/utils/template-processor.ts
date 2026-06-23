@@ -4,7 +4,12 @@ import { sanitizeRichText, escapeAttributeValue, sanitizeUrl } from './sanitize'
 import { TEMPLATE_REGEX } from './template-regex';
 import { splitDefaultAndValidation } from './field-extractor';
 import { firstChoiceValueFromRaw, rawChoiceValues } from './choice-options';
-import { processImageField, resolveBackendDataPath, expandUrlPlaceholders } from './template-utils';
+import {
+  processImageField,
+  resolveBackendDataPath,
+  resolveBackendDataWithDefault,
+  expandUrlPlaceholders
+} from './template-utils';
 import { logger } from './logger';
 import { joinSiblingHtmlWithAddButtons, type AddBetweenButtonLabels } from './page-add-buttons';
 
@@ -155,6 +160,37 @@ export interface ProcessTemplateOptions {
   };
 }
 
+function formatBackendDataResolved(resolved: string, attrName: string | null): string {
+  if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
+    return sanitizeUrl(resolved);
+  }
+  if (attrName !== null) {
+    return escapeAttributeValue(resolved);
+  }
+  return resolved;
+}
+
+function expandBackendDataReferences(
+  value: string,
+  backendData: Record<string, unknown> | undefined,
+  attrName: string | null = null
+): string {
+  value = value.replace(
+    TEMPLATE_REGEX.BACKEND_DATA_WITH_DEFAULT,
+    (_match, dataPath, defaultValue) => {
+      const resolved = resolveBackendDataWithDefault(backendData, dataPath, defaultValue);
+      return formatBackendDataResolved(resolved, attrName);
+    }
+  );
+  if (backendData) {
+    value = value.replace(TEMPLATE_REGEX.BACKEND_DATA, (_match, dataPath) => {
+      const resolved = resolveBackendDataPath(backendData, dataPath);
+      return formatBackendDataResolved(resolved, attrName);
+    });
+  }
+  return value;
+}
+
 // DOMパーサーベースの変数展開・条件処理
 export function processTemplateWithDOM(
   html: string,
@@ -184,12 +220,8 @@ export function processTemplateWithDOM(
     if (node.nodeType === DOM_NODE_TYPE_TEXT) {
       let text = node.textContent || '';
 
-      // バックエンドデータの展開（先に処理）
-      if (backendData) {
-        text = text.replace(TEMPLATE_REGEX.BACKEND_DATA, (_match, dataPath) => {
-          return resolveBackendDataPath(backendData, dataPath);
-        });
-      }
+      // バックエンドデータの展開（先に処理。デフォルト付きは backendData 未指定でも展開）
+      text = expandBackendDataReferences(text, backendData);
 
       // オプショナルリッチテキストフィールドの展開（先に処理）
       const richTextOptionalWithGroupRegex = /\{\$(\w+)\.(\w+)\?:(.+?):rich(?::[^}]+)?\}/;
@@ -555,20 +587,11 @@ export function processTemplateWithDOM(
 
         // バックエンドデータの展開（先に処理）
         if (backendData) {
-          // URL内のプレースホルダー展開
           if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
             value = expandUrlPlaceholders(value, backendData);
           }
-
-          // {@fieldName}形式の展開
-          value = value.replace(TEMPLATE_REGEX.BACKEND_DATA, (_match, dataPath) => {
-            const resolvedValue = resolveBackendDataPath(backendData, dataPath);
-            if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-              return sanitizeUrl(resolvedValue);
-            }
-            return escapeAttributeValue(resolvedValue);
-          });
         }
+        value = expandBackendDataReferences(value, backendData, attrName);
 
         // オプショナルフィールドの展開（先に処理、リッチテキスト）
         value = value.replace(

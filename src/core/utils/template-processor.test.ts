@@ -487,6 +487,87 @@ describe('processTemplateWithDOM', () => {
       );
       expect(result).toContain('Item 1');
     });
+
+    it('should use default when backend path is missing', () => {
+      const template = '<div>{@missing:フォールバック}</div>';
+      const component: ComponentData = {
+        id: '1',
+        part_id: 'part1'
+      };
+      const result = processTemplateWithDOM(
+        template,
+        component,
+        'page.0',
+        mockFindPart,
+        mockRenderComponentToHtml,
+        false,
+        [],
+        [],
+        [],
+        sampleBackendData
+      );
+      expect(result).toContain('フォールバック');
+    });
+
+    it('should use default when backendData is undefined', () => {
+      const template = '<div>{@title:デフォルトタイトル}</div>';
+      const component: ComponentData = {
+        id: '1',
+        part_id: 'part1'
+      };
+      const result = processTemplateWithDOM(
+        template,
+        component,
+        'page.0',
+        mockFindPart,
+        mockRenderComponentToHtml,
+        false
+      );
+      expect(result).toContain('デフォルトタイトル');
+    });
+
+    it('should prefer backend value over default', () => {
+      const template = '<div>{@user.name:ゲスト}</div>';
+      const component: ComponentData = {
+        id: '1',
+        part_id: 'part1'
+      };
+      const result = processTemplateWithDOM(
+        template,
+        component,
+        'page.0',
+        mockFindPart,
+        mockRenderComponentToHtml,
+        false,
+        [],
+        [],
+        [],
+        sampleBackendData
+      );
+      expect(result).toContain('John Doe');
+      expect(result).not.toContain('ゲスト');
+    });
+
+    it('should use default in href attribute', () => {
+      const template = '<a href="{@missing:/}">link</a>';
+      const component: ComponentData = {
+        id: '1',
+        part_id: 'part1'
+      };
+      const result = processTemplateWithDOM(
+        template,
+        component,
+        'page.0',
+        mockFindPart,
+        mockRenderComponentToHtml,
+        false,
+        [],
+        [],
+        [],
+        sampleBackendData
+      );
+      expect(result).toContain('href="/"');
+    });
   });
 
   describe('URL placeholders', () => {

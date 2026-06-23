@@ -718,19 +718,20 @@ watch(enableContextMenu, (newValue) => {
 
 ```
 {@fieldName}
+{@fieldName:defaultValue}
 {@user.name}
 {@items[0]}
 {@items[0].name}
 {@items.length}
 ```
 
-バックエンドから渡されたデータを参照します。
+バックエンドから渡されたデータを参照します。`{@fieldName:defaultValue}` は、データが取得できない場合や値が空の場合に `defaultValue` を表示します（`backend-data` 未指定時もデフォルト値を使用）。
 
 **例**:
 
 ```html
-<h1>{@title}</h1>
-<a href="{@url}">リンク</a>
+<h1>{@title:デフォルトタイトル}</h1>
+<a href="{@url:/}">リンク</a>
 <div>{@items.length}件</div>
 ```
 

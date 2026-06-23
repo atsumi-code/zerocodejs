@@ -24,6 +24,8 @@ export const TEMPLATE_REGEX = {
   RADIO_CHECKBOX_FIELD_WITH_GROUP: /\(\$(\w+)\.(\w+):([^)]+)\)/g,
   // ラジオボタン: ($field:option1|option2) / チェックボックス: ($field:option1,option2)
   RADIO_FIELD: /\(\$(\w+):([^)]+)\)/g,
+  // バックエンドデータ参照（デフォルト付き）: {@fieldName:default}, {@items[0].name:名称未設定}
+  BACKEND_DATA_WITH_DEFAULT: /\{@([\w.[\]]+):([^}]+)\}/g,
   // バックエンドデータ参照: {@fieldName}, {@items[0]}, {@items[0].name}
   BACKEND_DATA: /\{@([\w.[\]]+)\}/g
 } as const;

@@ -3,6 +3,7 @@ import {
   injectAttributesToRootElement,
   processImageField,
   resolveBackendDataPath,
+  resolveBackendDataWithDefault,
   expandUrlPlaceholders
 } from './template-utils';
 import { sampleImageData, sampleBackendData } from '../../__tests__/fixtures/sample-data';
@@ -180,6 +181,50 @@ describe('resolveBackendDataPath', () => {
     };
     const result = resolveBackendDataPath(data, 'level1.level2.level3.value');
     expect(result).toBe('deep');
+  });
+});
+
+describe('resolveBackendDataWithDefault', () => {
+  it('should return backend value when path exists', () => {
+    const result = resolveBackendDataWithDefault(sampleBackendData, 'user.name', 'ゲスト');
+    expect(result).toBe('John Doe');
+  });
+
+  it('should return default when path is missing', () => {
+    const result = resolveBackendDataWithDefault(
+      sampleBackendData,
+      'missing.path',
+      'フォールバック'
+    );
+    expect(result).toBe('フォールバック');
+  });
+
+  it('should return default when backendData is undefined', () => {
+    const result = resolveBackendDataWithDefault(undefined, 'title', 'デフォルトタイトル');
+    expect(result).toBe('デフォルトタイトル');
+  });
+
+  it('should return default when value is null', () => {
+    const data = { title: null };
+    const result = resolveBackendDataWithDefault(data, 'title', 'デフォルト');
+    expect(result).toBe('デフォルト');
+  });
+
+  it('should return default when value is empty string', () => {
+    const data = { title: '' };
+    const result = resolveBackendDataWithDefault(data, 'title', 'デフォルト');
+    expect(result).toBe('デフォルト');
+  });
+
+  it('should preserve zero and false values', () => {
+    const data = { count: 0, enabled: false };
+    expect(resolveBackendDataWithDefault(data, 'count', '0')).toBe('0');
+    expect(resolveBackendDataWithDefault(data, 'enabled', 'true')).toBe('false');
+  });
+
+  it('should support default values containing colons', () => {
+    const result = resolveBackendDataWithDefault(undefined, 'url', 'https://example.com/path');
+    expect(result).toBe('https://example.com/path');
   });
 });
 

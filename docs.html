@@ -809,20 +809,28 @@
           バックエンドから渡されたデータをテンプレート内で参照できます。動的URLや共通で使用するデータ（店舗ID、ユーザー情報など）を表示する際に便利です。
         </p>
         <pre><code>{@fieldName}
+{@fieldName:defaultValue}
 {@items[0].name}
 {@items.length}
 /shop/{shop_id}/products</code></pre>
         <p>例：</p>
         <pre><code>&lt;div class="shop-header"&gt;
-  &lt;h1&gt;{@title}&lt;/h1&gt;
-  &lt;a href="{@url}"&gt;店舗詳細&lt;/a&gt;
+  &lt;h1&gt;{@title:店舗名未設定}&lt;/h1&gt;
+  &lt;a href="{@url:/}"&gt;店舗詳細&lt;/a&gt;
   &lt;p&gt;アイテム数: {@items.length}&lt;/p&gt;
-  &lt;p&gt;最初のアイテム: {@items[0].name}&lt;/p&gt;
+  &lt;p&gt;最初のアイテム: {@items[0].name:名称未設定}&lt;/p&gt;
   &lt;a href="/shop/{shop_id}/products"&gt;商品一覧&lt;/a&gt;
 &lt;/div&gt;</code></pre>
         <p><strong>動作：</strong></p>
         <ul>
           <li>基本的なデータ参照: <code>{@fieldName}</code> でバックエンドデータを参照</li>
+          <li>
+            デフォルト付き参照:
+            <code>{@fieldName:defaultValue}</code>
+            で、データ未取得・パス不存在・null/undefined/空文字のとき
+            <code>defaultValue</code> を表示（<code>backend-data</code>
+            未指定時もデフォルト値を使用）
+          </li>
           <li>ネストされたオブジェクト: <code>{@user.name}</code> のようにドット記法で参照</li>
           <li>配列の参照: <code>{@items[0]}</code> で配列の要素を参照</li>
           <li>配列のlength: <code>{@items.length}</code> で配列の長さを取得</li>
@@ -838,7 +846,11 @@
         <div class="docs-info">
           <p>
             <strong>注意:</strong>
-            バックエンドデータは信頼できるソースからのみ使用してください。存在しないパスを参照した場合は空文字列が返されます。
+            バックエンドデータは信頼できるソースからのみ使用してください。<code>{@fieldName}</code>
+            で存在しないパスを参照した場合は空文字列が返されます。<code
+              >{@fieldName:defaultValue}</code
+            >
+            を使うと、その場合にデフォルト値を表示できます。
           </p>
         </div>
 
