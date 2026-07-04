@@ -23,7 +23,7 @@ ZeroCode.js is an embeddable CMS library for existing web services. Authenticati
 - **Parts Management** - Create and manage reusable content blocks
 - **Image Management** - Built-in image upload and management
 - **Flexible Templates** - Custom HTML template syntax for dynamic content
-- **Lightweight** - Only ~260KB gzipped
+- **Lightweight** - No heavy framework dependencies, just a small embeddable bundle
 - **i18n Ready** - Built-in Japanese & English UI support
 
 ## Demo
@@ -191,4 +191,4 @@ MIT License
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: June 2026
