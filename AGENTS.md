@@ -165,6 +165,22 @@ const textWithGroupRegex = new RegExp(...);
 - 手動確認: `npm run lint` / `npm run format:check`
 - **コミットメッセージ・コミットタイミング**（Cursor / Claude Code 共通）: `.cursor/rules/commit.mdc` と `commit-timing.mdc` を参照。Git フックでメッセージ形式を検証する場合は **commitlint** 等の別途導入が必要。
 
+### Claude Code 自動化
+
+このプロジェクト用に用意されている Claude Code の自動化一覧。
+
+| 種類     | 名前                  | 場所                                                       | 使い方                                                                                                                     |
+| -------- | --------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Skill    | new-part-template     | `.claude/skills/new-part-template/`                        | ユーザー専用。テンプレートDSLの新パターンについて頼むと、fixture（`sample-templates.ts`）とテストケースをセットで生成      |
+| Subagent | template-dsl-reviewer | `.claude/agents/template-dsl-reviewer.md`                  | テンプレート処理系（`template-processor.ts` 等）の変更時、DSL特有のバグ（処理順序違反、XSS、区切り文字衝突など）をレビュー |
+| Subagent | ui-reviewer           | `.claude/agents/ui-reviewer.md`                            | 編集UI（パネル・モーダル・並べ替え等）の変更時、アクセシビリティ（キーボード操作・ARIA）をレビュー                         |
+| Hook     | 型チェック自動実行    | `.claude/settings.json` + `.claude/hooks/type-check.sh`    | `.ts`/`.vue`/`.tsx` を編集した直後に `vue-tsc --noEmit` を自動実行し、失敗時のみ結果をClaudeに通知                         |
+| Hook     | 関連テスト自動実行    | `.claude/settings.json` + `.claude/hooks/related-tests.sh` | 同上のタイミングで `vitest related --run` を自動実行し、失敗時のみ結果をClaudeに通知                                       |
+| MCP      | context7              | `.mcp.json`                                                | Tiptap / Monaco Editor / vue-i18n 等のドキュメント検索（要 `/mcp` で承認）                                                 |
+| MCP      | github                | `.mcp.json`                                                | Issue/PR操作（要 `/mcp` で承認 + 初回利用時にGitHub OAuth認証）                                                            |
+
+**有効化の注意**: hooksの設定は Claude Code のセッション開始時に存在した `.claude/` 配下のみ監視されるため、追加・変更後は一度 `/hooks` を開くか Claude Code を再起動する必要がある。MCPサーバーはプロジェクトスコープ登録のため `/mcp` での承認が別途必要。
+
 ## HTMLタグの使用方針
 
 **適用範囲**: この方針は **ZeroCodeのUIコンポーネント**（パネル、ツールバー、編集画面など `src/` 配下のVueコンポーネント）にのみ適用します。ユーザーが記述する**パーツのテンプレート**には適用しません。パーツでは `z-tag` により見出し・段落などのタグを選択可能にできます。
