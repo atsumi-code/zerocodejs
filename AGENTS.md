@@ -163,7 +163,7 @@ const textWithGroupRegex = new RegExp(...);
 - `git commit` 時に Husky が **lint-staged** を実行する。staged の `*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}` に **ESLint --fix** と **Prettier**、`*.{json,md,css,html,yml,yaml}` は **Prettier** のみ。
 - 初回は `npm install` の `prepare` で Husky が有効になる（`core.hooksPath` が `.husky/_`）。
 - 手動確認: `npm run lint` / `npm run format:check`
-- **コミットメッセージ・コミットタイミング**（Cursor エージェント向け）: `.cursor/rules/commit.mdc` と `commit-timing.mdc`。Git フックでメッセージ形式を検証する場合は **commitlint** 等の別途導入が必要。
+- **コミットメッセージ・コミットタイミング**（Cursor / Claude Code 共通）: `.cursor/rules/commit.mdc` と `commit-timing.mdc` を参照。Git フックでメッセージ形式を検証する場合は **commitlint** 等の別途導入が必要。
 
 ## HTMLタグの使用方針
 

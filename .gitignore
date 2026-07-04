@@ -2,6 +2,7 @@ node_modules
 dist
 *.local
 .DS_Store
+.claude/settings.local.json
 
 dist-pages/
 .npm-cache/
