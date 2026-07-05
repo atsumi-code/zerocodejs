@@ -1,47 +1,102 @@
 import { getDOMParser, DOM_NODE_TYPE_ELEMENT, DOM_NODE_TYPE_TEXT } from './dom-utils';
-import { TEMPLATE_REGEX, type FieldInfo } from './template-regex';
+import type { FieldInfo } from './template-regex';
 import { mapRawChoices } from './choice-options';
 import { logger } from './logger';
+import {
+  scanFieldTokens,
+  splitDefaultAndValidation,
+  parseValidationFromTokens,
+  type FieldToken
+} from './field-syntax';
 
-export function parseValidationFromTokens(tokens: string[]) {
-  const parsed: Pick<FieldInfo, 'required' | 'maxLength' | 'readonly' | 'disabled'> = {};
-  for (const token of tokens) {
-    if (token === 'required') {
-      parsed.required = true;
-      continue;
-    }
-    if (token === 'readonly') {
-      parsed.readonly = true;
-      continue;
-    }
-    if (token === 'disabled') {
-      parsed.disabled = true;
-      continue;
-    }
-    if (token.startsWith('max=')) {
-      const n = Number(token.slice(4));
-      if (Number.isFinite(n)) {
-        parsed.maxLength = n;
-      }
-    }
+export { splitDefaultAndValidation, parseValidationFromTokens };
+
+/**
+ * 従来実装の分岐評価順（型 → optional/group バリアント → 選択肢）を再現するためのランク。
+ * 抽出結果の並び順は編集パネルの表示順に直結するため、トークンの出現位置順ではなく
+ * このランク順（同ランク内は出現位置順）で登録する。
+ */
+function legacyExtractionRank(token: FieldToken): number {
+  if (token.kind === 'value') {
+    const typeRank = { rich: 0, textarea: 1, image: 2, text: 3 }[token.fieldType];
+    const variantRank = token.optional ? (token.groupName ? 0 : 1) : token.groupName ? 2 : 3;
+    return typeRank * 4 + variantRank;
   }
-  return parsed;
+  return token.select ? (token.groupName ? 16 : 17) : token.groupName ? 18 : 19;
 }
 
-export function splitDefaultAndValidation(raw: string) {
-  const tokens = raw.split(':');
-  const validationTokens: string[] = [];
-  const isValidationToken = (t: string) =>
-    t === 'required' || t === 'readonly' || t === 'disabled' || /^max=\d+$/.test(t);
+// 従来の text 汎用パターンの除外ガード:
+// 型サフィックス付き（{$f::rich} 等の型判定不成立ケース）と、raw に . を含むものは抽出しない
+const TYPE_SUFFIX_GUARD = /(?::rich|:image|:textarea)(?::[^}]*)?\}$/;
 
-  while (tokens.length > 0 && isValidationToken(tokens[tokens.length - 1])) {
-    validationTokens.unshift(tokens.pop() as string);
+function shouldSkipValueToken(
+  token: Extract<FieldToken, { kind: 'value' }>,
+  context: 'text' | 'attr'
+): boolean {
+  if (context === 'attr' && token.fieldType === 'textarea') {
+    // 属性内では textarea を抽出しない（従来仕様）
+    return true;
   }
+  if (
+    token.fieldType === 'text' &&
+    !token.groupName &&
+    (TYPE_SUFFIX_GUARD.test(token.raw) || token.raw.includes('.'))
+  ) {
+    return true;
+  }
+  return false;
+}
 
-  return {
-    defaultValue: tokens.join(':'),
-    validation: parseValidationFromTokens(validationTokens)
-  };
+function collectFieldsFromString(
+  text: string,
+  context: 'text' | 'attr',
+  fields: FieldInfo[],
+  seenFields: Set<string>
+): void {
+  const ranked = scanFieldTokens(text)
+    .map((token, index) => ({ token, index }))
+    .sort(
+      (a, b) => legacyExtractionRank(a.token) - legacyExtractionRank(b.token) || a.index - b.index
+    );
+
+  for (const { token } of ranked) {
+    if (seenFields.has(token.fieldName)) continue;
+
+    if (token.kind === 'value') {
+      if (shouldSkipValueToken(token, context)) continue;
+      fields.push({
+        fieldName: token.fieldName,
+        ...(token.groupName ? { groupName: token.groupName } : {}),
+        type: token.fieldType,
+        defaultValue: token.defaultValue,
+        ...(token.optional ? { optional: true } : {}),
+        ...token.validation
+      });
+      seenFields.add(token.fieldName);
+      continue;
+    }
+
+    if (token.delimiter === null) {
+      // 区切り文字なし（選択肢が1つ）は登録しない（従来仕様。seen にだけ追加）
+      seenFields.add(token.fieldName);
+      continue;
+    }
+    const single = token.delimiter === '|';
+    const type = token.select
+      ? single
+        ? 'select'
+        : 'select-multiple'
+      : single
+        ? 'radio'
+        : 'checkbox';
+    fields.push({
+      fieldName: token.fieldName,
+      ...(token.groupName ? { groupName: token.groupName } : {}),
+      type,
+      options: mapRawChoices(token.rawOptions, token.delimiter)
+    });
+    seenFields.add(token.fieldName);
+  }
 }
 
 export function extractFieldsFromTemplate(template: string): FieldInfo[] {
@@ -57,453 +112,13 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
 
   const processNode = (node: Node) => {
     if (node.nodeType === DOM_NODE_TYPE_TEXT) {
-      const text = node.textContent || '';
-
-      // オプショナルフィールドを先にチェック（グループ付きリッチテキスト）
-      const richTextWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:(.+?):rich(?::[^}]+)?\}/g;
-      const richTextWithGroupOptionalMatches = Array.from(
-        text.matchAll(richTextWithGroupOptionalRegex)
-      );
-      richTextWithGroupOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3]) {
-          const fieldName = match[1];
-          const groupName = match[2];
-          if (!seenFields.has(fieldName)) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: fieldName,
-              groupName: groupName,
-              type: 'rich',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(fieldName);
-          }
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（リッチテキスト）
-      const richTextOptionalRegex = /\{\$(\w+)\?:(.+?):rich(?::[^}]+)?\}/g;
-      const richTextOptionalMatches = Array.from(text.matchAll(richTextOptionalRegex));
-      richTextOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2]) {
-          const fieldName = match[1];
-          if (!seenFields.has(fieldName)) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: fieldName,
-              type: 'rich',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(fieldName);
-          }
-        }
-      });
-
-      const richTextWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP.flags
-      );
-      const richTextWithGroupMatches = Array.from(text.matchAll(richTextWithGroupRegex));
-      richTextWithGroupMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3]) {
-          const fieldName = match[1];
-          const groupName = match[2];
-          if (!seenFields.has(fieldName)) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: fieldName,
-              groupName: groupName,
-              type: 'rich',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(fieldName);
-          }
-        }
-      });
-
-      const richTextRegex = new RegExp(
-        TEMPLATE_REGEX.RICH_TEXT_FIELD.source,
-        TEMPLATE_REGEX.RICH_TEXT_FIELD.flags
-      );
-      const richTextMatches = Array.from(text.matchAll(richTextRegex));
-      richTextMatches.forEach((match) => {
-        if (match && match[1] && match[2]) {
-          const fieldName = match[1];
-          if (!seenFields.has(fieldName)) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: fieldName,
-              type: 'rich',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(fieldName);
-          }
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（グループ付きテキストエリア）
-      const textareaWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:(.+?):textarea(?::[^}]+)?\}/g;
-      const textareaWithGroupOptionalMatches = Array.from(
-        text.matchAll(textareaWithGroupOptionalRegex)
-      );
-      textareaWithGroupOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-          fields.push({
-            fieldName: match[1],
-            groupName: match[2],
-            type: 'textarea',
-            defaultValue,
-            optional: true,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（テキストエリア）
-      const textareaOptionalRegex = /\{\$(\w+)\?:(.+?):textarea(?::[^}]+)?\}/g;
-      const textareaOptionalMatches = Array.from(text.matchAll(textareaOptionalRegex));
-      textareaOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-          fields.push({
-            fieldName: match[1],
-            type: 'textarea',
-            defaultValue,
-            optional: true,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      const textareaWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.TEXTAREA_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.TEXTAREA_FIELD_WITH_GROUP.flags
-      );
-      const textareaWithGroupMatches = Array.from(text.matchAll(textareaWithGroupRegex));
-      textareaWithGroupMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-          fields.push({
-            fieldName: match[1],
-            groupName: match[2],
-            type: 'textarea',
-            defaultValue,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      const textareaRegex = new RegExp(
-        TEMPLATE_REGEX.TEXTAREA_FIELD.source,
-        TEMPLATE_REGEX.TEXTAREA_FIELD.flags
-      );
-      const textareaMatches = Array.from(text.matchAll(textareaRegex));
-      textareaMatches.forEach((match) => {
-        if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-          fields.push({
-            fieldName: match[1],
-            type: 'textarea',
-            defaultValue,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（グループ付き画像）
-      const imageWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:(.+?):image(?::[^}]+)?\}/g;
-      const imageWithGroupOptionalMatches = Array.from(text.matchAll(imageWithGroupOptionalRegex));
-      imageWithGroupOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-          fields.push({
-            fieldName: match[1],
-            groupName: match[2],
-            type: 'image',
-            defaultValue,
-            optional: true,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（画像）
-      const imageOptionalRegex = /\{\$(\w+)\?:(.+?):image(?::[^}]+)?\}/g;
-      const imageOptionalMatches = Array.from(text.matchAll(imageOptionalRegex));
-      imageOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-          fields.push({
-            fieldName: match[1],
-            type: 'image',
-            defaultValue,
-            optional: true,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      const imageWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.IMAGE_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.IMAGE_FIELD_WITH_GROUP.flags
-      );
-      const imageWithGroupMatches = Array.from(text.matchAll(imageWithGroupRegex));
-      imageWithGroupMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-          fields.push({
-            fieldName: match[1],
-            groupName: match[2],
-            type: 'image',
-            defaultValue,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      const imageRegex = new RegExp(
-        TEMPLATE_REGEX.IMAGE_FIELD.source,
-        TEMPLATE_REGEX.IMAGE_FIELD.flags
-      );
-      const imageMatches = Array.from(text.matchAll(imageRegex));
-      imageMatches.forEach((match) => {
-        if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-          fields.push({
-            fieldName: match[1],
-            type: 'image',
-            defaultValue,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（グループ付きテキスト）
-      const textWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:([^}]+)\}/g;
-      const textWithGroupOptionalMatches = Array.from(text.matchAll(textWithGroupOptionalRegex));
-      textWithGroupOptionalMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-          fields.push({
-            fieldName: match[1],
-            groupName: match[2],
-            type: 'text',
-            defaultValue,
-            optional: true,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      // オプショナルフィールドを先にチェック（テキスト）
-      const textOptionalRegex = /\{\$(\w+)\?:([^}]+)\}/g;
-      const textOptionalMatches = Array.from(text.matchAll(textOptionalRegex));
-      textOptionalMatches.forEach((match) => {
-        if (
-          match &&
-          match[0] &&
-          !/:rich(?::[^}]*)?\}$/.test(match[0]) &&
-          !/:image(?::[^}]*)?\}$/.test(match[0]) &&
-          !/:textarea(?::[^}]*)?\}$/.test(match[0]) &&
-          !match[0].includes('.')
-        ) {
-          if (match[1] && match[2] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: match[1],
-              type: 'text',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        }
-      });
-
-      // グループ付きテキストフィールド（先にチェック）
-      const textWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.TEXT_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.TEXT_FIELD_WITH_GROUP.flags
-      );
-      const textWithGroupMatches = Array.from(text.matchAll(textWithGroupRegex));
-      textWithGroupMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-          fields.push({
-            fieldName: match[1],
-            groupName: match[2],
-            type: 'text',
-            defaultValue,
-            ...validation
-          });
-          seenFields.add(match[1]);
-        }
-      });
-
-      const textRegex = new RegExp(
-        TEMPLATE_REGEX.TEXT_FIELD.source,
-        TEMPLATE_REGEX.TEXT_FIELD.flags
-      );
-      const textMatches = Array.from(text.matchAll(textRegex));
-      textMatches.forEach((match) => {
-        if (
-          match &&
-          match[0] &&
-          !/:rich(?::[^}]*)?\}$/.test(match[0]) &&
-          !/:image(?::[^}]*)?\}$/.test(match[0]) &&
-          !/:textarea(?::[^}]*)?\}$/.test(match[0]) &&
-          !match[0].includes('.')
-        ) {
-          if (match[1] && match[2] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: match[1],
-              type: 'text',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        }
-      });
-
-      const selectWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.SELECT_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.SELECT_FIELD_WITH_GROUP.flags
-      );
-      const selectWithGroupMatches = Array.from(text.matchAll(selectWithGroupRegex));
-      selectWithGroupMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const fieldName = match[1];
-          const groupName = match[2];
-          const optionsStr = match[3];
-
-          // 区切り文字で判定: | = 単一選択、, = 複数選択
-          if (optionsStr.includes('|')) {
-            fields.push({
-              fieldName: fieldName,
-              groupName: groupName,
-              type: 'select',
-              options: mapRawChoices(optionsStr, '|')
-            });
-          } else if (optionsStr.includes(',')) {
-            fields.push({
-              fieldName: fieldName,
-              groupName: groupName,
-              type: 'select-multiple',
-              options: mapRawChoices(optionsStr, ',')
-            });
-          }
-          seenFields.add(fieldName);
-        }
-      });
-
-      // セレクトボックス（グループなし）
-      const selectMatches = text.match(TEMPLATE_REGEX.SELECT_FIELD) || [];
-      selectMatches.forEach((match) => {
-        const m = match.match(/\(\$(\w+)@:([^)]+)\)/);
-        if (m && !seenFields.has(m[1])) {
-          const fieldName = m[1];
-          const optionsStr = m[2];
-
-          // 区切り文字で判定: | = 単一選択、, = 複数選択
-          if (optionsStr.includes('|')) {
-            fields.push({
-              fieldName: fieldName,
-              type: 'select',
-              options: mapRawChoices(optionsStr, '|')
-            });
-          } else if (optionsStr.includes(',')) {
-            fields.push({
-              fieldName: fieldName,
-              type: 'select-multiple',
-              options: mapRawChoices(optionsStr, ',')
-            });
-          }
-          seenFields.add(fieldName);
-        }
-      });
-
-      // グループ付きラジオボタン/チェックボックス（先にチェック）
-      const radioCheckboxWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.RADIO_CHECKBOX_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.RADIO_CHECKBOX_FIELD_WITH_GROUP.flags
-      );
-      const radioCheckboxWithGroupMatches = Array.from(text.matchAll(radioCheckboxWithGroupRegex));
-      radioCheckboxWithGroupMatches.forEach((match) => {
-        if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-          const fieldName = match[1];
-          const groupName = match[2];
-          const optionsStr = match[3];
-
-          // 区切り文字で判定: | = ラジオボタン、, = チェックボックス
-          if (optionsStr.includes('|')) {
-            fields.push({
-              fieldName: fieldName,
-              groupName: groupName,
-              type: 'radio',
-              options: mapRawChoices(optionsStr, '|')
-            });
-          } else if (optionsStr.includes(',')) {
-            fields.push({
-              fieldName: fieldName,
-              groupName: groupName,
-              type: 'checkbox',
-              options: mapRawChoices(optionsStr, ',')
-            });
-          }
-          seenFields.add(fieldName);
-        }
-      });
-
-      // ラジオボタン/チェックボックス（グループなし）
-      const selectionMatches = text.match(TEMPLATE_REGEX.RADIO_FIELD) || [];
-      selectionMatches.forEach((match) => {
-        const m = match.match(/\(\$(\w+):([^)]+)\)/);
-        if (m && !seenFields.has(m[1])) {
-          const fieldName = m[1];
-          const optionsStr = m[2];
-
-          // 区切り文字で判定: | = ラジオボタン、, = チェックボックス
-          if (optionsStr.includes('|')) {
-            fields.push({
-              fieldName: fieldName,
-              type: 'radio',
-              options: mapRawChoices(optionsStr, '|')
-            });
-          } else if (optionsStr.includes(',')) {
-            fields.push({
-              fieldName: fieldName,
-              type: 'checkbox',
-              options: mapRawChoices(optionsStr, ',')
-            });
-          }
-          seenFields.add(fieldName);
-        }
-      });
-      // TEXT_NODEには子ノードがないので、ここで終了
+      collectFieldsFromString(node.textContent || '', 'text', fields, seenFields);
       return;
-    } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
+    }
+
+    if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
       const element = node as Element;
 
-      // z-if属性をチェック
       const zIfValue = element.getAttribute('z-if');
       if (zIfValue && !seenFields.has(zIfValue)) {
         fields.push({
@@ -514,14 +129,13 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
         seenFields.add(zIfValue);
       }
 
-      // z-tag属性をチェック
       const zTagValue = element.getAttribute('z-tag');
       if (zTagValue) {
         // $tagName:h1|h2|h3 の形式を解析
         const tagMatch = zTagValue.match(/^\$(\w+)(?::(.+))?$/);
         if (tagMatch) {
           const fieldName = tagMatch[1];
-          const optionsString = tagMatch[2]; // "h1|h2|h3" または undefined
+          const optionsString = tagMatch[2];
 
           if (!seenFields.has(fieldName)) {
             const parsedOptions = optionsString ? mapRawChoices(optionsString, '|') : undefined;
@@ -533,7 +147,6 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
 
             // 選択肢が指定されている場合、現在のタグ名が選択肢に含まれているかチェック
             if (values && !values.includes(currentTagName)) {
-              // 含まれていない場合は警告を出して、最初の選択肢を使用
               if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
                 logger.warn(
                   `z-tag="${zTagValue}": 現在のタグ名 "${currentTagName}" が選択肢に含まれていません。` +
@@ -555,387 +168,22 @@ export function extractFieldsFromTemplate(template: string): FieldInfo[] {
         }
       }
 
-      // 属性内のフィールドもチェック
       Array.from(element.attributes).forEach((attr) => {
-        const value = attr.value;
-
-        // オプショナルフィールドを先にチェック（属性内、グループ付きリッチテキスト）
-        const richTextWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:(.+?):rich(?::[^}]+)?\}/g;
-        const richTextWithGroupOptionalMatches = Array.from(
-          value.matchAll(richTextWithGroupOptionalRegex)
-        );
-        richTextWithGroupOptionalMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: match[1],
-              groupName: match[2],
-              type: 'rich',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // オプショナルフィールドを先にチェック（属性内、リッチテキスト）
-        const richTextOptionalRegex = /\{\$(\w+)\?:(.+?):rich(?::[^}]+)?\}/g;
-        const richTextOptionalMatches = Array.from(value.matchAll(richTextOptionalRegex));
-        richTextOptionalMatches.forEach((match) => {
-          if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: match[1],
-              type: 'rich',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // グループ付きリッチテキストフィールド（先にチェック）
-        const richTextWithGroupRegex = new RegExp(
-          TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP.source,
-          TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP.flags
-        );
-        const richTextWithGroupMatches = Array.from(value.matchAll(richTextWithGroupRegex));
-        richTextWithGroupMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: match[1],
-              groupName: match[2],
-              type: 'rich',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // リッチテキストフィールド（グループなし）
-        const richTextRegex = new RegExp(
-          TEMPLATE_REGEX.RICH_TEXT_FIELD.source,
-          TEMPLATE_REGEX.RICH_TEXT_FIELD.flags
-        );
-        const richTextMatches = Array.from(value.matchAll(richTextRegex));
-        richTextMatches.forEach((match) => {
-          if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: match[1],
-              type: 'rich',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // オプショナルフィールドを先にチェック（属性内、グループ付き画像）
-        const imageWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:(.+?):image(?::[^}]+)?\}/g;
-        const imageWithGroupOptionalMatches = Array.from(
-          value.matchAll(imageWithGroupOptionalRegex)
-        );
-        imageWithGroupOptionalMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: match[1],
-              groupName: match[2],
-              type: 'image',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // オプショナルフィールドを先にチェック（属性内、画像）
-        const imageOptionalRegex = /\{\$(\w+)\?:(.+?):image(?::[^}]+)?\}/g;
-        const imageOptionalMatches = Array.from(value.matchAll(imageOptionalRegex));
-        imageOptionalMatches.forEach((match) => {
-          if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: match[1],
-              type: 'image',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // グループ付き画像フィールド（先にチェック）
-        const imageWithGroupRegex = new RegExp(
-          TEMPLATE_REGEX.IMAGE_FIELD_WITH_GROUP.source,
-          TEMPLATE_REGEX.IMAGE_FIELD_WITH_GROUP.flags
-        );
-        const imageWithGroupMatches = Array.from(value.matchAll(imageWithGroupRegex));
-        imageWithGroupMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: match[1],
-              groupName: match[2],
-              type: 'image',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // 画像フィールド（グループなし）
-        const imageRegex = new RegExp(
-          TEMPLATE_REGEX.IMAGE_FIELD.source,
-          TEMPLATE_REGEX.IMAGE_FIELD.flags
-        );
-        const imageMatches = Array.from(value.matchAll(imageRegex));
-        imageMatches.forEach((match) => {
-          if (match && match[1] && match[2] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-            fields.push({
-              fieldName: match[1],
-              type: 'image',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // オプショナルフィールドを先にチェック（属性内、グループ付きテキスト）
-        const textWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:([^}]+)\}/g;
-        const textWithGroupOptionalMatches = Array.from(value.matchAll(textWithGroupOptionalRegex));
-        textWithGroupOptionalMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: match[1],
-              groupName: match[2],
-              type: 'text',
-              defaultValue,
-              optional: true,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // オプショナルフィールドを先にチェック（属性内、テキスト）
-        const textOptionalRegex = /\{\$(\w+)\?:([^}]+)\}/g;
-        const textOptionalMatches = Array.from(value.matchAll(textOptionalRegex));
-        textOptionalMatches.forEach((match) => {
-          if (
-            match &&
-            match[0] &&
-            !/:rich(?::[^}]*)?\}$/.test(match[0]) &&
-            !/:image(?::[^}]*)?\}$/.test(match[0]) &&
-            !/:textarea(?::[^}]*)?\}$/.test(match[0]) &&
-            !match[0].includes('.')
-          ) {
-            if (match[1] && match[2] && !seenFields.has(match[1])) {
-              const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-              fields.push({
-                fieldName: match[1],
-                type: 'text',
-                defaultValue,
-                optional: true,
-                ...validation
-              });
-              seenFields.add(match[1]);
-            }
-          }
-        });
-
-        // グループ付きテキストフィールド（先にチェック）
-        const textWithGroupRegex = new RegExp(
-          TEMPLATE_REGEX.TEXT_FIELD_WITH_GROUP.source,
-          TEMPLATE_REGEX.TEXT_FIELD_WITH_GROUP.flags
-        );
-        const textWithGroupMatches = Array.from(value.matchAll(textWithGroupRegex));
-        textWithGroupMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const { defaultValue, validation } = splitDefaultAndValidation(match[3]);
-            fields.push({
-              fieldName: match[1],
-              groupName: match[2],
-              type: 'text',
-              defaultValue,
-              ...validation
-            });
-            seenFields.add(match[1]);
-          }
-        });
-
-        // 通常テキストフィールド（グループなし）
-        const textRegex = new RegExp(
-          TEMPLATE_REGEX.TEXT_FIELD.source,
-          TEMPLATE_REGEX.TEXT_FIELD.flags
-        );
-        const textMatches = Array.from(value.matchAll(textRegex));
-        textMatches.forEach((match) => {
-          if (
-            match &&
-            match[0] &&
-            !/:rich(?::[^}]*)?\}$/.test(match[0]) &&
-            !/:image(?::[^}]*)?\}$/.test(match[0]) &&
-            !/:textarea(?::[^}]*)?\}$/.test(match[0]) &&
-            !match[0].includes('.')
-          ) {
-            if (match[1] && match[2] && !seenFields.has(match[1])) {
-              const { defaultValue, validation } = splitDefaultAndValidation(match[2]);
-              fields.push({
-                fieldName: match[1],
-                type: 'text',
-                defaultValue,
-                ...validation
-              });
-              seenFields.add(match[1]);
-            }
-          }
-        });
-
-        // グループ付きセレクトボックス（属性内、先にチェック）
-        const selectWithGroupRegex = new RegExp(
-          TEMPLATE_REGEX.SELECT_FIELD_WITH_GROUP.source,
-          TEMPLATE_REGEX.SELECT_FIELD_WITH_GROUP.flags
-        );
-        const selectWithGroupMatches = Array.from(value.matchAll(selectWithGroupRegex));
-        selectWithGroupMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const fieldName = match[1];
-            const groupName = match[2];
-            const optionsStr = match[3];
-
-            // 区切り文字で判定: | = 単一選択、, = 複数選択
-            if (optionsStr.includes('|')) {
-              fields.push({
-                fieldName: fieldName,
-                groupName: groupName,
-                type: 'select',
-                options: mapRawChoices(optionsStr, '|')
-              });
-            } else if (optionsStr.includes(',')) {
-              fields.push({
-                fieldName: fieldName,
-                groupName: groupName,
-                type: 'select-multiple',
-                options: mapRawChoices(optionsStr, ',')
-              });
-            }
-            seenFields.add(fieldName);
-          }
-        });
-
-        // セレクトボックス（属性内、グループなし）
-        const selectMatches = value.match(TEMPLATE_REGEX.SELECT_FIELD) || [];
-        selectMatches.forEach((match) => {
-          const m = match.match(/\(\$(\w+)@:([^)]+)\)/);
-          if (m && !seenFields.has(m[1])) {
-            const fieldName = m[1];
-            const optionsStr = m[2];
-
-            // 区切り文字で判定: | = 単一選択、, = 複数選択
-            if (optionsStr.includes('|')) {
-              fields.push({
-                fieldName: fieldName,
-                type: 'select',
-                options: mapRawChoices(optionsStr, '|')
-              });
-            } else if (optionsStr.includes(',')) {
-              fields.push({
-                fieldName: fieldName,
-                type: 'select-multiple',
-                options: mapRawChoices(optionsStr, ',')
-              });
-            }
-            seenFields.add(fieldName);
-          }
-        });
-
-        // グループ付きラジオボタン/チェックボックス（属性内、先にチェック）
-        const radioCheckboxWithGroupRegex = new RegExp(
-          TEMPLATE_REGEX.RADIO_CHECKBOX_FIELD_WITH_GROUP.source,
-          TEMPLATE_REGEX.RADIO_CHECKBOX_FIELD_WITH_GROUP.flags
-        );
-        const radioCheckboxWithGroupMatches = Array.from(
-          value.matchAll(radioCheckboxWithGroupRegex)
-        );
-        radioCheckboxWithGroupMatches.forEach((match) => {
-          if (match && match[1] && match[2] && match[3] && !seenFields.has(match[1])) {
-            const fieldName = match[1];
-            const groupName = match[2];
-            const optionsStr = match[3];
-
-            // 区切り文字で判定: | = ラジオボタン、, = チェックボックス
-            if (optionsStr.includes('|')) {
-              fields.push({
-                fieldName: fieldName,
-                groupName: groupName,
-                type: 'radio',
-                options: mapRawChoices(optionsStr, '|')
-              });
-            } else if (optionsStr.includes(',')) {
-              fields.push({
-                fieldName: fieldName,
-                groupName: groupName,
-                type: 'checkbox',
-                options: mapRawChoices(optionsStr, ',')
-              });
-            }
-            seenFields.add(fieldName);
-          }
-        });
-
-        // ラジオボタン/チェックボックス（属性内、グループなし）
-        const selectionMatches = value.match(TEMPLATE_REGEX.RADIO_FIELD) || [];
-        selectionMatches.forEach((match) => {
-          const m = match.match(/\(\$(\w+):([^)]+)\)/);
-          if (m && !seenFields.has(m[1])) {
-            const fieldName = m[1];
-            const optionsStr = m[2];
-
-            // 区切り文字で判定: | = ラジオボタン、, = チェックボックス
-            if (optionsStr.includes('|')) {
-              fields.push({
-                fieldName: fieldName,
-                type: 'radio',
-                options: mapRawChoices(optionsStr, '|')
-              });
-            } else if (optionsStr.includes(',')) {
-              fields.push({
-                fieldName: fieldName,
-                type: 'checkbox',
-                options: mapRawChoices(optionsStr, ',')
-              });
-            }
-            seenFields.add(fieldName);
-          }
-        });
+        collectFieldsFromString(attr.value, 'attr', fields, seenFields);
       });
 
-      // ELEMENT_NODEの子ノードを処理（配列にコピーしてから処理）
-      const childNodes = Array.from(node.childNodes);
-      childNodes.forEach((child) => processNode(child));
-      return;
-    } else if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-      // DocumentFragmentの子ノードを処理（配列にコピーしてから処理）
       const childNodes = Array.from(node.childNodes);
       childNodes.forEach((child) => processNode(child));
       return;
     }
-    // その他のノードタイプは処理しない
+
+    if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+      const childNodes = Array.from(node.childNodes);
+      childNodes.forEach((child) => processNode(child));
+      return;
+    }
   };
 
-  // templateEl.contentはDocumentFragmentなので、その子ノードを直接処理
   const childNodes = Array.from(templateEl.content.childNodes);
   childNodes.forEach((child) => processNode(child));
 

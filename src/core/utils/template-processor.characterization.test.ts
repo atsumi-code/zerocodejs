@@ -149,4 +149,35 @@ describe('キャラクタリゼーション: レンダリングの未カバー�
     expect(render(template)).toMatchSnapshot();
     expect(render(template, { component: emptyComponent })).toMatchSnapshot();
   });
+
+  it('{$content::rich}（空デフォルト）に値がある場合の現行挙動', () => {
+    const template = '<div>{$content::rich}</div>';
+    expect(render(template)).toMatchSnapshot();
+  });
+
+  it('デフォルト値に . を含むテキストフィールド（テキストノード / 属性）', () => {
+    const template = '<div>{$version:v1.5}</div><span data-v="{$version:v1.5}">x</span>';
+    expect(
+      render(template, { component: { ...emptyComponent, version: '2.0' } })
+    ).toMatchSnapshot();
+    expect(render(template, { component: emptyComponent })).toMatchSnapshot();
+  });
+
+  it('型トークンの後ろに validation があるケース（:rich:required）', () => {
+    const template = '<div>{$content:既定:rich:required}</div>';
+    expect(render(template)).toMatchSnapshot();
+    expect(render(template, { component: emptyComponent })).toMatchSnapshot();
+  });
+
+  it('型トークンの前に validation があるケース（:required:rich）', () => {
+    const template = '<div>{$content:既定:required:rich}</div>';
+    expect(render(template)).toMatchSnapshot();
+  });
+
+  it('選択肢が1つだけ（区切り文字なし）の現行挙動', () => {
+    const template = '<div>($mode:single)</div>';
+    expect(
+      render(template, { component: { ...emptyComponent, mode: 'single' } })
+    ).toMatchSnapshot();
+  });
 });
