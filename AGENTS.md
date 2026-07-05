@@ -608,6 +608,16 @@ interface ImageData {
 - `src/core/utils/image-scope.ts` でフィルタ・追加デフォルトを共通化
 - 検証用 `test-cms-scope.html` を追加
 
+23. ✅ **英語対応（i18n）**（2026年1月）
+
+- vue-i18n ベースで日英のUIロケールを実装（`src/i18n/locales/ja.ts` / `en.ts`）
+- 各 Web Component の `locale` 属性で切り替え
+
+24. ✅ **ユニットテスト（Vitest）**（順次拡充中）
+
+- テンプレート処理・パス操作・並べ替え等のコアロジックをカバー（`npm run test`）
+- 編集時に関連テストを自動実行（`.claude/hooks/related-tests.sh`）、CI でも全件実行
+
 ### 未実装（スコープ関連）
 
 - **専用パーツのページスコープ**: Phase 2 以降で検討（画像 Phase 1 完了後）
@@ -623,8 +633,7 @@ interface ImageData {
 
 ### 未実装機能
 
-- **英語対応（i18n）**: 仕様確定、実装保留
-- **テストコード**: 最終的に検討
+- **E2Eテスト**: 未導入（ユニットテストは実装済み。ブラウザ操作の自動テストは今後検討）
 
 ## 開発開始時のチェックリスト
 
