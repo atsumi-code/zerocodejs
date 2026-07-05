@@ -23,4 +23,20 @@ test.describe('zcode-editor パーツ管理スモークテスト', () => {
 
     await expect(partItems.first()).toBeVisible();
   });
+
+  test('カテゴリ情報モーダルが開閉できる', async ({ page }) => {
+    await page.goto('/test-dev.html');
+    const editor = page.locator('#test-cms');
+    await editor.locator('[data-zcode-id][data-zcode-path="page.0"]').waitFor();
+
+    await editor.locator('.zcode-dev-tab', { hasText: 'パーツ管理' }).click();
+    await editor.locator('.zcode-help-btn').first().click();
+
+    const infoModal = editor.locator('.zcode-help-modal');
+    await expect(infoModal).toBeVisible();
+    await expect(infoModal).toContainText('共通');
+
+    await infoModal.locator('.zcode-close-btn').click();
+    await expect(infoModal).toBeHidden();
+  });
 });

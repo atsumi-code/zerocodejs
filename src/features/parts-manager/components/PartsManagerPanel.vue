@@ -661,244 +661,23 @@
         </div>
       </Teleport>
 
-      <!-- 拡大プレビューモーダル（パーツ編集用） -->
-      <Teleport :to="teleportTo">
-        <div
-          v-if="showPreviewModal && editingPart"
-          class="zcode-preview-modal"
-          @click="showPreviewModal = false"
-        >
-          <div class="zcode-preview-modal-content" @click.stop>
-            <div class="zcode-preview-modal-header">
-              <div class="zcode-preview-modal-header-title" role="heading" aria-level="4">
-                {{ $t('partsManager.preview') }} {{ editingPart.part.title }}
-              </div>
-              <button class="zcode-close-btn" @click="showPreviewModal = false">
-                <X :size="18" />
-              </button>
-            </div>
-            <div class="zcode-preview-modal-body" v-html="displayPreviewHtml" />
-          </div>
-        </div>
-      </Teleport>
+      <PartZoomPreviewModal
+        :show="showPreviewModal && !!editingPart"
+        :title="editingPart?.part.title ?? ''"
+        :html="displayPreviewHtml"
+        @close="showPreviewModal = false"
+      />
 
-      <!-- CSS警告モーダル（共通・個別パーツ両方） -->
-      <Teleport :to="teleportTo">
-        <div
-          v-if="
-            showCssWarningModal &&
-            (activeCategory === 'common' ||
-              activeCategory === 'individual' ||
-              activeCategory === 'special')
-          "
-          class="zcode-help-modal-overlay"
-          @click.self="closeCssWarningModal"
-        >
-          <div class="zcode-help-modal zcode-css-warning-modal" @click.stop>
-            <div class="zcode-help-modal-header">
-              <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
-                <AlertTriangle :size="20" class="zcode-css-warning-modal-title-icon" />
-                <span>{{ $t('partsManager.cssEditWarning') }}</span>
-              </div>
-              <button
-                class="zcode-close-btn"
-                :aria-label="$t('common.close')"
-                @click="closeCssWarningModal"
-              >
-                <X :size="20" />
-              </button>
-            </div>
+      <CssWarningModal
+        v-model:dont-show-again="dontShowCssWarningAgainParts"
+        :show="showCssWarningModal"
+        :active-category="activeCategory"
+        @close="closeCssWarningModal"
+      />
 
-            <div class="zcode-help-modal-body">
-              <div class="zcode-warning-content">
-                <div class="zcode-warning-text">
-                  <ul class="zcode-warning-list">
-                    <li>
-                      <template v-if="activeCategory === 'common'">
-                        {{ $t('partsManager.cssEditWarningMessageCommon') }}
-                      </template>
-                      <template v-else-if="activeCategory === 'individual'">
-                        {{ $t('partsManager.cssEditWarningMessageIndividual') }}
-                      </template>
-                      <template v-else>
-                        {{ $t('partsManager.cssEditWarningMessageSpecial') }}
-                      </template>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+      <CategoryInfoModal :show="showCategoryInfoModal" @close="showCategoryInfoModal = false" />
 
-            <div class="zcode-css-warning-modal-footer">
-              <label class="zcode-checkbox-label" style="margin-bottom: 12px">
-                <input
-                  v-model="dontShowCssWarningAgainParts"
-                  type="checkbox"
-                  class="zcode-checkbox-input"
-                />
-                <span>{{ $t('partsManager.dontShowAgain') }}</span>
-              </label>
-              <button class="zcode-btn-primary" @click="closeCssWarningModal">
-                {{ $t('partsManager.understood') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </Teleport>
-
-      <!-- カテゴリ情報モーダル -->
-      <Teleport :to="teleportTo">
-        <div
-          v-if="showCategoryInfoModal"
-          class="zcode-help-modal-overlay"
-          @click.self="showCategoryInfoModal = false"
-        >
-          <div class="zcode-help-modal" @click.stop>
-            <div class="zcode-help-modal-header">
-              <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
-                <Info :size="20" class="zcode-css-warning-modal-title-icon" />
-                <span>{{ $t('dataViewer.categoryInfo.title') }}</span>
-              </div>
-              <button
-                class="zcode-close-btn"
-                :aria-label="$t('common.close')"
-                @click="showCategoryInfoModal = false"
-              >
-                <X :size="18" />
-              </button>
-            </div>
-            <div class="zcode-help-modal-body">
-              <div class="zcode-help-section">
-                <div class="zcode-help-section-title" role="heading" aria-level="4">
-                  {{ $t('dataViewer.categoryInfo.common.title') }}
-                </div>
-                <div class="zcode-help-section-item">
-                  {{ $t('dataViewer.categoryInfo.common.description') }}
-                </div>
-              </div>
-              <div class="zcode-help-section">
-                <div class="zcode-help-section-title" role="heading" aria-level="4">
-                  {{ $t('dataViewer.categoryInfo.individual.title') }}
-                </div>
-                <div class="zcode-help-section-item">
-                  {{ $t('dataViewer.categoryInfo.individual.description') }}
-                </div>
-              </div>
-              <div class="zcode-help-section">
-                <div class="zcode-help-section-title" role="heading" aria-level="4">
-                  {{ $t('dataViewer.categoryInfo.special.title') }}
-                </div>
-                <div class="zcode-help-section-item">
-                  {{ $t('dataViewer.categoryInfo.special.description') }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Teleport>
-
-      <!-- テンプレート記法ヘルプモーダル -->
-      <Teleport :to="teleportTo">
-        <div v-if="showTemplateHelp" class="zcode-help-modal-overlay" @click="closeTemplateHelp">
-          <div class="zcode-help-modal" @click.stop>
-            <div class="zcode-help-modal-header">
-              <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
-                {{ $t('partsManager.templateHelpTitle') }}
-              </div>
-              <button
-                class="zcode-close-btn"
-                :aria-label="$t('common.close')"
-                @click="closeTemplateHelp"
-              >
-                <X :size="20" />
-              </button>
-            </div>
-
-            <div class="zcode-help-modal-body">
-              <table class="zcode-help-table">
-                <thead>
-                  <tr>
-                    <th>{{ $t('partsManager.syntax') }}</th>
-                    <th>{{ $t('partsManager.description') }}</th>
-                    <th>{{ $t('partsManager.example') }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>{$field:default}</code></td>
-                    <td>{{ $t('partsManager.templateHelp.textField') }}</td>
-                    <td><code>{$title:タイトル}</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>{$field:default:rich}</code></td>
-                    <td>{{ $t('partsManager.templateHelp.richText') }}</td>
-                    <td><code>{$content:本文:rich}</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>{$field:default:textarea}</code></td>
-                    <td>{{ $t('partsManager.templateHelp.textarea') }}</td>
-                    <td><code>{$description:説明:textarea}</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>{$field:default:image}</code></td>
-                    <td>{{ $t('partsManager.templateHelp.image') }}</td>
-                    <td><code>{$hero:default.jpg:image}</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>($field:option1|option2)</code></td>
-                    <td>{{ $t('partsManager.templateHelp.radio') }}</td>
-                    <td><code>($color:red|blue|green)</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>($field:option1,option2)</code></td>
-                    <td>{{ $t('partsManager.templateHelp.checkbox') }}</td>
-                    <td><code>($features:fast,secure)</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>($field@:option1|option2)</code></td>
-                    <td>{{ $t('partsManager.templateHelp.selectSingle') }}</td>
-                    <td><code>($size@:S|M|L)</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>($field@:option1,option2)</code></td>
-                    <td>{{ $t('partsManager.templateHelp.selectMultiple') }}</td>
-                    <td><code>($tags@:tag1,tag2,tag3)</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>z-if="show_field"</code></td>
-                    <td>{{ $t('partsManager.templateHelp.conditional') }}</td>
-                    <td><code>&lt;div z-if="show_content"&gt;...&lt;/div&gt;</code></td>
-                  </tr>
-                  <tr>
-                    <td><code>z-slot="name"</code></td>
-                    <td>{{ $t('partsManager.templateHelp.slot') }}</td>
-                    <td><code>&lt;div z-slot="content"&gt;&lt;/div&gt;</code></td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="zcode-help-section">
-                <div class="zcode-help-section-title" role="heading" aria-level="4">
-                  {{ $t('partsManager.templateHelp.note') }}
-                </div>
-                <div role="list" class="zcode-help-section-list">
-                  <div
-                    role="listitem"
-                    class="zcode-help-section-item"
-                    v-html="$t('partsManager.templateHelp.suggestionNote')"
-                  />
-                  <div role="listitem" class="zcode-help-section-item">
-                    {{ $t('partsManager.templateHelp.fieldNameNote') }}
-                  </div>
-                  <div role="listitem" class="zcode-help-section-item">
-                    {{ $t('partsManager.templateHelp.defaultValueNote') }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Teleport>
+      <TemplateHelpModal :show="showTemplateHelp" @close="closeTemplateHelp" />
     </div>
   </div>
 </template>
@@ -922,10 +701,13 @@ import {
   ArrowUpDown,
   HelpCircle,
   Info,
-  AlertTriangle,
   SlidersHorizontal
 } from 'lucide-vue-next';
 import MonacoEditor from './MonacoEditor.vue';
+import PartZoomPreviewModal from './PartZoomPreviewModal.vue';
+import CssWarningModal from './CssWarningModal.vue';
+import CategoryInfoModal from './CategoryInfoModal.vue';
+import TemplateHelpModal from './TemplateHelpModal.vue';
 import {
   getDevSetting,
   saveDevSettings,
