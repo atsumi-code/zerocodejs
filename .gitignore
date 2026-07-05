@@ -6,3 +6,8 @@ dist
 
 dist-pages/
 .npm-cache/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/

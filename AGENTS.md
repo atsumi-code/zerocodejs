@@ -618,6 +618,13 @@ interface ImageData {
 - テンプレート処理・パス操作・並べ替え等のコアロジックをカバー（`npm run test`）
 - 編集時に関連テストを自動実行（`.claude/hooks/related-tests.sh`）、CI でも全件実行
 
+25. ✅ **E2Eテスト（Playwright）**（2026年7月）
+
+- `e2e/cms-smoke.spec.ts`: `test-cms.html` に対し「パーツ追加 → 編集 → 並べ替え → 保存で `save-request`（`targets: ['page', 'images-special']`）発火」を検証するスモークテスト
+- 実行: `npm run test:e2e`（vite dev サーバーは `playwright.config.ts` の webServer で自動起動）。UI モード: `npm run test:e2e:ui`
+- CI では `e2e` ジョブとして chromium で実行、失敗時は Playwright レポートをアーティファクトに保存
+- 注意: パーツ追加直後の選択は編集モードへハンドオフされ編集パネルが自動で開く（テストはこの挙動に依存）
+
 ### 未実装（スコープ関連）
 
 - **専用パーツのページスコープ**: Phase 2 以降で検討（画像 Phase 1 完了後）
@@ -633,7 +640,7 @@ interface ImageData {
 
 ### 未実装機能
 
-- **E2Eテスト**: 未導入（ユニットテストは実装済み。ブラウザ操作の自動テストは今後検討）
+- （現時点でなし。バンドル分割・テンプレート処理系のパーサー化は改善候補として CHANGELOG / レビュー参照）
 
 ## 開発開始時のチェックリスト
 

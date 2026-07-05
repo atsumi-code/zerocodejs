@@ -335,19 +335,15 @@
   - `docs.html`: ドキュメント追加
   - `src/features/parts-manager/components/MonacoEditor.vue`: 予測変換に追加
 
-### 16. テストコード
+### 16. ✅ テストコード【実装済み・順次拡充】
 
 - **複雑度**: 中〜高
-- **内容**: 最終的に検討
-- **実装方針**:
-  - 単体テスト（ユーティリティ関数、コンポーザブル）
-  - 統合テスト（Web Component、イベント）
-  - E2Eテスト（ユーザー操作フロー）
-  - テストフレームワーク（Vitest、Playwrightなど）
-- **検討事項**:
+- **実装状況**:
+  - ✅ 単体テスト: Vitest（テンプレート処理・パス操作・並べ替え等のコアロジック、`npm run test`）。CI で全件実行
+  - ✅ E2Eテスト: Playwright（2026年7月導入）。`e2e/cms-smoke.spec.ts` で「追加 → 編集 → 並べ替え → 保存イベント発火」を検証（`npm run test:e2e`）。CI の `e2e` ジョブで chromium 実行
+  - 未着手: 統合テスト（Web Component 属性・イベントの網羅）、E2E のシナリオ拡充（editor / studio、画像選択、スロット操作）
+- **検討事項（残）**:
   - テストカバレッジの目標値
-  - CI/CDへの統合
-  - テストデータの管理
 
 ---
 
