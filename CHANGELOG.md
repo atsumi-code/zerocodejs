@@ -6,6 +6,8 @@
 
 ## [未リリース]
 
+## [1.0.1-beta.22] - 2026-07-06
+
 ### 追加
 
 - バックエンドデータ参照のデフォルト値記法 `{@fieldName:defaultValue}`（データ未取得・パス不存在・null/undefined/空文字のときフォールバック）
@@ -84,7 +86,8 @@
 
 本ファイル導入前のため個別記録がありません。主な内容: 初回公開、i18n（日英 UI）、バリデーション記法、タグの動的変更（`z-tag`）、バックエンドデータ参照（`{@...}` / `z-for`）、選択肢記法の `ラベル=値` 対応、スマホ対応、パーツ管理のプレビュー連動・画像 ID 参照パネルなど。詳細は Git 履歴（`git log v1.0.1-beta.16` および各タグ）を参照してください。
 
-[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.21...HEAD
+[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.22...HEAD
+[1.0.1-beta.22]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.21...v1.0.1-beta.22
 [1.0.1-beta.21]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.20...v1.0.1-beta.21
 [1.0.1-beta.20]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.19...v1.0.1-beta.20
 [1.0.1-beta.19]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.18...v1.0.1-beta.19
