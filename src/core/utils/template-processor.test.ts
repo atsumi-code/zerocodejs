@@ -684,6 +684,48 @@ describe('processTemplateWithDOM', () => {
   });
 });
 
+describe('rich フィールドの URL 属性サニタイズ', () => {
+  const mockFindPart = vi.fn((_partId: string): PartData | null => null);
+  const mockRenderComponentToHtml = vi.fn((_component: ComponentData, _path: string) => '');
+
+  it('href に展開される rich 値の javascript: スキームを遮断する', () => {
+    const template = '<a href="{$content:既定:rich}">リンク</a>';
+    const component: ComponentData = {
+      id: '1',
+      part_id: 'part1',
+      content: 'javascript:alert(1)'
+    };
+    const result = processTemplateWithDOM(
+      template,
+      component,
+      'page.0',
+      mockFindPart,
+      mockRenderComponentToHtml,
+      false
+    );
+    expect(result).not.toContain('javascript:');
+    expect(result).toContain('href=""');
+  });
+
+  it('href に展開される rich 値の通常 URL は維持する', () => {
+    const template = '<a href="{$content:既定:rich}">リンク</a>';
+    const component: ComponentData = {
+      id: '1',
+      part_id: 'part1',
+      content: 'https://example.com/page'
+    };
+    const result = processTemplateWithDOM(
+      template,
+      component,
+      'page.0',
+      mockFindPart,
+      mockRenderComponentToHtml,
+      false
+    );
+    expect(result).toContain('href="https://example.com/page"');
+  });
+});
+
 describe('isEmptyForZEmpty', () => {
   it('treats empty rich text html as empty', () => {
     expect(isEmptyForZEmpty('<p></p>')).toBe(true);

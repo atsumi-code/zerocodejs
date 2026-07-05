@@ -174,6 +174,11 @@ describe('キャラクタリゼーション: レンダリングの未カバー�
     expect(render(template)).toMatchSnapshot();
   });
 
+  it('同一テキストノード内の text + rich 混在（rich 以外はリテラルのまま残る従来仕様）', () => {
+    const template = '<div>{$title:t}と{$content:c:rich}</div>';
+    expect(render(template)).toMatchSnapshot();
+  });
+
   it('選択肢が1つだけ（区切り文字なし）の現行挙動', () => {
     const template = '<div>($mode:single)</div>';
     expect(

@@ -283,5 +283,26 @@ describe('extractFieldsFromTemplate', () => {
       const fields = extractFieldsFromTemplate(template);
       expect(fields).toHaveLength(0);
     });
+
+    it('型トークンより後ろの validation は無視される（従来仕様のピン留め）', () => {
+      const fields = extractFieldsFromTemplate('<div>{$content:既定:rich:required}</div>');
+      expect(fields).toHaveLength(1);
+      expect(fields[0].type).toBe('rich');
+      expect(fields[0].defaultValue).toBe('既定');
+      expect(fields[0].required).toBeUndefined();
+    });
+
+    it('型トークンより前の validation は抽出される', () => {
+      const fields = extractFieldsFromTemplate('<div>{$content:既定:required:rich}</div>');
+      expect(fields).toHaveLength(1);
+      expect(fields[0].type).toBe('rich');
+      expect(fields[0].defaultValue).toBe('既定');
+      expect(fields[0].required).toBe(true);
+    });
+
+    it('デフォルト値に . を含む非グループ text は抽出されない（従来仕様のピン留め）', () => {
+      const fields = extractFieldsFromTemplate('<div>{$url:https://example.com/path}</div>');
+      expect(fields).toHaveLength(0);
+    });
   });
 });

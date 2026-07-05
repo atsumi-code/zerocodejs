@@ -5,6 +5,7 @@ import { TEMPLATE_REGEX } from './template-regex';
 import {
   scanFieldTokens,
   splitDefaultAndValidation,
+  VALID_Z_TAG_NAMES,
   type ChoiceFieldToken,
   type ValueFieldToken
 } from './field-syntax';
@@ -26,39 +27,6 @@ function selectionSingleFromComponent(
   const v = component[fieldName];
   return (typeof v === 'string' ? v : '') || firstChoiceValueFromRaw(optionsRaw);
 }
-
-const VALID_TAGS: string[] = [
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'div',
-  'p',
-  'span',
-  'li',
-  'ul',
-  'ol',
-  'section',
-  'article',
-  'aside',
-  'nav',
-  'header',
-  'footer',
-  'main',
-  'figure',
-  'figcaption',
-  'blockquote',
-  'pre',
-  'code',
-  'table',
-  'thead',
-  'tbody',
-  'tr',
-  'th',
-  'td'
-];
 
 function processZIf(content: DocumentFragment, component: ComponentData): void {
   content.querySelectorAll('[z-if]').forEach((el) => {
@@ -87,7 +55,10 @@ function processZTag(content: DocumentFragment, component: ComponentData, doc: D
         const tagName = typeof tagValue === 'string' ? tagValue : el.tagName.toLowerCase();
         const normalizedTagName = typeof tagName === 'string' ? tagName.toLowerCase() : tagName;
 
-        if (typeof normalizedTagName === 'string' && VALID_TAGS.includes(normalizedTagName)) {
+        if (
+          typeof normalizedTagName === 'string' &&
+          VALID_Z_TAG_NAMES.includes(normalizedTagName)
+        ) {
           const newElement = doc.createElement(normalizedTagName);
 
           Array.from(el.attributes).forEach((attr) => {
@@ -405,8 +376,12 @@ export function processTemplateWithDOM(
         return '';
       }
       const defaultValue = token.optional ? token.defaultValue : token.rawDefault;
-      // rich は URL 属性でもエスケープのみ（従来仕様）
-      return escapeAttributeValue(String(rawValue || defaultValue));
+      const stringValue = String(rawValue || defaultValue);
+      // URL 属性では javascript: 等のスキームを遮断する（エスケープだけでは防げないため）
+      if (isUrlAttribute(attrName)) {
+        return sanitizeUrlForAttr(stringValue, attrName);
+      }
+      return escapeAttributeValue(stringValue);
     }
 
     if (token.fieldType === 'image') {

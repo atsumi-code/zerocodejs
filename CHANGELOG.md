@@ -21,12 +21,14 @@
 
 ### 変更
 
+- **テンプレートDSL処理系をパーサー方式に再設計**（内部リファクタリング、公開API・出力は不変）: フィールド記法のパースを `field-syntax.ts` の単一トークナイザに一元化し、`field-extractor` / `template-processor` の正規表現分岐複製（約30ブロック）を解消。キャラクタリゼーションテスト91件で出力の同一性を検証
 - **ES ビルドをコード分割対応に変更**: Tiptap（リッチテキストエディタ）は初回利用時の遅延ロードに（約115KB）。UMD は従来どおり単一ファイル（CDN 互換維持、`vite.umd.config.ts`）
 - **`sanitizeUrl` のセキュリティ強化**:
   - タブ・改行等の制御文字によるスキーム偽装（例: `java\tscript:`）を拒否
   - data URL は `href` / `action`（遷移先）ではラスター画像のみ許可し、SVG の data URL を拒否。`img` の `src` / `poster`（埋め込み先）では SVG も引き続き許可
   - シグネチャに `context: 'navigation' | 'embed'` 引数を追加（省略時は安全側の `navigation`）
 - テンプレート処理の URL サニタイズ対象属性に `formaction` / `poster` を追加
+- **rich フィールドを URL 属性（href 等）に展開する際も `sanitizeUrl` を通すよう修正**（従来はエスケープのみで `javascript:` スキームが素通しだった）
 - UI 表記を「特別」から「専用」に統一
 - 右クリックメニュー・パネルオプション UI を改善
 - 画像選択モーダルのグリッドレイアウト・プレビュー・並べ替え表示を改善

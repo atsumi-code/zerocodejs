@@ -71,7 +71,7 @@
 
 **Q: 新しいテンプレート記法を追加するには？**
 
-- A: `src/core/utils/template-processor.ts`の`extractFieldsFromTemplate`と`processTemplateWithDOM`を修正。`AGENTS.md`の「テンプレート記法の実装」セクションを参照。
+- A: フィールド記法のパースは `src/core/utils/field-syntax.ts` の `scanFieldTokens` に一元化されている。記法の変更は (1) `field-syntax.ts` のトークナイザ、(2) `field-extractor.ts` の `FieldInfo` へのマッピング、(3) `template-processor.ts` のコンテキスト別解決関数（`resolveTextLikeValue` 等）の3箇所で完結する。`AGENTS.md`の「テンプレート記法の実装」セクションを参照。
 
 **Q: 新しいイベントを追加するには？**
 
@@ -357,6 +357,8 @@ interface ImageData {
 - **読み取り専用**: `{$fieldName:defaultValue:readonly}`
 - **無効化**: `{$fieldName:defaultValue:disabled}`
 - **複数指定**: `{$fieldName:defaultValue:required:max=50}`
+- **注意（型付きフィールドとの併用）**: validation は型トークンの**前**に書く（正: `{$f:既定:required:rich}`）。型トークンの後ろに書いた validation（`{$f:既定:rich:required}`）は無視される
+- **注意（デフォルト値の `.`）**: 非グループのテキストフィールドはデフォルト値に `.` を含むと抽出されない（例: `{$url:https://example.com/path}` は編集パネルに出ない）。URL 等をデフォルトにしたい場合はグループ付き記法か optional を使わない別の設計を検討する
 
 #### バックエンドデータ
 
@@ -379,13 +381,15 @@ interface ImageData {
 
 `processTemplateWithDOM`関数内での処理順序：
 
-1. テキストノードの変数展開（バックエンドデータ、リッチテキスト、テキストフィールドなど）
-2. 属性内の変数展開
+1. テキストノード・属性内の値フィールド展開（バックエンドデータ → `{$...}` フィールド。`field-syntax.ts` の `scanFieldTokens` によるトークンスキャンで一括処理）
+2. 選択肢記法 `($...)` の展開（値フィールドとは別パス）
 3. `z-if`条件分岐処理（表示 on/off。条件が偽の場合は要素を削除、処理後に`z-if`属性を削除）
 4. `z-tag`タグ名の動的変更処理（タグ名を変更し、`z-tag`属性は新しい要素にコピーしない）
 5. `z-empty`条件分岐処理（**fieldName に紐づく**。フィールドが空の場合は要素を削除、処理後に`z-empty`属性を削除）
 6. `z-for`ループ処理（バックエンドデータの配列をループ、処理後に`z-for`属性を削除）
 7. `z-slot`処理（スロットに子コンポーネントを挿入、処理後に`z-slot`属性を削除）
+
+**補足**: かつて存在した「optional→group→通常、rich/textarea/image→text の順で正規表現を評価しないと誤マッチする」という順序契約は、トークナイザ化（2026年7月）により消滅した。フィールド記法のパースを変更する場合は `field-syntax.ts` のみを見ればよい。
 
 ## コンポーネント初期化
 
@@ -514,7 +518,9 @@ interface ImageData {
 
 ### ユーティリティ関数
 
-- `src/core/utils/template-processor.ts`: テンプレート処理（フィールド抽出、変数展開、条件分岐など）
+- `src/core/utils/field-syntax.ts`: フィールド記法の単一トークナイザ（`scanFieldTokens`）。DSL文法の一次定義
+- `src/core/utils/field-extractor.ts`: テンプレートからのフィールド情報抽出（トークン → `FieldInfo` へのマッピング）
+- `src/core/utils/template-processor.ts`: テンプレート処理（トークン → 値展開、z-\* 制御属性、スロット）
 - `src/core/utils/component-initializer.ts`: コンポーネント初期化（不足フィールドの自動初期化）
 - `src/core/utils/storage.ts`: ローカルストレージ管理（ユーザー設定の保存・読み込み）
 - `src/core/utils/dom-utils.ts`: DOM操作ユーティリティ
@@ -634,7 +640,15 @@ interface ImageData {
 - CI では `e2e` ジョブとして chromium で実行、失敗時は Playwright レポートをアーティファクトに保存
 - 注意: パーツ追加直後の選択は編集モードへハンドオフされ編集パネルが自動で開く（テストはこの挙動に依存）
 
-26. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
+26. ✅ **テンプレートDSL処理系のパーサー化**（2026年7月）
+
+- `field-syntax.ts` を新設: フィールド記法・選択肢記法の単一トークナイザ `scanFieldTokens`（マスタ正規表現2本）
+- `field-extractor.ts`（943→約200行）と `template-processor.ts`（1,387→約880行）をトークナイザベースに再設計
+- 「optional→group→通常、型→text」の正規表現評価順序契約が消滅。記法追加は field-syntax + マッピング + 解決関数の3箇所で完結
+- `VALID_Z_TAG_NAMES`（z-tag のタグ一覧）を field-syntax に一元化、`EditPanelField` を `FieldInfo` の拡張に統一
+- キャラクタリゼーションテスト（スナップショット91件）で出力の同一性を機械的に検証。公開API・出力挙動は不変
+
+27. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
 
 - `zerocodejs/cms` サブパスを追加（`<zcode-cms>` のみ。初期ロード 圧縮後約100KB、従来比 約6割減）
 - Tiptap（RichTextEditor）を `defineAsyncComponent` で遅延ロード化（約115KB を初回のリッチテキスト編集時のみ取得）

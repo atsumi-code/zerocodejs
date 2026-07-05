@@ -1,32 +1,13 @@
 import type { ComponentData, PartData } from '../../types';
 import { getFieldLabel } from './path-utils';
 import { extractFieldsFromTemplate } from './field-extractor';
-import type { FieldChoiceOption } from './template-regex';
+import { VALID_Z_TAG_NAMES } from './field-syntax';
+import type { FieldChoiceOption, FieldInfo } from './template-regex';
 
-export type EditPanelField = {
-  type:
-    | 'text'
-    | 'textarea'
-    | 'radio'
-    | 'checkbox'
-    | 'boolean'
-    | 'rich'
-    | 'image'
-    | 'select'
-    | 'select-multiple'
-    | 'tag';
-  fieldName: string;
-  groupName?: string;
+export interface EditPanelField extends FieldInfo {
   label: string;
-  defaultValue?: string;
-  options?: FieldChoiceOption[];
   currentValue: unknown;
-  optional?: boolean;
-  required?: boolean;
-  maxLength?: number;
-  readonly?: boolean;
-  disabled?: boolean;
-};
+}
 
 export function getAvailableFieldsFromPart(
   part: PartData,
@@ -126,38 +107,7 @@ export function getAvailableFieldsFromPart(
       };
     }
     if (field.type === 'tag') {
-      const allTags: FieldChoiceOption[] = [
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'div',
-        'p',
-        'span',
-        'li',
-        'ul',
-        'ol',
-        'section',
-        'article',
-        'aside',
-        'nav',
-        'header',
-        'footer',
-        'main',
-        'figure',
-        'figcaption',
-        'blockquote',
-        'pre',
-        'code',
-        'table',
-        'thead',
-        'tbody',
-        'tr',
-        'th',
-        'td'
-      ].map((t) => ({ label: t, value: t }));
+      const allTags: FieldChoiceOption[] = VALID_Z_TAG_NAMES.map((t) => ({ label: t, value: t }));
       const tagOptions = field.options?.length ? field.options : allTags;
       return {
         ...baseField,

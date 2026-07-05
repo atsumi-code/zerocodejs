@@ -75,7 +75,7 @@
           <!-- テキストエリアフィールド（複数行） -->
           <div v-if="field.type === 'textarea'" class="zcode-text-editor">
             <textarea
-              :value="field.currentValue ?? ''"
+              :value="String(field.currentValue ?? '')"
               :placeholder="field.defaultValue"
               :maxlength="field.maxLength"
               :readonly="field.readonly"
@@ -96,7 +96,7 @@
           <!-- リッチテキストエディタ -->
           <div v-if="field.type === 'rich'" class="zcode-rich-text-editor-wrapper">
             <RichTextEditor
-              :model-value="field.currentValue ?? ''"
+              :model-value="String(field.currentValue ?? '')"
               :placeholder="field.defaultValue"
               @update:model-value="handleRichTextUpdate(field, $event)"
             />
@@ -232,9 +232,12 @@
               </button>
             </div>
             <!-- プレビュー -->
-            <div v-if="getImageUrl(field.currentValue)" class="zcode-image-preview">
+            <div
+              v-if="getImageUrl(field.currentValue as string | null | undefined)"
+              class="zcode-image-preview"
+            >
               <img
-                :src="getImageUrl(field.currentValue) || ''"
+                :src="getImageUrl(field.currentValue as string | null | undefined) || ''"
                 :alt="field.label"
                 class="zcode-image-preview-img"
               />
@@ -272,35 +275,12 @@ import type { ComponentData, ZeroCodeData } from '../../../types';
 const RichTextEditor = defineAsyncComponent(() => import('./RichTextEditor.vue'));
 import ImageSelectModal from './ImageSelectModal.vue';
 import { X, ChevronUp, Image } from 'lucide-vue-next';
-import type { FieldChoiceOption } from '../../../core/utils/template-regex';
 import { isEmptyForZEmpty } from '../../../core/utils/template-processor';
+import type { EditPanelField } from '../../../core/utils/edit-panel-fields';
 
 const props = defineProps<{
   editingComponent: ComponentData | null;
-  editingAvailableFields: Array<{
-    type:
-      | 'text'
-      | 'textarea'
-      | 'radio'
-      | 'checkbox'
-      | 'boolean'
-      | 'rich'
-      | 'image'
-      | 'select'
-      | 'select-multiple'
-      | 'tag';
-    fieldName: string;
-    groupName?: string; // グループ名（オプション）
-    label: string;
-    defaultValue?: string;
-    options?: FieldChoiceOption[];
-    currentValue: any;
-    optional?: boolean;
-    required?: boolean;
-    maxLength?: number;
-    readonly?: boolean;
-    disabled?: boolean;
-  }>;
+  editingAvailableFields: EditPanelField[];
   fieldErrors?: Record<string, string>;
   currentMode: 'edit' | 'add' | 'reorder' | 'delete';
   canSelectParent: boolean;

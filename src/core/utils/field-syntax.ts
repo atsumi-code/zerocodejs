@@ -60,6 +60,40 @@ export function splitDefaultAndValidation(raw: string) {
 
 export type ValueFieldType = 'text' | 'textarea' | 'rich' | 'image';
 
+// z-tag で選択可能なタグ名（processor のホワイトリストと編集パネルの選択肢の共通定義）
+export const VALID_Z_TAG_NAMES: readonly string[] = [
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'div',
+  'p',
+  'span',
+  'li',
+  'ul',
+  'ol',
+  'section',
+  'article',
+  'aside',
+  'nav',
+  'header',
+  'footer',
+  'main',
+  'figure',
+  'figcaption',
+  'blockquote',
+  'pre',
+  'code',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td'
+];
+
 interface FieldTokenBase {
   raw: string;
   start: number;
