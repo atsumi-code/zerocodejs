@@ -14,6 +14,7 @@ export { renderToHtml, renderCssToHtml, RenderError } from './core/renderer/rend
 
 // サニタイズ関数のエクスポート（サーバーサイドとルール共有用）
 export { sanitizeRichText, sanitizeUrl, sanitizePartTemplate } from './core/utils/sanitize';
+export type { UrlContext } from './core/utils/sanitize';
 
 // コンポーネントのエクスポート（Vue環境で直接使いたい場合）
 export { default as ZeroCodePreview } from './components/ZeroCodePreview.vue';

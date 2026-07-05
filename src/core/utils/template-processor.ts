@@ -160,9 +160,24 @@ export interface ProcessTemplateOptions {
   };
 }
 
+function isUrlAttribute(attrName: string | null): boolean {
+  return (
+    attrName === 'href' ||
+    attrName === 'src' ||
+    attrName === 'action' ||
+    attrName === 'formaction' ||
+    attrName === 'poster'
+  );
+}
+
+function sanitizeUrlForAttr(url: string, attrName: string | null): string {
+  const context = attrName === 'src' || attrName === 'poster' ? 'embed' : 'navigation';
+  return sanitizeUrl(url, context);
+}
+
 function formatBackendDataResolved(resolved: string, attrName: string | null): string {
-  if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-    return sanitizeUrl(resolved);
+  if (isUrlAttribute(attrName)) {
+    return sanitizeUrlForAttr(resolved, attrName);
   }
   if (attrName !== null) {
     return escapeAttributeValue(resolved);
@@ -587,7 +602,7 @@ export function processTemplateWithDOM(
 
         // バックエンドデータの展開（先に処理）
         if (backendData) {
-          if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
+          if (isUrlAttribute(attrName)) {
             value = expandUrlPlaceholders(value, backendData);
           }
         }
@@ -646,8 +661,8 @@ export function processTemplateWithDOM(
             );
             const imageUrlString =
               typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
-            if (attrName === 'href' || attrName === 'src') {
-              return sanitizeUrl(imageUrlString);
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(imageUrlString, attrName);
             }
             return escapeAttributeValue(imageUrlString);
           }
@@ -672,8 +687,8 @@ export function processTemplateWithDOM(
             );
             const imageUrlString =
               typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
-            if (attrName === 'href' || attrName === 'src') {
-              return sanitizeUrl(imageUrlString);
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(imageUrlString, attrName);
             }
             return escapeAttributeValue(imageUrlString);
           }
@@ -715,8 +730,8 @@ export function processTemplateWithDOM(
               imagesIndividual,
               imagesSpecial
             );
-            if (attrName === 'href' || attrName === 'src') {
-              return sanitizeUrl(imageUrl || defaultValue);
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(imageUrl || defaultValue, attrName);
             }
             return escapeAttributeValue(imageUrl || defaultValue);
           }
@@ -735,8 +750,8 @@ export function processTemplateWithDOM(
             imagesIndividual,
             imagesSpecial
           );
-          if (attrName === 'href' || attrName === 'src') {
-            return sanitizeUrl(imageUrl || defaultValue);
+          if (isUrlAttribute(attrName)) {
+            return sanitizeUrlForAttr(imageUrl || defaultValue, attrName);
           }
           return escapeAttributeValue(imageUrl || defaultValue);
         });
@@ -753,8 +768,8 @@ export function processTemplateWithDOM(
           }
           const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
           const stringValue = String(rawValue || defaultValue);
-          if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-            return sanitizeUrl(stringValue);
+          if (isUrlAttribute(attrName)) {
+            return sanitizeUrlForAttr(stringValue, attrName);
           }
           return escapeAttributeValue(stringValue);
         });
@@ -772,8 +787,8 @@ export function processTemplateWithDOM(
             }
             const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
             const stringValue = String(rawValue || defaultValue);
-            if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-              return sanitizeUrl(stringValue);
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(stringValue, attrName);
             }
             return escapeAttributeValue(stringValue);
           }
@@ -789,8 +804,8 @@ export function processTemplateWithDOM(
             }
             const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
             const stringValue = String(rawValue || defaultValue);
-            if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-              return sanitizeUrl(stringValue);
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(stringValue, attrName);
             }
             return escapeAttributeValue(stringValue);
           }
@@ -804,8 +819,8 @@ export function processTemplateWithDOM(
           }
           const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
           const stringValue = String(rawValue || defaultValue);
-          if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-            return sanitizeUrl(stringValue);
+          if (isUrlAttribute(attrName)) {
+            return sanitizeUrlForAttr(stringValue, attrName);
           }
           return escapeAttributeValue(stringValue);
         });
@@ -947,8 +962,8 @@ export function processTemplateWithDOM(
               const value = component[fieldName];
               result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
             }
-            if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-              return sanitizeUrl(String(result));
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(String(result), attrName);
             }
             return escapeAttributeValue(String(result));
           }
@@ -973,8 +988,8 @@ export function processTemplateWithDOM(
             const value = component[fieldName];
             result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
           }
-          if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-            return sanitizeUrl(String(result));
+          if (isUrlAttribute(attrName)) {
+            return sanitizeUrlForAttr(String(result), attrName);
           }
           return escapeAttributeValue(String(result));
         });
@@ -1000,8 +1015,8 @@ export function processTemplateWithDOM(
               const value = component[fieldName];
               result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
             }
-            if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-              return sanitizeUrl(String(result));
+            if (isUrlAttribute(attrName)) {
+              return sanitizeUrlForAttr(String(result), attrName);
             }
             return escapeAttributeValue(String(result));
           }
@@ -1026,8 +1041,8 @@ export function processTemplateWithDOM(
             const value = component[fieldName];
             result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
           }
-          if (attrName === 'href' || attrName === 'src' || attrName === 'action') {
-            return sanitizeUrl(String(result));
+          if (isUrlAttribute(attrName)) {
+            return sanitizeUrlForAttr(String(result), attrName);
           }
           return escapeAttributeValue(String(result));
         });
@@ -1232,8 +1247,9 @@ export function processTemplateWithDOM(
               const result = current === null || current === undefined ? '' : String(current);
 
               // URL属性の場合はサニタイズ
-              if (attr.name === 'href' || attr.name === 'src' || attr.name === 'action') {
-                return sanitizeUrl(result);
+              const urlAttrName = attr.name.toLowerCase();
+              if (isUrlAttribute(urlAttrName)) {
+                return sanitizeUrlForAttr(result, urlAttrName);
               }
               return escapeAttributeValue(result);
             } catch (error) {
@@ -1245,8 +1261,9 @@ export function processTemplateWithDOM(
           value = value.replace(new RegExp(`\\{${itemVar}\\}`, 'g'), () => {
             const result =
               typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item);
-            if (attr.name === 'href' || attr.name === 'src' || attr.name === 'action') {
-              return sanitizeUrl(result);
+            const urlAttrName = attr.name.toLowerCase();
+            if (isUrlAttribute(urlAttrName)) {
+              return sanitizeUrlForAttr(result, urlAttrName);
             }
             return escapeAttributeValue(result);
           });

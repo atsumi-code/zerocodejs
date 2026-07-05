@@ -923,7 +923,7 @@ const styles = renderCssToHtml(data.css);
 以下の関数はサーバーサイドとルール共有を目的として npm パッケージから export されています。
 
 - `sanitizeRichText(html: string): string`: リッチテキストフィールドのサニタイズ（DOMPurify）
-- `sanitizeUrl(url: string): string`: URL の検証・サニタイズ（`javascript:` / `vbscript:` / `file:` 等を拒否）
+- `sanitizeUrl(url: string, context?: 'navigation' | 'embed'): string`: URL の検証・サニタイズ（`javascript:` / `vbscript:` / `file:` と制御文字によるスキーム偽装を拒否）。data URL はラスター画像のみ許可し、SVG の data URL は `context: 'embed'`（`img` の `src` / `poster` 等の埋め込み先）でのみ許可。省略時は安全側の `'navigation'`（`href` / `action` 等の遷移先）として扱う
 - `sanitizePartTemplate(html: string): string`: パーツテンプレート HTML のサニタイズ（DOMPurify ベース、ZeroCode テンプレート記法 `z-*` 属性を許可、`<script>` / `<iframe>` 等の危険タグとイベントハンドラ属性を除去）
 
 ```javascript

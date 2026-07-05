@@ -25,16 +25,30 @@ export function escapeAttributeValue(value: string): string {
     .replace(/>/g, '&gt;');
 }
 
+const RASTER_IMAGE_DATA_URL_REGEX = /^data:image\/(png|jpe?g|gif|webp|avif|bmp|x-icon)[;,]/;
+const SVG_IMAGE_DATA_URL_REGEX = /^data:image\/svg\+xml[;,]/;
+
+export type UrlContext = 'navigation' | 'embed';
+
 /**
  * URLを検証・サニタイズする
+ * @param url - 検証するURL
+ * @param context - URLの使われ方。
+ *   'embed'（img の src 等の埋め込み先）では SVG の data URL を許可する
+ *   （img 経由ではスクリプトが実行されないため）。
+ *   'navigation'（href / action 等の遷移先）では SVG の data URL は
+ *   スクリプトを内包できるため拒否する。省略時は安全側の 'navigation'。
  */
-export function sanitizeUrl(url: string): string {
+export function sanitizeUrl(url: string, context: UrlContext = 'navigation'): string {
   if (!url || typeof url !== 'string') {
     return '';
   }
 
-  const trimmed = url.trim();
-  const lower = trimmed.toLowerCase();
+  // ブラウザは URL 中のタブ・改行等の制御文字を除去してから解釈するため
+  // （例: java\tscript: は javascript: として実行される）、判定前に同様に除去する
+  // eslint-disable-next-line no-control-regex -- 制御文字の除去自体が目的
+  const cleaned = url.trim().replace(/[\u0000-\u001f\u007f]/g, '');
+  const lower = cleaned.toLowerCase();
 
   if (
     lower.startsWith('javascript:') ||
@@ -45,13 +59,16 @@ export function sanitizeUrl(url: string): string {
   }
 
   if (lower.startsWith('data:')) {
-    if (lower.startsWith('data:image/')) {
-      return trimmed;
+    if (RASTER_IMAGE_DATA_URL_REGEX.test(lower)) {
+      return cleaned;
+    }
+    if (context === 'embed' && SVG_IMAGE_DATA_URL_REGEX.test(lower)) {
+      return cleaned;
     }
     return '';
   }
 
-  return trimmed;
+  return cleaned;
 }
 
 /**
