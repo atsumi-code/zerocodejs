@@ -16,9 +16,12 @@
 - 設定を初期値に戻す UI
 - `sanitizeUrl` のテストを追加
 - E2E テスト（Playwright）を導入: `zcode-cms` の「追加 → 編集 → 並べ替え → 保存イベント発火」スモークテストと CI の `e2e` ジョブ（`npm run test:e2e`）
+- **軽量 `zerocodejs/cms` サブパスを追加**: `<zcode-cms>` のみを含むエントリ（初期ロード 圧縮後約100KB、フルバンドル比 約6割減）
+- size-limit によるバンドルサイズの CI 監視（`npm run size`）
 
 ### 変更
 
+- **ES ビルドをコード分割対応に変更**: Tiptap（リッチテキストエディタ）は初回利用時の遅延ロードに（約115KB）。UMD は従来どおり単一ファイル（CDN 互換維持、`vite.umd.config.ts`）
 - **`sanitizeUrl` のセキュリティ強化**:
   - タブ・改行等の制御文字によるスキーム偽装（例: `java\tscript:`）を拒否
   - data URL は `href` / `action`（遷移先）ではラスター画像のみ許可し、SVG の data URL を拒否。`img` の `src` / `poster`（埋め込み先）では SVG も引き続き許可

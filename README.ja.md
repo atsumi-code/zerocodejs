@@ -128,6 +128,13 @@ import 'zerocodejs/style.css';
 <zcode-cms></zcode-cms>
 ```
 
+`<zcode-cms>` だけを使うページでは、専用エントリ **`zerocodejs/cms`** の import を推奨します。editor / studio とパーツ管理・画像管理の UI を含まないため初期ロードは圧縮後 約100KB で済みます（リッチテキストエディタは初回利用時に遅延ロード）。
+
+```javascript
+import 'zerocodejs/cms';
+import 'zerocodejs/style.css';
+```
+
 ### `<zcode-studio>`
 
 **信頼できるユーザー・制作会社向け**。画面構成は **`zcode-editor` と同じ**（ページ管理・パーツ管理・画像管理・データビューア）。ページ管理は `zcode-cms` 相当の編集（共通/個別/専用のパーツ利用を含む）。パーツ・画像の管理タブとデータビューアのパーツ/画像表示は**専用カテゴリのみ**（共通・個別の切り替えはなし）。エンドユーザー用の `zcode-cms` と役割を分けたいときに使います。

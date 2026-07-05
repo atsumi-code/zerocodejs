@@ -265,9 +265,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, defineAsyncComponent } from 'vue';
 import type { ComponentData, ZeroCodeData } from '../../../types';
-import RichTextEditor from './RichTextEditor.vue';
+
+// Tiptap を含むため遅延ロードし、リッチテキスト未使用時はバンドルに含めない
+const RichTextEditor = defineAsyncComponent(() => import('./RichTextEditor.vue'));
 import ImageSelectModal from './ImageSelectModal.vue';
 import { X, ChevronUp, Image } from 'lucide-vue-next';
 import type { FieldChoiceOption } from '../../../core/utils/template-regex';

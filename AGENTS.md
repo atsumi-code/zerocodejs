@@ -529,9 +529,17 @@ interface ImageData {
 
 - `src/core/renderer/renderer.ts`: レンダリング処理（HTML生成）
 
-### SSR 用エントリ（npm）
+### npm エントリポイント
 
+- `src/index.ts`: メインエントリ `zerocodejs`（cms / editor / studio すべて登録。ES + UMD）
+- `src/cms-entry.ts`: `zerocodejs/cms` の軽量エントリ（`<zcode-cms>` のみ登録。パーツ管理・画像管理・データビューア・Monaco を含まない）
 - `src/ssr-entry.ts`: `zerocodejs/ssr` の公開エントリ（`renderToHtml`、`renderCssToHtml`、`RenderError` のみ。`vite.ssr.config.ts` で `dist/zerocode-ssr.es.js` を生成）
+
+### ビルド構成
+
+- `vite.config.ts`: ES ビルド（`index` + `cms-entry` のマルチエントリ、共有チャンク分割あり。Tiptap は `RichTextEditor` の遅延ロードで別チャンク）
+- `vite.umd.config.ts`: CDN 向け UMD 単一ファイル（`inlineDynamicImports` で遅延ロードをインライン化）
+- `package.json` の `size-limit` でエントリ別サイズ上限を管理（CI の `Bundle size check` で検証、`npm run size`）
 
 ### 検証用 HTML（ルート）
 
@@ -621,9 +629,17 @@ interface ImageData {
 25. ✅ **E2Eテスト（Playwright）**（2026年7月）
 
 - `e2e/cms-smoke.spec.ts`: `test-cms.html` に対し「パーツ追加 → 編集 → 並べ替え → 保存で `save-request`（`targets: ['page', 'images-special']`）発火」を検証するスモークテスト
+- `e2e/rich-text-lazy.spec.ts`: 遅延ロードされる リッチテキストエディタ（Tiptap）の表示を検証
 - 実行: `npm run test:e2e`（vite dev サーバーは `playwright.config.ts` の webServer で自動起動）。UI モード: `npm run test:e2e:ui`
 - CI では `e2e` ジョブとして chromium で実行、失敗時は Playwright レポートをアーティファクトに保存
 - 注意: パーツ追加直後の選択は編集モードへハンドオフされ編集パネルが自動で開く（テストはこの挙動に依存）
+
+26. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
+
+- `zerocodejs/cms` サブパスを追加（`<zcode-cms>` のみ。初期ロード 圧縮後約100KB、従来比 約6割減）
+- Tiptap（RichTextEditor）を `defineAsyncComponent` で遅延ロード化（約115KB を初回のリッチテキスト編集時のみ取得）
+- ES ビルドをマルチエントリ + チャンク分割に変更、UMD は `vite.umd.config.ts` で単一ファイルを維持
+- size-limit をCIに導入（`npm run size`）
 
 ### 未実装（スコープ関連）
 

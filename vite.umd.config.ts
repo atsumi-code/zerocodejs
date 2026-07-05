@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 
+// CDN 向け UMD ビルド。UMD はコード分割できないため、
+// 遅延ロード（dynamic import）をインライン化した単一ファイルを生成する。
 export default defineConfig({
   define: {
     __VUE_I18N_FULL_INSTALL__: false,
@@ -19,27 +20,22 @@ export default defineConfig({
           isCustomElement: (tag) => tag.startsWith('zcode-')
         }
       }
-    }),
-    dts({
-      insertTypesEntry: true,
-      include: ['src/**/*.ts', 'src/**/*.vue'],
-      exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/__tests__/**/*']
     })
   ],
   build: {
     lib: {
-      entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        'cms-entry': resolve(__dirname, 'src/cms-entry.ts')
-      },
-      formats: ['es'],
-      fileName: (_format, entryName) =>
-        entryName === 'index' ? 'zerocode.es.js' : 'zerocode-cms.es.js'
+      entry: resolve(__dirname, 'src/index.ts'),
+      name: 'ZeroCode',
+      formats: ['umd'],
+      fileName: () => 'zerocode.umd.js'
     },
     rollupOptions: {
-      external: ['vue', 'jsdom'], // Vueは使用者側で提供、jsdomはサーバーサイドでのみ使用
+      external: ['vue', 'jsdom'],
       output: {
-        chunkFileNames: 'chunks/[name]-[hash].js',
+        globals: {
+          vue: 'Vue'
+        },
+        inlineDynamicImports: true,
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'style.css') return 'style.css';
           if (assetInfo.name === 'zcode-cms.css') return 'zcode-cms.css';
@@ -49,10 +45,9 @@ export default defineConfig({
     },
     sourcemap: false,
     copyPublicDir: false,
-    minify: 'esbuild'
-  },
-  optimizeDeps: {
-    include: ['monaco-editor', '@monaco-editor/loader']
+    minify: 'esbuild',
+    outDir: 'dist',
+    emptyOutDir: false
   },
   resolve: {
     alias: {

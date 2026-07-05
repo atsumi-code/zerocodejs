@@ -121,6 +121,13 @@ User-facing CMS editor for content management (no parts/image management).
 <zcode-cms locale="en"></zcode-cms>
 ```
 
+If the page only needs `<zcode-cms>`, import the dedicated **`zerocodejs/cms`** entry. It excludes the editor/studio components and their parts/image management UI, so the initial load is roughly 100 KB compressed (the rich text editor is lazy-loaded on first use):
+
+```javascript
+import 'zerocodejs/cms';
+import 'zerocodejs/style.css';
+```
+
 ### `<zcode-studio>`
 
 For **trusted users / agencies**: same **shell as `zcode-editor`** (page, parts, images, data viewer tabs). **Page** management matches `zcode-cms` (including common/individual/special parts when adding to the page). **Parts / images** management and the data viewer’s parts/images views are **special category only** (no common/individual toggles there). Use alongside `zcode-cms` when you want a separate trusted surface.

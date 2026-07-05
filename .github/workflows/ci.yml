@@ -39,6 +39,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Bundle size check
+        run: npm run size
+
       # - name: Upload coverage
       #   uses: codecov/codecov-action@v3
       #   with:
