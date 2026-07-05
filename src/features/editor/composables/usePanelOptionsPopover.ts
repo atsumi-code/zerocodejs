@@ -38,6 +38,10 @@ export function usePanelOptionsPopover(anchorRef: Ref<HTMLElement | null>) {
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        // capture フェーズで止めることで、同じ document に登録された
+        // モーダル側（バブルフェーズ）の Esc 処理まで届かないようにする
+        event.stopPropagation();
+        event.preventDefault();
         closeOptionsPopover();
       }
     };
@@ -50,7 +54,7 @@ export function usePanelOptionsPopover(anchorRef: Ref<HTMLElement | null>) {
       closeOptionsPopover();
     };
 
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown, true);
 
     outsideInteractionTimer = window.setTimeout(() => {
       outsideInteractionTimer = null;
@@ -58,7 +62,7 @@ export function usePanelOptionsPopover(anchorRef: Ref<HTMLElement | null>) {
     }, 0);
 
     outsideInteractionCleanup = () => {
-      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onKeyDown, true);
       document.removeEventListener('pointerdown', onOutsideInteraction, true);
     };
   });

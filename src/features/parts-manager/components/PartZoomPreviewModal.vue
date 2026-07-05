@@ -1,7 +1,7 @@
 <template>
   <Teleport :to="teleportTo">
     <div v-if="show" class="zcode-preview-modal" @click="$emit('close')">
-      <div class="zcode-preview-modal-content" @click.stop>
+      <div ref="modalContentRef" class="zcode-preview-modal-content" @click.stop>
         <div class="zcode-preview-modal-header">
           <div class="zcode-preview-modal-header-title" role="heading" aria-level="4">
             {{ $t('partsManager.preview') }} {{ title }}
@@ -18,15 +18,24 @@
 
 <script setup lang="ts">
 import { X } from 'lucide-vue-next';
+import { ref } from 'vue';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 
-defineProps<{
+const props = defineProps<{
   show: boolean;
   title: string;
   html: string;
 }>();
 
-defineEmits<{ close: [] }>();
+const emit = defineEmits<{ close: [] }>();
 
 const teleportTo = useZcodeTeleportTo();
+
+const modalContentRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => props.show,
+  () => emit('close'),
+  modalContentRef
+);
 </script>

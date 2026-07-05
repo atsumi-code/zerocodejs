@@ -24,6 +24,30 @@ test.describe('zcode-editor パーツ管理スモークテスト', () => {
     await expect(partItems.first()).toBeVisible();
   });
 
+  test('Esc キーでモーダルが閉じ、重なったモーダルは最前面から閉じる', async ({ page }) => {
+    await page.goto('/test-dev.html');
+    const editor = page.locator('#test-cms');
+    await editor.locator('[data-zcode-id][data-zcode-path="page.0"]').waitFor();
+
+    await editor.locator('.zcode-dev-tab', { hasText: 'パーツ管理' }).click();
+    await editor.locator('.zcode-part-item').first().click();
+
+    const modal = editor.locator('.zcode-part-modal');
+    await expect(modal).toBeVisible();
+
+    // モーダル内の記法ヘルプボタンから2枚目のモーダルを開く
+    await modal.locator('.zcode-help-btn').click();
+    const helpModal = editor.locator('.zcode-help-modal');
+    await expect(helpModal).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(helpModal).toBeHidden();
+    await expect(modal).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(modal).toBeHidden();
+  });
+
   test('カテゴリ情報モーダルが開閉できる', async ({ page }) => {
     await page.goto('/test-dev.html');
     const editor = page.locator('#test-cms');

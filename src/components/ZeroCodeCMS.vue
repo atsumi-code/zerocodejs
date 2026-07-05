@@ -176,7 +176,7 @@
       class="zcode-save-confirm-dialog-overlay"
       @click.self="cancelSave"
     >
-      <div class="zcode-save-confirm-dialog">
+      <div ref="saveConfirmDialogRef" class="zcode-save-confirm-dialog">
         <div class="zcode-save-confirm-dialog-header">
           <div class="zcode-save-confirm-dialog-title">
             {{ $t('saveConfirm.title') }}
@@ -230,6 +230,7 @@ import ReorderPanel from '../features/reorder/components/ReorderPanel.vue';
 import AddPanel from '../features/add/components/AddPanel.vue';
 import ContextMenu from '../features/editor/components/ContextMenu.vue';
 import { useZeroCodeData } from '../core/composables/useZeroCodeData';
+import { useModalA11y } from '../core/composables/useModalA11y';
 import { useZeroCodeRenderer } from '../core/composables/useZeroCodeRenderer';
 import { useEditorMode, type EditorMode } from '../features/editor/composables/useEditorMode';
 import { useEditMode } from '../features/editor/composables/useEditMode';
@@ -339,6 +340,12 @@ const devRightPaddingValue = computed(() => devRightPadding.value);
 
 // 保存確認ダイアログの状態
 const showSaveConfirmDialog = ref(false);
+const saveConfirmDialogRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => showSaveConfirmDialog.value,
+  () => cancelSave(),
+  saveConfirmDialogRef
+);
 
 const { cmsData, loadDataFromProps, getData: getDataBase, setData } = useZeroCodeData(props);
 const { fullPageHtml, renderComponentPreviewHtml } = useZeroCodeRenderer(cmsData, true);

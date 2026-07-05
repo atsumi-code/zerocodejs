@@ -1,7 +1,7 @@
 <template>
   <Teleport :to="teleportTo">
     <div v-if="show" class="zcode-help-modal-overlay" @click.self="$emit('close')">
-      <div class="zcode-help-modal" @click.stop>
+      <div ref="modalContentRef" class="zcode-help-modal" @click.stop>
         <div class="zcode-help-modal-header">
           <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
             <Info :size="20" class="zcode-css-warning-modal-title-icon" />
@@ -32,11 +32,20 @@
 
 <script setup lang="ts">
 import { X, Info } from 'lucide-vue-next';
+import { ref } from 'vue';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 
-defineProps<{ show: boolean }>();
+const props = defineProps<{ show: boolean }>();
 
-defineEmits<{ close: [] }>();
+const emit = defineEmits<{ close: [] }>();
 
 const teleportTo = useZcodeTeleportTo();
+
+const modalContentRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => props.show,
+  () => emit('close'),
+  modalContentRef
+);
 </script>

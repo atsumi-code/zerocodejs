@@ -648,7 +648,14 @@ interface ImageData {
 - `VALID_Z_TAG_NAMES`（z-tag のタグ一覧）を field-syntax に一元化、`EditPanelField` を `FieldInfo` の拡張に統一
 - キャラクタリゼーションテスト（スナップショット91件）で出力の同一性を機械的に検証。公開API・出力挙動は不変
 
-27. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
+27. ✅ **モーダルのキーボードアクセシビリティ**（2026年7月）
+
+- `src/core/composables/useModalA11y.ts` を新設: Esc で閉じる（モーダルスタックで最前面のみ・IME 変換取消は無視・`shouldIgnoreEscape` オプション）、Tab のフォーカストラップ、開閉時のフォーカス移動/復元
+- 適用: 保存確認ダイアログ / ImageSelectModal（選択・画像編集オーバーレイ）/ パーツ管理のタイプ・パーツ編集モーダル / 抽出済み4モーダル
+- ポップオーバー（`usePanelOptionsPopover`）は capture フェーズ + `preventDefault` で先に Esc を処理し、背後のモーダルを閉じない
+- Monaco エディタ内の Esc は `shouldIgnoreEscape`（composedPath に `.monaco-editor`）で除外
+
+28. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
 
 - `zerocodejs/cms` サブパスを追加（`<zcode-cms>` のみ。初期ロード 圧縮後約100KB、従来比 約6割減）
 - Tiptap（RichTextEditor）を `defineAsyncComponent` で遅延ロード化（約115KB を初回のリッチテキスト編集時のみ取得）

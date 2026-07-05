@@ -10,7 +10,7 @@
       class="zcode-help-modal-overlay"
       @click.self="$emit('close')"
     >
-      <div class="zcode-help-modal zcode-css-warning-modal" @click.stop>
+      <div ref="modalContentRef" class="zcode-help-modal zcode-css-warning-modal" @click.stop>
         <div class="zcode-help-modal-header">
           <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
             <AlertTriangle :size="20" class="zcode-css-warning-modal-title-icon" />
@@ -56,17 +56,26 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { X, AlertTriangle } from 'lucide-vue-next';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 
-defineProps<{
+const props = defineProps<{
   show: boolean;
   activeCategory: string;
 }>();
 
-defineEmits<{ close: [] }>();
+const emit = defineEmits<{ close: [] }>();
 
 const dontShowAgain = defineModel<boolean>('dontShowAgain', { required: true });
 
 const teleportTo = useZcodeTeleportTo();
+
+const modalContentRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => props.show,
+  () => emit('close'),
+  modalContentRef
+);
 </script>

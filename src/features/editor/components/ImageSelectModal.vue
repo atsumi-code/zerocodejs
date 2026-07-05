@@ -1,6 +1,6 @@
 <template>
   <Teleport :to="teleportTo">
-    <div v-if="isOpen" class="zcode-image-modal" @click.self="close">
+    <div v-if="isOpen" ref="imageModalRef" class="zcode-image-modal" @click.self="close">
       <div class="zcode-image-modal-content" @click.stop>
         <div class="zcode-image-modal-header">
           <div class="zcode-image-modal-header-title" role="heading" aria-level="3">
@@ -184,7 +184,7 @@
       class="zcode-image-modal zcode-image-select-edit-overlay"
       @click.self="cancelEditing"
     >
-      <div class="zcode-image-modal-content" data-edit-mode @click.stop>
+      <div ref="imageEditOverlayRef" class="zcode-image-modal-content" data-edit-mode @click.stop>
         <div class="zcode-image-editor-header">
           <div class="zcode-image-editor-header-title" role="heading" aria-level="4">
             {{ $t('imagesManager.editImage') }}
@@ -249,6 +249,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 import { useI18n } from 'vue-i18n';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import type { ZeroCodeData, ImageData } from '../../../types';
@@ -415,6 +416,22 @@ const handleConfirm = () => {
     close();
   }
 };
+
+const imageModalRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => props.isOpen,
+  () => close(),
+  imageModalRef
+);
+
+// 画像編集オーバーレイは選択モーダルの上に重なる別モーダルとして扱う
+// （スタックにより Esc は編集側が先に閉じ、Tab トラップも編集側の範囲になる）
+const imageEditOverlayRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => !!editingImage.value,
+  () => cancelEditing(),
+  imageEditOverlayRef
+);
 
 const close = () => {
   cancelEditing();

@@ -174,7 +174,7 @@
           class="zcode-part-modal"
           @click.self="cancelEditingType"
         >
-          <div class="zcode-part-modal-content" @click.stop>
+          <div ref="typeEditModalRef" class="zcode-part-modal-content" @click.stop>
             <div class="zcode-part-editor-header">
               <div class="zcode-part-editor-header-title" role="heading" aria-level="4">
                 {{ isCreatingNew ? $t('partsManager.createType') : $t('partsManager.editType') }}
@@ -240,7 +240,7 @@
           class="zcode-part-modal"
           @click.self="handleCancelPart"
         >
-          <div class="zcode-part-modal-content" @click.stop>
+          <div ref="partEditModalRef" class="zcode-part-modal-content" @click.stop>
             <div class="zcode-part-editor-header">
               <div class="zcode-part-editor-header-title" role="heading" aria-level="4">
                 {{ $t('partsManager.editPart', { title: editingPart.part.title }) }}
@@ -685,6 +685,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, computed, onBeforeUnmount, nextTick, inject, type Ref } from 'vue';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 import { zcodeTeleportTargetKey } from '../../../core/injectionKeys';
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, TypeData, CMSConfig, ComponentData } from '../../../types';
@@ -1030,6 +1031,38 @@ const isPartEditModalOpen = computed(() => {
   const level = (editingLevel as any)?.value ?? editingLevel;
   return level === 'part' && !!editingPart.value;
 });
+
+const isTypeEditModalOpen = computed(() => {
+  const level = (editingLevel as any)?.value ?? editingLevel;
+  return !!editingType.value && (level === 'type' || isCreatingNew.value);
+});
+
+const typeEditModalRef = ref<HTMLElement | null>(null);
+const partEditModalRef = ref<HTMLElement | null>(null);
+useModalA11y(
+  () => isTypeEditModalOpen.value,
+  () => cancelEditingType(),
+  typeEditModalRef
+);
+useModalA11y(
+  () => isPartEditModalOpen.value,
+  () => {
+    // モーダル内のオプションポップオーバーが開いている場合は、それだけを閉じる
+    if (showPartOptionsPopover.value) {
+      showPartOptionsPopover.value = false;
+      return;
+    }
+    handleCancelPart();
+  },
+  partEditModalRef,
+  {
+    // Monaco エディタ内の Esc は編集操作（ウィジェットを閉じる等）なのでモーダルを閉じない
+    shouldIgnoreEscape: (event) =>
+      event
+        .composedPath()
+        .some((el) => el instanceof HTMLElement && el.classList.contains('monaco-editor'))
+  }
+);
 
 watch(
   () => isPartEditModalOpen.value,
