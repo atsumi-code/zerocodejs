@@ -1,0 +1,212 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: arrayBackendData 1`] = `"<div>Item 1</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: backendData 1`] = `"<div>John Doe</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: checkbox 1`] = `"<div>tag1 tag3</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: complex 1`] = `
+"
+    <div>
+      <h3>実タイトル</h3>
+      <div>実サブタイトル</div>
+      <div><p>実コンテンツ</p></div>
+      <div>
+        <div></div>
+      </div><div>
+        <div></div>
+      </div>
+    </div>
+  "
+`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: groupedField 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: image 1`] = `"<div><img src="https://example.com/sample.jpg" alt="画像"></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: nestedBackendData 1`] = `"<div>Tokyo</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: optionalField 1`] = `"<div>実サブタイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: optionalRichText 1`] = `"<div><p>実コンテンツ</p></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: radio 1`] = `"<div>option2</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: richText 1`] = `"<div><p>実コンテンツ</p></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: select 1`] = `"<div>option2</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: selectMultiple 1`] = `"<div>tag1 tag3</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: simpleText 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: textarea 1`] = `"<div>行1<br>行2</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: urlPlaceholder 1`] = `"<a href="/shop/shop-123/products">商品一覧</a>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: withValidation 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: zEmpty 1`] = `"<div>サブタイトル: 実サブタイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: zFor 1`] = `"<div></div><div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: zIf 1`] = `"<div>コンテンツ</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: zSlot 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値あり）: zTag 1`] = `"<h3>見出し</h3>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: arrayBackendData 1`] = `"<div>Item 1</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: backendData 1`] = `"<div>John Doe</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: checkbox 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: complex 1`] = `
+"
+    <div>
+      <h2></h2>
+      
+      <div><p></p></div>
+      <div>
+        <div></div>
+      </div><div>
+        <div></div>
+      </div>
+    </div>
+  "
+`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: groupedField 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: image 1`] = `"<div><img src="" alt="画像"></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: nestedBackendData 1`] = `"<div>Tokyo</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: optionalField 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: optionalRichText 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: radio 1`] = `"<div>option1</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: richText 1`] = `"<div><p></p></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: select 1`] = `"<div>option1</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: selectMultiple 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: simpleText 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: textarea 1`] = `"<div>説明</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: urlPlaceholder 1`] = `"<a href="/shop/shop-123/products">商品一覧</a>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: withValidation 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: zEmpty 1`] = `""`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: zFor 1`] = `"<div></div><div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: zIf 1`] = `"<div>コンテンツ</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: zSlot 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 公開モード（値未設定・デフォルト経路）: zTag 1`] = `"<h2>見出し</h2>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: arrayBackendData 1`] = `"<div>Item 1</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: backendData 1`] = `"<div>John Doe</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: checkbox 1`] = `"<div>tag1 tag3</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: complex 1`] = `
+"
+    <div>
+      <h3>実タイトル</h3>
+      <div>実サブタイトル</div>
+      <div><p>実コンテンツ</p></div>
+      <div>
+        <div></div>
+      </div><div>
+        <div></div>
+      </div>
+    </div>
+  "
+`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: groupedField 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: image 1`] = `"<div><img src="https://example.com/sample.jpg" alt="画像"></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: nestedBackendData 1`] = `"<div>Tokyo</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: optionalField 1`] = `"<div>実サブタイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: optionalRichText 1`] = `"<div><p>実コンテンツ</p></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: radio 1`] = `"<div>option2</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: richText 1`] = `"<div><p>実コンテンツ</p></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: select 1`] = `"<div>option2</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: selectMultiple 1`] = `"<div>tag1 tag3</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: simpleText 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: textarea 1`] = `"<div>行1<br>行2</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: urlPlaceholder 1`] = `"<a href="/shop/shop-123/products">商品一覧</a>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: withValidation 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: zEmpty 1`] = `"<div>サブタイトル: 実サブタイトル</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: zFor 1`] = `"<div></div><div></div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: zIf 1`] = `"<div>コンテンツ</div>"`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: zSlot 1`] = `
+"<div data-zcode-empty-slot="content" data-zcode-slot-path="page.0.slots.content"><div class="zcode-empty-slot" data-zcode-empty-slot-content="">
+            <button class="zcode-add-slot-btn" data-zcode-add-slot="">+ Add Part</button>
+          </div></div>"
+`;
+
+exports[`キャラクタリゼーション: sample-templates 全フィクスチャ > 編集モード（値あり）: zTag 1`] = `"<h3>見出し</h3>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > {$content::rich}（空デフォルト）の現行挙動 1`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > {@items.length} の現行挙動 1`] = `"<div>2</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > optional な rich（値あり / 値なし） 1`] = `"<div><p>実コンテンツ</p></div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > optional な rich（値あり / 値なし） 2`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > optional のみの属性が空のとき属性ごと削除される 1`] = `"<div>本文</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > optional のみの属性が空のとき属性ごと削除される 2`] = `"<div data-note="あり">本文</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > textarea の改行変換（テキストノード） 1`] = `"<div>行1<br>行2</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > グループ付きフィールドのレンダリング 1`] = `"<div>グループ値</div><span></span>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > テキストと属性の混在（同一フィールドの二重展開） 1`] = `"<a href="/x" title="題">題</a>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > デフォルト値に : を含むテキストフィールド 1`] = `"<a href="">リンク</a>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > バリデーション付きフィールドのレンダリング（validation は出力に影響しない） 1`] = `"<div>実タイトル</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > バリデーション付きフィールドのレンダリング（validation は出力に影響しない） 2`] = `"<div></div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > 属性内のテキストフィールド（エスケープ経路） 1`] = `"<div title="A&amp;lt;B&amp;gt;&amp;amp;&amp;quot;C">本文</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > 属性内の画像フィールド（src / サニタイズ経路） 1`] = `"<img src="https://example.com/sample.jpg" alt="実タイトル">"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > 属性内の画像フィールド（src / サニタイズ経路） 2`] = `"<img src="" alt="">"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > 選択肢の label=値 記法（radio） 1`] = `"<div>published</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > 選択肢の label=値 記法（radio） 2`] = `"<div>draft</div>"`;
+
+exports[`キャラクタリゼーション: レンダリングの未カバー記法 > 選択肢の label=値 記法（select 複数） 1`] = `"<div>b</div>"`;
