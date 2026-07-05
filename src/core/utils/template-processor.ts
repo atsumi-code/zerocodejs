@@ -2,7 +2,12 @@ import type { ComponentData, PartData, SlotConfig } from '../../types';
 import { getDOMParser, DOM_NODE_TYPE_ELEMENT, DOM_NODE_TYPE_TEXT } from './dom-utils';
 import { sanitizeRichText, escapeAttributeValue, sanitizeUrl } from './sanitize';
 import { TEMPLATE_REGEX } from './template-regex';
-import { splitDefaultAndValidation } from './field-extractor';
+import {
+  scanFieldTokens,
+  splitDefaultAndValidation,
+  type ChoiceFieldToken,
+  type ValueFieldToken
+} from './field-syntax';
 import { firstChoiceValueFromRaw, rawChoiceValues } from './choice-options';
 import {
   processImageField,
@@ -231,821 +236,349 @@ export function processTemplateWithDOM(
   }
 
   // 1. テキストノードの変数展開 {$variable:default}
-  const processTextNodes = (node: Node) => {
-    if (node.nodeType === DOM_NODE_TYPE_TEXT) {
-      let text = node.textContent || '';
+  // ===== フィールド展開エンジン =====
+  // scanFieldTokens が返すトークンを、コンテキスト（テキストノード / 属性）ごとの
+  // 解決ルールで展開する。値フィールドと選択肢は従来どおり別パスで処理する
+  // （値の展開結果に選択肢記法が含まれる場合、後段の選択肢パスが処理する従来挙動を維持）。
 
-      // バックエンドデータの展開（先に処理。デフォルト付きは backendData 未指定でも展開）
-      text = expandBackendDataReferences(text, backendData);
+  const valueTokensOf = (text: string): ValueFieldToken[] =>
+    scanFieldTokens(text).filter((t): t is ValueFieldToken => t.kind === 'value');
 
-      // オプショナルリッチテキストフィールドの展開（先に処理）
-      const richTextOptionalWithGroupRegex = /\{\$(\w+)\.(\w+)\?:(.+?):rich(?::[^}]+)?\}/;
-      let richTextOptionalMatch = richTextOptionalWithGroupRegex.exec(text);
-      let isOptionalGrouped = false;
-      if (richTextOptionalMatch && node.parentNode) {
-        isOptionalGrouped = true;
-      } else {
-        const richTextOptionalRegex = /\{\$(\w+)\?:(.+?):rich(?::[^}]+)?\}/;
-        richTextOptionalMatch = richTextOptionalRegex.exec(text);
-      }
-      if (richTextOptionalMatch && node.parentNode) {
-        const varName = richTextOptionalMatch[1];
-        const defaultValueRaw = isOptionalGrouped
-          ? richTextOptionalMatch[3]
-          : richTextOptionalMatch[2];
-        const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-        const rawValue = component[varName];
-        // boolean型の値は表示しない（z-ifで制御するため）
-        if (typeof rawValue === 'boolean') {
-          const parent = node.parentNode as Element;
-          const matchIndex = richTextOptionalMatch.index || 0;
-          const beforeText = text.substring(0, matchIndex);
-          const afterText = text.substring(matchIndex + richTextOptionalMatch[0].length);
+  const choiceTokensOf = (text: string): ChoiceFieldToken[] =>
+    scanFieldTokens(text).filter((t): t is ChoiceFieldToken => t.kind === 'choice');
 
-          if (beforeText) {
-            parent.insertBefore(doc.createTextNode(beforeText), node);
-          }
-          if (afterText) {
-            parent.insertBefore(doc.createTextNode(afterText), node);
-          }
+  // 従来の分岐評価順: optional+group → optional → group → 通常
+  const variantRank = (token: ValueFieldToken): number =>
+    token.optional ? (token.groupName ? 0 : 1) : token.groupName ? 2 : 3;
 
-          if (node.parentNode) {
-            node.parentNode.removeChild(node);
-          }
-          return;
-        }
-        let richTextValue: string =
-          rawValue === undefined
-            ? ''
-            : typeof rawValue === 'string'
-              ? rawValue
-              : String(rawValue || defaultValue);
+  const pickLegacyFirst = (tokens: ValueFieldToken[]): ValueFieldToken =>
+    tokens.reduce((best, token) => {
+      const diff = variantRank(token) - variantRank(best);
+      return diff < 0 || (diff === 0 && token.start < best.start) ? token : best;
+    });
 
-        if (!enableEditorAttributes) {
-          richTextValue = sanitizeRichText(richTextValue);
-        }
+  // text / image / （属性内の）textarea トークンをテキストとして解決
+  const resolveTextLikeValue = (token: ValueFieldToken): string => {
+    const rawValue = component[token.fieldName];
+    if (rawValue === undefined) {
+      return '';
+    }
+    // boolean型の値は表示しない（z-ifで制御するため）。従来どおり optional のみ
+    if (token.optional && typeof rawValue === 'boolean') {
+      return '';
+    }
+    const defaultValue =
+      token.fieldType === 'text'
+        ? token.defaultValue
+        : splitDefaultAndValidation(token.body).defaultValue;
+    return String(rawValue || defaultValue);
+  };
 
-        const parent = node.parentNode as Element;
-        const matchIndex = richTextOptionalMatch.index || 0;
-        const beforeText = text.substring(0, matchIndex);
-        const afterText = text.substring(matchIndex + richTextOptionalMatch[0].length);
+  // rich トークンを DOM 挿入用 HTML に解決（空文字は「何も挿入しない」）
+  const resolveRichHtml = (token: ValueFieldToken): string => {
+    const rawValue = component[token.fieldName];
+    if (token.optional && typeof rawValue === 'boolean') {
+      return '';
+    }
+    // 従来仕様: optional は validation を剥がしたデフォルト、通常は未加工デフォルトを使う
+    const defaultValue = token.optional ? token.defaultValue : token.rawDefault;
+    let richTextValue: string =
+      rawValue === undefined
+        ? ''
+        : typeof rawValue === 'string'
+          ? rawValue
+          : String(rawValue || defaultValue);
 
-        if (!richTextValue) {
-          richTextValue = '';
-        } else if (!richTextValue.trim().startsWith('<p')) {
-          richTextValue = `<p>${richTextValue}</p>`;
-        }
-
-        const tempDiv = doc.createElement('div');
-        tempDiv.innerHTML = richTextValue;
-
-        if (beforeText) {
-          parent.insertBefore(doc.createTextNode(beforeText), node);
-        }
-
-        Array.from(tempDiv.childNodes).forEach((child) => {
-          parent.insertBefore(child.cloneNode(true), node);
-        });
-
-        if (afterText) {
-          parent.insertBefore(doc.createTextNode(afterText), node);
-        }
-
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
-        return;
-      }
-
-      // グループ付きリッチテキストフィールドの展開（先に処理）
-      // gフラグ付きの正規表現ではmatch()でindexが取得できないため、exec()を使用
-      const richTextWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP.flags
-      );
-      let richTextMatch = richTextWithGroupRegex.exec(text);
-      let isGrouped = false;
-      if (richTextMatch && node.parentNode) {
-        isGrouped = true;
-      } else {
-        // グループなしリッチテキストフィールドの展開
-        const richTextRegex = new RegExp(
-          TEMPLATE_REGEX.RICH_TEXT_FIELD.source,
-          TEMPLATE_REGEX.RICH_TEXT_FIELD.flags
-        );
-        richTextMatch = richTextRegex.exec(text);
-      }
-      if (richTextMatch && node.parentNode) {
-        const varName = richTextMatch[1];
-        const defaultValue = isGrouped ? richTextMatch[3] : richTextMatch[2];
-        const rawValue = component[varName];
-        let richTextValue: string =
-          rawValue === undefined
-            ? ''
-            : typeof rawValue === 'string'
-              ? rawValue
-              : String(rawValue || defaultValue);
-
-        if (!enableEditorAttributes) {
-          richTextValue = sanitizeRichText(richTextValue);
-        }
-
-        // リッチテキストの場合はHTMLとして挿入
-        // 空の場合や<p>タグで始まっていない場合は<p>タグで囲む
-        const parent = node.parentNode as Element;
-        const matchIndex = richTextMatch.index || 0;
-        const beforeText = text.substring(0, matchIndex);
-        const afterText = text.substring(matchIndex + richTextMatch[0].length);
-
-        // リッチテキストのHTMLをパース
-        // 空の場合は<p></p>を生成
-        // 値があるが<p>タグで始まっていない場合は<p>タグで囲む
-        if (!richTextValue) {
-          richTextValue = '<p></p>';
-        } else if (!richTextValue.trim().startsWith('<p')) {
-          // <p>タグで始まっていない場合は<p>タグで囲む
-          richTextValue = `<p>${richTextValue}</p>`;
-        }
-
-        const tempDiv = doc.createElement('div');
-        tempDiv.innerHTML = richTextValue;
-
-        // 前のテキストがある場合は追加
-        if (beforeText) {
-          parent.insertBefore(doc.createTextNode(beforeText), node);
-        }
-
-        // リッチテキストのHTMLを追加（クローンして追加）
-        Array.from(tempDiv.childNodes).forEach((child) => {
-          parent.insertBefore(child.cloneNode(true), node);
-        });
-
-        // 後のテキストがある場合は追加
-        if (afterText) {
-          parent.insertBefore(doc.createTextNode(afterText), node);
-        }
-
-        // 元のテキストノードを削除
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
-        return;
-      }
-
-      // オプショナルテキストエリアフィールドの展開（先に処理）
-      const textareaWithGroupOptionalRegex = /\{\$(\w+)\.(\w+)\?:(.+?):textarea(?::[^}]+)?\}/;
-      let textareaOptionalMatch = textareaWithGroupOptionalRegex.exec(text);
-      let isTextareaOptionalGrouped = false;
-      if (textareaOptionalMatch && node.parentNode) {
-        isTextareaOptionalGrouped = true;
-      } else {
-        const textareaOptionalRegex = /\{\$(\w+)\?:(.+?):textarea(?::[^}]+)?\}/;
-        textareaOptionalMatch = textareaOptionalRegex.exec(text);
-      }
-      if (textareaOptionalMatch && node.parentNode) {
-        const varName = textareaOptionalMatch[1] as string;
-        const defaultValueRaw = isTextareaOptionalGrouped
-          ? (textareaOptionalMatch[3] as string)
-          : (textareaOptionalMatch[2] as string);
-        const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-        const raw = component[varName];
-        const str = raw === undefined ? '' : String(raw || defaultValue);
-
-        const parent = node.parentNode as Element;
-        const matchIndex = textareaOptionalMatch.index || 0;
-        const beforeText = text.substring(0, matchIndex);
-        const afterText = text.substring(matchIndex + textareaOptionalMatch[0].length);
-
-        // 前のテキストがある場合はテキストノードとして追加
-        if (beforeText) {
-          parent.insertBefore(doc.createTextNode(beforeText), node);
-        }
-
-        // テキストエリアの内容を改行で分割し、<br>要素を挟みながら追加
-        const lines = str.split('\n');
-        lines.forEach((line, index) => {
-          if (line) {
-            parent.insertBefore(doc.createTextNode(line), node);
-          }
-          // 最後の行以外は必ず<br>を挿入（空行の場合も含む）
-          if (index < lines.length - 1) {
-            parent.insertBefore(doc.createElement('br'), node);
-          }
-        });
-
-        // 後ろのテキストがある場合は新しいテキストノードを作成し再帰処理
-        if (afterText) {
-          const afterNode = doc.createTextNode(afterText);
-          parent.insertBefore(afterNode, node);
-          processTextNodes(afterNode);
-        }
-
-        // 元のテキストノードを削除
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
-        return;
-      }
-
-      // グループ付きテキストエリアフィールドの展開（先に処理）
-      // gフラグ付きの正規表現ではmatch()でindexが取得できないため、exec()を使用
-      const textareaWithGroupRegex = new RegExp(
-        TEMPLATE_REGEX.TEXTAREA_FIELD_WITH_GROUP.source,
-        TEMPLATE_REGEX.TEXTAREA_FIELD_WITH_GROUP.flags
-      );
-      let textareaMatch = textareaWithGroupRegex.exec(text);
-      let isTextareaGrouped = false;
-      if (textareaMatch && node.parentNode) {
-        isTextareaGrouped = true;
-      } else {
-        // グループなしテキストエリアフィールドの展開
-        const textareaRegex = new RegExp(
-          TEMPLATE_REGEX.TEXTAREA_FIELD.source,
-          TEMPLATE_REGEX.TEXTAREA_FIELD.flags
-        );
-        textareaMatch = textareaRegex.exec(text);
-      }
-      if (textareaMatch && node.parentNode) {
-        const varName = textareaMatch[1] as string;
-        const defaultValue = isTextareaGrouped
-          ? (textareaMatch[3] as string)
-          : (textareaMatch[2] as string);
-        const raw = component[varName] ?? defaultValue ?? '';
-        const str = String(raw);
-
-        const parent = node.parentNode as Element;
-        const matchIndex = textareaMatch.index || 0;
-        const beforeText = text.substring(0, matchIndex);
-        const afterText = text.substring(matchIndex + textareaMatch[0].length);
-
-        // 前のテキストがある場合はテキストノードとして追加
-        if (beforeText) {
-          parent.insertBefore(doc.createTextNode(beforeText), node);
-        }
-
-        // テキストエリアの内容を改行で分割し、<br>要素を挟みながら追加
-        const lines = str.split('\n');
-        lines.forEach((line, index) => {
-          if (line) {
-            parent.insertBefore(doc.createTextNode(line), node);
-          }
-          // 最後の行以外は必ず<br>を挿入（空行の場合も含む）
-          if (index < lines.length - 1) {
-            parent.insertBefore(doc.createElement('br'), node);
-          }
-        });
-
-        // 後ろのテキストがある場合は新しいテキストノードを作成し再帰処理
-        if (afterText) {
-          const afterNode = doc.createTextNode(afterText);
-          parent.insertBefore(afterNode, node);
-          processTextNodes(afterNode);
-        }
-
-        // 元のテキストノードを削除
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
-        return;
-      }
-
-      // オプショナルフィールドの展開（先に処理、textareaは除く）
-      text = text.replace(/\{\$(\w+)\?:([^}]+)\}/g, (_match, varName, defaultValueRaw) => {
-        // textareaの場合はスキップ（既に処理済み）
-        if (/:textarea(?::[^}]*)?$/.test(_match)) {
-          return _match;
-        }
-        const rawValue = component[varName];
-        if (rawValue === undefined) {
-          return '';
-        }
-        // boolean型の値は表示しない（z-ifで制御するため）
-        if (typeof rawValue === 'boolean') {
-          return '';
-        }
-        const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-        return String(rawValue || defaultValue);
-      });
-
-      text = text.replace(
-        /\{\$(\w+)\.(\w+)\?:([^}]+)\}/g,
-        (_match, varName, _groupName, defaultValueRaw) => {
-          // textareaの場合はスキップ（既に処理済み）
-          if (/:textarea(?::[^}]*)?$/.test(_match)) {
-            return _match;
-          }
-          const rawValue = component[varName];
-          if (rawValue === undefined) {
-            return '';
-          }
-          // boolean型の値は表示しない（z-ifで制御するため）
-          if (typeof rawValue === 'boolean') {
-            return '';
-          }
-          const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-          return String(rawValue || defaultValue);
-        }
-      );
-
-      // グループ付きテキストフィールドの展開（先に処理）
-      text = text.replace(
-        TEMPLATE_REGEX.TEXT_FIELD_WITH_GROUP,
-        (_match, varName, _groupName, defaultValueRaw) => {
-          const rawValue = component[varName];
-          if (rawValue === undefined) {
-            return '';
-          }
-          const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-          return String(rawValue || defaultValue);
-        }
-      );
-
-      // 通常テキストフィールドの展開
-      text = text.replace(TEMPLATE_REGEX.TEXT_FIELD, (_match, varName, defaultValueRaw) => {
-        const rawValue = component[varName];
-        if (rawValue === undefined) {
-          return '';
-        }
-        const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-        return String(rawValue || defaultValue);
-      });
-
-      node.textContent = text;
-    } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
-      // 属性内の変数展開
-      const element = node as Element;
-      const attributesToRemove: string[] = [];
-
-      Array.from(element.attributes).forEach((attr) => {
-        const originalValue = attr.value;
-        let value = attr.value;
-        const attrName = attr.name.toLowerCase();
-
-        // 特殊属性は削除しない（z-forは後で処理するため、ここではスキップ）
-        if (
-          attrName === 'z-if' ||
-          attrName === 'z-for' ||
-          attrName === 'z-slot' ||
-          attrName === 'z-empty' ||
-          attrName === 'z-tag' ||
-          attrName.startsWith('data-zcode-')
-        ) {
-          // 既存の処理を続行（属性は削除しない）
-          return;
-        }
-
-        // 元の属性値がオプショナルフィールドのみかチェック
-        // パターン: {$field?:default} または {$field?:default:type} または {$field.group?:default:type}
-        const isOptionalOnly = /^\{\$[\w.]+?\?:[^}]+\}(?::(rich|image|textarea))?$/.test(
-          originalValue.trim()
-        );
-
-        // バックエンドデータの展開（先に処理）
-        if (backendData) {
-          if (isUrlAttribute(attrName)) {
-            value = expandUrlPlaceholders(value, backendData);
-          }
-        }
-        value = expandBackendDataReferences(value, backendData, attrName);
-
-        // オプショナルフィールドの展開（先に処理、リッチテキスト）
-        value = value.replace(
-          /\{\$(\w+)\?:(.+?):rich(?::[^}]+)?\}/g,
-          (_match, varName, defaultValueRaw) => {
-            const rawValue = component[varName];
-            if (rawValue === undefined) {
-              return '';
-            }
-            // boolean型の値は表示しない（z-ifで制御するため）
-            if (typeof rawValue === 'boolean') {
-              return '';
-            }
-            const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            return escapeAttributeValue(String(rawValue || defaultValue));
-          }
-        );
-
-        value = value.replace(
-          /\{\$(\w+)\.(\w+)\?:(.+?):rich(?::[^}]+)?\}/g,
-          (_match, varName, _groupName, defaultValueRaw) => {
-            const rawValue = component[varName];
-            if (rawValue === undefined) {
-              return '';
-            }
-            // boolean型の値は表示しない（z-ifで制御するため）
-            if (typeof rawValue === 'boolean') {
-              return '';
-            }
-            const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            return escapeAttributeValue(String(rawValue || defaultValue));
-          }
-        );
-
-        // オプショナルフィールドの展開（先に処理、画像）
-        value = value.replace(
-          /\{\$(\w+)\?:(.+?):image(?::[^}]+)?\}/g,
-          (_match, varName, defaultValueRaw) => {
-            const imageId = component[varName];
-            if (imageId === undefined) {
-              return '';
-            }
-            const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            const imageIdValue =
-              typeof imageId === 'string' ? imageId : String(imageId || defaultValue);
-            const imageUrl = processImageField(
-              imageIdValue,
-              defaultValue,
-              imagesCommon,
-              imagesIndividual,
-              imagesSpecial
-            );
-            const imageUrlString =
-              typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(imageUrlString, attrName);
-            }
-            return escapeAttributeValue(imageUrlString);
-          }
-        );
-
-        value = value.replace(
-          /\{\$(\w+)\.(\w+)\?:(.+?):image(?::[^}]+)?\}/g,
-          (_match, varName, _groupName, defaultValueRaw) => {
-            const imageId = component[varName];
-            if (imageId === undefined) {
-              return '';
-            }
-            const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            const imageIdValue =
-              typeof imageId === 'string' ? imageId : String(imageId || defaultValue);
-            const imageUrl = processImageField(
-              imageIdValue,
-              defaultValue,
-              imagesCommon,
-              imagesIndividual,
-              imagesSpecial
-            );
-            const imageUrlString =
-              typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(imageUrlString, attrName);
-            }
-            return escapeAttributeValue(imageUrlString);
-          }
-        );
-
-        // グループ付きリッチテキストフィールドの展開（先に処理）
-        value = value.replace(
-          TEMPLATE_REGEX.RICH_TEXT_FIELD_WITH_GROUP,
-          (_match, varName, _groupName, defaultValue) => {
-            const rawValue = component[varName];
-            if (rawValue === undefined) {
-              return '';
-            }
-            return escapeAttributeValue(String(rawValue || defaultValue));
-          }
-        );
-
-        // リッチテキストフィールドの展開
-        value = value.replace(TEMPLATE_REGEX.RICH_TEXT_FIELD, (_match, varName, defaultValue) => {
-          const rawValue = component[varName];
-          if (rawValue === undefined) {
-            return '';
-          }
-          return escapeAttributeValue(String(rawValue || defaultValue));
-        });
-
-        // グループ付き画像フィールドの展開（先に処理）
-        value = value.replace(
-          TEMPLATE_REGEX.IMAGE_FIELD_WITH_GROUP,
-          (_match, varName, _groupName, defaultValue) => {
-            const imageId = component[varName];
-            if (imageId === undefined) {
-              return '';
-            }
-            const imageUrl = processImageField(
-              imageId || defaultValue,
-              defaultValue,
-              imagesCommon,
-              imagesIndividual,
-              imagesSpecial
-            );
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(imageUrl || defaultValue, attrName);
-            }
-            return escapeAttributeValue(imageUrl || defaultValue);
-          }
-        );
-
-        // 画像フィールドの展開
-        value = value.replace(TEMPLATE_REGEX.IMAGE_FIELD, (_match, varName, defaultValue) => {
-          const imageId = component[varName];
-          if (imageId === undefined) {
-            return '';
-          }
-          const imageUrl = processImageField(
-            imageId || defaultValue,
-            defaultValue,
-            imagesCommon,
-            imagesIndividual,
-            imagesSpecial
-          );
-          if (isUrlAttribute(attrName)) {
-            return sanitizeUrlForAttr(imageUrl || defaultValue, attrName);
-          }
-          return escapeAttributeValue(imageUrl || defaultValue);
-        });
-
-        // オプショナルフィールドの展開（先に処理）
-        value = value.replace(/\{\$(\w+)\?:([^}]+)\}/g, (_match, varName, defaultValueRaw) => {
-          const rawValue = component[varName];
-          if (rawValue === undefined) {
-            return '';
-          }
-          // boolean型の値は表示しない（z-ifで制御するため）
-          if (typeof rawValue === 'boolean') {
-            return '';
-          }
-          const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-          const stringValue = String(rawValue || defaultValue);
-          if (isUrlAttribute(attrName)) {
-            return sanitizeUrlForAttr(stringValue, attrName);
-          }
-          return escapeAttributeValue(stringValue);
-        });
-
-        value = value.replace(
-          /\{\$(\w+)\.(\w+)\?:([^}]+)\}/g,
-          (_match, varName, _groupName, defaultValueRaw) => {
-            const rawValue = component[varName];
-            if (rawValue === undefined) {
-              return '';
-            }
-            // boolean型の値は表示しない（z-ifで制御するため）
-            if (typeof rawValue === 'boolean') {
-              return '';
-            }
-            const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            const stringValue = String(rawValue || defaultValue);
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(stringValue, attrName);
-            }
-            return escapeAttributeValue(stringValue);
-          }
-        );
-
-        // グループ付きテキストフィールドの展開（先に処理）
-        value = value.replace(
-          TEMPLATE_REGEX.TEXT_FIELD_WITH_GROUP,
-          (_match, varName, _groupName, defaultValueRaw) => {
-            const rawValue = component[varName];
-            if (rawValue === undefined) {
-              return '';
-            }
-            const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-            const stringValue = String(rawValue || defaultValue);
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(stringValue, attrName);
-            }
-            return escapeAttributeValue(stringValue);
-          }
-        );
-
-        // 通常テキストフィールドの展開
-        value = value.replace(TEMPLATE_REGEX.TEXT_FIELD, (_match, varName, defaultValueRaw) => {
-          const rawValue = component[varName];
-          if (rawValue === undefined) {
-            return '';
-          }
-          const { defaultValue } = splitDefaultAndValidation(defaultValueRaw);
-          const stringValue = String(rawValue || defaultValue);
-          if (isUrlAttribute(attrName)) {
-            return sanitizeUrlForAttr(stringValue, attrName);
-          }
-          return escapeAttributeValue(stringValue);
-        });
-
-        // 属性値が空文字列で、元の属性値がオプショナルフィールドのみの場合、属性を削除
-        if (isOptionalOnly && value.trim() === '') {
-          attributesToRemove.push(attr.name);
-        } else {
-          attr.value = value;
-        }
-      });
-
-      // 属性を削除（forEach中に削除すると問題が起きるため、後で削除）
-      attributesToRemove.forEach((attrName) => {
-        element.removeAttribute(attrName);
-      });
+    if (!enableEditorAttributes) {
+      richTextValue = sanitizeRichText(richTextValue);
     }
 
+    if (!richTextValue) {
+      // 従来仕様: optional は何も挿入せず、通常は空の <p></p> を挿入
+      return token.optional ? '' : '<p></p>';
+    }
+    if (!richTextValue.trim().startsWith('<p')) {
+      richTextValue = `<p>${richTextValue}</p>`;
+    }
+    return richTextValue;
+  };
+
+  const resolveTextareaString = (token: ValueFieldToken): string => {
+    const rawValue = component[token.fieldName];
+    if (token.optional) {
+      return rawValue === undefined ? '' : String(rawValue || token.defaultValue);
+    }
+    // 従来仕様: 通常 textarea のみ ?? （空文字はデフォルトに落ちない）かつ未加工デフォルト
+    return String(rawValue ?? token.rawDefault ?? '');
+  };
+
+  const appendRichNodes = (parts: Node[], token: ValueFieldToken) => {
+    const html = resolveRichHtml(token);
+    if (!html) return;
+    const tempDiv = doc.createElement('div');
+    tempDiv.innerHTML = html;
+    Array.from(tempDiv.childNodes).forEach((child) => {
+      parts.push(child.cloneNode(true));
+    });
+  };
+
+  const appendTextareaNodes = (parts: Node[], token: ValueFieldToken) => {
+    const lines = resolveTextareaString(token).split('\n');
+    lines.forEach((line, index) => {
+      if (line) {
+        parts.push(doc.createTextNode(line));
+      }
+      // 最後の行以外は必ず<br>を挿入（空行の場合も含む）
+      if (index < lines.length - 1) {
+        parts.push(doc.createElement('br'));
+      }
+    });
+  };
+
+  const expandValueTokensInTextNode = (node: Node) => {
+    let text = node.textContent || '';
+
+    // バックエンドデータの展開（先に処理。デフォルト付きは backendData 未指定でも展開）
+    text = expandBackendDataReferences(text, backendData);
+
+    const tokens = valueTokensOf(text);
+    const richTokens = tokens.filter((t) => t.fieldType === 'rich');
+    const textareaTokens = tokens.filter((t) => t.fieldType === 'textarea');
+
+    // rich / textarea は DOM ノード挿入が必要。従来実装と同じく1ノードにつき
+    // 優先順の1トークンだけを展開し、前後のテキストは未展開のまま残す。
+    // textarea の場合のみ後続テキストを再帰処理する（従来仕様）
+    const domToken =
+      node.parentNode && richTokens.length > 0
+        ? pickLegacyFirst(richTokens)
+        : node.parentNode && textareaTokens.length > 0
+          ? pickLegacyFirst(textareaTokens)
+          : null;
+
+    if (domToken) {
+      const parent = node.parentNode as Element;
+      const beforeText = text.substring(0, domToken.start);
+      const afterText = text.substring(domToken.end);
+
+      if (beforeText) {
+        parent.insertBefore(doc.createTextNode(beforeText), node);
+      }
+
+      const parts: Node[] = [];
+      if (domToken.fieldType === 'rich') {
+        appendRichNodes(parts, domToken);
+      } else {
+        appendTextareaNodes(parts, domToken);
+      }
+      parts.forEach((part) => parent.insertBefore(part, node));
+
+      if (afterText) {
+        const afterNode = doc.createTextNode(afterText);
+        parent.insertBefore(afterNode, node);
+        if (domToken.fieldType === 'textarea') {
+          expandValueTokensInTextNode(afterNode);
+        }
+      }
+
+      parent.removeChild(node);
+      return;
+    }
+
+    // 文字列置換のみ（text / image）。位置を保つため後ろから前へ置換
+    let result = text;
+    for (let i = tokens.length - 1; i >= 0; i--) {
+      const token = tokens[i];
+      if (token.fieldType === 'rich' || token.fieldType === 'textarea') continue;
+      result = result.slice(0, token.start) + resolveTextLikeValue(token) + result.slice(token.end);
+    }
+    node.textContent = result;
+  };
+
+  const resolveAttrTokenValue = (token: ValueFieldToken, attrName: string): string => {
+    const rawValue = component[token.fieldName];
+
+    if (token.fieldType === 'rich') {
+      if (rawValue === undefined) {
+        return '';
+      }
+      if (token.optional && typeof rawValue === 'boolean') {
+        return '';
+      }
+      const defaultValue = token.optional ? token.defaultValue : token.rawDefault;
+      // rich は URL 属性でもエスケープのみ（従来仕様）
+      return escapeAttributeValue(String(rawValue || defaultValue));
+    }
+
+    if (token.fieldType === 'image') {
+      if (rawValue === undefined) {
+        return '';
+      }
+      let imageUrlString: string;
+      if (token.optional) {
+        const defaultValue = token.defaultValue;
+        const imageIdValue =
+          typeof rawValue === 'string' ? rawValue : String(rawValue || defaultValue);
+        const imageUrl = processImageField(
+          imageIdValue,
+          defaultValue,
+          imagesCommon,
+          imagesIndividual,
+          imagesSpecial
+        );
+        imageUrlString = typeof imageUrl === 'string' ? imageUrl : String(imageUrl || defaultValue);
+      } else {
+        const defaultValue = token.rawDefault;
+        const imageUrl = processImageField(
+          (rawValue || defaultValue) as string,
+          defaultValue,
+          imagesCommon,
+          imagesIndividual,
+          imagesSpecial
+        );
+        imageUrlString = imageUrl || defaultValue;
+      }
+      if (isUrlAttribute(attrName)) {
+        return sanitizeUrlForAttr(imageUrlString, attrName);
+      }
+      return escapeAttributeValue(imageUrlString);
+    }
+
+    // text / （属性内の）textarea
+    const stringValue = resolveTextLikeValue(token);
+    if (isUrlAttribute(attrName)) {
+      return sanitizeUrlForAttr(stringValue, attrName);
+    }
+    return escapeAttributeValue(stringValue);
+  };
+
+  const expandValueTokensInAttrValue = (value: string, attrName: string): string => {
+    const tokens = valueTokensOf(value);
+    let result = value;
+    for (let i = tokens.length - 1; i >= 0; i--) {
+      result =
+        result.slice(0, tokens[i].start) +
+        resolveAttrTokenValue(tokens[i], attrName) +
+        result.slice(tokens[i].end);
+    }
+    return result;
+  };
+
+  const expandAttributesOnElement = (element: Element) => {
+    const attributesToRemove: string[] = [];
+
+    Array.from(element.attributes).forEach((attr) => {
+      const originalValue = attr.value;
+      let value = attr.value;
+      const attrName = attr.name.toLowerCase();
+
+      // 特殊属性は展開しない（z-forは後で処理するため、ここではスキップ）
+      if (
+        attrName === 'z-if' ||
+        attrName === 'z-for' ||
+        attrName === 'z-slot' ||
+        attrName === 'z-empty' ||
+        attrName === 'z-tag' ||
+        attrName.startsWith('data-zcode-')
+      ) {
+        return;
+      }
+
+      // 元の属性値がオプショナルフィールドのみかチェック
+      const isOptionalOnly = /^\{\$[\w.]+?\?:[^}]+\}(?::(rich|image|textarea))?$/.test(
+        originalValue.trim()
+      );
+
+      // バックエンドデータの展開（先に処理）
+      if (backendData) {
+        if (isUrlAttribute(attrName)) {
+          value = expandUrlPlaceholders(value, backendData);
+        }
+      }
+      value = expandBackendDataReferences(value, backendData, attrName);
+
+      value = expandValueTokensInAttrValue(value, attrName);
+
+      // 属性値が空文字列で、元の属性値がオプショナルフィールドのみの場合、属性を削除
+      if (isOptionalOnly && value.trim() === '') {
+        attributesToRemove.push(attr.name);
+      } else {
+        attr.value = value;
+      }
+    });
+
+    // 属性を削除（forEach中に削除すると問題が起きるため、後で削除）
+    attributesToRemove.forEach((attrName) => {
+      element.removeAttribute(attrName);
+    });
+  };
+
+  const processTextNodes = (node: Node) => {
+    if (node.nodeType === DOM_NODE_TYPE_TEXT) {
+      expandValueTokensInTextNode(node);
+      return;
+    }
+    if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
+      expandAttributesOnElement(node as Element);
+    }
     Array.from(node.childNodes).forEach((child) => processTextNodes(child));
   };
 
   processTextNodes(template.content);
 
   // 2. 選択式・複数選択式の処理 ($field:opt1|opt2) と ($field@:opt1|opt2)
+  const resolveChoiceSingle = (token: ChoiceFieldToken, withEmptyFallback: boolean): string => {
+    if (withEmptyFallback) {
+      return selectionSingleFromComponent(component, token.fieldName, token.rawOptions);
+    }
+    const value = component[token.fieldName];
+    return typeof value === 'string' ? value : firstChoiceValueFromRaw(token.rawOptions);
+  };
+
+  const resolveChoiceValue = (token: ChoiceFieldToken, context: 'text' | 'attr'): string => {
+    if (token.delimiter === ',') {
+      const selectedValues = component[token.fieldName];
+      const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
+      const optionList = rawChoiceValues(token.rawOptions, ',');
+      return valuesArray
+        .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
+        .join(' ');
+    }
+    if (context === 'attr') {
+      // 属性: | 区切りは空文字→先頭選択肢のフォールバックあり、区切りなしはなし（従来仕様）
+      return resolveChoiceSingle(token, token.delimiter === '|');
+    }
+    // テキスト: グループ付き select のみフォールバックあり（従来仕様）
+    return resolveChoiceSingle(token, token.select && !!token.groupName);
+  };
+
   const processSelectionSyntax = (node: Node) => {
     if (node.nodeType === DOM_NODE_TYPE_TEXT) {
-      let text = node.textContent || '';
-
-      // グループ付きセレクトボックス（先に処理）
-      text = text.replace(
-        TEMPLATE_REGEX.SELECT_FIELD_WITH_GROUP,
-        (_match, fieldName, _groupName, options) => {
-          // 区切り文字で判定: | = 単一選択、, = 複数選択
-          if (options.includes('|')) {
-            // セレクトボックス（単一選択）
-            return selectionSingleFromComponent(component, fieldName, options);
-          } else if (options.includes(',')) {
-            // セレクトボックス（複数選択）
-            const selectedValues = component[fieldName];
-            const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = rawChoiceValues(options, ',');
-            return valuesArray
-              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-              .join(' ');
-          }
-          return selectionSingleFromComponent(component, fieldName, options);
+      const text = node.textContent || '';
+      const tokens = choiceTokensOf(text);
+      if (tokens.length > 0) {
+        let result = text;
+        for (let i = tokens.length - 1; i >= 0; i--) {
+          result =
+            result.slice(0, tokens[i].start) +
+            resolveChoiceValue(tokens[i], 'text') +
+            result.slice(tokens[i].end);
         }
-      );
-
-      // セレクトボックス（先に処理）
-      text = text.replace(TEMPLATE_REGEX.SELECT_FIELD, (_match, fieldName, options) => {
-        // 区切り文字で判定: | = 単一選択、, = 複数選択
-        if (options.includes('|')) {
-          // セレクトボックス（単一選択）
-          const value = component[fieldName];
-          return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-        } else if (options.includes(',')) {
-          // セレクトボックス（複数選択）
-          const selectedValues = component[fieldName];
-          const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-          const optionList = rawChoiceValues(options, ',');
-          return valuesArray
-            .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-            .join(' ');
-        }
-        const value = component[fieldName];
-        return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-      });
-
-      // グループ付きラジオボタン/チェックボックス（先に処理）
-      text = text.replace(
-        TEMPLATE_REGEX.RADIO_CHECKBOX_FIELD_WITH_GROUP,
-        (_match, fieldName, _groupName, options) => {
-          // 区切り文字で判定: | = ラジオボタン（単一選択）、, = チェックボックス（複数選択）
-          if (options.includes('|')) {
-            // ラジオボタン: 単一選択
-            const value = component[fieldName];
-            return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-          } else if (options.includes(',')) {
-            // チェックボックス: 複数選択
-            const selectedValues = component[fieldName];
-            const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = rawChoiceValues(options, ',');
-            return valuesArray
-              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-              .join(' ');
-          }
-          const value = component[fieldName];
-          return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-        }
-      );
-
-      // ラジオボタン/チェックボックス（区切り文字で判定）
-      text = text.replace(TEMPLATE_REGEX.RADIO_FIELD, (_match, fieldName, options) => {
-        // 区切り文字で判定: | = ラジオボタン（単一選択）、, = チェックボックス（複数選択）
-        if (options.includes('|')) {
-          // ラジオボタン: 単一選択
-          const value = component[fieldName];
-          return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-        } else if (options.includes(',')) {
-          // チェックボックス: 複数選択
-          const selectedValues = component[fieldName];
-          const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-          const optionList = rawChoiceValues(options, ',');
-          return valuesArray
-            .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-            .join(' ');
-        }
-        const value = component[fieldName];
-        return typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-      });
-
-      node.textContent = text;
+        node.textContent = result;
+      }
     } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
-      // 属性内の選択式処理
       const element = node as Element;
       Array.from(element.attributes).forEach((attr) => {
-        let value = attr.value;
+        const tokens = choiceTokensOf(attr.value);
+        if (tokens.length === 0) return;
         const attrName = attr.name.toLowerCase();
-
-        // グループ付きセレクトボックス（先に処理）
-        value = value.replace(
-          TEMPLATE_REGEX.SELECT_FIELD_WITH_GROUP,
-          (_match, fieldName, _groupName, options) => {
-            let result: string;
-            // 区切り文字で判定: | = 単一選択、, = 複数選択
-            if (options.includes('|')) {
-              // セレクトボックス（単一選択）
-              result = selectionSingleFromComponent(component, fieldName, options);
-            } else if (options.includes(',')) {
-              // セレクトボックス（複数選択）
-              const selectedValues = component[fieldName];
-              const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-              const optionList = rawChoiceValues(options, ',');
-              result = valuesArray
-                .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-                .join(' ');
-            } else {
-              const value = component[fieldName];
-              result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-            }
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(String(result), attrName);
-            }
-            return escapeAttributeValue(String(result));
-          }
-        );
-
-        // セレクトボックス（先に処理）
-        value = value.replace(TEMPLATE_REGEX.SELECT_FIELD, (_match, fieldName, options) => {
-          let result: string;
-          // 区切り文字で判定: | = 単一選択、, = 複数選択
-          if (options.includes('|')) {
-            // セレクトボックス（単一選択）
-            result = selectionSingleFromComponent(component, fieldName, options);
-          } else if (options.includes(',')) {
-            // セレクトボックス（複数選択）
-            const selectedValues = component[fieldName];
-            const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = rawChoiceValues(options, ',');
-            result = valuesArray
-              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-              .join(' ');
-          } else {
-            const value = component[fieldName];
-            result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-          }
-          if (isUrlAttribute(attrName)) {
-            return sanitizeUrlForAttr(String(result), attrName);
-          }
-          return escapeAttributeValue(String(result));
-        });
-
-        // グループ付きラジオボタン/チェックボックス（先に処理）
-        value = value.replace(
-          TEMPLATE_REGEX.RADIO_CHECKBOX_FIELD_WITH_GROUP,
-          (_match, fieldName, _groupName, options) => {
-            let result: string;
-            // 区切り文字で判定: | = ラジオボタン（単一選択）、, = チェックボックス（複数選択）
-            if (options.includes('|')) {
-              // ラジオボタン: 単一選択
-              result = selectionSingleFromComponent(component, fieldName, options);
-            } else if (options.includes(',')) {
-              // チェックボックス: 複数選択
-              const selectedValues = component[fieldName];
-              const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-              const optionList = rawChoiceValues(options, ',');
-              result = valuesArray
-                .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-                .join(' ');
-            } else {
-              const value = component[fieldName];
-              result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-            }
-            if (isUrlAttribute(attrName)) {
-              return sanitizeUrlForAttr(String(result), attrName);
-            }
-            return escapeAttributeValue(String(result));
-          }
-        );
-
-        // ラジオボタン/チェックボックス
-        value = value.replace(TEMPLATE_REGEX.RADIO_FIELD, (_match, fieldName, options) => {
-          let result: string;
-          // 区切り文字で判定: | = ラジオボタン（単一選択）、, = チェックボックス（複数選択）
-          if (options.includes('|')) {
-            // ラジオボタン: 単一選択
-            result = selectionSingleFromComponent(component, fieldName, options);
-          } else if (options.includes(',')) {
-            // チェックボックス: 複数選択
-            const selectedValues = component[fieldName];
-            const valuesArray = Array.isArray(selectedValues) ? selectedValues : [];
-            const optionList = rawChoiceValues(options, ',');
-            result = valuesArray
-              .filter((val: unknown) => typeof val === 'string' && optionList.includes(val))
-              .join(' ');
-          } else {
-            const value = component[fieldName];
-            result = typeof value === 'string' ? value : firstChoiceValueFromRaw(options);
-          }
-          if (isUrlAttribute(attrName)) {
-            return sanitizeUrlForAttr(String(result), attrName);
-          }
-          return escapeAttributeValue(String(result));
-        });
+        let value = attr.value;
+        for (let i = tokens.length - 1; i >= 0; i--) {
+          const resolved = String(resolveChoiceValue(tokens[i], 'attr'));
+          const wrapped = isUrlAttribute(attrName)
+            ? sanitizeUrlForAttr(resolved, attrName)
+            : escapeAttributeValue(resolved);
+          value = value.slice(0, tokens[i].start) + wrapped + value.slice(tokens[i].end);
+        }
         attr.value = value;
       });
     }
@@ -1161,112 +694,66 @@ export function processTemplateWithDOM(
     backendData: Record<string, unknown> | undefined,
     _parser: DOMParser
   ) => {
-    // テキストノード内のループ変数を展開
+    // {item.name} のプロパティパスを解決（テキスト / 属性共通）
+    const resolveLoopVarPath = (propPath: string): string => {
+      try {
+        const parts = propPath.split(/[.[\]]/).filter((p: string) => p);
+        let current: unknown = item;
+
+        for (const part of parts) {
+          if (part.match(/^\d+$/)) {
+            const index = parseInt(part, 10);
+            if (Array.isArray(current) && index >= 0 && index < current.length) {
+              current = current[index];
+            } else {
+              return '';
+            }
+          } else {
+            if (
+              current &&
+              typeof current === 'object' &&
+              part in (current as Record<string, unknown>)
+            ) {
+              current = (current as Record<string, unknown>)[part];
+            } else {
+              return '';
+            }
+          }
+        }
+
+        return current === null || current === undefined ? '' : String(current);
+      } catch (error) {
+        return '';
+      }
+    };
+
+    const resolveLoopVarDirect = (): string =>
+      typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item);
+
+    const loopVarPathRegex = () => new RegExp(`\\{${itemVar}\\.([\\w\\.\\[\\]]+)\\}`, 'g');
+    const loopVarDirectRegex = () => new RegExp(`\\{${itemVar}\\}`, 'g');
+
     const processNode = (node: Node) => {
       if (node.nodeType === DOM_NODE_TYPE_TEXT) {
         let text = node.textContent || '';
-
-        // {item.name} のような参照を展開
-        const loopVarRegex = new RegExp(`\\{${itemVar}\\.([\\w\\.\\[\\]]+)\\}`, 'g');
-        text = text.replace(loopVarRegex, (_match, propPath) => {
-          try {
-            const parts = propPath.split(/[.[\]]/).filter((p: string) => p);
-            let current: unknown = item;
-
-            for (const part of parts) {
-              if (part.match(/^\d+$/)) {
-                const index = parseInt(part, 10);
-                if (Array.isArray(current) && index >= 0 && index < current.length) {
-                  current = current[index];
-                } else {
-                  return '';
-                }
-              } else {
-                if (
-                  current &&
-                  typeof current === 'object' &&
-                  part in (current as Record<string, unknown>)
-                ) {
-                  current = (current as Record<string, unknown>)[part];
-                } else {
-                  return '';
-                }
-              }
-            }
-
-            return current === null || current === undefined ? '' : String(current);
-          } catch (error) {
-            return '';
-          }
-        });
-
-        // {item} のような直接参照も展開
-        text = text.replace(new RegExp(`\\{${itemVar}\\}`, 'g'), () => {
-          if (typeof item === 'object' && item !== null) {
-            return JSON.stringify(item);
-          }
-          return String(item);
-        });
-
+        text = text.replace(loopVarPathRegex(), (_match, propPath) => resolveLoopVarPath(propPath));
+        text = text.replace(loopVarDirectRegex(), () => resolveLoopVarDirect());
         node.textContent = text;
       } else if (node.nodeType === DOM_NODE_TYPE_ELEMENT) {
         const el = node as Element;
 
-        // 属性内のループ変数を展開
         Array.from(el.attributes).forEach((attr) => {
+          const urlAttrName = attr.name.toLowerCase();
+          const wrapForAttr = (result: string): string =>
+            isUrlAttribute(urlAttrName)
+              ? sanitizeUrlForAttr(result, urlAttrName)
+              : escapeAttributeValue(result);
+
           let value = attr.value;
-
-          // {item.name} のような参照を展開
-          const loopVarRegex = new RegExp(`\\{${itemVar}\\.([\\w\\.\\[\\]]+)\\}`, 'g');
-          value = value.replace(loopVarRegex, (_match, propPath) => {
-            try {
-              const parts = propPath.split(/[.[\]]/).filter((p: string) => p);
-              let current: unknown = item;
-
-              for (const part of parts) {
-                if (part.match(/^\d+$/)) {
-                  const index = parseInt(part, 10);
-                  if (Array.isArray(current) && index >= 0 && index < current.length) {
-                    current = current[index];
-                  } else {
-                    return '';
-                  }
-                } else {
-                  if (
-                    current &&
-                    typeof current === 'object' &&
-                    part in (current as Record<string, unknown>)
-                  ) {
-                    current = (current as Record<string, unknown>)[part];
-                  } else {
-                    return '';
-                  }
-                }
-              }
-
-              const result = current === null || current === undefined ? '' : String(current);
-
-              // URL属性の場合はサニタイズ
-              const urlAttrName = attr.name.toLowerCase();
-              if (isUrlAttribute(urlAttrName)) {
-                return sanitizeUrlForAttr(result, urlAttrName);
-              }
-              return escapeAttributeValue(result);
-            } catch (error) {
-              return '';
-            }
-          });
-
-          // {item} のような直接参照も展開
-          value = value.replace(new RegExp(`\\{${itemVar}\\}`, 'g'), () => {
-            const result =
-              typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item);
-            const urlAttrName = attr.name.toLowerCase();
-            if (isUrlAttribute(urlAttrName)) {
-              return sanitizeUrlForAttr(result, urlAttrName);
-            }
-            return escapeAttributeValue(result);
-          });
+          value = value.replace(loopVarPathRegex(), (_match, propPath) =>
+            wrapForAttr(resolveLoopVarPath(propPath))
+          );
+          value = value.replace(loopVarDirectRegex(), () => wrapForAttr(resolveLoopVarDirect()));
 
           attr.value = value;
         });

@@ -72,7 +72,12 @@ export interface ValueFieldToken extends FieldTokenBase {
   kind: 'value';
   fieldType: ValueFieldType;
   optional: boolean;
+  /** validation トークンを取り除いたデフォルト値 */
   defaultValue: string;
+  /** 型トークン直前までの未加工デフォルト（型なしの場合は body 全体）。従来実装の一部分岐はこちらを使う */
+  rawDefault: string;
+  /** {$name(...)?:body} の body 部分の生文字列 */
+  body: string;
   validation: FieldValidation;
 }
 
@@ -94,6 +99,7 @@ const TYPE_TOKENS: readonly ValueFieldType[] = ['rich', 'textarea', 'image'];
 function classifyBody(body: string): {
   fieldType: ValueFieldType;
   defaultValue: string;
+  rawDefault: string;
   validation: FieldValidation;
 } {
   const segments = body.split(':');
@@ -104,18 +110,19 @@ function classifyBody(body: string): {
       // 型トークンの前が空（例: {$f::rich}）の場合は型付きとみなさない（従来仕様）
       if (head === '') continue;
       const { defaultValue, validation } = splitDefaultAndValidation(head);
-      return { fieldType: type, defaultValue, validation };
+      return { fieldType: type, defaultValue, rawDefault: head, validation };
     }
   }
   const { defaultValue, validation } = splitDefaultAndValidation(body);
-  return { fieldType: 'text', defaultValue, validation };
+  return { fieldType: 'text', defaultValue, rawDefault: body, validation };
 }
 
 export function scanFieldTokens(text: string): FieldToken[] {
   const tokens: FieldToken[] = [];
 
   for (const match of text.matchAll(VALUE_FIELD_REGEX)) {
-    const { fieldType, defaultValue, validation } = classifyBody(match[4]);
+    const body = match[4];
+    const { fieldType, defaultValue, rawDefault, validation } = classifyBody(body);
     tokens.push({
       kind: 'value',
       raw: match[0],
@@ -126,6 +133,8 @@ export function scanFieldTokens(text: string): FieldToken[] {
       optional: match[3] === '?',
       fieldType,
       defaultValue,
+      rawDefault,
+      body,
       validation
     });
   }
