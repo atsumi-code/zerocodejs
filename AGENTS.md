@@ -648,14 +648,22 @@ interface ImageData {
 - `VALID_Z_TAG_NAMES`（z-tag のタグ一覧）を field-syntax に一元化、`EditPanelField` を `FieldInfo` の拡張に統一
 - キャラクタリゼーションテスト（スナップショット91件）で出力の同一性を機械的に検証。公開API・出力挙動は不変
 
-27. ✅ **モーダルのキーボードアクセシビリティ**（2026年7月）
+27. ✅ **ドキュメント・デモサイトの再構成**（2026年7月）
+
+- `docs.html`（2,888行の単一ページ）を4ページに分割: はじめに / テンプレート記法（`docs-template.html`）/ 管理画面とAPI（`docs-api.html`）/ バックエンド連携（`docs-backend.html`）
+- 横断検索: `public/js/docs-search-index.js`（自動生成、`scripts/build-docs-search-index.mjs` で再生成）+ 共通 `public/js/docs.js`
+- docs 冒頭に読者タイプ別「読む順ガイド」、英語読者への README 案内
+- index.html を日本語デフォルトに統一（EN切替維持）、Studio / SSR / Light DOM デモへの導線を追加
+- デモページ4枚の「テスト」表記を解消し、「このデモで試せること」ガイドバナーを設置
+
+28. ✅ **モーダルのキーボードアクセシビリティ**（2026年7月）
 
 - `src/core/composables/useModalA11y.ts` を新設: Esc で閉じる（モーダルスタックで最前面のみ・IME 変換取消は無視・`shouldIgnoreEscape` オプション）、Tab のフォーカストラップ、開閉時のフォーカス移動/復元
 - 適用: 保存確認ダイアログ / ImageSelectModal（選択・画像編集オーバーレイ）/ パーツ管理のタイプ・パーツ編集モーダル / 抽出済み4モーダル
 - ポップオーバー（`usePanelOptionsPopover`）は capture フェーズ + `preventDefault` で先に Esc を処理し、背後のモーダルを閉じない
 - Monaco エディタ内の Esc は `shouldIgnoreEscape`（composedPath に `.monaco-editor`）で除外
 
-28. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
+29. ✅ **バンドル分割と軽量 cms エントリ**（2026年7月）
 
 - `zerocodejs/cms` サブパスを追加（`<zcode-cms>` のみ。初期ロード 圧縮後約100KB、従来比 約6割減）
 - Tiptap（RichTextEditor）を `defineAsyncComponent` で遅延ロード化（約115KB を初回のリッチテキスト編集時のみ取得）
@@ -705,7 +713,7 @@ interface ImageData {
 - [ ] `TODO.md`の該当タスクを完了に更新
 - [ ] `AGENTS.md`の「実装済み機能」に追加（必要に応じて）
 - [ ] `TECHNICAL_SPECIFICATION.md`を更新（API変更がある場合）
-- [ ] `docs.html`を更新（ユーザー向けドキュメントに影響がある場合）
+- [ ] `docs*.html`（4ページ構成）を更新（ユーザー向けドキュメントに影響がある場合）。見出しを追加・変更したら `node scripts/build-docs-search-index.mjs` で検索インデックスを再生成
 
 ## 実装時の注意事項
 
@@ -1081,7 +1089,7 @@ const expensiveValue = computed(() => {
 
 - [TODO.md](./TODO.md) - 実装タスク一覧
 - [技術仕様書](./TECHNICAL_SPECIFICATION.md) - 外部向け技術仕様
-- [ドキュメント](./docs.html) - ユーザー向けドキュメント
+- [ドキュメント](./docs.html) - ユーザー向けドキュメント（はじめに / [テンプレート記法](./docs-template.html) / [管理画面とAPI](./docs-api.html) / [バックエンド連携](./docs-backend.html) の4ページ構成）
 
 ---
 

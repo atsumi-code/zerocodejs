@@ -29,6 +29,9 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, 'index.html'),
         docs: resolve(__dirname, 'docs.html'),
+        docsTemplate: resolve(__dirname, 'docs-template.html'),
+        docsApi: resolve(__dirname, 'docs-api.html'),
+        docsBackend: resolve(__dirname, 'docs-backend.html'),
         testDev: resolve(__dirname, 'test-dev.html'),
         testCms: resolve(__dirname, 'test-cms.html'),
         testPub: resolve(__dirname, 'test-pub.html'),

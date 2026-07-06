@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js ドキュメント - 管理画面とAPI</title>
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- サイト共通CSS（ヘッダー・フッター） -->
+    <link rel="stylesheet" href="./css/site-common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/docs.css" />
+  </head>
+  <body>
+    <!-- ヘッダー（共通） -->
+    <div id="header-placeholder"></div>
+
+    <div class="docs-container">
+      <!-- サイドバー -->
+      <aside class="docs-sidebar">
+        <!-- 検索セクション -->
+        <div class="docs-search-section">
+          <input
+            type="text"
+            id="docs-search-input"
+            class="docs-search-input"
+            placeholder="ドキュメントを検索..."
+            autocomplete="off"
+          />
+          <div id="docs-search-results" class="docs-search-results"></div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">概要</div>
+          <div class="docs-nav-links">
+            <a href="docs.html#about" class="docs-nav-link">ZeroCode.js とは</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#about-purpose" class="docs-nav-link-sub">目的</a>
+              <a href="docs.html#about-problems" class="docs-nav-link-sub">解決したい課題</a>
+              <a href="docs.html#about-design" class="docs-nav-link-sub">設計方針</a>
+              <a href="docs.html#about-data" class="docs-nav-link-sub">データの扱い</a>
+              <a href="docs.html#about-components" class="docs-nav-link-sub"
+                >コンポーネントと役割</a
+              >
+              <a href="docs.html#roadmap" class="docs-nav-link-sub">編集体験改善ロードマップ</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">フロントエンド</div>
+          <div class="docs-nav-links">
+            <a href="docs.html#quickstart" class="docs-nav-link">クイックスタート</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#installation" class="docs-nav-link-sub">インストール</a>
+              <a href="docs.html#basic-usage" class="docs-nav-link-sub">基本的な使用例</a>
+            </div>
+            <a href="docs.html#multiple-instances" class="docs-nav-link">複数インスタンス対応</a>
+            <a href="docs.html#shadow-dom" class="docs-nav-link">Shadow DOM</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#shadow-dom-host-style" class="docs-nav-link-sub"
+                >ホストスタイルのリセット</a
+              >
+            </div>
+            <a href="docs-template.html#template-syntax" class="docs-nav-link">テンプレート記法</a>
+            <div class="docs-nav-sub">
+              <a href="docs-template.html#field-syntax" class="docs-nav-link-sub">フィールド記法</a>
+              <div class="docs-nav-sub-sub">
+                <a href="docs-template.html#text-field" class="docs-nav-link-sub-sub"
+                  >テキストフィールド</a
+                >
+                <a href="docs-template.html#textarea-field" class="docs-nav-link-sub-sub"
+                  >テキストエリア</a
+                >
+                <a href="docs-template.html#rich-text-field" class="docs-nav-link-sub-sub"
+                  >リッチテキスト</a
+                >
+                <a href="docs-template.html#image-field" class="docs-nav-link-sub-sub"
+                  >画像フィールド</a
+                >
+                <a href="docs-template.html#grouped-fields" class="docs-nav-link-sub-sub"
+                  >グループ化</a
+                >
+                <a href="docs-template.html#optional-fields" class="docs-nav-link-sub-sub"
+                  >オプショナル</a
+                >
+                <a href="docs-template.html#validation-syntax" class="docs-nav-link-sub-sub"
+                  >バリデーション</a
+                >
+              </div>
+              <a href="docs-template.html#backend-data" class="docs-nav-link-sub"
+                >バックエンドデータ</a
+              >
+              <a href="docs-template.html#z-for-loop" class="docs-nav-link-sub">z-for ループ</a>
+              <a href="docs-template.html#choice-syntax" class="docs-nav-link-sub">選択肢記法</a>
+              <a href="docs-template.html#conditional-syntax" class="docs-nav-link-sub">条件分岐</a>
+              <div class="docs-nav-sub-sub">
+                <a href="docs-template.html#z-tag-syntax" class="docs-nav-link-sub-sub"
+                  >z-tag 属性</a
+                >
+                <a href="docs-template.html#z-empty-syntax" class="docs-nav-link-sub-sub"
+                  >z-empty 属性</a
+                >
+              </div>
+              <a href="docs-template.html#slot-syntax" class="docs-nav-link-sub">スロット</a>
+            </div>
+            <a href="#editing-modes" class="docs-nav-link">編集モード</a>
+            <a href="#parts-management" class="docs-nav-link">パーツ管理</a>
+            <div class="docs-nav-sub">
+              <a href="#types-and-parts" class="docs-nav-link-sub">タイプとパーツ</a>
+              <a href="#common-and-individual-parts" class="docs-nav-link-sub"
+                >共通パーツと個別パーツ</a
+              >
+              <a href="#parts-management-features" class="docs-nav-link-sub">パーツ管理機能</a>
+              <a href="#part-template-structure" class="docs-nav-link-sub"
+                >パーツテンプレートの構造</a
+              >
+              <a href="#template-field-initialization" class="docs-nav-link-sub"
+                >テンプレート記法の後から追加</a
+              >
+            </div>
+            <a href="#images-management" class="docs-nav-link">画像管理</a>
+            <a href="#configuration" class="docs-nav-link">設定オプション</a>
+            <a href="#api-reference" class="docs-nav-link">APIリファレンス</a>
+            <a href="#events" class="docs-nav-link">イベント</a>
+            <a href="#methods" class="docs-nav-link">メソッド</a>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">バックエンド</div>
+          <div class="docs-nav-links">
+            <a href="#data-structure" class="docs-nav-link">データ構造</a>
+            <a href="docs-backend.html#database-design" class="docs-nav-link">データベース構成</a>
+            <a href="docs-backend.html#save-request" class="docs-nav-link">保存リクエスト</a>
+            <div class="docs-nav-sub">
+              <a href="docs-backend.html#save-request-handler" class="docs-nav-link-sub"
+                >イベントの受け取り方</a
+              >
+              <a href="docs-backend.html#save-request-image-upload" class="docs-nav-link-sub"
+                >画像のアップロード</a
+              >
+              <a href="docs-backend.html#save-request-validation" class="docs-nav-link-sub"
+                >バリデーションエラー</a
+              >
+            </div>
+            <a href="docs-backend.html#security" class="docs-nav-link">セキュリティ</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- メインコンテンツ -->
+      <main class="docs-content">
+        <!-- パンくずリスト -->
+        <nav class="docs-breadcrumb" id="docs-breadcrumb">
+          <a href="./docs.html">ドキュメント</a>
+          <span class="docs-breadcrumb-separator">></span>
+          <span id="docs-breadcrumb-current">管理画面とAPI</span>
+        </nav>
+
+        <h1>管理画面とAPI</h1>
+        <p>
+          編集モード・パーツ管理・画像管理などのUIガイドと、属性・イベント・メソッド・データ構造のAPIリファレンスです。
+        </p>
+
+        <h2 id="editing-modes">編集モード</h2>
+        <p>ZeroCode.jsでは、4つの編集モードが利用できます。</p>
+
+        <h3 id="edit-mode">edit（編集モード）</h3>
+        <p>既存のコンポーネントを編集するモードです。</p>
+        <ul>
+          <li>コンポーネントのフィールドを編集</li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+          <li>同じパーツをクリックした場合はパネルを閉じる</li>
+        </ul>
+
+        <h3 id="add-mode">add（追加モード）</h3>
+        <p>新しいコンポーネントを追加するモードです。</p>
+        <ul>
+          <li>
+            パーツ一覧から選ぶと、既定では対象要素の<strong>後ろに</strong>すぐ追加される（編集モードへは移動しない）
+          </li>
+          <li>
+            既定では追加パネルは開いたまま続けて選択でき、追加直後は追加したコンポーネントがアンカーになる
+          </li>
+          <li>
+            カテゴリタブ行の<strong>右端の設定アイコン</strong>から、「選択した要素の前に追加する」「追加後に編集に移動」「プレビューに＋ボタンを表示」を切り替えられる。追加後に編集に移動をオンにすると、追加直後に編集モードへ切り替わり追加したパーツを編集できる
+          </li>
+          <li>
+            「選択したパーツ」タブではカードをクリックすると、プレビューで選んだパーツを複製して追加できる
+          </li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+        </ul>
+
+        <h3 id="delete-mode">delete（削除モード）</h3>
+        <p>コンポーネントを削除するモードです。</p>
+        <ul>
+          <li>削除確認</li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+        </ul>
+
+        <h3 id="reorder-mode">reorder（並べ替えモード）</h3>
+        <p>コンポーネントの順序を変更するモードです。</p>
+        <ul>
+          <li>
+            <strong>並べ替えパネル（構造リスト）</strong>: パーツをクリックするとパネルが開き、行の
+            D&amp;D または行クリックで操作できます（page 直下・スロット内）
+          </li>
+          <li>
+            <strong>プレビュー click-click</strong>: 移動元 → 移動先の順にクリック（D&amp;D と同じ
+            insert 移動）
+          </li>
+          <li>プレビュー上の直接 D&amp;D は不可（パネル D&amp;D または click-click を利用）</li>
+          <li>
+            オプション「パーツにラベルを表示」（<code>showReorderStructureLabels</code>）で同階層ラベルを表示
+          </li>
+          <li>親要素への移動（「親要素を選択」ボタン）</li>
+          <li>他モードから切り替えた際、選択中パーツを移動元として引き継ぎ</li>
+        </ul>
+
+        <h3 id="parent-selection">親要素選択</h3>
+        <p>各編集モードで使用可能な親要素選択機能です。</p>
+        <ul>
+          <li>「親要素を選択」ボタンで親要素に移動</li>
+          <li>親要素がない場合はボタンが非表示になる</li>
+          <li>移動時に自動的にスクロールして移動先を表示</li>
+        </ul>
+
+        <h2 id="parts-management">パーツ管理</h2>
+        <p>パーツ管理は、<code>zcode-editor</code>でのみ利用可能な機能です。</p>
+
+        <h3 id="types-and-parts">タイプとパーツ</h3>
+        <ul>
+          <li><strong>タイプ（Type）</strong>: パーツのグループ。複数のパーツを含む</li>
+          <li><strong>パーツ（Part）</strong>: 実際のコンポーネントテンプレート</li>
+        </ul>
+
+        <h3 id="common-and-individual-parts">共通パーツ、個別パーツ、専用パーツ</h3>
+        <ul>
+          <li><strong>共通パーツ</strong>: すべてのページで使用可能なパーツ</li>
+          <li><strong>個別パーツ</strong>: 特定のページでのみ使用可能なパーツ</li>
+          <li>
+            <strong>専用パーツ</strong>:
+            動的ページ（動的ルートやURLパラメータに応じて生成されるページ）で使用可能なパーツ
+          </li>
+        </ul>
+
+        <h3 id="parts-management-features">パーツ管理機能</h3>
+        <ul>
+          <li>タイプの作成・編集・削除</li>
+          <li>パーツの作成・編集・削除</li>
+          <li>タイプ間の並べ替え</li>
+          <li>パーツのプレビュー表示</li>
+          <li>Monaco Editorによるコード編集</li>
+          <li>テンプレート記法の予測変換（オプション）</li>
+        </ul>
+
+        <h3 id="part-template-structure">パーツテンプレートの構造</h3>
+        <pre><code>{
+  "id": "part-id",
+  "title": "パーツタイトル",
+  "description": "パーツの説明",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;",
+  "slots": {
+    "slotName": {
+      "allowedParts": ["part-id-1", "part-id-2"]
+    }
+  },
+  "slotOnly": false
+}</code></pre>
+
+        <h3 id="template-field-initialization">テンプレート記法の後から追加と自動初期化</h3>
+        <p>
+          パーツ管理で既存のパーツにテンプレート記法（フィールド）を後から追加した場合、既存のページデータ（<code>page</code>）にそのパーツを使用しているコンポーネントがあると、自動的に不足しているフィールドが初期化されます。
+        </p>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>データ読み込み時の自動初期化</strong>:
+            ページデータが読み込まれる際に、すべてのコンポーネント（スロット内も含む）に対して自動的に初期化処理が実行されます
+          </li>
+          <li>
+            <strong>通常フィールドの初期化</strong>:
+            テンプレートに定義されている通常フィールド（<code>{$field:default}</code>）で、コンポーネントデータに存在しない（<code>undefined</code>）場合、デフォルト値で初期化されます
+          </li>
+          <li>
+            <strong>オプショナルフィールドの扱い</strong>:
+            オプショナルフィールド（<code>{$field?:default}</code>）は初期化されず、<code>undefined</code>のまま残ります
+          </li>
+          <li>
+            <strong>再帰的な処理</strong>:
+            スロット内の子コンポーネントも再帰的に処理され、すべての階層で初期化が行われます
+          </li>
+        </ul>
+        <p><strong>初期化されるデフォルト値：</strong></p>
+        <ul>
+          <li>
+            <strong>テキストフィールド</strong>（<code>{$field:default:text}</code>）:
+            テンプレートで指定されたデフォルト値、または空文字列
+          </li>
+          <li>
+            <strong>テキストエリア</strong>（<code>{$field:default:textarea}</code>）:
+            テンプレートで指定されたデフォルト値、または空文字列
+          </li>
+          <li>
+            <strong>リッチテキスト</strong>（<code>{$field:default:rich}</code>）:
+            デフォルト値がある場合は<code>&lt;p&gt;デフォルト値&lt;/p&gt;</code>、ない場合は<code
+              >&lt;p&gt;&lt;/p&gt;</code
+            >
+          </li>
+          <li>
+            <strong>画像フィールド</strong>（<code>{$field:default:image}</code>）:
+            テンプレートで指定されたデフォルト値、または空文字列
+          </li>
+          <li>
+            <strong>ラジオボタン</strong>（<code>($field:option1|option2)</code>）: 最初の選択肢
+          </li>
+          <li>
+            <strong>セレクトボックス</strong>（<code>($field@:option1|option2)</code>）:
+            最初の選択肢
+          </li>
+          <li>
+            <strong>チェックボックス</strong>（<code>($field:option1,option2)</code>）: 空配列<code
+              >[]</code
+            >
+          </li>
+          <li>
+            <strong>複数選択セレクト</strong>（<code>($field@:option1,option2)</code>）: 空配列<code
+              >[]</code
+            >
+          </li>
+          <li>
+            <strong>ブール値</strong>（<code>z-if</code>で使用される場合など）:
+            <code>true</code>
+          </li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>// 既存のパーツテンプレート
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;"
+}
+
+// 後からテンプレート記法を追加
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;&lt;div&gt;{$subtitle:サブタイトル}&lt;/div&gt;"
+}
+
+// 既存のページデータ（初期化前）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル"
+  // subtitleフィールドが存在しない
+}
+
+// データ読み込み後の自動初期化（初期化後）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル",
+  "subtitle": "サブタイトル"  // 自動的に追加・初期化される
+}</code></pre>
+        <p><strong>オプショナルフィールドの例：</strong></p>
+        <pre><code>// パーツテンプレートにオプショナルフィールドを追加
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;&lt;div&gt;{$subtitle?:サブタイトル}&lt;/div&gt;"
+}
+
+// 既存のページデータ（初期化後）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル"
+  // subtitleはundefinedのまま（初期化されない）
+}</code></pre>
+        <p><strong>オプショナルフィールドで親要素を削除したい場合：</strong></p>
+        <p>
+          オプショナルフィールドが空の場合、基本動作では親要素（タグ）が残ります。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください。
+        </p>
+        <pre><code>// パーツテンプレート（z-emptyを使用）
+{
+  "id": "hero-part",
+  "title": "ヒーローセクション",
+  "body": "&lt;div&gt;{$title:タイトル}&lt;/div&gt;&lt;div z-empty=\"$subtitle\"&gt;&lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;&lt;/div&gt;"
+}
+
+// 既存のページデータ（subtitleがundefinedの場合）
+{
+  "id": "hero-1",
+  "part_id": "hero-part",
+  "title": "既存のタイトル"
+  // subtitleはundefinedのまま
+}
+
+// レンダリング結果：subtitleがundefinedの場合、&lt;div z-empty="$subtitle"&gt;要素ごと削除される
+&lt;div&gt;既存のタイトル&lt;/div&gt;
+&lt;!-- subtitleのdiv要素は表示されない --&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            この初期化処理は、データ読み込み時（<code>page</code>属性が設定された時点）に自動的に実行されます。パーツテンプレートを編集した後、ページデータを再読み込みすると、新しいフィールドが自動的に初期化されます。
+          </p>
+        </div>
+        <div class="docs-info">
+          <p>
+            <strong>補足:</strong>
+            テンプレート記法を削除した場合、ページデータにはフィールドが残りますが、パーツテンプレートには存在しないため、表示上は非表示になります。不要になったフィールドは、手動でページデータから削除するか、バックエンドで一括削除する処理を実装してください。
+          </p>
+        </div>
+
+        <h2 id="images-management">画像管理</h2>
+        <p>
+          画像の一覧管理（アップロード・ID 編集・削除）は <code>zcode-editor</code> /
+          <code>zcode-studio</code>
+          の画像管理タブで行います。ページ編集時の画像<strong>選択</strong>は
+          <code>zcode-cms</code>（および Editor のページ管理）の編集パネルから行います。
+        </p>
+
+        <h3 id="images-management-features">画像管理機能</h3>
+        <ul>
+          <li>画像のアップロード</li>
+          <li>画像の編集（ID、名前、URL）</li>
+          <li>画像の削除</li>
+          <li>共通・個別・専用カテゴリの管理（Editor / Studio）</li>
+          <li>専用画像の page-id スコープ（CMS 画像選択モーダル。詳細は下記）</li>
+        </ul>
+
+        <h3 id="image-data-structure">画像データ構造</h3>
+        <pre><code>interface ImageData {
+  id: string;
+  name: string;
+  url: string;
+  mimeType?: string;
+  needsUpload?: boolean;
+  scope?: 'shared' | 'page';  // 専用画像（images-special）のみ
+  pageId?: string;            // scope が 'page' のとき
+}</code></pre>
+
+        <h4 id="dedicated-image-scope">専用画像のスコープ（page-id）</h4>
+        <p>
+          ブログの記事編集など、<strong>同一ユーザーが複数ページを編集する</strong>場合、<code
+            >page-id</code
+          >
+          属性で専用画像をページ単位に区別できます。内部キーは従来どおり
+          <code>images-special</code> です。
+        </p>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th><code>scope</code></th>
+              <th>意味</th>
+              <th>CMS 画像選択（page-id 指定時）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>未指定 / <code>shared</code></td>
+              <td>全ページで選択可能</td>
+              <td>表示される</td>
+            </tr>
+            <tr>
+              <td><code>page</code> + <code>pageId</code></td>
+              <td>当該 page-id の編集画面のみ</td>
+              <td>一致する pageId のみ</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>
+            <code>zcode-cms</code> / <code>zcode-editor</code> / <code>zcode-studio</code> の
+            <code>page-id</code> 属性に記事 ID 等を渡す
+          </li>
+          <li>CMS 編集画面から追加した専用画像は <code>{ scope: 'page', pageId }</code> になる</li>
+          <li>
+            Editor / Studio の画像管理タブから追加した専用画像は
+            <code>scope: 'shared'</code>（管理者向け）
+          </li>
+          <li>
+            保存は従来どおり <code>images-special</code> ターゲット（スコープ付き JSON
+            をホストが永続化）
+          </li>
+        </ul>
+        <pre><code>&lt;zcode-cms
+  page-id="post-123"
+  page="..."
+  images-special="..."
+&gt;&lt;/zcode-cms&gt;</code></pre>
+
+        <h4>mimeType</h4>
+        <p>
+          画像のMIMEタイプ（例: <code>image/jpeg</code>,
+          <code>image/png</code>）。base64画像の場合に設定されます。
+        </p>
+
+        <h4>needsUpload</h4>
+        <p>
+          <code>true</code
+          >の場合、バックエンドで画像のアップロード処理が必要です。通常、base64画像は<code
+            >needsUpload: true</code
+          >として保存されます。
+        </p>
+
+        <h3 id="image-selection-modal">画像選択モーダル</h3>
+        <p>
+          編集パネルから画像を選択する際に表示されるモーダルです（<code>zcode-cms</code> および
+          Editor のページ管理）。
+        </p>
+        <ul>
+          <li>タブ: 全て / 共通 / 個別 / 専用</li>
+          <li>専用タブおよび「全て」タブで、専用画像の追加・並べ替え・削除が可能</li>
+          <li>ツールバー右の「専用画像を追加」は常時表示（追加後は自動選択）</li>
+          <li>
+            <code>page-id</code> 指定時は、他 page の専用画像は一覧から除外（UI バッジは表示しない）
+          </li>
+        </ul>
+
+        <h2 id="configuration">設定オプション</h2>
+        <p>ZeroCode.jsでは、<code>config</code>属性で初期設定を指定できます。</p>
+
+        <h3 id="config-structure">設定の構造</h3>
+        <p>
+          設定は<code>cms</code>、<code>dev</code>、および共通設定の3つのカテゴリに分離されています。
+        </p>
+        <pre><code>{
+  "cms": {
+    "allowDynamicContentInteraction": false,
+    "devRightPadding": false,
+    "enableContextMenu": false
+  },
+  "dev": {
+    "showDataViewer": false,
+    "enableTemplateSuggestions": false
+  },
+  "categoryOrder": "common"
+}</code></pre>
+
+        <h3 id="config-priority">設定の優先順位</h3>
+        <ol>
+          <li><strong>localStorage</strong>: ユーザーが変更した設定（最優先）</li>
+          <li><strong>config属性</strong>: 初期設定として指定された値</li>
+          <li><strong>デフォルト値</strong>: 全て<code>false</code></li>
+        </ol>
+
+        <h3 id="cms-settings">CMS設定（cms）</h3>
+        <p><code>zcode-cms</code>と<code>zcode-editor</code>の両方で共有される設定です。</p>
+
+        <h4>allowDynamicContentInteraction</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>アコーディオン、タブ、モーダル、リンクなどの動的コンテンツの動作を有効/無効にします。</p>
+        <p>設定パネルでは「ページの動作を有効にする」として表示されます。</p>
+
+        <h4>devRightPadding</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>編集パネル表示時にコンテンツの右余白を追加します。</p>
+        <p>設定パネルでは「編集パネル分の余白をつける」として表示されます。</p>
+
+        <h4>enableContextMenu</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>右クリックメニューを有効にします。</p>
+        <p>設定パネルでは「右クリックメニューを有効にする」として表示されます。</p>
+
+        <h3 id="dev-settings">Dev設定（dev）</h3>
+        <p><code>zcode-editor</code>専用の設定です。</p>
+
+        <h4>showDataViewer</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>データビューアを表示します。</p>
+        <p>設定パネルでは「データビューアを表示」として表示されます。</p>
+
+        <h4>enableTemplateSuggestions</h4>
+        <p>デフォルト: <code>false</code></p>
+        <p>テンプレート記法の予測変換を有効にします。</p>
+        <p>パーツ管理パネルのエディタで使用されます。</p>
+
+        <h3 id="common-settings">共通設定</h3>
+        <p><code>zcode-cms</code>と<code>zcode-editor</code>の両方で使用される設定です。</p>
+
+        <h4>categoryOrder</h4>
+        <p>デフォルト: <code>"common"</code></p>
+        <p>
+          パーツ管理、画像管理、データビューア、追加パネルにおける「共通」「個別」「専用」タブの表示順序と初期選択を制御します。
+        </p>
+        <p>設定可能な値:</p>
+        <ul>
+          <li>
+            <code>"common"</code>: 共通タブを先に表示し、初期状態で共通タブを選択（デフォルト）
+          </li>
+          <li><code>"individual"</code>: 個別タブを先に表示し、初期状態で個別タブを選択</li>
+          <li>
+            <code>"special"</code>:
+            専用タブを先に表示し、初期状態で専用タブを選択（専用データが存在する場合のみ表示）
+          </li>
+        </ul>
+        <p>この設定は以下の画面に適用されます:</p>
+        <ul>
+          <li>パーツ管理タブ（<code>zcode-editor</code>のみ）</li>
+          <li>画像管理タブ（<code>zcode-editor</code>のみ）</li>
+          <li>データビューアタブ（<code>zcode-editor</code>のみ、パーツ/画像表示時）</li>
+          <li>追加パネル（<code>zcode-cms</code>と<code>zcode-editor</code>の両方）</li>
+        </ul>
+
+        <h3 id="config-examples">設定の使用例</h3>
+        <pre><code>&lt;zcode-cms
+  config='{"cms": {"allowDynamicContentInteraction": true, "devRightPadding": true, "enableContextMenu": true}, "categoryOrder": "individual"}'
+&gt;&lt;/zcode-cms&gt;
+
+&lt;zcode-editor
+  config='{"cms": {"allowDynamicContentInteraction": true}, "dev": {"showDataViewer": true}, "categoryOrder": "individual"}'
+&gt;&lt;/zcode-editor&gt;</code></pre>
+
+        <p>または、JavaScript変数で指定することもできます：</p>
+        <pre><code>const cmsConfig = {
+  cms: {
+    allowDynamicContentInteraction: true,
+    devRightPadding: true,
+    enableContextMenu: true
+  },
+  categoryOrder: 'individual'
+};
+
+const cmsElement = document.getElementById('cms');
+cmsElement.setAttribute('config', JSON.stringify(cmsConfig));</code></pre>
+
+        <h2 id="api-reference">APIリファレンス</h2>
+
+        <h3>zcode-cms</h3>
+        <p>ユーザー向け管理画面のWebコンポーネント。</p>
+
+        <h4>属性</h4>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>属性名</th>
+              <th>型</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>page</code></td>
+              <td>string</td>
+              <td>ページデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>page-id</code></td>
+              <td>string</td>
+              <td>
+                専用画像のページスコープ用 ID（記事 ID
+                など）。指定時、画像選択モーダルでは「全ページ」(<code>shared</code>) と当該 page-id
+                の「このページ」(<code>scope: 'page'</code>) のみ表示。CMS から専用画像を追加すると
+                <code>scope: 'page'</code> が付与される
+              </td>
+            </tr>
+            <tr>
+              <td><code>parts-common</code></td>
+              <td>string</td>
+              <td>共通パーツデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>parts-individual</code></td>
+              <td>string</td>
+              <td>個別パーツデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>parts-special</code></td>
+              <td>string</td>
+              <td>専用パーツデータ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>images-common</code></td>
+              <td>string</td>
+              <td>共通画像データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>images-individual</code></td>
+              <td>string</td>
+              <td>個別画像データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>images-special</code></td>
+              <td>string</td>
+              <td>専用画像データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>config</code></td>
+              <td>string</td>
+              <td>初期設定データ（JSON文字列）</td>
+            </tr>
+            <tr>
+              <td><code>use-shadow-dom</code></td>
+              <td>string</td>
+              <td>Shadow DOMを使用するか（'true' | 'false'、デフォルト: 'true'）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>スロット</h4>
+        <ul>
+          <li><code>css</code>: CSSファイルを指定</li>
+          <li><code>script</code>: JavaScriptファイルを指定</li>
+        </ul>
+
+        <h3>zcode-editor</h3>
+        <p>エンジニア・デザイナー向け管理画面のWebコンポーネント。</p>
+        <p>ZeroCodeCMSの機能に加えて、パーツ管理・画像管理・データビューアが利用できます。</p>
+
+        <h4>属性</h4>
+        <p>
+          <code>zcode-cms</code>の属性（<code>page-id</code>
+          含む）に加えて、以下の属性が利用できます：
+        </p>
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>属性名</th>
+              <th>型</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>enable-parts-manager</code></td>
+              <td>string</td>
+              <td>パーツ管理を有効にするか（デフォルト: 'true'）</td>
+            </tr>
+            <tr>
+              <td><code>enable-images-manager</code></td>
+              <td>string</td>
+              <td>画像管理を有効にするか（デフォルト: 'true'）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>renderToHtml()</h3>
+        <p>ページコンポーネントからHTML文字列を生成します。CSSは含まれません。</p>
+        <p>
+          Node や SSR では <code>zerocodejs/ssr</code> から import
+          することを推奨します（軽量エントリ。Vue / Web Components は含みません）。ブラウザ用の一括
+          import は <code>zerocodejs</code> のままでも問題ありません。
+        </p>
+        <pre><code>import { renderToHtml } from 'zerocodejs/ssr';
+
+const html = renderToHtml(data, {
+  enableEditorAttributes: false
+});</code></pre>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li><code>data</code>: ZeroCodeData形式のデータ</li>
+          <li>
+            <code>options.enableEditorAttributes</code>: 編集用属性を有効にするか（デフォルト:
+            <code>false</code>）
+          </li>
+        </ul>
+
+        <h4>戻り値</h4>
+        <p>生成されたHTML文字列</p>
+
+        <h3>renderCssToHtml()</h3>
+        <p>
+          CSSデータから<code>&lt;style&gt;</code>タグのHTML文字列を生成します。common → individual →
+          special の順で出力されます。
+        </p>
+        <pre><code>import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
+
+const content = renderToHtml(data, { enableEditorAttributes: false });
+const styles = renderCssToHtml(data.css);
+
+// content は &lt;body&gt; に、styles は &lt;head&gt; に配置</code></pre>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li>
+            <code>css</code>:
+            <code>{ common?: string; individual?: string; special?: string }</code>
+          </li>
+        </ul>
+
+        <h4>戻り値</h4>
+        <p>
+          <code>&lt;style&gt;</code
+          >タグを含むHTML文字列。空や<code>undefined</code>のカテゴリはスキップされます。
+        </p>
+
+        <h2 id="events">イベント</h2>
+
+        <h3>save-request</h3>
+        <p>
+          保存ボタンクリック時に発火します。<code>event.detail</code> に
+          <code>data</code> は含まれません。保存対象のデータは
+          <code>cms.getData()</code> で取得してください。
+        </p>
+        <pre><code>cms.addEventListener('save-request', (event) => {
+  const { requestId, source, targets, timestamp } = event.detail;
+  const data = cms.getData();
+  for (const target of targets) {
+    // target ごとに data から必要な部分を切り出してサーバーへ送る
+  }
+});</code></pre>
+
+        <h4>event.detail</h4>
+        <ul>
+          <li><code>requestId</code>: リクエストID（<code>save-result</code> で対応付けに使用）</li>
+          <li><code>source</code>: 送信元（<code>'cms'</code> または <code>'editor'</code>）</li>
+          <li>
+            <code>targets</code>: 保存対象の配列（<code>'page'</code>, <code>'parts-common'</code>,
+            <code>'parts-individual'</code>, <code>'parts-special'</code>,
+            <code>'images-common'</code>, <code>'images-individual'</code>,
+            <code>'images-special'</code>, <code>'parts-common-css'</code>,
+            <code>'parts-individual-css'</code>, <code>'parts-special-css'</code> のいずれか）
+          </li>
+          <li><code>timestamp</code>: タイムスタンプ</li>
+        </ul>
+        <p>
+          <strong>含まれないもの</strong>: <code>target</code>（単数）・<code>data</code>。データは
+          <code>cms.getData()</code> で取得する。
+        </p>
+
+        <h3>zcode-dom-updated</h3>
+        <p>DOMが更新されたときに発火します。動的コンテンツの初期化などに使用できます。</p>
+        <pre><code>window.addEventListener('zcode-dom-updated', () => {
+  // DOM更新後の処理
+  initializeAccordion();
+});</code></pre>
+
+        <h2 id="methods">メソッド</h2>
+
+        <h3>getData(path?: string)</h3>
+        <p>データを取得します。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+// 全体のデータを取得
+const allData = cms.getData();
+
+// 特定のパスのデータを取得
+const pageData = cms.getData('page');
+const firstComponent = cms.getData('page.0');
+const title = cms.getData('page.0.title');</code></pre>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li>
+            <code>path</code>（オプション）: データのパス（例: <code>'page'</code>,
+            <code>'page.0'</code>, <code>'page.0.title'</code>）
+          </li>
+        </ul>
+
+        <h4>戻り値</h4>
+        <p>指定したパスのデータ。パスが指定されていない場合は全体のデータを返します。</p>
+
+        <h3>setData(path: string | object, value?: any)</h3>
+        <p>データを設定します。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+// パスを指定して値を設定
+cms.setData('page.0.title', '新しいタイトル');
+
+// オブジェクト全体を設定
+cms.setData({
+  page: [...],
+  parts: {
+    common: [...],
+    individual: [...]
+  }
+});</code></pre>
+
+        <div class="docs-warning">
+          <p>
+            <strong>セキュリティ注意:</strong>
+            このメソッドはクライアント側から任意のデータを設定できます。開発者ツールからも呼び出し可能です。<strong
+              >サーバー側での検証を必ず実装してください。</strong
+            >
+          </p>
+        </div>
+
+        <h4>パラメータ</h4>
+        <ul>
+          <li>
+            <code>path</code>:
+            データのパス（文字列の場合）またはデータオブジェクト全体（オブジェクトの場合）
+          </li>
+          <li><code>value</code>（オプション）: 設定する値（<code>path</code>が文字列の場合）</li>
+        </ul>
+
+        <h3>allowDynamicContentInteraction（プロパティ）</h3>
+        <p>動的コンテンツの動作を有効/無効にします（getter/setter）。</p>
+        <pre><code>const cms = document.getElementById('cms');
+
+// 値を取得
+const isEnabled = cms.allowDynamicContentInteraction;
+
+// 値を設定
+cms.allowDynamicContentInteraction = true;</code></pre>
+
+        <h2 id="data-structure">データ構造</h2>
+        <p>ZeroCode.jsで使用するデータ構造の説明です。</p>
+
+        <h3>ZeroCodeData</h3>
+        <pre><code>interface ZeroCodeData {
+  page: ComponentData[];
+  parts: {
+    common: TypeData[];
+    individual: TypeData[];
+    special: TypeData[];
+  };
+  images: {
+    common: ImageData[];
+    individual: ImageData[];
+    special: ImageData[];
+  };
+}</code></pre>
+
+        <h3>ComponentData</h3>
+        <pre><code>interface ComponentData {
+  id: string;
+  part_id: string;
+  [key: string]: any;
+  slots?: Record&lt;string, ComponentData[] | SlotConfig&gt;;
+}</code></pre>
+        <ul>
+          <li><code>id</code>: コンポーネントの一意のID</li>
+          <li><code>part_id</code>: パーツID（タイトル変更時も紐付けが維持される）</li>
+          <li>
+            <code>[key: string]: any</code>:
+            フィールドの値（テンプレート記法で定義されたフィールド）
+          </li>
+          <li><code>slots</code>: スロットの子コンポーネント</li>
+        </ul>
+
+        <h3>SlotConfig</h3>
+        <pre><code>interface SlotConfig {
+  allowedParts?: string[];
+  children?: ComponentData[];
+}</code></pre>
+        <ul>
+          <li><code>allowedParts</code>: 許可されるパーツIDの配列</li>
+          <li>
+            <code>children</code>:
+            子コンポーネントの配列（<code>ComponentData[]</code>としても使用可能）
+          </li>
+        </ul>
+
+        <h3>TypeData</h3>
+        <pre><code>interface TypeData {
+  id: string;
+  type: string;
+  description: string;
+  parts: PartData[];
+}</code></pre>
+        <ul>
+          <li><code>id</code>: タイプID（タイプ変更時も紐付けが維持される）</li>
+          <li><code>type</code>: タイプ名</li>
+          <li><code>description</code>: タイプの説明</li>
+          <li><code>parts</code>: パーツの配列</li>
+        </ul>
+
+        <h3>PartData</h3>
+        <pre><code>interface PartData {
+  id: string;
+  title: string;
+  description: string;
+  body: string;
+  slots?: Record&lt;string, { allowedParts?: string[] }&gt;;
+  slotOnly?: boolean;
+}</code></pre>
+        <ul>
+          <li><code>id</code>: パーツID（タイトル変更時も紐付けが維持される）</li>
+          <li><code>title</code>: パーツタイトル</li>
+          <li><code>description</code>: パーツの説明</li>
+          <li><code>body</code>: パーツのテンプレート（HTML文字列）</li>
+          <li><code>slots</code>: スロットの設定</li>
+          <li><code>slotOnly</code>: スロット専用パーツかどうか</li>
+        </ul>
+
+        <h3>ImageData</h3>
+        <pre><code>interface ImageData {
+  id: string;
+  name: string;
+  url: string;
+  mimeType?: string;
+  needsUpload?: boolean;
+}</code></pre>
+        <ul>
+          <li><code>id</code>: 画像の一意のID</li>
+          <li><code>name</code>: 画像名</li>
+          <li>
+            <code>url</code>: 画像のURL（base64データの場合は<code>data:image/...</code>形式）
+          </li>
+          <li>
+            <code>mimeType</code>: MIMEタイプ（例: <code>image/jpeg</code>, <code>image/png</code>）
+          </li>
+          <li>
+            <code>needsUpload</code>:
+            アップロードが必要かどうか（<code>true</code>の場合、バックエンドでアップロード処理が必要）
+          </li>
+        </ul>
+      </main>
+    </div>
+
+    <script src="./js/docs-search-index.js"></script>
+    <script src="./js/docs.js"></script>
+
+    <!-- フッター（共通） -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 共通ヘッダー・フッター読み込み -->
+    <script type="module" src="./common-header-footer.js"></script>
+  </body>
+</html>

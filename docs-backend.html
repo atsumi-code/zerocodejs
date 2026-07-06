@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js ドキュメント - バックエンド連携</title>
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- サイト共通CSS（ヘッダー・フッター） -->
+    <link rel="stylesheet" href="./css/site-common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/docs.css" />
+  </head>
+  <body>
+    <!-- ヘッダー（共通） -->
+    <div id="header-placeholder"></div>
+
+    <div class="docs-container">
+      <!-- サイドバー -->
+      <aside class="docs-sidebar">
+        <!-- 検索セクション -->
+        <div class="docs-search-section">
+          <input
+            type="text"
+            id="docs-search-input"
+            class="docs-search-input"
+            placeholder="ドキュメントを検索..."
+            autocomplete="off"
+          />
+          <div id="docs-search-results" class="docs-search-results"></div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">概要</div>
+          <div class="docs-nav-links">
+            <a href="docs.html#about" class="docs-nav-link">ZeroCode.js とは</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#about-purpose" class="docs-nav-link-sub">目的</a>
+              <a href="docs.html#about-problems" class="docs-nav-link-sub">解決したい課題</a>
+              <a href="docs.html#about-design" class="docs-nav-link-sub">設計方針</a>
+              <a href="docs.html#about-data" class="docs-nav-link-sub">データの扱い</a>
+              <a href="docs.html#about-components" class="docs-nav-link-sub"
+                >コンポーネントと役割</a
+              >
+              <a href="docs.html#roadmap" class="docs-nav-link-sub">編集体験改善ロードマップ</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">フロントエンド</div>
+          <div class="docs-nav-links">
+            <a href="docs.html#quickstart" class="docs-nav-link">クイックスタート</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#installation" class="docs-nav-link-sub">インストール</a>
+              <a href="docs.html#basic-usage" class="docs-nav-link-sub">基本的な使用例</a>
+            </div>
+            <a href="docs.html#multiple-instances" class="docs-nav-link">複数インスタンス対応</a>
+            <a href="docs.html#shadow-dom" class="docs-nav-link">Shadow DOM</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#shadow-dom-host-style" class="docs-nav-link-sub"
+                >ホストスタイルのリセット</a
+              >
+            </div>
+            <a href="docs-template.html#template-syntax" class="docs-nav-link">テンプレート記法</a>
+            <div class="docs-nav-sub">
+              <a href="docs-template.html#field-syntax" class="docs-nav-link-sub">フィールド記法</a>
+              <div class="docs-nav-sub-sub">
+                <a href="docs-template.html#text-field" class="docs-nav-link-sub-sub"
+                  >テキストフィールド</a
+                >
+                <a href="docs-template.html#textarea-field" class="docs-nav-link-sub-sub"
+                  >テキストエリア</a
+                >
+                <a href="docs-template.html#rich-text-field" class="docs-nav-link-sub-sub"
+                  >リッチテキスト</a
+                >
+                <a href="docs-template.html#image-field" class="docs-nav-link-sub-sub"
+                  >画像フィールド</a
+                >
+                <a href="docs-template.html#grouped-fields" class="docs-nav-link-sub-sub"
+                  >グループ化</a
+                >
+                <a href="docs-template.html#optional-fields" class="docs-nav-link-sub-sub"
+                  >オプショナル</a
+                >
+                <a href="docs-template.html#validation-syntax" class="docs-nav-link-sub-sub"
+                  >バリデーション</a
+                >
+              </div>
+              <a href="docs-template.html#backend-data" class="docs-nav-link-sub"
+                >バックエンドデータ</a
+              >
+              <a href="docs-template.html#z-for-loop" class="docs-nav-link-sub">z-for ループ</a>
+              <a href="docs-template.html#choice-syntax" class="docs-nav-link-sub">選択肢記法</a>
+              <a href="docs-template.html#conditional-syntax" class="docs-nav-link-sub">条件分岐</a>
+              <div class="docs-nav-sub-sub">
+                <a href="docs-template.html#z-tag-syntax" class="docs-nav-link-sub-sub"
+                  >z-tag 属性</a
+                >
+                <a href="docs-template.html#z-empty-syntax" class="docs-nav-link-sub-sub"
+                  >z-empty 属性</a
+                >
+              </div>
+              <a href="docs-template.html#slot-syntax" class="docs-nav-link-sub">スロット</a>
+            </div>
+            <a href="docs-api.html#editing-modes" class="docs-nav-link">編集モード</a>
+            <a href="docs-api.html#parts-management" class="docs-nav-link">パーツ管理</a>
+            <div class="docs-nav-sub">
+              <a href="docs-api.html#types-and-parts" class="docs-nav-link-sub">タイプとパーツ</a>
+              <a href="docs-api.html#common-and-individual-parts" class="docs-nav-link-sub"
+                >共通パーツと個別パーツ</a
+              >
+              <a href="docs-api.html#parts-management-features" class="docs-nav-link-sub"
+                >パーツ管理機能</a
+              >
+              <a href="docs-api.html#part-template-structure" class="docs-nav-link-sub"
+                >パーツテンプレートの構造</a
+              >
+              <a href="docs-api.html#template-field-initialization" class="docs-nav-link-sub"
+                >テンプレート記法の後から追加</a
+              >
+            </div>
+            <a href="docs-api.html#images-management" class="docs-nav-link">画像管理</a>
+            <a href="docs-api.html#configuration" class="docs-nav-link">設定オプション</a>
+            <a href="docs-api.html#api-reference" class="docs-nav-link">APIリファレンス</a>
+            <a href="docs-api.html#events" class="docs-nav-link">イベント</a>
+            <a href="docs-api.html#methods" class="docs-nav-link">メソッド</a>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">バックエンド</div>
+          <div class="docs-nav-links">
+            <a href="docs-api.html#data-structure" class="docs-nav-link">データ構造</a>
+            <a href="#database-design" class="docs-nav-link">データベース構成</a>
+            <a href="#save-request" class="docs-nav-link">保存リクエスト</a>
+            <div class="docs-nav-sub">
+              <a href="#save-request-handler" class="docs-nav-link-sub">イベントの受け取り方</a>
+              <a href="#save-request-image-upload" class="docs-nav-link-sub">画像のアップロード</a>
+              <a href="#save-request-validation" class="docs-nav-link-sub">バリデーションエラー</a>
+            </div>
+            <a href="#security" class="docs-nav-link">セキュリティ</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- メインコンテンツ -->
+      <main class="docs-content">
+        <!-- パンくずリスト -->
+        <nav class="docs-breadcrumb" id="docs-breadcrumb">
+          <a href="./docs.html">ドキュメント</a>
+          <span class="docs-breadcrumb-separator">></span>
+          <span id="docs-breadcrumb-current">バックエンド連携</span>
+        </nav>
+
+        <h1>バックエンド連携</h1>
+        <p>
+          データベース設計・保存リクエストの受け方（save-request /
+          save-result）・セキュリティ対策など、サーバー側で実装する内容です。
+        </p>
+
+        <h2 id="database-design">データベース構成</h2>
+        <p>ZeroCode.jsのデータをRDBで管理する場合の推奨データベース設計です。</p>
+
+        <h3>テーブル構成</h3>
+        <p>以下の3つのテーブルで構成されます：</p>
+        <ul>
+          <li><strong>zcode_common_parts</strong>: 共通パーツ管理（店舗に依存しない）</li>
+          <li><strong>zcode_common_images</strong>: 共通画像管理（店舗に依存しない）</li>
+          <li><strong>zcode_individual</strong>: 店舗ごとのページ・個別パーツ・個別画像</li>
+        </ul>
+
+        <h3>zcode_common_parts（共通パーツ）</h3>
+        <p>すべての店舗で共有される共通パーツを管理します。</p>
+        <pre><code>CREATE TABLE zcode_common_parts (
+  id VARCHAR(50) PRIMARY KEY,
+  type VARCHAR(50) NOT NULL,
+  description TEXT,
+  parts JSON NOT NULL,
+  version INT NOT NULL DEFAULT 1,
+  is_published BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);</code></pre>
+
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>カラム名</th>
+              <th>型</th>
+              <th>NULL</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>パーツタイプID（PK）</td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>パーツタイプ（例: <code>hero</code>, <code>features</code>）</td>
+            </tr>
+            <tr>
+              <td><code>description</code></td>
+              <td>TEXT</td>
+              <td>YES</td>
+              <td>タイプの説明</td>
+            </tr>
+            <tr>
+              <td><code>parts</code></td>
+              <td>JSON</td>
+              <td>NO</td>
+              <td>パーツ配列（<code>PartData[]</code>形式）</td>
+            </tr>
+            <tr>
+              <td><code>version</code></td>
+              <td>INT</td>
+              <td>NO</td>
+              <td>バージョン番号（楽観的ロック用）</td>
+            </tr>
+            <tr>
+              <td><code>is_published</code></td>
+              <td>BOOLEAN</td>
+              <td>NO</td>
+              <td>公開フラグ</td>
+            </tr>
+            <tr>
+              <td><code>created_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>作成日時</td>
+            </tr>
+            <tr>
+              <td><code>updated_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>更新日時</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>zcode_common_images（共通画像）</h3>
+        <p>すべての店舗で共有される共通画像を管理します。</p>
+        <pre><code>CREATE TABLE zcode_common_images (
+  id VARCHAR(50) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  url TEXT NOT NULL,
+  mime_type VARCHAR(50) NOT NULL,
+  needs_upload BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);</code></pre>
+
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>カラム名</th>
+              <th>型</th>
+              <th>NULL</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>画像ID（PK）</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>VARCHAR(255)</td>
+              <td>NO</td>
+              <td>画像名</td>
+            </tr>
+            <tr>
+              <td><code>url</code></td>
+              <td>TEXT</td>
+              <td>NO</td>
+              <td>画像URL（base64の場合は<code>data:image/...</code>形式）</td>
+            </tr>
+            <tr>
+              <td><code>mime_type</code></td>
+              <td>VARCHAR(50)</td>
+              <td>NO</td>
+              <td>MIMEタイプ（例: <code>image/jpeg</code>, <code>image/png</code>）</td>
+            </tr>
+            <tr>
+              <td><code>needs_upload</code></td>
+              <td>BOOLEAN</td>
+              <td>NO</td>
+              <td>
+                アップロード要否（<code>true</code>の場合、バックエンドでアップロード処理が必要）
+              </td>
+            </tr>
+            <tr>
+              <td><code>created_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>作成日時</td>
+            </tr>
+            <tr>
+              <td><code>updated_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>更新日時</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>zcode_individual（店舗ごとの個別データ）</h3>
+        <p>店舗ごとのページ、個別パーツ、個別画像を管理します。</p>
+        <pre><code>CREATE TABLE zcode_individual (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  data_type ENUM('page', 'parts', 'images') NOT NULL,
+  content JSON NOT NULL,
+  version INT NOT NULL DEFAULT 1,
+  status ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'draft',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_type_status (user_id, data_type, status)
+);</code></pre>
+
+        <table class="docs-table">
+          <thead>
+            <tr>
+              <th>カラム名</th>
+              <th>型</th>
+              <th>NULL</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>BIGINT</td>
+              <td>NO</td>
+              <td>レコードID（PK, AUTO_INCREMENT）</td>
+            </tr>
+            <tr>
+              <td><code>user_id</code></td>
+              <td>BIGINT</td>
+              <td>NO</td>
+              <td>店舗ID（外部キー）</td>
+            </tr>
+            <tr>
+              <td><code>data_type</code></td>
+              <td>ENUM</td>
+              <td>NO</td>
+              <td>データ種別（<code>page</code>, <code>parts</code>, <code>images</code>）</td>
+            </tr>
+            <tr>
+              <td><code>content</code></td>
+              <td>JSON</td>
+              <td>NO</td>
+              <td>
+                データ内容（<code>ComponentData[]</code>, <code>TypeData[]</code>,
+                <code>ImageData[]</code>形式）
+              </td>
+            </tr>
+            <tr>
+              <td><code>version</code></td>
+              <td>INT</td>
+              <td>NO</td>
+              <td>バージョン番号（楽観的ロック用）</td>
+            </tr>
+            <tr>
+              <td><code>status</code></td>
+              <td>ENUM</td>
+              <td>NO</td>
+              <td>
+                ステータス（<code>draft</code>: 下書き, <code>published</code>: 公開,
+                <code>archived</code>: アーカイブ）
+              </td>
+            </tr>
+            <tr>
+              <td><code>created_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>作成日時</td>
+            </tr>
+            <tr>
+              <td><code>updated_at</code></td>
+              <td>TIMESTAMP</td>
+              <td>NO</td>
+              <td>更新日時</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>データ例</h3>
+        <h4>zcode_individual のデータ例</h4>
+        <pre><code>-- 店舗1（user_id=1）のページデータ（下書き）
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'page',
+  '[{"id": "hero-1", "part_id": "zcode-part-1", "title": "店舗1のタイトル", ...}]',
+  'draft'
+);
+
+-- 店舗1（user_id=1）のページデータ（公開版）
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'page',
+  '[{"id": "hero-1", "part_id": "zcode-part-1", "title": "店舗1のタイトル", ...}]',
+  'published'
+);
+
+-- 店舗1（user_id=1）の個別パーツデータ
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'parts',
+  '[{"id": "zcode-part-12", "type": "cta", "description": "店舗専用のCTA", ...}]',
+  'published'
+);
+
+-- 店舗1（user_id=1）の個別画像データ
+INSERT INTO zcode_individual (user_id, data_type, content, status) VALUES (
+  1,
+  'images',
+  '[{"id": "img-ind-1", "name": "店舗専用画像", "url": "/images/store1-hero.jpg", ...}]',
+  'published'
+);</code></pre>
+
+        <h3>クエリ例</h3>
+        <h4>店舗の公開ページデータを取得</h4>
+        <pre><code>SELECT content
+FROM zcode_individual
+WHERE user_id = 1
+  AND data_type = 'page'
+  AND status = 'published'
+LIMIT 1;</code></pre>
+
+        <h4>店舗の下書きページデータを取得</h4>
+        <pre><code>SELECT content
+FROM zcode_individual
+WHERE user_id = 1
+  AND data_type = 'page'
+  AND status = 'draft'
+LIMIT 1;</code></pre>
+
+        <h4>共通パーツを取得</h4>
+        <pre><code>SELECT parts
+FROM zcode_common_parts
+WHERE is_published = TRUE;</code></pre>
+
+        <h3>設計の特徴</h3>
+        <ul>
+          <li>
+            <strong>共通データの一元管理</strong>:
+            共通パーツと共通画像は1箇所で管理され、すべての店舗で共有されます
+          </li>
+          <li>
+            <strong>個別データの統合管理</strong>:
+            店舗ごとのページ、個別パーツ、個別画像を1つのテーブルで管理します
+          </li>
+          <li>
+            <strong>ステータス管理</strong>:
+            下書き・公開・アーカイブを1テーブルで管理できます（1店舗あたり最大9レコード: 3種別 ×
+            3ステータス）
+          </li>
+          <li>
+            <strong>楽観的ロック</strong>:
+            <code>version</code>カラムを使用して同時更新の競合を防ぎます
+          </li>
+          <li>
+            <strong>スケーラビリティ</strong>:
+            200店舗規模でも問題なく動作します（インデックス<code>idx_user_type_status</code>が有効）
+          </li>
+        </ul>
+
+        <h3>注意事項</h3>
+        <ul>
+          <li>
+            <code>content</code
+            >カラムは<code>JSON</code>型または<code>LONGTEXT</code>型を使用してください（データ量が多い場合）
+          </li>
+          <li>
+            MySQLの場合、<code>JSON</code>型は最大1GBですが、実用的には数MB程度を目安にしてください
+          </li>
+          <li>PostgreSQLの場合、<code>JSONB</code>型を使用すると検索パフォーマンスが向上します</li>
+          <li>更新時は<code>version</code>カラムをチェックして楽観的ロックを実装してください</li>
+        </ul>
+
+        <h2 id="save-request">保存リクエスト</h2>
+        <p>保存ボタンをクリックすると、<code>save-request</code>イベントが発火します。</p>
+
+        <h3 id="save-request-handler">イベントの受け取り方</h3>
+        <p>
+          <code>event.detail</code> に <code>data</code> は含まれません。<code>cms.getData()</code>
+          で取得してください。
+        </p>
+        <pre><code>const cms = document.getElementById('cms');
+
+cms.addEventListener('save-request', (event) => {
+  const { requestId, source, targets, timestamp } = event.detail;
+  const data = cms.getData();
+
+  for (const target of targets) {
+    fetch('/api/zero-code/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target, source, data, requestId, timestamp })
+    });
+  }
+});</code></pre>
+
+        <h3 id="save-request-targets">保存ターゲットの仕様</h3>
+        <p>
+          <code>save-request</code
+          >イベントの<code>targets</code>配列には、現在のタブやモードに応じて複数のターゲットが含まれる場合があります。
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>タブ/モード</th>
+              <th>含まれるターゲット</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ページ管理（編集モード）</td>
+              <td>
+                <code>['page', 'images-special']</code>
+              </td>
+              <td>ページデータと専用画像プールを保存対象として通知（ホストが永続化方針を決定）</td>
+            </tr>
+            <tr>
+              <td>パーツ管理</td>
+              <td>
+                <code>['parts-common', 'parts-common-css']</code>、<code
+                  >['parts-individual', 'parts-individual-css']</code
+                >、または<code>['parts-special', 'parts-special-css']</code>
+              </td>
+              <td>パーツデータとページCSSを保存（パーツ編集時にページCSSも編集可能なため）</td>
+            </tr>
+            <tr>
+              <td>画像管理</td>
+              <td>
+                <code>['images-common']</code>、<code>['images-individual']</code>、または<code
+                  >['images-special']</code
+                >
+              </td>
+              <td>画像データのみを保存</td>
+            </tr>
+            <tr>
+              <td>データビューアー</td>
+              <td>選択中のタブとカテゴリに応じて決定</td>
+              <td>現在表示中のデータに対応するターゲット</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="save-request-image-upload">画像のアップロード</h3>
+        <p>
+          <code>targets</code
+          >配列に<code>images-common</code>、<code>images-individual</code>、または<code>images-special</code>が含まれる場合、<code
+            >needsUpload: true</code
+          >の画像をアップロード処理してください。<code>data</code> はハンドラ先頭で
+          <code>cms.getData()</code> したもの。
+        </p>
+        <pre><code>for (const target of targets) {
+  if (target.startsWith('images-')) {
+    const images = target === 'images-common'
+      ? data.images?.common || []
+      : target === 'images-individual'
+      ? data.images?.individual || []
+      : data.images?.special || [];
+
+    const imagesToUpload = images.filter(img => img.needsUpload === true);
+
+    for (const image of imagesToUpload) {
+      // base64データをデコード
+      const base64Data = image.url.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      // S3などにアップロード
+      // アップロード後、image.urlを更新し、needsUploadをfalseに設定
+    }
+  }
+}</code></pre>
+
+        <h3 id="save-request-validation">バリデーションエラーの返却</h3>
+        <p>
+          バックエンドでバリデーションを行い、エラーがある場合は<code>save-result</code>イベントでエラーを返してください。フロントエンドでは、<code>required</code>と<code>max</code>のみをチェックします。複雑なバリデーション（メール形式チェック、重複チェックなど）はバックエンドで実施してください。
+        </p>
+        <p><strong>イベント形式：</strong></p>
+        <pre><code>// 成功時
+cms.dispatchEvent(
+  new CustomEvent('save-result', {
+    detail: {
+      requestId: 'req-1234567890-abc', // save-request の requestId
+      target: 'page', // この回の保存対象（targets の要素のいずれか）
+      ok: true,
+      errors: []
+    },
+    bubbles: true,
+    composed: true
+  })
+);
+
+// エラー時
+cms.dispatchEvent(
+  new CustomEvent('save-result', {
+    detail: {
+      requestId: 'req-1234567890-abc', // save-request の requestId
+      target: 'page', // この回の保存対象（targets の要素のいずれか）
+      ok: false,
+      errors: [
+        {
+          path: 'page.0', // コンポーネントのパス（オプション、指定しない場合はすべてのコンポーネントに適用）
+          field: 'email', // フィールド名
+          message: 'メールアドレスの形式が正しくありません', // エラーメッセージ
+          code: 'FORMAT' // エラーコード（オプション）
+        }
+      ]
+    },
+    bubbles: true,
+    composed: true
+  })
+);</code></pre>
+        <p><strong>実装例（Node.js/Express）：</strong></p>
+        <pre><code>cms.addEventListener('save-request', async (event) =&gt; {
+  const { requestId, source, targets, timestamp } = event.detail;
+  const data = cms.getData();
+
+  for (const target of targets) {
+    try {
+      // バリデーション
+      const errors = [];
+
+        if (target === 'page') {
+          // ページデータのバリデーション
+          const pageData = data.page || [];
+          for (let i = 0; i &lt; pageData.length; i++) {
+            const component = pageData[i];
+
+            // メール形式チェック（例）
+            if (component.email &amp;&amp; !component.email.includes('@')) {
+              errors.push({
+                path: `page.${i}`,
+                field: 'email',
+                message: 'メールアドレスの形式が正しくありません',
+                code: 'FORMAT'
+              });
+            }
+
+            // 重複チェック（例）
+            if (component.title &amp;&amp; await isTitleDuplicate(component.title)) {
+              errors.push({
+                path: `page.${i}`,
+                field: 'title',
+                message: 'このタイトルは既に使用されています',
+                code: 'DUPLICATE'
+              });
+            }
+          }
+        } else if (target === 'parts-common-css' || target === 'parts-individual-css' || target === 'parts-special-css') {
+          // CSSのバリデーション（例）
+          const css = target === 'parts-common-css' ? data.css?.common :
+                      target === 'parts-individual-css' ? data.css?.individual :
+                      data.css?.special || '';
+          if (css.length &gt; 10000) {
+            errors.push({
+              field: target,
+              message: 'CSSのサイズが大きすぎます',
+              code: 'SIZE_LIMIT'
+            });
+          }
+        } else if (target.startsWith('images-')) {
+          // 画像データのアップロード処理
+          const images = target === 'images-common'
+            ? data.images?.common || []
+            : target === 'images-individual'
+            ? data.images?.individual || []
+            : data.images?.special || [];
+
+          for (const image of images) {
+            if (image.needsUpload) {
+              // 画像をアップロード
+              const uploadedUrl = await uploadImage(image);
+              image.url = uploadedUrl;
+              image.needsUpload = false;
+            }
+          }
+        }
+
+        if (errors.length &gt; 0) {
+          // エラーがある場合
+          cms.dispatchEvent(
+            new CustomEvent('save-result', {
+              detail: {
+                requestId,
+                target,
+                ok: false,
+                errors
+              },
+              bubbles: true,
+              composed: true
+            })
+          );
+          continue; // 次のターゲットへ
+        }
+
+        // データベースに保存
+        await saveToDatabase(target, data);
+
+        // 成功時
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: true,
+              errors: []
+            },
+            bubbles: true,
+            composed: true
+          })
+        );
+      } catch (error) {
+        // エラー時
+        cms.dispatchEvent(
+          new CustomEvent('save-result', {
+            detail: {
+              requestId,
+              target,
+              ok: false,
+              errors: [
+                {
+                  field: 'general',
+                  message: '保存に失敗しました',
+                  code: 'SAVE_FAILED'
+                }
+              ]
+            },
+            bubbles: true,
+            composed: true
+          })
+        );
+      }
+    }
+  }
+});</code></pre>
+        <p><strong>エラーの表示：</strong></p>
+        <ul>
+          <li>
+            <strong>編集パネルが開いている場合:</strong>
+            エラーは該当フィールドの下に表示されます。<code>path</code>が指定されている場合、そのパスのコンポーネントのフィールドにのみ表示されます。
+          </li>
+          <li>
+            <strong>編集パネルが閉じている場合:</strong>
+            エラーは画面上部にエラーバナーとして表示されます。編集パネルを開くと、該当フィールドに詳細エラーが表示されます。
+          </li>
+        </ul>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            <code>requestId</code
+            >は<code>save-request</code>イベントの<code>requestId</code>と同じ値を使用してください。これにより、複数の保存リクエストが同時に発火した場合でも、正しいレスポンスとリクエストを関連付けることができます。
+          </p>
+        </div>
+
+        <h2 id="security">セキュリティ</h2>
+        <div class="docs-warning">
+          <p>
+            <strong>重要:</strong>
+            ZeroCode.jsはフロントエンドライブラリのため、クライアント側での完全なセキュリティ保証はできません。サーバー側での検証を必ず実装してください。
+          </p>
+        </div>
+
+        <h3>必須実装事項</h3>
+
+        <h4>1. サーバー側でのデータ検証（必須）</h4>
+        <ul>
+          <li>すべてのデータをサーバー側で検証してください</li>
+          <li>
+            パーツテンプレート（<code>part.body</code>）が信頼できるソースからのみ来ることを確認してください
+          </li>
+          <li>
+            <code>save-request</code
+            >イベントの<code>source</code>フィールドを確認し、CMSからのパーツデータ保存を拒否してください
+          </li>
+        </ul>
+
+        <h4>2. 認証・認可</h4>
+        <ul>
+          <li>パーツデータの変更は認証されたユーザーのみ許可してください</li>
+          <li>ロールベースアクセス制御を実装してください</li>
+          <li>CMS（<code>source: 'cms'</code>）からのパーツデータ保存を拒否してください</li>
+        </ul>
+
+        <h4>3. 属性値のセキュリティ</h4>
+        <ul>
+          <li>
+            URL属性（<code>href</code>, <code>src</code>,
+            <code>action</code>）の検証を実装してください
+          </li>
+          <li>
+            <code>style</code>属性にユーザー入力を直接設定する場合は、サーバー側での検証を推奨します
+          </li>
+          <li>基本的なエスケープ処理が適用されますが、サーバー側での追加検証を推奨します</li>
+        </ul>
+
+        <h4>4. パーツテンプレートの管理</h4>
+        <ul>
+          <li>パーツテンプレートは信頼できるソースからのみ受け入れてください</li>
+          <li>サーバー側でテンプレートの妥当性を検証してください</li>
+        </ul>
+
+        <h3>実装例</h3>
+        <p>
+          ※ クライアントは save-request ハンドラで <code>cms.getData()</code> し、<code
+            >targets</code
+          >
+          をループして各 <code>target</code> と <code>data</code> を
+          <code>req.body</code> に含めて送る。
+        </p>
+        <pre><code>// Node.js/Express の例（サーバー側）
+app.post('/api/zero-code/save', authenticate, (req, res) => {
+  const { target, source, data } = req.body;
+
+  if (source === 'cms' && target.startsWith('parts-')) {
+    return res.status(403).json({
+      error: 'CMSからのパーツ保存は拒否されました'
+    });
+  }
+
+  // データ構造の検証
+  if (!validateDataStructure(data)) {
+    return res.status(400).json({
+      error: '無効なデータです'
+    });
+  }
+
+  // パーツテンプレートの検証
+  if (target.startsWith('parts-')) {
+    if (!validatePartTemplate(data)) {
+      return res.status(400).json({
+        error: '無効なテンプレートです'
+      });
+    }
+  }
+
+  // 画像アップロード処理
+  if (target.startsWith('images-')) {
+    const imagesToUpload = data.filter(img => img.needsUpload === true);
+    for (const image of imagesToUpload) {
+      // アップロード処理
+    }
+  }
+
+  // 保存処理
+  // ...
+
+  res.json({ success: true });
+});</code></pre>
+
+        <h3>画像アップロードのセキュリティ</h3>
+        <ul>
+          <li><code>needsUpload: true</code>の画像のみアップロード処理を行ってください</li>
+          <li>MIMEタイプ（<code>mimeType</code>）の検証を実装してください</li>
+          <li>ファイルサイズの制限を設定してください</li>
+          <li>ファイル名のサニタイズを実装してください</li>
+        </ul>
+      </main>
+    </div>
+
+    <script src="./js/docs-search-index.js"></script>
+    <script src="./js/docs.js"></script>
+
+    <!-- フッター（共通） -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 共通ヘッダー・フッター読み込み -->
+    <script type="module" src="./common-header-footer.js"></script>
+  </body>
+</html>

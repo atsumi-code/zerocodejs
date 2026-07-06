@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroCode.js ドキュメント - テンプレート記法</title>
+
+    <!-- 共通CSS（リセットCSS含む） -->
+    <link rel="stylesheet" href="./css/common.css" />
+    <!-- サイト共通CSS（ヘッダー・フッター） -->
+    <link rel="stylesheet" href="./css/site-common.css" />
+    <!-- ページ専用CSS -->
+    <link rel="stylesheet" href="./css/docs.css" />
+  </head>
+  <body>
+    <!-- ヘッダー（共通） -->
+    <div id="header-placeholder"></div>
+
+    <div class="docs-container">
+      <!-- サイドバー -->
+      <aside class="docs-sidebar">
+        <!-- 検索セクション -->
+        <div class="docs-search-section">
+          <input
+            type="text"
+            id="docs-search-input"
+            class="docs-search-input"
+            placeholder="ドキュメントを検索..."
+            autocomplete="off"
+          />
+          <div id="docs-search-results" class="docs-search-results"></div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">概要</div>
+          <div class="docs-nav-links">
+            <a href="docs.html#about" class="docs-nav-link">ZeroCode.js とは</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#about-purpose" class="docs-nav-link-sub">目的</a>
+              <a href="docs.html#about-problems" class="docs-nav-link-sub">解決したい課題</a>
+              <a href="docs.html#about-design" class="docs-nav-link-sub">設計方針</a>
+              <a href="docs.html#about-data" class="docs-nav-link-sub">データの扱い</a>
+              <a href="docs.html#about-components" class="docs-nav-link-sub"
+                >コンポーネントと役割</a
+              >
+              <a href="docs.html#roadmap" class="docs-nav-link-sub">編集体験改善ロードマップ</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">フロントエンド</div>
+          <div class="docs-nav-links">
+            <a href="docs.html#quickstart" class="docs-nav-link">クイックスタート</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#installation" class="docs-nav-link-sub">インストール</a>
+              <a href="docs.html#basic-usage" class="docs-nav-link-sub">基本的な使用例</a>
+            </div>
+            <a href="docs.html#multiple-instances" class="docs-nav-link">複数インスタンス対応</a>
+            <a href="docs.html#shadow-dom" class="docs-nav-link">Shadow DOM</a>
+            <div class="docs-nav-sub">
+              <a href="docs.html#shadow-dom-host-style" class="docs-nav-link-sub"
+                >ホストスタイルのリセット</a
+              >
+            </div>
+            <a href="#template-syntax" class="docs-nav-link">テンプレート記法</a>
+            <div class="docs-nav-sub">
+              <a href="#field-syntax" class="docs-nav-link-sub">フィールド記法</a>
+              <div class="docs-nav-sub-sub">
+                <a href="#text-field" class="docs-nav-link-sub-sub">テキストフィールド</a>
+                <a href="#textarea-field" class="docs-nav-link-sub-sub">テキストエリア</a>
+                <a href="#rich-text-field" class="docs-nav-link-sub-sub">リッチテキスト</a>
+                <a href="#image-field" class="docs-nav-link-sub-sub">画像フィールド</a>
+                <a href="#grouped-fields" class="docs-nav-link-sub-sub">グループ化</a>
+                <a href="#optional-fields" class="docs-nav-link-sub-sub">オプショナル</a>
+                <a href="#validation-syntax" class="docs-nav-link-sub-sub">バリデーション</a>
+              </div>
+              <a href="#backend-data" class="docs-nav-link-sub">バックエンドデータ</a>
+              <a href="#z-for-loop" class="docs-nav-link-sub">z-for ループ</a>
+              <a href="#choice-syntax" class="docs-nav-link-sub">選択肢記法</a>
+              <a href="#conditional-syntax" class="docs-nav-link-sub">条件分岐</a>
+              <div class="docs-nav-sub-sub">
+                <a href="#z-tag-syntax" class="docs-nav-link-sub-sub">z-tag 属性</a>
+                <a href="#z-empty-syntax" class="docs-nav-link-sub-sub">z-empty 属性</a>
+              </div>
+              <a href="#slot-syntax" class="docs-nav-link-sub">スロット</a>
+            </div>
+            <a href="docs-api.html#editing-modes" class="docs-nav-link">編集モード</a>
+            <a href="docs-api.html#parts-management" class="docs-nav-link">パーツ管理</a>
+            <div class="docs-nav-sub">
+              <a href="docs-api.html#types-and-parts" class="docs-nav-link-sub">タイプとパーツ</a>
+              <a href="docs-api.html#common-and-individual-parts" class="docs-nav-link-sub"
+                >共通パーツと個別パーツ</a
+              >
+              <a href="docs-api.html#parts-management-features" class="docs-nav-link-sub"
+                >パーツ管理機能</a
+              >
+              <a href="docs-api.html#part-template-structure" class="docs-nav-link-sub"
+                >パーツテンプレートの構造</a
+              >
+              <a href="docs-api.html#template-field-initialization" class="docs-nav-link-sub"
+                >テンプレート記法の後から追加</a
+              >
+            </div>
+            <a href="docs-api.html#images-management" class="docs-nav-link">画像管理</a>
+            <a href="docs-api.html#configuration" class="docs-nav-link">設定オプション</a>
+            <a href="docs-api.html#api-reference" class="docs-nav-link">APIリファレンス</a>
+            <a href="docs-api.html#events" class="docs-nav-link">イベント</a>
+            <a href="docs-api.html#methods" class="docs-nav-link">メソッド</a>
+          </div>
+        </div>
+
+        <div class="docs-nav-section">
+          <div class="docs-nav-title">バックエンド</div>
+          <div class="docs-nav-links">
+            <a href="docs-api.html#data-structure" class="docs-nav-link">データ構造</a>
+            <a href="docs-backend.html#database-design" class="docs-nav-link">データベース構成</a>
+            <a href="docs-backend.html#save-request" class="docs-nav-link">保存リクエスト</a>
+            <div class="docs-nav-sub">
+              <a href="docs-backend.html#save-request-handler" class="docs-nav-link-sub"
+                >イベントの受け取り方</a
+              >
+              <a href="docs-backend.html#save-request-image-upload" class="docs-nav-link-sub"
+                >画像のアップロード</a
+              >
+              <a href="docs-backend.html#save-request-validation" class="docs-nav-link-sub"
+                >バリデーションエラー</a
+              >
+            </div>
+            <a href="docs-backend.html#security" class="docs-nav-link">セキュリティ</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- メインコンテンツ -->
+      <main class="docs-content">
+        <!-- パンくずリスト -->
+        <nav class="docs-breadcrumb" id="docs-breadcrumb">
+          <a href="./docs.html">ドキュメント</a>
+          <span class="docs-breadcrumb-separator">></span>
+          <span id="docs-breadcrumb-current">テンプレート記法</span>
+        </nav>
+
+        <h1>テンプレート記法</h1>
+        <p>
+          パーツのHTMLに書く独自記法のリファレンスです。フィールド・選択肢・バリデーション・バックエンドデータ参照・z-*
+          制御属性を扱います。
+        </p>
+
+        <h2 id="template-syntax">テンプレート記法</h2>
+        <p>ZeroCode.jsでは、カスタムHTMLテンプレート構文を使用して動的なコンテンツを定義します。</p>
+
+        <h3 id="field-syntax">フィールド記法</h3>
+
+        <h4 id="text-field">テキストフィールド</h4>
+        <pre><code>{$fieldName:defaultValue}</code></pre>
+        <p>単一行のテキスト入力フィールドとして表示されます。</p>
+        <pre><code>&lt;h1&gt;{$title:タイトル}&lt;/h1&gt;</code></pre>
+
+        <h4 id="textarea-field">テキストエリアフィールド</h4>
+        <pre><code>{$fieldName:defaultValue:textarea}</code></pre>
+        <p>複数行のテキスト入力フィールドとして表示されます。</p>
+        <pre><code>&lt;p&gt;{$description:説明文:textarea}&lt;/p&gt;</code></pre>
+
+        <h4 id="rich-text-field">リッチテキストフィールド</h4>
+        <pre><code>{$fieldName:defaultValue:rich}</code></pre>
+        <p>
+          リッチテキストエディター（TipTap）として表示されます。HTMLタグを含むテキストを編集できます。
+        </p>
+        <pre><code>&lt;div&gt;{$content:本文:rich}&lt;/div&gt;</code></pre>
+
+        <h4 id="image-field">画像フィールド</h4>
+        <pre><code>{$fieldName:defaultValue:image}</code></pre>
+        <p>画像選択フィールドとして表示されます。画像管理から画像を選択できます。</p>
+        <pre><code>&lt;img src="{$image:default.jpg:image}" alt="画像" /&gt;</code></pre>
+
+        <h4 id="grouped-fields">グループ化されたフィールド</h4>
+        <p>フィールド名にドット（<code>.</code>）を使用して、フィールドをグループ化できます。</p>
+        <pre><code>{$fieldName.groupName:defaultValue}</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div&gt;
+  &lt;h2&gt;{$hero.title:ヒーロータイトル}&lt;/h2&gt;
+  &lt;p&gt;{$hero.description:ヒーロー説明}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p>
+          グループ化されたフィールドは、編集パネルでグループとして表示され、整理された編集が可能です。
+        </p>
+
+        <h4 id="optional-fields">オプショナルフィールド（空入力制御）</h4>
+        <p>
+          フィールド名の後に<code>?</code>を追加することで、オプショナルフィールドとして定義できます。ユーザーが何も入力しなかった場合、フィールドの値は<code>undefined</code>になります。
+        </p>
+        <pre><code>{$fieldName?:defaultValue}
+{$fieldName?:defaultValue:rich}
+{$fieldName?:defaultValue:image}
+{$fieldName.groupName?:defaultValue}</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div class="section"&gt;
+  &lt;div class="section__title"&gt;{$title:タイトル（必須）}&lt;/div&gt;
+  &lt;div class="section__subtitle"&gt;{$subtitle?:サブタイトル（オプション）}&lt;/div&gt;
+  &lt;img src="{$optional_image?:default.jpg:image}" alt="{$optional_alt?:画像の説明}" /&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            ユーザーが何も入力しなかった場合、フィールドの値は<code>undefined</code>になります（デフォルト値は使用されません）
+          </li>
+          <li>編集パネルでは、オプショナルフィールドは空欄として表示されます</li>
+          <li>
+            属性値がオプショナルフィールドのみで構成されていて、値が<code>undefined</code>（または空）の場合、その属性自体がHTMLから削除されます
+          </li>
+          <li>
+            基本動作では、オプショナルフィールドが空の場合でも親要素（タグ）は残ります（例:
+            <code>&lt;p&gt;&lt;/p&gt;</code
+            >）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください（詳細は「条件分岐」セクションの「z-empty
+            属性」を参照）
+          </li>
+        </ul>
+        <p>例：</p>
+        <pre><code>&lt;!-- テンプレート --&gt;
+&lt;img src="{$optional_image?:default.jpg:image}" alt="{$optional_alt?:画像の説明}" /&gt;
+
+&lt;!-- optional_imageとoptional_altが両方undefinedの場合 --&gt;
+&lt;img /&gt;
+
+&lt;!-- optional_imageに値がある場合 --&gt;
+&lt;img src="image.jpg" alt="画像の説明" /&gt;</code></pre>
+        <p><strong>親要素を削除したい場合：</strong></p>
+        <p>
+          オプショナルフィールドが空の場合、基本動作では親要素（タグ）が残ります（例:
+          <code>&lt;p&gt;&lt;/p&gt;</code
+          >）。親要素ごと削除したい場合は、<code>z-empty</code>属性を使用してください。
+        </p>
+        <pre><code>&lt;!-- 基本動作：空タグが残る --&gt;
+&lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;p&gt;&lt;/p&gt;が残る --&gt;
+
+&lt;!-- z-emptyを使用：親要素を削除 --&gt;
+&lt;div z-empty="$subtitle"&gt;
+  &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;/div&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;div&gt;要素ごと削除される --&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            属性値全体がオプショナルフィールドのみで構成されている場合のみ属性が削除されます。他のテキストが含まれている場合は削除されません。
+          </p>
+        </div>
+        <div class="docs-info">
+          <p>
+            <strong>補足:</strong>
+            <code>z-empty</code>属性の詳細については、「条件分岐」セクションの「z-empty
+            属性」を参照してください。
+          </p>
+        </div>
+
+        <h4 id="validation-syntax">バリデーション記法</h4>
+        <p>
+          フィールドにバリデーションルールを追加できます。フロントエンドでの同期バリデーションと、バックエンドでの非同期バリデーションの両方をサポートしています。
+        </p>
+        <pre><code>{$fieldName:defaultValue:required}
+{$fieldName:defaultValue:max=100}
+{$fieldName:defaultValue:required:max=50}
+{$fieldName:defaultValue:readonly}
+{$fieldName:defaultValue:disabled}</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div class="form"&gt;
+  &lt;input type="text" name="title" value="{$title:タイトル:required:max=100}" /&gt;
+  &lt;input type="email" name="email" value="{$email:メールアドレス:required}" /&gt;
+  &lt;textarea name="description"&gt;{$description:説明:max=500}&lt;/textarea&gt;
+  &lt;input type="text" name="readonly_field" value="{$readonly_field:読み取り専用:readonly}" /&gt;
+  &lt;input type="text" name="disabled_field" value="{$disabled_field:無効化:disabled}" /&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>バリデーションルール：</strong></p>
+        <ul>
+          <li>
+            <code>:required</code> - 必須フィールド。空の場合はエラーメッセージが表示されます。
+          </li>
+          <li>
+            <code>:max=N</code> -
+            最大文字数制限（Nは数値）。指定した文字数を超えるとエラーメッセージが表示されます。
+          </li>
+          <li>
+            <code>:readonly</code> - 読み取り専用フィールド。編集できませんが、値は送信されます。
+          </li>
+          <li><code>:disabled</code> - 無効化フィールド。編集できず、値も送信されません。</li>
+        </ul>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>フロントエンドバリデーション（同期）:</strong>
+            <code>required</code
+            >と<code>max</code>は、ユーザーが入力中にリアルタイムでチェックされます。エラーがある場合は、フィールドの下にエラーメッセージが表示されます。
+          </li>
+          <li>
+            <strong>バックエンドバリデーション（非同期）:</strong>
+            保存ボタンをクリックすると、<code>save-request</code>イベントが発火します。バックエンドでバリデーションを行い、エラーがある場合は<code>save-result</code>イベントでエラーを返してください。詳細は「保存リクエスト」セクションを参照してください。
+          </li>
+          <li>
+            バリデーションエラーは、編集パネルが開いている場合は該当フィールドに表示され、編集パネルが閉じている場合は画面上部にエラーバナーが表示されます。
+          </li>
+        </ul>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            複雑なバリデーション（メール形式チェック、重複チェックなど）は、バックエンドで実施することを推奨します。フロントエンドでは、<code>required</code>と<code>max</code>のみをサポートしています。
+          </p>
+        </div>
+
+        <h4 id="backend-data">バックエンドデータの参照</h4>
+        <p>
+          バックエンドから渡されたデータをテンプレート内で参照できます。動的URLや共通で使用するデータ（店舗ID、ユーザー情報など）を表示する際に便利です。
+        </p>
+        <pre><code>{@fieldName}
+{@fieldName:defaultValue}
+{@items[0].name}
+{@items.length}
+/shop/{shop_id}/products</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;div class="shop-header"&gt;
+  &lt;h1&gt;{@title:店舗名未設定}&lt;/h1&gt;
+  &lt;a href="{@url:/}"&gt;店舗詳細&lt;/a&gt;
+  &lt;p&gt;アイテム数: {@items.length}&lt;/p&gt;
+  &lt;p&gt;最初のアイテム: {@items[0].name:名称未設定}&lt;/p&gt;
+  &lt;a href="/shop/{shop_id}/products"&gt;商品一覧&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>基本的なデータ参照: <code>{@fieldName}</code> でバックエンドデータを参照</li>
+          <li>
+            デフォルト付き参照:
+            <code>{@fieldName:defaultValue}</code>
+            で、データ未取得・パス不存在・null/undefined/空文字のとき
+            <code>defaultValue</code> を表示（<code>backend-data</code>
+            未指定時もデフォルト値を使用）
+          </li>
+          <li>ネストされたオブジェクト: <code>{@user.name}</code> のようにドット記法で参照</li>
+          <li>配列の参照: <code>{@items[0]}</code> で配列の要素を参照</li>
+          <li>配列のlength: <code>{@items.length}</code> で配列の長さを取得</li>
+          <li>URL内プレースホルダー: <code>/shop/{shop_id}/</code> のようにURL内に直接記述可能</li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>&lt;!-- Web Componentにバックエンドデータを渡す --&gt;
+&lt;zcode-cms
+  backend-data='{"title":"A店舗","url":"/shop/123/","shop_id":"123","items":[{"name":"商品1"}]}'
+&gt;
+  &lt;!-- テンプレート内で {@title}, {@url}, {@items[0].name} などが使用可能 --&gt;
+&lt;/zcode-cms&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            バックエンドデータは信頼できるソースからのみ使用してください。<code>{@fieldName}</code>
+            で存在しないパスを参照した場合は空文字列が返されます。<code
+              >{@fieldName:defaultValue}</code
+            >
+            を使うと、その場合にデフォルト値を表示できます。
+          </p>
+        </div>
+
+        <h4 id="z-for-loop">z-for ループ記法</h4>
+        <p>
+          バックエンドデータの配列をループ表示するには、<code>z-for</code>属性を使用します。現在はバックエンドデータの配列のみをサポートしています。
+        </p>
+        <pre><code>&lt;div z-for="item in {@items}"&gt;
+  &lt;!-- ループ内のコンテンツ --&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>構文：</strong></p>
+        <pre><code>z-for="変数名 in {@配列パス}"</code></pre>
+        <p>例：</p>
+        <pre><code>&lt;!-- 店舗一覧をループ表示 --&gt;
+&lt;div class="shop-list"&gt;
+  &lt;div z-for="shop in {@shops}" class="shop-item"&gt;
+    &lt;h2&gt;{shop.name}&lt;/h2&gt;
+    &lt;p&gt;{shop.description}&lt;/p&gt;
+    &lt;a href="{shop.url}"&gt;詳細を見る&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 商品一覧をループ表示 --&gt;
+&lt;div class="product-list"&gt;
+  &lt;div z-for="product in {@products}" class="product-item"&gt;
+    &lt;h3&gt;{product.name}&lt;/h3&gt;
+    &lt;p&gt;価格: {product.price}円&lt;/p&gt;
+    &lt;p&gt;カテゴリ: {product.category}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>ループ変数の参照：</strong></p>
+        <ul>
+          <li>
+            <code>{変数名.プロパティ名}</code>: ループ変数のプロパティを参照（例:
+            <code>{shop.name}</code>）
+          </li>
+          <li>
+            <code>{変数名.ネストされた.プロパティ}</code>: ネストされたプロパティを参照（例:
+            <code>{shop.address.city}</code>）
+          </li>
+          <li>
+            <code>{変数名}</code>: ループ変数自体を参照（オブジェクトの場合はJSON文字列として表示）
+          </li>
+        </ul>
+        <p><strong>ループ内での他のテンプレート構文：</strong></p>
+        <p>
+          ループ内では、通常のテンプレート構文（<code>{$field}</code>、<code>{@data}</code>など）も使用できます。
+        </p>
+        <pre><code>&lt;div z-for="shop in {@shops}" class="shop-item"&gt;
+  &lt;h2&gt;{shop.name}&lt;/h2&gt;
+  &lt;p&gt;{$description:説明文}&lt;/p&gt;
+  &lt;a href="/shop/{@shop_id}/{shop.id}/"&gt;詳細&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>制限事項：</strong></p>
+        <ul>
+          <li>
+            現在はバックエンドデータの配列のみをサポート（コンポーネントデータの配列は非対応）
+          </li>
+          <li>ネストループは非対応</li>
+          <li>
+            インデックス変数は非対応（<code>z-for="(item, index) in {@items}"</code
+            >のような構文は使用不可）
+          </li>
+          <li>空の配列の場合は、ループ要素全体が削除されます</li>
+        </ul>
+        <p><strong>完全な例：</strong></p>
+        <pre><code>&lt;!-- HTML --&gt;
+&lt;zcode-cms id="cms" backend-data='{"shops": [{"id": "1", "name": "A店舗", "url": "/shop/1/"}, {"id": "2", "name": "B店舗", "url": "/shop/2/"}]}'&gt;
+  &lt;link slot="css" rel="stylesheet" href="/css/common.css" /&gt;
+&lt;/zcode-cms&gt;
+
+&lt;!-- パーツテンプレート --&gt;
+&lt;div class="section"&gt;
+  &lt;div class="section__head"&gt;
+    &lt;div class="section__title"&gt;{$title:店舗一覧}&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="section__contents"&gt;
+    &lt;div class="section__items"&gt;
+      &lt;div z-for="shop in {@shops}" class="shop-item"&gt;
+        &lt;h2&gt;{shop.name}&lt;/h2&gt;
+        &lt;a href="{shop.url}"&gt;詳細を見る&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            z-forループ記法は、バックエンドデータの配列を表示するためのシンプルな実装です。将来的には、コンポーネントデータの配列やネストループなどの機能が追加される予定です。
+          </p>
+        </div>
+
+        <h3 id="choice-syntax">選択肢記法</h3>
+
+        <h4 id="radio-button">ラジオボタン（単一選択）</h4>
+        <pre><code>($fieldName:option1|option2|option3)</code></pre>
+        <p>パイプ（<code>|</code>）で区切られたオプションから1つを選択します。</p>
+        <pre><code>&lt;div&gt;($color:red|blue|green)&lt;/div&gt;</code></pre>
+
+        <h4 id="checkbox-multiple">チェックボックス（複数選択）</h4>
+        <pre><code>($fieldName:option1,option2,option3)</code></pre>
+        <p>カンマ（<code>,</code>）で区切られたオプションから複数を選択できます。</p>
+        <pre><code>&lt;div&gt;($tags:tag1,tag2,tag3)&lt;/div&gt;</code></pre>
+
+        <h4 id="select-single">セレクトボックス（単一選択）</h4>
+        <pre><code>($fieldName@:option1|option2|option3)</code></pre>
+        <p>
+          アットマーク（<code>@</code>）とパイプ（<code>|</code>）で区切られたオプションから1つを選択します。
+        </p>
+        <pre><code>&lt;div&gt;($size@:S|M|L)&lt;/div&gt;</code></pre>
+
+        <h4 id="select-multiple">セレクトボックス（複数選択）</h4>
+        <pre><code>($fieldName@:option1,option2,option3)</code></pre>
+        <p>
+          アットマーク（<code>@</code>）とカンマ（<code>,</code>）で区切られたオプションから複数を選択できます。
+        </p>
+        <pre><code>&lt;div&gt;($categories@:cat1,cat2,cat3)&lt;/div&gt;</code></pre>
+
+        <h3 id="conditional-syntax">条件分岐</h3>
+        <p>
+          <strong>z-if</strong> は表示するかしないかを決めます。fieldName
+          に紐づく形ではありません（fieldName に紐づくのは
+          <strong>z-empty</strong>）。属性値に指定したキーの真偽で、要素を表示または削除します。
+        </p>
+        <pre><code>&lt;element z-if="showContent"&gt;
+  &lt;!-- 条件が真の場合に表示 --&gt;
+&lt;/element&gt;</code></pre>
+        <pre><code>&lt;div z-if="showContent"&gt;
+  &lt;p&gt;コンテンツが表示されます&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>指定キーの値が真（<code>true</code>、非空文字列など）の場合、要素を表示</li>
+          <li>
+            指定キーの値が偽（<code>false</code>、<code>null</code>、空文字列、<code>0</code>）の場合は要素を削除
+          </li>
+          <li>指定キーが存在しない（<code>undefined</code>）場合は表示として扱う</li>
+        </ul>
+
+        <h4 id="z-tag-syntax">z-tag 属性（タグ名の動的変更）</h4>
+        <pre><code>&lt;element z-tag="$tagName:h1|h2|h3"&gt;
+  &lt;!-- タグ名を動的に変更 --&gt;
+&lt;/element&gt;</code></pre>
+        <p>
+          HTMLタグ名を動的に変更できます。テンプレートで書いたタグ名がデフォルト値として使用されます。
+        </p>
+        <pre><code>&lt;!-- 見出しタグを動的に変更（h2をデフォルト） --&gt;
+&lt;h2 z-tag="$headingTag:h1|h2|h3" class="title"&gt;{$title:タイトル}&lt;/h2&gt;
+&lt;!-- headingTagが"h1"の場合 → &lt;h1 class="title"&gt;タイトル&lt;/h1&gt; --&gt;
+&lt;!-- headingTagが"h2"の場合 → &lt;h2 class="title"&gt;タイトル&lt;/h2&gt; --&gt;
+
+&lt;!-- 選択肢を指定しない場合（全量表示） --&gt;
+&lt;div z-tag="$containerTag" class="container"&gt;
+  {$content:コンテンツ}
+&lt;/div&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>
+            <strong>デフォルト値</strong>: テンプレートで書いたタグ名（例:
+            <code>&lt;h2&gt;</code>）がデフォルト値として使用されます
+          </li>
+          <li>
+            <strong>選択肢の指定</strong>:
+            <code>z-tag="$tagName:h1|h2|h3"</code>
+            のように、パイプ（<code>|</code>）で区切って選択肢を指定できます
+          </li>
+          <li>
+            <strong>全量表示</strong>:
+            選択肢を指定しない場合、すべての有効なタグが選択肢として表示されます
+          </li>
+          <li>
+            <strong>属性の保持</strong>:
+            タグ名が変更されても、<code>class</code>、<code>id</code>などの属性は保持されます
+          </li>
+          <li><strong>子要素の保持</strong>: タグ名が変更されても、子要素は保持されます</li>
+        </ul>
+        <p><strong>対応タグ：</strong></p>
+        <ul>
+          <li>
+            見出し: <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code>,
+            <code>h5</code>, <code>h6</code>
+          </li>
+          <li>コンテナ: <code>div</code>, <code>p</code>, <code>span</code></li>
+          <li>リスト: <code>li</code>, <code>ul</code>, <code>ol</code></li>
+          <li>
+            セマンティック: <code>section</code>, <code>article</code>, <code>aside</code>,
+            <code>nav</code>, <code>header</code>, <code>footer</code>, <code>main</code>
+          </li>
+          <li>
+            その他: <code>figure</code>, <code>figcaption</code>, <code>blockquote</code>,
+            <code>pre</code>, <code>code</code>
+          </li>
+          <li>
+            テーブル: <code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>,
+            <code>th</code>, <code>td</code>
+          </li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>&lt;!-- 見出しタグを動的に変更 --&gt;
+&lt;h2 z-tag="$headingTag:h1|h2|h3" class="title"&gt;{$title:タイトル}&lt;/h2&gt;
+
+&lt;!-- リストアイテムのタグを変更 --&gt;
+&lt;li z-tag="$itemTag:li|div|span" class="list-item"&gt;{$item:項目}&lt;/li&gt;
+
+&lt;!-- コンテナタグを変更 --&gt;
+&lt;div z-tag="$containerTag:div|section|article" class="container"&gt;
+  {$content:コンテンツ}
+&lt;/div&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            テンプレートで書いたタグ名が選択肢に含まれていない場合、開発環境では警告が表示され、選択肢の最初の値がデフォルト値として使用されます。
+          </p>
+        </div>
+
+        <h4 id="z-empty-syntax">z-empty 属性（fieldName に紐づく・空なら親要素削除）</h4>
+        <pre><code>&lt;element z-empty="$fieldName"&gt;
+  &lt;!-- フィールドが空の場合、要素ごと削除 --&gt;
+&lt;/element&gt;</code></pre>
+        <p>
+          <strong>z-empty</strong> は
+          <code>$fieldName</code>
+          で指定したフィールドに紐づきます。そのフィールドが空（<code>undefined</code>、<code>null</code>、空文字列、または実質的に空のrichテキスト）の場合、親要素を削除します。基本動作では空タグが残るため、親ごと消したいときだけ
+          <code>z-empty</code> を使ってください。
+        </p>
+        <pre><code>&lt;!-- 基本動作：空タグが残る --&gt;
+&lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;p&gt;&lt;/p&gt;が残る --&gt;
+
+&lt;!-- z-empty：親要素を削除 --&gt;
+&lt;div z-empty="$subtitle"&gt;
+  &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;/div&gt;
+&lt;!-- subtitleがundefinedの場合、&lt;div&gt;要素ごと削除される --&gt;</code></pre>
+        <p><strong>動作：</strong></p>
+        <ul>
+          <li>フィールドが<code>undefined</code>、<code>null</code>、空文字列の場合、要素を削除</li>
+          <li>
+            richテキストが実質的に空（<code>&lt;p&gt;&lt;/p&gt;</code>、<code
+              >&lt;p&gt; &lt;/p&gt;</code
+            >など）の場合も要素を削除
+          </li>
+          <li>フィールドに値がある場合は、要素を表示</li>
+        </ul>
+        <p><strong>使用例：</strong></p>
+        <pre><code>&lt;!-- オプショナルフィールドで親要素を削除したい場合 --&gt;
+&lt;div z-empty="$subtitle"&gt;
+  &lt;p&gt;{$subtitle?:サブタイトル}&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- richテキストが空の場合も削除 --&gt;
+&lt;div z-empty="$content"&gt;
+  &lt;div&gt;{$content?:デフォルトコンテンツ:rich}&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- textareaフィールドでも使用可能 --&gt;
+&lt;div z-empty="$description"&gt;
+  &lt;div&gt;{$description?:説明文:textarea}&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <div class="docs-info">
+          <p>
+            <strong>注意:</strong>
+            fieldName に紐づくのは <code>z-empty</code> です。<code>z-if</code> は表示 on/off
+            のみで、field には紐づきません。
+          </p>
+        </div>
+
+        <h3 id="slot-syntax">スロット（ネスト構造）</h3>
+        <pre><code>&lt;element z-slot="slotName"&gt;
+  &lt;!-- スロットコンテンツ --&gt;
+&lt;/element&gt;</code></pre>
+        <p>スロットを使用して、パーツ内に他のパーツをネストできます。</p>
+        <pre><code>&lt;div class="features"&gt;
+  &lt;div z-slot="items"&gt;
+    &lt;!-- ここに子パーツが追加されます --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <h4 id="slot-restrictions">スロットの制限</h4>
+        <p>
+          <code>PartData</code
+          >の<code>slots</code>プロパティで<code>allowedParts</code>を指定することで、スロットに追加可能なパーツを制限できます。
+        </p>
+        <pre><code>{
+  "id": "feature-list",
+  "title": "機能一覧",
+  "body": "&lt;div z-slot=\"items\"&gt;&lt;/div&gt;",
+  "slots": {
+    "items": {
+      "allowedParts": ["feature-item-1", "feature-item-2"]
+    }
+  }
+}</code></pre>
+
+        <div class="docs-warning">
+          <p>
+            <strong>セキュリティ注意:</strong>
+            テンプレート構文で属性値にユーザー入力を設定する場合、基本的なエスケープ処理とURL検証が適用されますが、<strong
+              >サーバー側での検証を必ず実装してください。</strong
+            >
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script src="./js/docs-search-index.js"></script>
+    <script src="./js/docs.js"></script>
+
+    <!-- フッター（共通） -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 共通ヘッダー・フッター読み込み -->
+    <script type="module" src="./common-header-footer.js"></script>
+  </body>
+</html>
