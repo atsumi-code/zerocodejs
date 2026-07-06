@@ -33,9 +33,9 @@ export default defineConfig({
         testCms: resolve(__dirname, 'test-cms.html'),
         testPub: resolve(__dirname, 'test-pub.html'),
         testSsr: resolve(__dirname, 'test-ssr.html'),
-        testLightDom: resolve(__dirname, 'test-light-dom.html')
+        testLightDom: resolve(__dirname, 'test-light-dom.html'),
+        testStudio: resolve(__dirname, 'test-studio.html')
       }
     }
   }
 });
-

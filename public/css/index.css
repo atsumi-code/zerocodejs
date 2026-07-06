@@ -271,6 +271,24 @@
 }
 
 /* デモセクション */
+.demo-secondary {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  justify-content: center;
+  font-size: 14px;
+}
+.demo-secondary-label {
+  color: #7f8c8d;
+  font-weight: 600;
+}
+.demo-secondary a {
+  color: #3498db;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .demo-grid {
   display: flex;
   align-items: stretch;
@@ -523,7 +541,9 @@
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .why-choose-card:hover {
@@ -824,7 +844,9 @@
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .usecase-item:hover {

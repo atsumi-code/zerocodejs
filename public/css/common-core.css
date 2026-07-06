@@ -30,6 +30,66 @@
   opacity: 0.9;
   font-size: 14px;
 }
+/* ========================================
+デモガイドバナー（デモページ上部の案内）
+======================================== */
+
+.demo-guide {
+  background: #f6f8fa;
+  border-bottom: 1px solid #e1e4e8;
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.demo-guide-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+}
+
+.demo-guide-title {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.demo-guide-steps {
+  margin: 0;
+  padding-left: 1.4em;
+  flex: 1 1 480px;
+  list-style: decimal;
+}
+
+.demo-guide-steps li {
+  margin: 2px 0;
+}
+
+.demo-guide-steps code,
+.demo-guide-note code {
+  background: #eceff1;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.demo-guide-note {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: #7f8c8d;
+}
+
+.demo-guide-back {
+  margin-left: auto;
+  white-space: nowrap;
+  color: #3498db;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* CMS用ヘッダーとフッター */
 .l-header--cms,
 .l-footer--cms {

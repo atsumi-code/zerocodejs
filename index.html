@@ -13,7 +13,9 @@
         s.async = true;
         document.head.appendChild(s);
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() {
+          dataLayer.push(arguments);
+        }
         gtag('js', new Date());
         gtag('config', 'G-VN4QWBNC69');
       }
@@ -281,6 +283,17 @@
           >
         </div>
       </div>
+
+      <div class="demo-secondary">
+        <span class="demo-secondary-label" data-i18n="demo.more.label">Other demos:</span>
+        <a href="./test-studio.html" target="_blank" data-i18n="demo.more.studio"
+          >Studio (for agencies) — special parts only</a
+        >
+        <a href="./test-ssr.html" target="_blank" data-i18n="demo.more.ssr">SSR output</a>
+        <a href="./test-light-dom.html" target="_blank" data-i18n="demo.more.lightdom"
+          >Light DOM mode</a
+        >
+      </div>
     </section>
 
     <!-- クイックスタートセクション -->
@@ -458,6 +471,10 @@
           'demo.pub.f2': 'No Editing Features',
           'demo.pub.f3': 'Lightweight, No Side Effects',
           'demo.pub.button': 'Open Demo',
+          'demo.more.label': 'Other demos:',
+          'demo.more.studio': 'Studio (for agencies) — special parts only',
+          'demo.more.ssr': 'SSR output',
+          'demo.more.lightdom': 'Light DOM mode',
           'quickstart.title': 'Quick Start',
           'quickstart.install': 'Get Started',
           'docs.title': 'Documentation',
@@ -530,6 +547,10 @@
           'demo.pub.f2': '編集機能なし',
           'demo.pub.f3': '軽量で副作用なし',
           'demo.pub.button': 'デモを開く',
+          'demo.more.label': 'その他のデモ:',
+          'demo.more.studio': 'Studio（制作会社向け・専用パーツのみ編集可）',
+          'demo.more.ssr': 'SSR出力の確認',
+          'demo.more.lightdom': 'Light DOM モード',
           'quickstart.title': 'クイックスタート',
           'quickstart.install': 'はじめよう',
           'docs.title': 'ドキュメント',
@@ -543,7 +564,7 @@
 
       // 現在の言語を取得
       function getCurrentLang() {
-        return localStorage.getItem('zerocode-lang') || 'en';
+        return localStorage.getItem('zerocode-lang') || 'ja';
       }
 
       // 言語を設定

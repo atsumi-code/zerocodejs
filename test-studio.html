@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZeroCodeStudio - Test</title>
+    <title>ZeroCode.js デモ - 制作会社向け管理画面（zcode-studio）</title>
 
     <!-- 共通CSS（リセットCSS含む） -->
     <link rel="stylesheet" href="./css/common.css" />
@@ -14,8 +14,22 @@
   </head>
   <body>
     <div class="l-header l-header--dev">
-      <h1>ZeroCodeStudio - 制作会社向け管理画面テスト</h1>
-      <p>専用パーツ・専用CSS・専用画像のみ編集可（それ以外は読み取り専用）</p>
+      <h1>制作会社向け管理画面（zcode-studio）</h1>
+      <p>専用パーツ・専用CSS・専用画像のみ編集可能。共通・個別パーツは読み取り専用</p>
+    </div>
+    <div class="demo-guide">
+      <div class="demo-guide-inner">
+        <span class="demo-guide-title">このデモで試せること</span>
+        <ol class="demo-guide-steps">
+          <li>「パーツ管理」を開き、編集できるのが「専用」カテゴリだけであることを確認</li>
+          <li>ページ管理はコンテンツ担当者向け（zcode-cms）と同じ操作感で編集可能</li>
+          <li>
+            保存時の <code>save-request</code> は
+            <code>source: 'studio'</code> で発火（サーバー側の権限チェック用）
+          </li>
+        </ol>
+        <a class="demo-guide-back" href="./index.html">← トップへ戻る</a>
+      </div>
     </div>
 
     <div class="l-container">
@@ -38,7 +52,7 @@
     </div>
 
     <div class="l-footer l-footer--dev">
-      <h1>ZeroCodeStudio - 制作会社向け管理画面テスト</h1>
+      <h1>制作会社向け管理画面（zcode-studio）</h1>
       <p>専用パーツ・専用CSS・専用画像のみ編集可</p>
     </div>
 

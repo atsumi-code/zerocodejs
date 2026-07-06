@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZeroCodeEditor - Test</title>
+    <title>ZeroCode.js デモ - エンジニア向け管理画面（zcode-editor）</title>
 
     <!-- 検証用: ホストのみ別リセット（Shadow 内は slot の common.css のまま） -->
     <link rel="stylesheet" href="./css/reset-host-test.css" />
@@ -15,8 +15,25 @@
   </head>
   <body>
     <div class="l-header l-header--dev">
-      <h1>ZeroCodeEditor - エンジニア用管理画面テスト</h1>
-      <p>全機能付き（編集、パーツ管理、画像管理）</p>
+      <h1>エンジニア向け管理画面（zcode-editor）</h1>
+      <p>全機能: ページ編集＋パーツ管理・画像管理・データビューア</p>
+    </div>
+    <div class="demo-guide">
+      <div class="demo-guide-inner">
+        <span class="demo-guide-title">このデモで試せること</span>
+        <ol class="demo-guide-steps">
+          <li>「ページ管理」タブでクリック編集・追加・並べ替えを体験</li>
+          <li>
+            「パーツ管理」タブでテンプレート記法（<code>{$title:見出し}</code>
+            など）を編集し、プレビューに反映されるのを確認
+          </li>
+          <li>「データビューア」タブで保存される JSON / 公開 HTML を確認</li>
+        </ol>
+        <p class="demo-guide-note">
+          データはお使いのブラウザにのみ保存されます。「リセット」で初期状態に戻せます。
+        </p>
+        <a class="demo-guide-back" href="./index.html">← トップへ戻る</a>
+      </div>
     </div>
 
     <div class="l-container">
@@ -39,8 +56,8 @@
     </div>
 
     <div class="l-footer l-footer--dev">
-      <h1>ZeroCodeEditor - エンジニア用管理画面テスト</h1>
-      <p>全機能付き（編集、パーツ管理、画像管理）</p>
+      <h1>エンジニア向け管理画面（zcode-editor）</h1>
+      <p>全機能: ページ編集＋パーツ管理・画像管理・データビューア</p>
     </div>
 
     <!-- リセットボタン（保存ボタンの横に配置） -->

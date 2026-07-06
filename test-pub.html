@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZeroCode Pub - Test</title>
+    <title>ZeroCode.js デモ - 公開ページ出力（renderToHtml）</title>
 
     <!-- 共通CSS（リセットCSS含む） -->
     <link rel="stylesheet" href="./css/common.css" />
@@ -14,8 +14,19 @@
   </head>
   <body>
     <div class="l-header l-header--pub">
-      <h1>ZeroCode Pub - 公開用テスト（SSR）</h1>
-      <p>renderToHtml()を使用したサーバーサイドレンダリング</p>
+      <h1>公開ページ出力（renderToHtml）</h1>
+      <p>編集UIを含まない公開用HTML。CMSデモで保存した内容がそのまま反映されます</p>
+    </div>
+    <div class="demo-guide">
+      <div class="demo-guide-inner">
+        <span class="demo-guide-title">このデモで試せること</span>
+        <ol class="demo-guide-steps">
+          <li>CMSデモ（zcode-cms / zcode-editor）で編集・保存する</li>
+          <li>このページを再読み込みすると、保存した内容が編集UIなしの素のHTMLとして表示される</li>
+          <li>編集用の <code>data-zcode-*</code> 属性が出力に含まれないことを開発者ツールで確認</li>
+        </ol>
+        <a class="demo-guide-back" href="./index.html">← トップへ戻る</a>
+      </div>
     </div>
 
     <div class="l-container">
@@ -23,8 +34,8 @@
     </div>
 
     <div class="l-footer l-footer--pub">
-      <h1>ZeroCode Pub - 公開用テスト（SSR）</h1>
-      <p>renderToHtml()を使用したサーバーサイドレンダリング</p>
+      <h1>公開ページ出力（renderToHtml）</h1>
+      <p>編集UIを含まない公開用HTML。CMSデモで保存した内容がそのまま反映されます</p>
     </div>
 
     <!-- jQuery -->
