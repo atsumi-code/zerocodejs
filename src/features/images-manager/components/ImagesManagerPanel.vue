@@ -85,7 +85,7 @@
     <!-- 画像編集モーダル -->
     <Teleport :to="teleportTo">
       <div v-if="editingImage" class="zcode-image-modal" @click.self="cancelEditing">
-        <div class="zcode-image-modal-content" data-edit-mode @click.stop>
+        <div ref="imageEditModalRef" class="zcode-image-modal-content" data-edit-mode @click.stop>
           <div class="zcode-image-editor-header">
             <div class="zcode-image-editor-header-title" role="heading" aria-level="4">
               {{ $t('imagesManager.editImage') }}
@@ -161,6 +161,7 @@ import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo
 import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ImageData, CMSConfig } from '../../../types';
 import { useImagesManager } from '../composables/useImagesManager';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 import { logger } from '../../../core/utils/logger';
 import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Image } from 'lucide-vue-next';
 import CategoryInfoModal from '../../parts-manager/components/CategoryInfoModal.vue';
@@ -226,6 +227,9 @@ if (props.fixedCategory) {
 defineExpose({
   activeCategory
 });
+
+const imageEditModalRef = ref<HTMLElement | null>(null);
+useModalA11y(() => !!editingImage.value, cancelEditing, imageEditModalRef);
 
 async function handleFileSelect(event: Event) {
   const input = event.target as HTMLInputElement;

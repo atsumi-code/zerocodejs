@@ -752,7 +752,7 @@ ZC-3（並行可）
 - ✅ `AddPanel.vue` のプレビューモーダルに `useModalA11y` を適用
 - ✅ `ImageSelectModal` の画像グリッド（`special`タブ / `all`他タブの両方）に `role="button"` + `tabindex="0"` + Enter/Space ハンドラを追加（`ReorderStructureTreeRows` と同パターン）
 - ✅ パーツ編集モーダルにダーティ判定（`usePartsManager.ts` の `isPartDirty`）を追加。Esc / × / オーバーレイクリックいずれも未保存の変更があれば `confirm()` で破棄確認するように変更（`handleCancelPart`）
-- 残: `ImagesManagerPanel.vue` の画像編集モーダル（差し替え用）は今回のスコープ外（`useModalA11y` 未適用のまま）
+- ✅ `ImagesManagerPanel.vue` の画像編集モーダル（差し替え用）にも `useModalA11y` を適用
 
 ---
 

@@ -686,6 +686,8 @@ interface ImageData {
 - `AddPanel.vue` のパーツ拡大プレビューモーダルに `useModalA11y` を適用
 - `ImageSelectModal` の画像グリッド（全カテゴリ）に `role="button"` + `tabindex="0"` + Enter/Space ハンドラを追加し、キーボードのみで画像選択可能に
 - パーツ編集モーダルにダーティ判定（`usePartsManager.ts` の `isPartDirty`）を追加。未保存の変更がある状態での Esc / × / オーバーレイクリックは `confirm()` で破棄意図を確認してから閉じる
+- `ImagesManagerPanel.vue` の画像編集モーダル（差し替え用）にも `useModalA11y` を適用
+- `sanitizePartTemplate` の `srcset` 属性の安全性を検証: DOMPurify（v3系）が `srcset` 内の危険なスキーム（`javascript:` 等）を検出すると属性ごと除去することを確認し、`sanitize.test.ts` に特性テストとして固定（実装変更なし。安全側であることが判明したため）
 
 ### 未実装（スコープ関連）
 

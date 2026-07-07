@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeUrl } from './sanitize';
+import { sanitizeUrl, sanitizePartTemplate } from './sanitize';
 
 describe('sanitizeUrl', () => {
   it('通常のURLはそのまま返す', () => {
@@ -62,5 +62,34 @@ describe('sanitizeUrl', () => {
       expect(sanitizeUrl('data:image/pngx;base64,AAAA', 'embed')).toBe('');
       expect(sanitizeUrl('data:image/svg+xmlfoo;base64,AAAA', 'embed')).toBe('');
     });
+  });
+});
+
+describe('sanitizePartTemplate', () => {
+  it('危険なタグ・イベントハンドラ属性を除去する', () => {
+    const dirty = '<div onclick="alert(1)"><script>alert(1)</script>{$text:本文}</div>';
+    const clean = sanitizePartTemplate(dirty);
+    expect(clean).not.toContain('<script>');
+    expect(clean).not.toContain('onclick');
+    expect(clean).toContain('{$text:本文}');
+  });
+
+  it('z-* 制御属性とZeroCodeテンプレート記法は保持する', () => {
+    const template =
+      '<div z-if="show" z-tag="$tag:h1|h2" z-empty="$title" z-for="item in {@items}" z-slot="items">{$title:見出し}</div>';
+    expect(sanitizePartTemplate(template)).toBe(template);
+  });
+
+  it('img/source の srcset に危険なスキームが含まれる場合は属性ごと除去する', () => {
+    const dirty = '<img src="a.png" srcset="javascript:alert(1) 1x, b.png 2x">';
+    const clean = sanitizePartTemplate(dirty);
+    expect(clean).not.toContain('javascript:');
+    expect(clean).not.toContain('srcset');
+    expect(clean).toContain('src="a.png"');
+  });
+
+  it('安全な srcset はそのまま保持する', () => {
+    const safe = '<img src="a.png" srcset="b.png 1x, c.png 2x">';
+    expect(sanitizePartTemplate(safe)).toBe(safe);
   });
 });
