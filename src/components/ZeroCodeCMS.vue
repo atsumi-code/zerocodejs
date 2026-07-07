@@ -37,8 +37,8 @@
 
     <!-- 保存ボタン（左下固定、管理モードの時のみ表示。Studio 等で親に委譲する場合は非表示） -->
     <div v-if="viewMode === 'manage' && !hideFixedSaveButton" class="zcode-save-controls-fixed">
-      <button class="zcode-save-btn" @click="handleSave">
-        <Save :size="16" />
+      <button class="zcode-save-btn" :aria-label="$t('common.save')" @click="handleSave">
+        <Save :size="16" aria-hidden="true" />
         <span>{{ $t('common.save') }}</span>
       </button>
     </div>

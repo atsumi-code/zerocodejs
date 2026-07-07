@@ -147,7 +147,7 @@
 }
 
 .event-item__date {
-  color: rgba(100, 116, 139, 0.95);
+  color: #475569;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -203,7 +203,7 @@
 }
 
 .info-item__label {
-  color: rgba(100, 116, 139, 0.95);
+  color: #475569;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.02em;

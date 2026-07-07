@@ -670,6 +670,16 @@ interface ImageData {
 - ES ビルドをマルチエントリ + チャンク分割に変更、UMD は `vite.umd.config.ts` で単一ファイルを維持
 - size-limit をCIに導入（`npm run size`）
 
+30. ✅ **アクセシビリティ改善（Lighthouse 100点）**（2026年7月）
+
+- 全デモ・ドキュメントページで Lighthouse アクセシビリティスコア 100 を達成（index / docs 4ページ / test-cms / test-dev / test-studio）
+- ツールバーのモード切替・保存・設定ボタンに `aria-label` + `aria-pressed` を追加（モバイル幅でテキストが `display:none` になりアクセシブルネームが消えていた問題の修正）
+- Editor / Studio の DevTabs タブボタンに `aria-pressed`、設定ボタンに `aria-label` を追加
+- コントラスト修正: サイト共通グレー `#7f8c8d`→`#5f6e70`、デモヘッダー背景の暗色化、docs の `code`・パンくず・バッジ・フッター等（すべて WCAG AA 4.5:1 以上を計算検証）
+- `.zcode-toolbar-mode-label` 背景を `rgba(55,65,81,0.95)` に変更、`.zcode-dev-tab.active` 背景を `#2563eb` に変更
+- ランドマーク: index.html に `<main>`、デモページの `.l-container` に `role="main"` を追加
+- サンプルパーツテンプレートの `role="listitem"` の親（`event__items` / `info__items` / `faq__items`）に `role="list"` を追加
+
 ### 未実装（スコープ関連）
 
 - **専用パーツのページスコープ**: Phase 2 以降で検討（画像 Phase 1 完了後）

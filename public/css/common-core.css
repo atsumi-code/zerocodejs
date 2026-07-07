@@ -27,7 +27,6 @@
 .l-header p,
 .l-footer p {
   margin: 0;
-  opacity: 0.9;
   font-size: 14px;
 }
 /* ========================================
@@ -79,13 +78,13 @@
   flex-basis: 100%;
   margin: 4px 0 0;
   font-size: 12.5px;
-  color: #7f8c8d;
+  color: #5f6e70;
 }
 
 .demo-guide-back {
   margin-left: auto;
   white-space: nowrap;
-  color: #3498db;
+  color: #1d6fa5;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -93,37 +92,37 @@
 /* CMS用ヘッダーとフッター */
 .l-header--cms,
 .l-footer--cms {
-  background: #3498db;
+  background: #2077b4;
 }
 
 /* Dev（エンジニア用） */
 .l-header--dev,
 .l-footer--dev {
-  background: #e67e22;
+  background: #b35900;
 }
 
 /* Light DOM */
 .l-header--light-dom,
 .l-footer--light-dom {
-  background: #16a085;
+  background: #0e7a65;
 }
 
 /* Preview（表示専用） */
 .l-header--preview,
 .l-footer--preview {
-  background: #9b59b6;
+  background: #8046a5;
 }
 
 /* Pub（公開用） */
 .l-header--pub,
 .l-footer--pub {
-  background: #27ae60;
+  background: #1e8449;
 }
 
 /* SSR（SSR比較） */
 .l-header--ssr,
 .l-footer--ssr {
-  background: #2ecc71;
+  background: #157347;
 }
 
 .l-container {

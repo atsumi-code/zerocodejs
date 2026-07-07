@@ -18,7 +18,7 @@
 
 .hero-subtitle {
   font-size: 18px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-bottom: 32px;
 }
 
@@ -129,7 +129,7 @@
 .section-subtitle {
   font-size: 18px;
   text-align: center;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-bottom: 50px;
   max-width: 800px;
   margin-left: auto;
@@ -165,7 +165,7 @@
 
 .feature-description {
   font-size: 15px;
-  color: #7f8c8d;
+  color: #5f6e70;
   line-height: 1.7;
 }
 
@@ -230,7 +230,7 @@
 
 .arch-features {
   font-size: 11px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-top: 6px;
   line-height: 1.4;
 }
@@ -251,20 +251,20 @@
 
 .arch-desc {
   font-size: 13px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-top: 8px;
 }
 
 .arch-arrow {
   font-size: 24px;
-  color: #7f8c8d;
+  color: #5f6e70;
   font-weight: 300;
 }
 
 .arch-note {
   text-align: center;
   font-size: 14px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #e0e0e0;
@@ -280,11 +280,11 @@
   font-size: 14px;
 }
 .demo-secondary-label {
-  color: #7f8c8d;
+  color: #5f6e70;
   font-weight: 600;
 }
 .demo-secondary a {
-  color: #3498db;
+  color: #1d6fa5;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -362,17 +362,17 @@
 
 .demo-card.pub .demo-badge {
   background: #d5f4e6;
-  color: #27ae60;
+  color: #156e3f;
 }
 
 .demo-card.cms .demo-badge {
   background: #d6eaf8;
-  color: #3498db;
+  color: #1a6398;
 }
 
 .demo-card.dev .demo-badge {
   background: #fadbd8;
-  color: #e67e22;
+  color: #9c4a00;
 }
 
 .demo-title {
@@ -384,7 +384,7 @@
 
 .demo-description {
   font-size: 14px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-bottom: 16px;
   line-height: 1.6;
 }
@@ -396,7 +396,7 @@
 
 .demo-features li {
   font-size: 14px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin: 8px 0;
   padding-left: 24px;
   position: relative;
@@ -406,7 +406,7 @@
   content: '\2022';
   position: absolute;
   left: 0;
-  color: #7f8c8d;
+  color: #5f6e70;
   font-weight: normal;
 }
 
@@ -498,7 +498,7 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: #7f8c8d;
+  color: #5f6e70;
   transition: all 0.2s;
 }
 
@@ -655,7 +655,7 @@
 
 .why-choose-description {
   font-size: 15px;
-  color: #7f8c8d;
+  color: #5f6e70;
   line-height: 1.7;
   text-align: left;
 }
@@ -700,7 +700,7 @@
 .comparison-table td {
   padding: 16px;
   border-bottom: 1px solid #e0e0e0;
-  color: #7f8c8d;
+  color: #5f6e70;
 }
 
 .comparison-table tbody tr:hover {
@@ -822,7 +822,7 @@
   padding-top: 24px;
   border-top: 1px solid #e0e0e0;
   font-size: 14px;
-  color: #7f8c8d;
+  color: #5f6e70;
   line-height: 1.7;
   text-align: center;
 }
@@ -869,7 +869,7 @@
 
 .usecase-content p {
   font-size: 15px;
-  color: #7f8c8d;
+  color: #5f6e70;
   line-height: 1.7;
   margin: 0;
 }
@@ -878,7 +878,7 @@
 .demo-hint {
   margin-top: 12px;
   font-size: 13px;
-  color: #7f8c8d;
+  color: #5f6e70;
   text-align: center;
   font-style: italic;
 }
@@ -898,7 +898,7 @@
 
 .docs-text {
   font-size: 18px;
-  color: #7f8c8d;
+  color: #5f6e70;
   margin-bottom: 30px;
 }
 

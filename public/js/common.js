@@ -546,7 +546,7 @@ const SAMPLE_DATA = {
             items: { allowedParts: ['zcode-part-event-item'] }
           },
           body: `<div class="event">
-  <div class="event__items" z-slot="items"></div>
+  <div class="event__items" role="list" z-slot="items"></div>
 </div>`
         },
         {
@@ -592,7 +592,7 @@ const SAMPLE_DATA = {
             items: { allowedParts: ['zcode-part-info-item'] }
           },
           body: `<div class="info">
-  <div class="info__items" z-slot="items"></div>
+  <div class="info__items" role="list" z-slot="items"></div>
 </div>`
         },
         {
@@ -621,7 +621,7 @@ const SAMPLE_DATA = {
             items: { allowedParts: ['zcode-part-faq-item'] }
           },
           body: `<div class="faq">
-  <div class="faq__items" z-slot="items"></div>
+  <div class="faq__items" role="list" z-slot="items"></div>
 </div>`
         },
         {

@@ -5,41 +5,46 @@
         <button
           :class="{ active: activeTab === 'edit' }"
           class="zcode-dev-tab"
+          :aria-pressed="activeTab === 'edit'"
           @click="handleTabClick('edit')"
         >
-          <Edit :size="16" />
+          <Edit :size="16" aria-hidden="true" />
           <span>{{ $t('editor.pageManagement') }}</span>
         </button>
         <button
           :class="{ active: activeTab === 'parts' }"
           class="zcode-dev-tab"
+          :aria-pressed="activeTab === 'parts'"
           @click="handleTabClick('parts')"
         >
-          <Package :size="16" />
+          <Package :size="16" aria-hidden="true" />
           <span>{{ $t('editor.partsManagement') }}</span>
         </button>
         <button
           :class="{ active: activeTab === 'images' }"
           class="zcode-dev-tab"
+          :aria-pressed="activeTab === 'images'"
           @click="handleTabClick('images')"
         >
-          <Image :size="16" />
+          <Image :size="16" aria-hidden="true" />
           <span>{{ $t('editor.imagesManagement') }}</span>
         </button>
         <button
           :class="{ active: activeTab === 'data' }"
           class="zcode-dev-tab"
+          :aria-pressed="activeTab === 'data'"
           @click="handleTabClick('data')"
         >
-          <Database :size="16" />
+          <Database :size="16" aria-hidden="true" />
           <span>{{ $t('editor.dataViewer') }}</span>
         </button>
         <button
           class="zcode-dev-tab zcode-dev-settings-btn"
           :title="$t('toolbar.settings')"
+          :aria-label="$t('toolbar.settings')"
           @click="devTabsSettingsPanelOpen = true"
         >
-          <Settings :size="16" />
+          <Settings :size="16" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -133,8 +138,8 @@
     />
 
     <div v-if="viewMode === 'manage'" class="zcode-save-controls-fixed">
-      <button class="zcode-save-btn" @click="handleSaveClick">
-        <Save :size="16" />
+      <button class="zcode-save-btn" :aria-label="$t('common.save')" @click="handleSaveClick">
+        <Save :size="16" aria-hidden="true" />
         <span>{{ $t('common.save') }}</span>
       </button>
     </div>
