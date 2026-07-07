@@ -912,6 +912,7 @@ const {
   activeCategory,
   editingType,
   editingPart,
+  isPartDirty,
   editingLevel,
   isCreatingNew,
   groupedPartsByType,
@@ -1138,6 +1139,9 @@ async function handleSavePart() {
 }
 
 function handleCancelPart() {
+  if (isPartDirty.value && !confirm(t('partsManager.discardPartChangesConfirm'))) {
+    return;
+  }
   cssDraft.value = cssDraftInitial.value;
   cleanupModalPreviewPageCSS();
   showPreviewModal.value = false;

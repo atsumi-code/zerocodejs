@@ -236,7 +236,7 @@
         class="zcode-preview-modal"
         @click="closePreviewModal"
       >
-        <div class="zcode-preview-modal-content" @click.stop>
+        <div ref="previewModalContentRef" class="zcode-preview-modal-content" @click.stop>
           <div class="zcode-preview-modal-header">
             <div class="zcode-preview-modal-header-title" role="heading" aria-level="4">
               {{ $t('common.preview') }}:
@@ -266,6 +266,7 @@
 import { ref, computed } from 'vue';
 import { useZcodeTeleportTo } from '../../../core/composables/useZcodeTeleportTo';
 import { usePanelOptionsPopover } from '../../editor/composables/usePanelOptionsPopover';
+import { useModalA11y } from '../../../core/composables/useModalA11y';
 import type { TypeData, PartData, ComponentData, CMSConfig } from '../../../types';
 import { X, ChevronUp, ZoomIn, Settings } from 'lucide-vue-next';
 
@@ -349,4 +350,7 @@ function closePreviewModal() {
   showPreviewModal.value = false;
   previewTarget.value = null;
 }
+
+const previewModalContentRef = ref<HTMLElement | null>(null);
+useModalA11y(() => showPreviewModal.value, closePreviewModal, previewModalContentRef);
 </script>

@@ -31,6 +31,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
   const selectedType = ref<TypeData | null>(null);
   const editingType = ref<TypeData | null>(null);
   const editingPart = ref<EditingPart | null>(null);
+  const editingPartSnapshot = ref<string | null>(null);
   const editingLevel = ref<EditingLevel>(null);
   const isCreatingNew = ref(false);
 
@@ -208,6 +209,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
       partIndex,
       part: reactive(partCopy)
     };
+    editingPartSnapshot.value = JSON.stringify(partCopy);
     editingLevel.value = 'part';
   }
 
@@ -233,8 +235,14 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
       part: reactive(JSON.parse(JSON.stringify(newPart))),
       isNewPart: true
     };
+    editingPartSnapshot.value = JSON.stringify(newPart);
     editingLevel.value = 'part';
   }
+
+  const isPartDirty = computed(() => {
+    if (!editingPart.value || editingPartSnapshot.value === null) return false;
+    return JSON.stringify(toRaw(editingPart.value.part)) !== editingPartSnapshot.value;
+  });
 
   async function saveType() {
     if (!editingType.value) return;
@@ -339,6 +347,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
     void groupedPartsByType.value;
 
     editingPart.value = null;
+    editingPartSnapshot.value = null;
     editingLevel.value = null;
   }
 
@@ -779,6 +788,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
 
   function cancelEditingPart() {
     editingPart.value = null;
+    editingPartSnapshot.value = null;
     editingLevel.value = null;
   }
 
@@ -828,6 +838,7 @@ export function usePartsManager(cmsData: ZeroCodeData, options?: PartsManagerOpt
     selectedType,
     editingType,
     editingPart,
+    isPartDirty,
     editingLevel,
     isCreatingNew,
     currentTypes,

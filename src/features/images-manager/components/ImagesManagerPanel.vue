@@ -151,55 +151,7 @@
     </Teleport>
 
     <!-- カテゴリ情報モーダル -->
-    <Teleport :to="teleportTo">
-      <div
-        v-if="showCategoryInfoModal"
-        class="zcode-help-modal-overlay"
-        @click.self="showCategoryInfoModal = false"
-      >
-        <div class="zcode-help-modal" @click.stop>
-          <div class="zcode-help-modal-header">
-            <div class="zcode-help-modal-header-title" role="heading" aria-level="3">
-              <Info :size="20" class="zcode-css-warning-modal-title-icon" />
-              <span>{{ $t('dataViewer.categoryInfo.title') }}</span>
-            </div>
-            <button
-              class="zcode-close-btn"
-              :aria-label="$t('common.close')"
-              @click="showCategoryInfoModal = false"
-            >
-              <X :size="18" />
-            </button>
-          </div>
-          <div class="zcode-help-modal-body">
-            <div class="zcode-help-section">
-              <div class="zcode-help-section-title" role="heading" aria-level="4">
-                {{ $t('dataViewer.categoryInfo.common.title') }}
-              </div>
-              <div class="zcode-help-section-item">
-                {{ $t('dataViewer.categoryInfo.common.description') }}
-              </div>
-            </div>
-            <div class="zcode-help-section">
-              <div class="zcode-help-section-title" role="heading" aria-level="4">
-                {{ $t('dataViewer.categoryInfo.individual.title') }}
-              </div>
-              <div class="zcode-help-section-item">
-                {{ $t('dataViewer.categoryInfo.individual.description') }}
-              </div>
-            </div>
-            <div class="zcode-help-section">
-              <div class="zcode-help-section-title" role="heading" aria-level="4">
-                {{ $t('dataViewer.categoryInfo.special.title') }}
-              </div>
-              <div class="zcode-help-section-item">
-                {{ $t('dataViewer.categoryInfo.special.description') }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <CategoryInfoModal :show="showCategoryInfoModal" @close="showCategoryInfoModal = false" />
   </div>
 </template>
 
@@ -210,7 +162,8 @@ import { useI18n } from 'vue-i18n';
 import type { ZeroCodeData, ImageData, CMSConfig } from '../../../types';
 import { useImagesManager } from '../composables/useImagesManager';
 import { logger } from '../../../core/utils/logger';
-import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Info, Image } from 'lucide-vue-next';
+import { Plus, Trash2, X, Check, ArrowUpDown, HelpCircle, Image } from 'lucide-vue-next';
+import CategoryInfoModal from '../../parts-manager/components/CategoryInfoModal.vue';
 
 const { t } = useI18n();
 

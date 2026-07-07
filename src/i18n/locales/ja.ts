@@ -165,6 +165,7 @@ export default {
     slotOnly: 'スロット専用パーツ',
     slotOnlyDescription: '通常の追加一覧には出ず、スロットからのみ追加できます。',
     deletePartConfirm: 'パーツ {number} を削除しますか？\n（タイプには他のパーツが残ります）',
+    discardPartChangesConfirm: '編集内容が保存されていません。破棄しますか？',
     deleteTypeConfirm: 'このタイプを削除しますか？',
     deleteTypeWithUsagesConfirm: 'タイプ「{type}」は{count}箇所で使用されています。削除しますか？',
     deleteSlotConfirm: 'スロット「{slotName}」を削除しますか？',

@@ -96,7 +96,11 @@
               v-for="image in currentImages"
               :key="image.id"
               :class="getSpecialItemClass(image)"
+              role="button"
+              tabindex="0"
               @click="selectImage(image)"
+              @keydown.enter.prevent="selectImage(image)"
+              @keydown.space.prevent="selectImage(image)"
             >
               <div v-if="reorderSourceImage === image.id" class="zcode-reorder-source-indicator">
                 {{ $t('partsManager.source') }}
@@ -142,7 +146,11 @@
               :key="entry.image.id"
               :class="{ selected: selectedImageId === entry.image.id }"
               class="zcode-image-item"
+              role="button"
+              tabindex="0"
               @click="selectImage(entry.image)"
+              @keydown.enter.prevent="selectImage(entry.image)"
+              @keydown.space.prevent="selectImage(entry.image)"
             >
               <span
                 v-if="activeTab === 'all'"

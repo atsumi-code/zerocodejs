@@ -166,6 +166,7 @@ export default {
     slotOnlyDescription: 'Hidden from the main add list; add only via a parent slot.',
     deletePartConfirm:
       'Do you want to delete part {number}?\n(Other parts in the type will remain)',
+    discardPartChangesConfirm: 'You have unsaved changes. Discard them?',
     deleteTypeConfirm: 'Do you want to delete this type?',
     deleteTypeWithUsagesConfirm:
       'Type "{type}" is used in {count} places. Do you want to delete it?',

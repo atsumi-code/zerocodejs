@@ -680,6 +680,13 @@ interface ImageData {
 - ランドマーク: index.html に `<main>`、デモページの `.l-container` に `role="main"` を追加
 - サンプルパーツテンプレートの `role="listitem"` の親（`event__items` / `info__items` / `faq__items`）に `role="list"` を追加
 
+31. ✅ **モーダルa11yフォローアップ（ui-reviewer指摘の残課題）**（2026年7月）
+
+- `ImagesManagerPanel.vue` のカテゴリ情報モーダルを `CategoryInfoModal.vue` に統合し重複実装を解消（`useModalA11y` が自動適用）
+- `AddPanel.vue` のパーツ拡大プレビューモーダルに `useModalA11y` を適用
+- `ImageSelectModal` の画像グリッド（全カテゴリ）に `role="button"` + `tabindex="0"` + Enter/Space ハンドラを追加し、キーボードのみで画像選択可能に
+- パーツ編集モーダルにダーティ判定（`usePartsManager.ts` の `isPartDirty`）を追加。未保存の変更がある状態での Esc / × / オーバーレイクリックは `confirm()` で破棄意図を確認してから閉じる
+
 ### 未実装（スコープ関連）
 
 - **専用パーツのページスコープ**: Phase 2 以降で検討（画像 Phase 1 完了後）

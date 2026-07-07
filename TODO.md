@@ -746,12 +746,13 @@ ZC-3（並行可）
 - **設計メモ**: パーツ編集モーダルは `editingPart.part.*` / `cssDraft` / `slotPartFilters` 等への v-model が10箇所以上あり、props 経由では vue/no-mutating-props と衝突する。抽出時は **provide/inject**（`InjectionKey` で usePartsManager の状態スライスを提供）でデータフローを再設計するか、モーダル専用の `usePartEditModal` コンポーザブルに状態を移してから分割する
 - **セーフティネット**: `e2e/parts-manager-smoke.spec.ts`（タブ→一覧→モーダル開閉、カテゴリ情報モーダル）。着手前に「テンプレート編集→プレビュー反映→保存」のE2Eを追加すること
 
-### モーダルa11yのフォローアップ（ui-reviewer 指摘・非ブロッキング）
+### モーダルa11yのフォローアップ（ui-reviewer 指摘・非ブロッキング）【完了】（2026年7月8日）
 
-- `ImagesManagerPanel.vue` のカテゴリ情報モーダルは `CategoryInfoModal.vue` の重複実装。置き換えれば `useModalA11y` も自動適用される
-- `AddPanel.vue` のプレビューモーダルに `useModalA11y` 未適用
-- `ImageSelectModal` の画像グリッドは `div @click` のみでキーボード到達不可。`ReorderStructureTreeRows` の tabindex + enter/space パターンを適用する
-- パーツ編集モーダルの Esc / × はテンプレート編集を確認なしで破棄する（既存挙動）。ダーティ時の確認ダイアログを検討
+- ✅ `ImagesManagerPanel.vue` のカテゴリ情報モーダルを `CategoryInfoModal.vue` に置き換え、`useModalA11y` を自動適用
+- ✅ `AddPanel.vue` のプレビューモーダルに `useModalA11y` を適用
+- ✅ `ImageSelectModal` の画像グリッド（`special`タブ / `all`他タブの両方）に `role="button"` + `tabindex="0"` + Enter/Space ハンドラを追加（`ReorderStructureTreeRows` と同パターン）
+- ✅ パーツ編集モーダルにダーティ判定（`usePartsManager.ts` の `isPartDirty`）を追加。Esc / × / オーバーレイクリックいずれも未保存の変更があれば `confirm()` で破棄確認するように変更（`handleCancelPart`）
+- 残: `ImagesManagerPanel.vue` の画像編集モーダル（差し替え用）は今回のスコープ外（`useModalA11y` 未適用のまま）
 
 ---
 
