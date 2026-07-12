@@ -30,7 +30,7 @@ const headerFooterTranslations = {
 };
 
 function getCurrentLang() {
-  return localStorage.getItem('zerocode-lang') || 'en';
+  return localStorage.getItem('zerocode-lang') || 'ja';
 }
 
 function applyHeaderFooterTranslations(container, lang) {
@@ -189,6 +189,7 @@ async function loadHeader() {
     }
 
     const currentLang = getCurrentLang();
+    document.documentElement.lang = currentLang;
     applyHeaderFooterTranslations(document, currentLang);
     updateLangButtons(currentLang);
     setupLangSwitchButtons();
