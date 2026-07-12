@@ -17,6 +17,11 @@
   text-align: center;
 }
 
+.l-header {
+  position: relative;
+  padding-top: 26px;
+}
+
 .l-header h1,
 .l-footer h1 {
   margin: 0 0 10px 0;
@@ -30,35 +35,96 @@
   font-size: 14px;
 }
 /* ========================================
-デモガイドバナー（デモページ上部の案内）
+使い方ポップオーバー（デモページヘッダー右上）
 ======================================== */
 
-.demo-guide {
-  background: #f6f8fa;
-  border-bottom: 1px solid #e1e4e8;
-  padding: 14px 20px;
-  font-size: 14px;
-  color: #2c3e50;
+.l-header-utility {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: stretch;
+  font-size: 12.5px;
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom-left-radius: 8px;
+  overflow: hidden;
 }
 
-.demo-guide-inner {
-  max-width: 960px;
-  margin: 0 auto;
+.demo-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.demo-back-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.demo-back-link:hover {
+  color: #fff;
+}
+
+.demo-help {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px 16px;
+}
+
+.demo-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 4px 12px;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.demo-help-btn:hover,
+.demo-help-btn[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.demo-help-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(360px, 84vw);
+  background: #fff;
+  color: #2c3e50;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  padding: 16px 18px;
+  text-align: left;
+  font-size: 13.5px;
+  z-index: 20;
+}
+
+.demo-help-popover[hidden] {
+  display: none;
 }
 
 .demo-guide-title {
+  display: block;
   font-weight: 700;
-  white-space: nowrap;
+  margin-bottom: 8px;
 }
 
 .demo-guide-steps {
   margin: 0;
   padding-left: 1.4em;
-  flex: 1 1 480px;
   list-style: decimal;
 }
 
@@ -75,18 +141,21 @@
 }
 
 .demo-guide-note {
-  flex-basis: 100%;
-  margin: 4px 0 0;
-  font-size: 12.5px;
+  margin: 10px 0 0;
+  font-size: 12px;
   color: #5f6e70;
 }
 
-.demo-guide-back {
-  margin-left: auto;
-  white-space: nowrap;
-  color: #1d6fa5;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+/* モバイルではラベルを隠しアイコンのみにして見出しとの圧迫感を減らす */
+@media (max-width: 768px) {
+  .demo-util-label {
+    display: none;
+  }
+
+  .demo-back-link,
+  .demo-help-btn {
+    padding: 6px 10px;
+  }
 }
 
 /* CMS用ヘッダーとフッター */

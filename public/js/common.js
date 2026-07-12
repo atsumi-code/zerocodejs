@@ -1129,11 +1129,56 @@ function setupSaveResetListeners() {
   });
 }
 
+// 「使い方」ポップオーバーの開閉を設定
+function setupDemoHelpToggles() {
+  document.querySelectorAll('.demo-help-btn').forEach((btn) => {
+    const popoverId = btn.getAttribute('aria-controls');
+    const popover = popoverId ? document.getElementById(popoverId) : null;
+    if (!popover) return;
+
+    function close() {
+      popover.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function open() {
+      popover.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (popover.hidden) {
+        open();
+      } else {
+        close();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!popover.hidden && !popover.contains(e.target) && e.target !== btn) {
+        close();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !popover.hidden) {
+        close();
+        btn.focus();
+      }
+    });
+  });
+}
+
 // DOMContentLoaded時にイベントリスナーを設定
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', setupSaveResetListeners);
+  document.addEventListener('DOMContentLoaded', () => {
+    setupSaveResetListeners();
+    setupDemoHelpToggles();
+  });
 } else {
   setupSaveResetListeners();
+  setupDemoHelpToggles();
 }
 
 // グローバルに公開
@@ -1142,6 +1187,7 @@ window.ZeroCodeCommon = {
   SAMPLE_DATA,
   StorageManager,
   setupSaveResetListeners,
+  setupDemoHelpToggles,
   getInstanceId,
   getStorageKey
 };

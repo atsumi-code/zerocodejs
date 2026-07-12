@@ -14,22 +14,57 @@
   </head>
   <body>
     <div class="l-header l-header--dev">
+      <div class="l-header-utility">
+        <a class="demo-back-link" href="./index.html#demo" aria-label="デモ一覧へ戻る">
+          <span aria-hidden="true">←</span>
+          <span class="demo-util-label">デモ一覧へ戻る</span>
+        </a>
+        <div class="demo-help">
+          <button
+            type="button"
+            class="demo-help-btn"
+            aria-expanded="false"
+            aria-controls="demo-help-popover-studio"
+            aria-label="使い方"
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+            <span class="demo-util-label">使い方</span>
+          </button>
+          <div
+            id="demo-help-popover-studio"
+            class="demo-help-popover"
+            role="region"
+            aria-label="このデモで試せること"
+            hidden
+          >
+            <span class="demo-guide-title">このデモで試せること</span>
+            <ol class="demo-guide-steps">
+              <li>「パーツ管理」を開き、編集できるのが「専用」カテゴリだけであることを確認</li>
+              <li>ページ管理はコンテンツ担当者向け（zcode-cms）と同じ操作感で編集可能</li>
+              <li>
+                保存時の <code>save-request</code> は
+                <code>source: 'studio'</code> で発火（サーバー側の権限チェック用）
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
       <h1>制作会社向け管理画面（zcode-studio）</h1>
       <p>専用パーツ・専用CSS・専用画像のみ編集可能。共通・個別パーツは読み取り専用</p>
-    </div>
-    <div class="demo-guide">
-      <div class="demo-guide-inner">
-        <span class="demo-guide-title">このデモで試せること</span>
-        <ol class="demo-guide-steps">
-          <li>「パーツ管理」を開き、編集できるのが「専用」カテゴリだけであることを確認</li>
-          <li>ページ管理はコンテンツ担当者向け（zcode-cms）と同じ操作感で編集可能</li>
-          <li>
-            保存時の <code>save-request</code> は
-            <code>source: 'studio'</code> で発火（サーバー側の権限チェック用）
-          </li>
-        </ol>
-        <a class="demo-guide-back" href="./index.html">← トップへ戻る</a>
-      </div>
     </div>
 
     <div class="l-container" role="main">

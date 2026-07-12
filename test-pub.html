@@ -14,19 +14,58 @@
   </head>
   <body>
     <div class="l-header l-header--pub">
+      <div class="l-header-utility">
+        <a class="demo-back-link" href="./index.html#demo" aria-label="デモ一覧へ戻る">
+          <span aria-hidden="true">←</span>
+          <span class="demo-util-label">デモ一覧へ戻る</span>
+        </a>
+        <div class="demo-help">
+          <button
+            type="button"
+            class="demo-help-btn"
+            aria-expanded="false"
+            aria-controls="demo-help-popover-pub"
+            aria-label="使い方"
+          >
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+            <span class="demo-util-label">使い方</span>
+          </button>
+          <div
+            id="demo-help-popover-pub"
+            class="demo-help-popover"
+            role="region"
+            aria-label="このデモで試せること"
+            hidden
+          >
+            <span class="demo-guide-title">このデモで試せること</span>
+            <ol class="demo-guide-steps">
+              <li>CMSデモ（zcode-cms / zcode-editor）で編集・保存する</li>
+              <li>
+                このページを再読み込みすると、保存した内容が編集UIなしの素のHTMLとして表示される
+              </li>
+              <li>
+                編集用の <code>data-zcode-*</code> 属性が出力に含まれないことを開発者ツールで確認
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
       <h1>公開ページ出力（renderToHtml）</h1>
       <p>編集UIを含まない公開用HTML。CMSデモで保存した内容がそのまま反映されます</p>
-    </div>
-    <div class="demo-guide">
-      <div class="demo-guide-inner">
-        <span class="demo-guide-title">このデモで試せること</span>
-        <ol class="demo-guide-steps">
-          <li>CMSデモ（zcode-cms / zcode-editor）で編集・保存する</li>
-          <li>このページを再読み込みすると、保存した内容が編集UIなしの素のHTMLとして表示される</li>
-          <li>編集用の <code>data-zcode-*</code> 属性が出力に含まれないことを開発者ツールで確認</li>
-        </ol>
-        <a class="demo-guide-back" href="./index.html">← トップへ戻る</a>
-      </div>
     </div>
 
     <div class="l-container" role="main">
