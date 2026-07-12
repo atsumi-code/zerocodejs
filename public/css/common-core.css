@@ -48,7 +48,6 @@
   border-left: 1px solid rgba(255, 255, 255, 0.35);
   border-bottom: 1px solid rgba(255, 255, 255, 0.35);
   border-bottom-left-radius: 8px;
-  overflow: hidden;
 }
 
 .demo-back-link {
@@ -109,7 +108,9 @@
   padding: 16px 18px;
   text-align: left;
   font-size: 13.5px;
-  z-index: 20;
+  /* zcode-cms 側の最上位レイヤー（.zcode-help-modal-overlay 等 z-index: 9000）より
+     確実に手前に表示するため、デモページ側はそれを上回る値にする */
+  z-index: 9999;
 }
 
 .demo-help-popover[hidden] {
