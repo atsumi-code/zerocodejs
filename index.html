@@ -135,10 +135,11 @@
         <h2 class="section-title" data-i18n="features.title">主な特徴</h2>
         <div class="features-grid">
           <div class="feature-card">
-            <h3 class="feature-title" data-i18n="features.isolated.title">依存・副作用なし</h3>
+            <h3 class="feature-title" data-i18n="features.isolated.title">CSS/JSの完全分離</h3>
             <p class="feature-description" data-i18n="features.isolated.desc">
               WebコンポーネントのShadow
-              DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。依存関係や副作用がなく、Vue/React/Laravelなどどの環境でも安全に組み込めます。
+              DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。内部でVue
+              3を使用しており利用時は別途読み込みが必要ですが、Vue/React/Laravelなどどの環境でも安全に組み込めます。
             </p>
           </div>
           <div class="feature-card">
@@ -460,9 +461,9 @@
           'hero.getStarted': 'Get Started',
           'hero.viewDemo': 'View Demo',
           'features.title': 'Key Features',
-          'features.isolated.title': 'No Dependencies, No Side Effects',
+          'features.isolated.title': 'Fully Isolated CSS/JS',
           'features.isolated.desc':
-            "Web Components with Shadow DOM completely isolate CSS/JS. No impact on your existing admin panels, and your existing CSS/JS won't affect ZeroCode.js. Safe to integrate with Vue/React/Laravel or any framework.",
+            "Web Components with Shadow DOM completely isolate CSS/JS. No impact on your existing admin panels, and your existing CSS/JS won't affect ZeroCode.js. Uses Vue 3 internally (loaded separately) and integrates safely with Vue/React/Laravel or any framework.",
           'features.learning.title': 'Low Learning Curve',
           'features.learning.desc':
             'Built on Web Components standard - if you know HTML/CSS/JS basics, you can understand it. While Vue 3 is used internally, we provide a framework-agnostic API, so no Vue knowledge required. Flexible content management with our custom template syntax.',
@@ -538,9 +539,9 @@
           'hero.getStarted': 'はじめる',
           'hero.viewDemo': 'デモを見る',
           'features.title': '主な特徴',
-          'features.isolated.title': '依存・副作用なし',
+          'features.isolated.title': 'CSS/JSの完全分離',
           'features.isolated.desc':
-            'WebコンポーネントのShadow DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。依存関係や副作用がなく、Vue/React/Laravelなどどの環境でも安全に組み込めます。',
+            'WebコンポーネントのShadow DOMによりCSS/JSを完全に分離。既存の管理画面に影響を与えず、管理画面側のCSS/JSにも影響されません。内部でVue 3を使用しており利用時は別途読み込みが必要ですが、Vue/React/Laravelなどどの環境でも安全に組み込めます。',
           'features.learning.title': '学習コストが低い',
           'features.learning.desc':
             'Web Components標準で実装されているため、HTML/CSS/JSの基礎知識があれば理解できます。Vue 3を内部で使用していますが、フレームワーク非依存のAPIを提供するため、Vueの詳細な知識は不要です。独自のテンプレート記法で柔軟なコンテンツ管理ができます。',
