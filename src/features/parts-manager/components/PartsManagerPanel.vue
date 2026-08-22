@@ -2,7 +2,7 @@
   <div class="zcode-parts-manager">
     <!-- 共通/個別タブ ＋ 新規作成ボタン（右上にコンパクト配置） -->
     <div class="zcode-parts-category-tabs">
-      <div v-if="!fixedCategory" class="zcode-parts-category-tab-group">
+      <div v-if="!fixedCategory && categoryTabs.length > 0" class="zcode-parts-category-tab-group">
         <button
           v-for="category in categoryTabs"
           :key="category"
@@ -26,7 +26,7 @@
           <HelpCircle :size="14" />
         </button>
       </div>
-      <div class="zcode-parts-add-wrapper">
+      <div v-if="visibleCategories.length > 0" class="zcode-parts-add-wrapper">
         <button class="zcode-btn-primary zcode-parts-new-btn" @click="startCreating">
           <Plus :size="14" />
           <span>{{ $t('partsManager.createType') }}</span>
@@ -889,21 +889,10 @@ watch(showPartOptionsPopover, (open) => {
 // タブの順序を制御
 const categoryOrder = computed(() => props.config?.categoryOrder || 'common');
 
-const categoryTabs = computed(() => {
-  const tabs: Array<'common' | 'individual' | 'special'> = [];
-
-  if (categoryOrder.value === 'individual') {
-    tabs.push('individual', 'common', 'special');
-  } else if (categoryOrder.value === 'special') {
-    tabs.push('special', 'common', 'individual');
-  } else {
-    tabs.push('common', 'individual', 'special');
-  }
-
-  return tabs as readonly ('common' | 'individual' | 'special')[];
-});
-
 const {
+  // 非表示カテゴリ
+  visibleCategories,
+
   // 並べ替え
   reorderSourcePart,
   handleReorderClick,
@@ -939,7 +928,27 @@ const {
   deletePartType
 } = usePartsManager(props.cmsData, {
   beforeSavePart: props.config?.studio?.beforeSavePart,
-  sanitize: props.config?.studio?.sanitizePartTemplate
+  sanitize: props.config?.studio?.sanitizePartTemplate,
+  hiddenCategories: props.config?.studio?.hiddenCategories
+});
+
+// タブとして表示するカテゴリ（非表示カテゴリを除外した上で順序を制御）
+const categoryTabs = computed(() => {
+  const tabs: Array<'common' | 'individual' | 'special'> = [];
+
+  if (categoryOrder.value === 'individual') {
+    tabs.push('individual', 'common', 'special');
+  } else if (categoryOrder.value === 'special') {
+    tabs.push('special', 'common', 'individual');
+  } else {
+    tabs.push('common', 'individual', 'special');
+  }
+
+  return tabs.filter((c) => visibleCategories.includes(c)) as readonly (
+    | 'common'
+    | 'individual'
+    | 'special'
+  )[];
 });
 
 const editPanelPreviewComponent = ref<ComponentData | null>(null);
@@ -1020,11 +1029,15 @@ function handleEditPanelPreviewSaveField(field: { fieldName: string; currentValu
 }
 
 // fixedCategory が指定されていればそれを使用、そうでなければ categoryOrder に基づいて設定
-if (props.fixedCategory) {
+// （非表示カテゴリが指定されていた場合は無視し、usePartsManager 側の初期値のまま）
+if (props.fixedCategory && visibleCategories.includes(props.fixedCategory)) {
   activeCategory.value = props.fixedCategory;
-} else if (props.config?.categoryOrder === 'individual') {
+} else if (
+  props.config?.categoryOrder === 'individual' &&
+  visibleCategories.includes('individual')
+) {
   activeCategory.value = 'individual';
-} else if (props.config?.categoryOrder === 'special') {
+} else if (props.config?.categoryOrder === 'special' && visibleCategories.includes('special')) {
   activeCategory.value = 'special';
 }
 

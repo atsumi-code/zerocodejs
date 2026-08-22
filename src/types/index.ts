@@ -91,6 +91,12 @@ export interface StudioSettings {
   showSaveConfirm?: boolean;
   sanitizePartTemplate?: boolean;
   beforeSavePart?: (body: string) => string | Promise<string>;
+  /**
+   * 指定したカテゴリをパーツマネージャー（タイプ/パーツの追加・編集・削除・並べ替えUI）から
+   * 除外する。タブ自体を表示せず、一覧にも出さない。
+   * 用途例: 特定カテゴリのパーツ定義をアプリコード側で管理し、CMS上のGUI編集を禁止したい場合。
+   */
+  hiddenCategories?: Array<'common' | 'individual' | 'special'>;
 }
 
 export interface CMSConfig {

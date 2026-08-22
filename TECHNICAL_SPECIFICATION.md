@@ -284,6 +284,7 @@ interface ImageData {
 - `showSaveConfirm`: 保存時の確認ダイアログを表示する（デフォルト: `true`）
 - `sanitizePartTemplate`: パーツテンプレート保存時に DOMPurify ベースのサニタイズを実行する（デフォルト: `false`）
 - `beforeSavePart`: パーツテンプレート保存時に実行するフック関数。`(body: string) => string | Promise<string>`
+- `hiddenCategories`: 指定したカテゴリ（`'common' | 'individual' | 'special'` の配列）をパーツマネージャーから除外する。タブ・一覧に表示されず、追加・編集・削除・並べ替え関数もそのカテゴリに対しては何もしない（ガード済み）。ホストアプリ側で特定カテゴリのパーツ定義を別の手段（コード管理など）で行い、CMS上のGUI編集を禁止したい場合に使う
 
 **使用例**:
 
