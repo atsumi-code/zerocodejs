@@ -221,6 +221,10 @@ export default {
     dangerousAttrWarning: '{attr} 属性が含まれています。',
     slotSettings: 'スロット設定',
     slot: 'スロット',
+    templateHelpTitle: 'テンプレート記法ヘルプ',
+    syntax: '記法',
+    description: '説明',
+    example: '例',
     templateHelpButton: 'テンプレート記法のヘルプ',
     clickToEnlarge: 'クリックで拡大',
     displayPreview: '表示プレビュー',
@@ -289,6 +293,10 @@ export default {
     partsManagement: 'パーツ管理',
     imagesManagement: '画像管理',
     dataViewer: 'データビューアー',
-    loading: 'データを読み込み中...'
+    loading: 'データを読み込み中...',
+    saveFailed: '保存に失敗しました',
+    saveFailedWithCount: '保存に失敗しました（{count}件）',
+    saveFailedWithMessage: '保存に失敗しました（{count}件）: {message}',
+    noSaveTargets: '保存対象がありません'
   }
 };
