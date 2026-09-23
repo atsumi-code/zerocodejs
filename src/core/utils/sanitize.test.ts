@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeUrl, sanitizePartTemplate } from './sanitize';
+import { sanitizeUrl, sanitizePartTemplate, sanitizeRichText } from './sanitize';
 
 describe('sanitizeUrl', () => {
   it('通常のURLはそのまま返す', () => {
@@ -91,5 +91,13 @@ describe('sanitizePartTemplate', () => {
   it('安全な srcset はそのまま保持する', () => {
     const safe = '<img src="a.png" srcset="b.png 1x, c.png 2x">';
     expect(sanitizePartTemplate(safe)).toBe(safe);
+  });
+});
+
+describe('sanitizeRichText', () => {
+  it('許可タグは残し script を除去する', () => {
+    const clean = sanitizeRichText('<p>本文</p><script>alert(1)</script>');
+    expect(clean).toContain('<p>本文</p>');
+    expect(clean).not.toContain('<script>');
   });
 });

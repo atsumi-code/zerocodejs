@@ -1,7 +1,49 @@
-import DOMPurify from 'dompurify';
+import createDOMPurify from 'dompurify';
+
+type Purify = ReturnType<typeof createDOMPurify>;
+
+type SsrGlobals = typeof globalThis & {
+  __ZCODE_SSR_WINDOW__?: Window;
+  window?: Window;
+};
+
+function purifyWindow(): Window | undefined {
+  const g = globalThis as SsrGlobals;
+  return g.__ZCODE_SSR_WINDOW__ ?? g.window;
+}
+
+let cachedPurify: Purify | null = null;
+let cachedWindow: Window | undefined;
+
+/**
+ * Next.js SSR の `window` は DOMPurify が要求する形ではないことがある。
+ * ホストが `__ZCODE_SSR_WINDOW__`（jsdom）を置けば、それを優先して初期化する。
+ */
+function getPurify(): Purify {
+  const w = purifyWindow();
+  if (cachedPurify && cachedWindow === w && typeof cachedPurify.sanitize === 'function') {
+    return cachedPurify;
+  }
+
+  const imported = createDOMPurify as unknown as Purify;
+  const g = globalThis as SsrGlobals;
+  if (typeof imported.sanitize === 'function' && g.__ZCODE_SSR_WINDOW__ == null) {
+    cachedPurify = imported;
+    cachedWindow = w;
+    return cachedPurify;
+  }
+
+  if (!w) {
+    throw new Error('DOMPurify requires a window');
+  }
+
+  cachedPurify = createDOMPurify(w as unknown as Parameters<typeof createDOMPurify>[0]);
+  cachedWindow = w;
+  return cachedPurify;
+}
 
 export function sanitizeRichText(html: string): string {
-  return DOMPurify.sanitize(html, {
+  return getPurify().sanitize(html, {
     ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 's', 'u', 'ul', 'ol', 'li', 'a', 'hr'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],
     ALLOW_DATA_ATTR: false,
@@ -77,7 +119,7 @@ export function sanitizeUrl(url: string, context: UrlContext = 'navigation'): st
  * 危険なタグ・属性を除去する。
  */
 export function sanitizePartTemplate(html: string): string {
-  return DOMPurify.sanitize(html, {
+  return getPurify().sanitize(html, {
     ADD_TAGS: ['img', 'picture', 'source', 'video', 'audio', 'svg', 'path', 'use'],
     ADD_ATTR: [
       'z-if',
