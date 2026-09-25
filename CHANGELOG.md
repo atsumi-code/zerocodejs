@@ -6,6 +6,11 @@
 
 ## [未リリース]
 
+### 修正
+
+- ESM から `zerocodejs/ssr` を使う場合に jsdom が自動で読み込まれず、ホスト側でグローバルの `DOMParser` / `window` を用意する必要があった問題を修正。Node.js 20.16+ / 22.3+ では `process.getBuiltinModule` 経由で jsdom を読み込み、その `window` を `DOMParser` と DOMPurify の両方に使う。従来どおりホスト側でグローバルを用意する方法も引き続き使える
+- `package.json` の `repository.url` を npm の正規形式に修正（publish 時の自動修正の警告を解消）
+
 ## [1.0.1-beta.25] - 2026-09-25
 
 > **1.0.1-beta.23 / 1.0.1-beta.24 は使用しないでください。** 公開手順の誤りにより、beta.23 に記載したセキュリティ修正が npm のパッケージに正しく含まれていませんでした。beta.25 はその内容を正しくビルドして公開したものです。

@@ -138,7 +138,7 @@ See [Technical Specification – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcod
 
 ## Server-side rendering (SSR)
 
-For **Node.js** or app frameworks (e.g. Next.js), import from the **`zerocodejs/ssr`** subpath. It is the supported `package.json` export for the SSR bundle (no Vue / Web Components). Template processing needs **jsdom**, which is an optional peer dependency — install it yourself for SSR (`npm install jsdom`). Browser-only users do not need it.
+For **Node.js** or app frameworks (e.g. Next.js), import from the **`zerocodejs/ssr`** subpath. It is the supported `package.json` export for the SSR bundle (no Vue / Web Components). Template processing needs **jsdom**, which is an optional peer dependency — install it yourself for SSR (`npm install jsdom`). Browser-only users do not need it. On Node.js 20.16+ / 22.3+ it is loaded automatically, including from ESM.
 
 ```javascript
 import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';

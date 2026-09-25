@@ -145,7 +145,7 @@ import 'zerocodejs/style.css';
 
 ## サーバーサイドレンダリング（SSR）
 
-**Node.js** や Next.js などでは、公式サブパス **`zerocodejs/ssr`** から `renderToHtml` / `renderCssToHtml` を import することを推奨します。Vue・Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）です。テンプレート処理には **jsdom** が必要です。jsdom は任意の peer 依存のため、SSR で使う場合は別途 `npm install jsdom` してください（ブラウザのみで使う場合は不要です）。
+**Node.js** や Next.js などでは、公式サブパス **`zerocodejs/ssr`** から `renderToHtml` / `renderCssToHtml` を import することを推奨します。Vue・Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）です。テンプレート処理には **jsdom** が必要です。jsdom は任意の peer 依存のため、SSR で使う場合は別途 `npm install jsdom` してください（ブラウザのみで使う場合は不要です）。Node.js 20.16+ / 22.3+ では ESM からでも自動で読み込まれます。
 
 ```javascript
 import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
