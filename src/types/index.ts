@@ -1,5 +1,6 @@
 // データ型定義
 export interface ZeroCodeData {
+  version?: number; // データ形式のバージョン（未指定は 1 とみなす）
   page: ComponentData[];
   css: {
     common?: string; // 共通パーツ用CSS

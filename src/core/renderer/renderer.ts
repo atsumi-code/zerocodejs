@@ -2,6 +2,7 @@ import type { ZeroCodeData, ComponentData, PartData } from '../../types';
 import { processTemplateWithDOM, type ProcessTemplateOptions } from '../utils/template-processor';
 import { injectAttributesToRootElement } from '../utils/template-utils';
 import { findPartById } from '../utils/path-utils';
+import { migrateZeroCodeData } from '../utils/data-version';
 import { joinPageHtmlWithAddButtons, type AddBetweenButtonLabels } from '../utils/page-add-buttons';
 
 /**
@@ -112,11 +113,11 @@ export function renderToHtml(
     enableEditorAttributes = false,
     addBetweenButtonLabels = { before: 'Add before', after: 'Add after' }
   } = options;
-  const backendData = data.backendData;
-
   if (!data) {
     throw new RenderError('PARSE_ERROR', '', 'データが提供されていません');
   }
+  data = migrateZeroCodeData(data);
+  const backendData = data.backendData;
 
   const parts = data.parts || { common: [], individual: [], special: [] };
   const images = data.images || { common: [], individual: [], special: [] };

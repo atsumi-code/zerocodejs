@@ -239,6 +239,7 @@ ZeroCodeのUIが呼び出し側のCSS（リセットCSSやデフォルトCSS）�
 
 ```typescript
 interface ZeroCodeData {
+  version?: number; // データ形式のバージョン（未指定は 1 とみなす）
   page: ComponentData[];
   css: {
     common?: string; // 共通パーツ用CSS
@@ -528,6 +529,7 @@ interface ImageData {
 - `src/core/utils/path-utils.ts`: パス操作ユーティリティ
 - `src/core/utils/image-utils.ts`: 画像処理ユーティリティ
 - `src/core/utils/image-scope.ts`: 専用画像の page-id スコープ（フィルタ・追加デフォルト）
+- `src/core/utils/data-version.ts`: データ形式のバージョン（`ZERO_CODE_DATA_VERSION`）と移行処理（`migrateZeroCodeData`）。データ形式を変える場合は version を上げて `MIGRATIONS` に移行処理を追加する
 - `src/core/utils/css-manager.ts`: CSS管理
 - `src/core/utils/validation.ts`: バリデーション処理
 
