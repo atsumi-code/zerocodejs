@@ -462,5 +462,11 @@ window.__DOCS_SEARCH_INDEX__ = [
     id: 'security-model',
     text: 'セキュリティモデル（信頼境界）',
     parent: 'セキュリティ'
+  },
+  {
+    page: 'docs-backend.html',
+    id: 'csp',
+    text: 'CSP（Content Security Policy）',
+    parent: 'セキュリティ'
   }
 ];

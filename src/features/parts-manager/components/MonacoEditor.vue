@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import loader from '@monaco-editor/loader';
+import { MONACO_VS_PATH } from '../monaco-cdn';
 import { logger } from '../../../core/utils/logger';
 
 const props = defineProps<{
@@ -110,6 +111,7 @@ onMounted(async () => {
 
   try {
     // Monaco Editorを動的にロード
+    loader.config({ paths: { vs: MONACO_VS_PATH } });
     monacoInstance = await loader.init();
     syncMonacoStylesToShadowRoot();
 

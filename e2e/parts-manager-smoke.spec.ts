@@ -1,4 +1,33 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { readFileSync } from 'fs';
+import { resolve, extname } from 'path';
+
+const MONACO_DIR = resolve(process.cwd(), 'node_modules/monaco-editor');
+const installedMonacoVersion = JSON.parse(readFileSync(resolve(MONACO_DIR, 'package.json'), 'utf8'))
+  .version as string;
+
+const CONTENT_TYPES: Record<string, string> = {
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.ttf': 'font/ttf'
+};
+
+/** CDN（jsdelivr）の Monaco をインストール済みの npm パッケージから返す。版が異なる場合は読み込ませない */
+async function serveMonacoFromNodeModules(page: Page) {
+  await page.route('https://cdn.jsdelivr.net/npm/monaco-editor@*/**', (route) => {
+    const match = new URL(route.request().url()).pathname.match(
+      /^\/npm\/monaco-editor@([^/]+)\/(.+)$/
+    );
+    if (!match || match[1] !== installedMonacoVersion) {
+      return route.abort();
+    }
+    const file = resolve(MONACO_DIR, match[2]);
+    return route.fulfill({
+      body: readFileSync(file),
+      contentType: CONTENT_TYPES[extname(file)] ?? 'application/octet-stream'
+    });
+  });
+}
 
 test.describe('zcode-editor パーツ管理スモークテスト', () => {
   test('パーツ管理タブ→一覧→編集モーダルの開閉ができる', async ({ page }) => {
@@ -22,6 +51,19 @@ test.describe('zcode-editor パーツ管理スモークテスト', () => {
     await expect(modal).toBeHidden();
 
     await expect(partItems.first()).toBeVisible();
+  });
+
+  test('npm と同じ版の Monaco エディタが読み込まれ、テンプレートが表示される', async ({ page }) => {
+    await serveMonacoFromNodeModules(page);
+    await page.goto('/test-dev.html');
+    const editor = page.locator('#test-cms');
+    await editor.locator('[data-zcode-id][data-zcode-path="page.0"]').waitFor();
+
+    await editor.locator('.zcode-dev-tab', { hasText: 'パーツ管理' }).click();
+    await editor.locator('.zcode-part-item').first().click();
+
+    const modal = editor.locator('.zcode-part-modal');
+    await expect(modal.locator('.monaco-editor .view-lines')).toContainText('{$');
   });
 
   test('Esc キーでモーダルが閉じ、重なったモーダルは最前面から閉じる', async ({ page }) => {

@@ -807,6 +807,28 @@ cms.dispatchEvent(
           </li>
         </ul>
 
+        <h3 id="csp">CSP（Content Security Policy）</h3>
+        <p>
+          ZeroCode.js は <code>unsafe-eval</code> を必要としません。CSP
+          を設定する場合は、次を許可してください。
+        </p>
+        <ul>
+          <li>
+            <code>style-src 'unsafe-inline'</code>（UI とパーツ用 CSS を <code>&lt;style&gt;</code>
+            要素で適用するため）
+          </li>
+          <li>
+            <code>img-src</code> に画像の配信元と <code>data:</code>（アップロード前の画像の表示）
+          </li>
+          <li>
+            Editor / Studio のパーツ管理でコードを編集する場合のみ:
+            <code>script-src</code> と <code>style-src</code> に
+            <code>https://cdn.jsdelivr.net</code>、<code>font-src data:</code>、<code
+              >worker-src blob:</code
+            >（Monaco エディタを CDN から読み込むため）
+          </li>
+        </ul>
+
         <h3>必須実装事項</h3>
 
         <h4>1. サーバー側でのデータ検証（必須）</h4>
