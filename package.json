@@ -33,6 +33,8 @@
     "build": "vue-tsc && vite build && npm run build:umd && npm run build:ssr",
     "build:umd": "vite build --config vite.umd.config.ts",
     "build:ssr": "vite build --config vite.ssr.config.ts",
+    "verify:deps": "npm ls --omit=dev",
+    "prepublishOnly": "npm run verify:deps && npm run build",
     "build:pages": "vite build --config vite.pages.config.ts",
     "preview": "vite preview",
     "preview:pages": "vite preview --config vite.pages.config.ts --outDir dist-pages",

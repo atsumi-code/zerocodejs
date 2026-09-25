@@ -6,6 +6,10 @@
 
 ## [未リリース]
 
+### 変更
+
+- `npm publish` 時に `prepublishOnly` で依存の整合性チェック（`npm run verify:deps` = `npm ls --omit=dev`）とビルドを必ず実行するよう変更。古い `dist` や、lockfile と異なる `node_modules`（例: 旧版の DOMPurify）のまま公開されることを防ぐ
+
 ## [1.0.1-beta.23] - 2026-09-25
 
 ### セキュリティ
