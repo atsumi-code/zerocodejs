@@ -260,9 +260,7 @@ export function processTemplateWithDOM(
           ? rawValue
           : String(rawValue || defaultValue);
 
-    if (!enableEditorAttributes) {
-      richTextValue = sanitizeRichText(richTextValue);
-    }
+    richTextValue = sanitizeRichText(richTextValue);
 
     if (!richTextValue) {
       // 従来仕様: optional は何も挿入せず、通常は空の <p></p> を挿入
