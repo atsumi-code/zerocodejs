@@ -530,7 +530,7 @@ interface ImageData {
 - `src/core/utils/path-utils.ts`: パス操作ユーティリティ
 - `src/core/utils/image-utils.ts`: 画像処理ユーティリティ
 - `src/core/utils/image-scope.ts`: 専用画像の page-id スコープ（フィルタ・追加デフォルト）
-- `src/features/parts-manager/monaco-cdn.ts`: Monaco を CDN から読み込む版（`MONACO_VERSION`）。npm の `monaco-editor` と一致させる（`monaco-cdn.test.ts` と E2E で検査）
+- `src/features/parts-manager/monaco-cdn.ts`: Monaco を CDN から読み込む版（`MONACO_VERSION`）。devDependencies の `monaco-editor` と一致させる（`monaco-cdn.test.ts` と E2E で一致、CI の `scripts/audit-monaco.mjs` で脆弱性を検査）
 - `src/core/utils/data-version.ts`: データ形式のバージョン（`ZERO_CODE_DATA_VERSION`）と移行処理（`migrateZeroCodeData`）。データ形式を変える場合は version を上げて `MIGRATIONS` に移行処理を追加する
 - `src/core/utils/css-manager.ts`: CSS管理
 - `src/core/utils/validation.ts`: バリデーション処理

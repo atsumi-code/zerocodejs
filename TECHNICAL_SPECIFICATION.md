@@ -1261,7 +1261,7 @@ cms.addEventListener('save-request', async (event) => {
 ### 主要な依存関係
 
 - **Vue 3**: UIフレームワーク
-- **Monaco Editor**: コードエディター
+- **Monaco Editor**: コードエディター（Editor / Studio のパーツ管理のみ）。パッケージの容量を抑えるため、実行時に CDN（jsdelivr）から読み込む。npm の `monaco-editor` は版の管理と脆弱性監査のための devDependencies
 - **TipTap**: リッチテキストエディター
 - **SortableJS**: 並べ替えパネル内 D&D
 - **lucide-vue-next**: アイコンライブラリ
