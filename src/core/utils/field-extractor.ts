@@ -25,23 +25,12 @@ function legacyExtractionRank(token: FieldToken): number {
   return token.select ? (token.groupName ? 16 : 17) : token.groupName ? 18 : 19;
 }
 
-// 従来の text 汎用パターンの除外ガード:
-// 型サフィックス付き（{$f::rich} 等の型判定不成立ケース）と、raw に . を含むものは抽出しない
-const TYPE_SUFFIX_GUARD = /(?::rich|:image|:textarea)(?::[^}]*)?\}$/;
-
 function shouldSkipValueToken(
   token: Extract<FieldToken, { kind: 'value' }>,
   context: 'text' | 'attr'
 ): boolean {
   if (context === 'attr' && token.fieldType === 'textarea') {
     // 属性内では textarea を抽出しない（従来仕様）
-    return true;
-  }
-  if (
-    token.fieldType === 'text' &&
-    !token.groupName &&
-    (TYPE_SUFFIX_GUARD.test(token.raw) || token.raw.includes('.'))
-  ) {
     return true;
   }
   return false;

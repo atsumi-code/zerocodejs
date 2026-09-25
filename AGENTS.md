@@ -358,8 +358,9 @@ interface ImageData {
 - **読み取り専用**: `{$fieldName:defaultValue:readonly}`
 - **無効化**: `{$fieldName:defaultValue:disabled}`
 - **複数指定**: `{$fieldName:defaultValue:required:max=50}`
-- **注意（型付きフィールドとの併用）**: validation は型トークンの**前**に書く（正: `{$f:既定:required:rich}`）。型トークンの後ろに書いた validation（`{$f:既定:rich:required}`）は無視される
-- **注意（デフォルト値の `.`）**: 非グループのテキストフィールドはデフォルト値に `.` を含むと抽出されない（例: `{$url:https://example.com/path}` は編集パネルに出ない）。URL 等をデフォルトにしたい場合はグループ付き記法か optional を使わない別の設計を検討する
+- **デフォルト値の省略**: `{$fieldName}`（テキスト）、`{$fieldName::rich}` / `{$fieldName:rich}`（型付き）はデフォルト値が空のフィールドとして扱う
+- **validation の位置**: 型トークンの前後どちらに書いてもよい（`{$f:既定:required:rich}` と `{$f:既定:rich:required}` は同じ）
+- **デフォルト値の `.` と `:`**: デフォルト値に `.` や `:` を含めてよい（例: `{$url:https://example.com/path}`、`{$mail:mailto:info@example.com}`）
 
 #### バックエンドデータ
 

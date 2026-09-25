@@ -284,12 +284,13 @@ describe('extractFieldsFromTemplate', () => {
       expect(fields).toHaveLength(0);
     });
 
-    it('型トークンより後ろの validation は無視される（従来仕様のピン留め）', () => {
-      const fields = extractFieldsFromTemplate('<div>{$content:既定:rich:required}</div>');
+    it('型トークンより後ろの validation も抽出される', () => {
+      const fields = extractFieldsFromTemplate('<div>{$content:既定:rich:required:max=10}</div>');
       expect(fields).toHaveLength(1);
       expect(fields[0].type).toBe('rich');
       expect(fields[0].defaultValue).toBe('既定');
-      expect(fields[0].required).toBeUndefined();
+      expect(fields[0].required).toBe(true);
+      expect(fields[0].maxLength).toBe(10);
     });
 
     it('型トークンより前の validation は抽出される', () => {
@@ -300,9 +301,33 @@ describe('extractFieldsFromTemplate', () => {
       expect(fields[0].required).toBe(true);
     });
 
-    it('デフォルト値に . を含む非グループ text は抽出されない（従来仕様のピン留め）', () => {
-      const fields = extractFieldsFromTemplate('<div>{$url:https://example.com/path}</div>');
-      expect(fields).toHaveLength(0);
+    it('デフォルト値に . や : を含む非グループ text も抽出される', () => {
+      const fields = extractFieldsFromTemplate(
+        '<a href="{$url:https://example.com/path}">{$mail:mailto:info@example.com}</a>'
+      );
+      expect(fields.map((f) => [f.fieldName, f.type, f.defaultValue])).toEqual([
+        ['url', 'text', 'https://example.com/path'],
+        ['mail', 'text', 'mailto:info@example.com']
+      ]);
+    });
+
+    it('デフォルト値を省略した {$name} は空のデフォルト値の text として抽出される', () => {
+      const fields = extractFieldsFromTemplate('<h2>{$title}</h2><p>{$note?}</p>');
+      expect(fields).toEqual([
+        { fieldName: 'title', type: 'text', defaultValue: '' },
+        { fieldName: 'note', type: 'text', defaultValue: '', optional: true }
+      ]);
+    });
+
+    it('デフォルト値を省略した型付きフィールド（{$f::rich} / {$f:rich}）は型付きとして抽出される', () => {
+      const fields = extractFieldsFromTemplate(
+        '<div>{$a::rich}</div><div>{$b:rich}</div><img src="{$c:image}"><p>{$d::textarea:required}</p>'
+      );
+      const byName = Object.fromEntries(fields.map((f) => [f.fieldName, f]));
+      expect(byName.a).toMatchObject({ type: 'rich', defaultValue: '' });
+      expect(byName.b).toMatchObject({ type: 'rich', defaultValue: '' });
+      expect(byName.c).toMatchObject({ type: 'image', defaultValue: '' });
+      expect(byName.d).toMatchObject({ type: 'textarea', defaultValue: '', required: true });
     });
   });
 });

@@ -172,11 +172,7 @@ describe('initializeAllComponentFields', () => {
     };
 
     initializeAllComponentFields(cmsData);
-    // {$content::rich}は無効な記法の可能性があるため、フィールドが抽出されない可能性がある
-    // その場合、contentはundefinedのまま
-    // 実際の動作に合わせて、このテストはスキップまたは削除する
-    // expect(cmsData.page[0].content).toBe('<p></p>');
-    expect(cmsData.page[0].content).toBeUndefined();
+    expect(cmsData.page[0].content).toBe('<p></p>');
   });
 
   it('should initialize radio field with first option', () => {
