@@ -64,6 +64,38 @@ After `npm ci` or `npm install`, [Husky](https://github.com/typicode/husky) sets
 - Please describe the reason for the change and the scope of impact (breaking changes)
 - If documentation changes are needed, please update `docs.html` / `TECHNICAL_SPECIFICATION.md` together
 
+### Releasing a Beta (Maintainers)
+
+```bash
+# 0. Start from the latest main and reinstall dependencies from the lockfile
+git checkout main
+git pull
+rm -rf node_modules && npm ci
+
+# 1. (Optional) Rename the "Unreleased" heading in CHANGELOG.md to the new version, then commit it
+#    npm version requires a clean working tree
+
+# 2. Bump the version (-beta.N → -beta.N+1). This also creates a git commit and tag
+npm version prerelease --preid=beta
+
+# 3. Publish with the beta tag (prepublishOnly runs verify:deps and build automatically)
+npm login
+npm publish --tag beta
+
+# 4. Push the version commit and tag
+git push --follow-tags
+
+# 5. Point latest to the new version as well
+npm dist-tag add zerocodejs@$(node -p "require('./package.json').version") latest
+
+# 6. Check
+npm dist-tag ls zerocodejs
+```
+
+- Always run `git pull` and `npm ci` first. `npm publish` ships whatever is in `dist/` and `node_modules/` at that moment
+- If `npm publish` stops with `invalid: ...`, your `node_modules` does not match `package.json`. Run `rm -rf node_modules && npm ci` and retry
+- If a broken version was published, publish a fixed version and deprecate the broken one: `npm deprecate zerocodejs@<version> "<reason>"` (npm does not allow republishing the same version)
+
 ---
 
 ## 日本語
@@ -121,3 +153,35 @@ npm run build
 - 小さく分けたPRが嬉しいです
 - 変更理由と影響範囲（破壊的変更の有無）を書いてください
 - ドキュメント変更を伴う場合は、`docs.html` / `TECHNICAL_SPECIFICATION.md` も同時に更新してください
+
+### ベータ版のリリース（メンテナー向け）
+
+```bash
+# 0. 最新の main にして、依存を lockfile どおりに入れ直す
+git checkout main
+git pull
+rm -rf node_modules && npm ci
+
+# 1. （任意）CHANGELOG.md の「未リリース」の見出しを新しいバージョンに書き換えてコミットする
+#    npm version は作業ツリーがクリーンでないと実行できない
+
+# 2. バージョンを上げる（-beta.N → -beta.N+1）。Git のコミットとタグも自動で作られる
+npm version prerelease --preid=beta
+
+# 3. ベータタグで公開（prepublishOnly で verify:deps とビルドが自動実行される）
+npm login
+npm publish --tag beta
+
+# 4. バージョンのコミットとタグを push する
+git push --follow-tags
+
+# 5. latest も新しいバージョンに合わせる
+npm dist-tag add zerocodejs@$(node -p "require('./package.json').version") latest
+
+# 6. 確認
+npm dist-tag ls zerocodejs
+```
+
+- `git pull` と `npm ci` は必ず最初に実行する。`npm publish` はその時点の `dist/` と `node_modules/` の中身をそのまま公開する
+- `npm publish` が `invalid: ...` で止まった場合は、`node_modules` が `package.json` と一致していない。`rm -rf node_modules && npm ci` を実行してからやり直す
+- 問題のある版を公開してしまった場合は、修正版を公開したうえで問題の版を非推奨にする: `npm deprecate zerocodejs@<バージョン> "<理由>"`（npm では同じバージョンを再公開できない）
