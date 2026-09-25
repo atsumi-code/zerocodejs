@@ -6,11 +6,28 @@
 
 ## [未リリース]
 
+## [1.0.1-beta.25] - 2026-09-25
+
+> **1.0.1-beta.23 / 1.0.1-beta.24 は使用しないでください。** 公開手順の誤りにより、beta.23 に記載したセキュリティ修正が npm のパッケージに正しく含まれていませんでした。beta.25 はその内容を正しくビルドして公開したものです。
+
+### 修正
+
+- beta.23 に記載したセキュリティ修正（URL 属性の最終値検査・編集モードでのリッチテキスト無害化・DOMPurify 3.4.16 への更新）を含むパッケージを公開
+
 ### 変更
 
 - `npm publish` 時に `prepublishOnly` で依存の整合性チェック（`npm run verify:deps` = `npm ls --omit=dev`）とビルドを必ず実行するよう変更。古い `dist` や、lockfile と異なる `node_modules`（例: 旧版の DOMPurify）のまま公開されることを防ぐ
+- `CONTRIBUTING.md` にベータ版のリリース手順（メンテナー向け）を追加
+
+## [1.0.1-beta.24] - 2026-09-25
+
+> **使用しないでください（1.0.1-beta.25 以降を使用）。** 更新前の `node_modules` のままビルドしたため、既知の脆弱性がある DOMPurify 3.3.1 を同梱しています。コード上の修正（URL 属性の最終値検査・編集モードでのリッチテキスト無害化）は含まれています。
+
+- 変更内容は 1.0.1-beta.23 と同じ
 
 ## [1.0.1-beta.23] - 2026-09-25
+
+> **使用しないでください（1.0.1-beta.25 以降を使用）。** 公開されたパッケージは修正前のコードでビルドされており、以下のセキュリティ修正は含まれていません。
 
 ### セキュリティ
 
@@ -119,7 +136,9 @@
 
 本ファイル導入前のため個別記録がありません。主な内容: 初回公開、i18n（日英 UI）、バリデーション記法、タグの動的変更（`z-tag`）、バックエンドデータ参照（`{@...}` / `z-for`）、選択肢記法の `ラベル=値` 対応、スマホ対応、パーツ管理のプレビュー連動・画像 ID 参照パネルなど。詳細は Git 履歴（`git log v1.0.1-beta.16` および各タグ）を参照してください。
 
-[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.23...HEAD
+[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.25...HEAD
+[1.0.1-beta.25]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.24...v1.0.1-beta.25
+[1.0.1-beta.24]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.21...v1.0.1-beta.24
 [1.0.1-beta.23]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.22...v1.0.1-beta.23
 [1.0.1-beta.22]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.21...v1.0.1-beta.22
 [1.0.1-beta.21]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.20...v1.0.1-beta.21
