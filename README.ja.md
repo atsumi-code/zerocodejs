@@ -31,7 +31,7 @@ ZeroCode.js は、既存 Web サービスに後付けできる埋め込み型 CM
 - **パーツ管理**: 再利用可能なパーツを作成・管理
 - **画像管理**: 画像のアップロード・管理機能
 - **柔軟なテンプレート**: カスタムHTMLテンプレート構文で動的なコンテンツを定義
-- **軽量**: 重量級フレームワーク依存なしで、埋め込みやすいコンパクトなバンドル
+- **初期ロードが小さい**: `zerocodejs/cms` の初期ロードは圧縮後約100KB（リッチテキストエディタは遅延ロード）。Vue 3 を peer 依存として利用します
 
 ## デモ
 
@@ -145,7 +145,7 @@ import 'zerocodejs/style.css';
 
 ## サーバーサイドレンダリング（SSR）
 
-**Node.js** や Next.js などでは、公式サブパス **`zerocodejs/ssr`** から `renderToHtml` / `renderCssToHtml` を import することを推奨します。Vue・Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）です。テンプレート処理には **jsdom** が必要です（`zerocodejs` の依存として入ります）。
+**Node.js** や Next.js などでは、公式サブパス **`zerocodejs/ssr`** から `renderToHtml` / `renderCssToHtml` を import することを推奨します。Vue・Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）です。テンプレート処理には **jsdom** が必要です。jsdom は任意の peer 依存のため、SSR で使う場合は別途 `npm install jsdom` してください（ブラウザのみで使う場合は不要です）。
 
 ```javascript
 import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';

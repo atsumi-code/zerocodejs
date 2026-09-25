@@ -23,7 +23,7 @@ ZeroCode.js is an embeddable CMS library for existing web services. Authenticati
 - **Parts Management** - Create and manage reusable content blocks
 - **Image Management** - Built-in image upload and management
 - **Flexible Templates** - Custom HTML template syntax for dynamic content
-- **Lightweight** - No heavy framework dependencies, just a small embeddable bundle
+- **Small Initial Load** - `zerocodejs/cms` is about 100 KB (brotli) on first load, with the rich text editor loaded lazily. Requires Vue 3 as a peer dependency
 - **i18n Ready** - Built-in Japanese & English UI support
 
 ## Demo
@@ -138,7 +138,7 @@ See [Technical Specification – zcode-studio](./TECHNICAL_SPECIFICATION.md#zcod
 
 ## Server-side rendering (SSR)
 
-For **Node.js** or app frameworks (e.g. Next.js), import from the **`zerocodejs/ssr`** subpath. It is the supported `package.json` export for the SSR bundle (no Vue / Web Components). Template processing needs **jsdom** (already a dependency of `zerocodejs`).
+For **Node.js** or app frameworks (e.g. Next.js), import from the **`zerocodejs/ssr`** subpath. It is the supported `package.json` export for the SSR bundle (no Vue / Web Components). Template processing needs **jsdom**, which is an optional peer dependency — install it yourself for SSR (`npm install jsdom`). Browser-only users do not need it.
 
 ```javascript
 import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';

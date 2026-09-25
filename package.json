@@ -71,16 +71,20 @@
     "@tiptap/extension-text": "^3.31.3",
     "@tiptap/starter-kit": "^3.31.3",
     "@tiptap/vue-3": "^3.31.3",
-    "@types/dompurify": "^3.0.5",
     "dompurify": "^3.4.16",
-    "jsdom": "^27.2.0",
     "lucide-vue-next": "^0.553.0",
     "monaco-editor": "^0.55.1",
     "sortablejs": "^1.15.7",
     "vue-i18n": "^9.14.5"
   },
   "peerDependencies": {
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "jsdom": ">=25.0.0"
+  },
+  "peerDependenciesMeta": {
+    "jsdom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
@@ -98,6 +102,7 @@
     "eslint-plugin-vue": "^9.19.0",
     "happy-dom": "^20.3.1",
     "husky": "^9.1.7",
+    "jsdom": "^27.2.0",
     "lint-staged": "^16.4.0",
     "prettier": "^3.1.0",
     "size-limit": "^12.1.0",
