@@ -456,5 +456,11 @@ window.__DOCS_SEARCH_INDEX__ = [
     id: 'security',
     text: 'セキュリティ',
     parent: ''
+  },
+  {
+    page: 'docs-backend.html',
+    id: 'security-model',
+    text: 'セキュリティモデル（信頼境界）',
+    parent: 'セキュリティ'
   }
 ];
