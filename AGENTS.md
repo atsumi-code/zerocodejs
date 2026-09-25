@@ -529,6 +529,7 @@ interface ImageData {
 - `src/core/utils/path-utils.ts`: パス操作ユーティリティ
 - `src/core/utils/image-utils.ts`: 画像処理ユーティリティ
 - `src/core/utils/image-scope.ts`: 専用画像の page-id スコープ（フィルタ・追加デフォルト）
+- `src/core/utils/template-lint.ts`: パーツテンプレートの記法の誤り（認識されない記法・デフォルト値の `.`・型の前が空・型の後ろの validation）を検出する `lintTemplateSyntax`。パーツ編集モーダルの HTML エディタ下に警告を表示。判定は `field-extractor.ts` のスキップ条件と一致させる
 - `src/core/utils/data-version.ts`: データ形式のバージョン（`ZERO_CODE_DATA_VERSION`）と移行処理（`migrateZeroCodeData`）。データ形式を変える場合は version を上げて `MIGRATIONS` に移行処理を追加する
 - `src/core/utils/css-manager.ts`: CSS管理
 - `src/core/utils/validation.ts`: バリデーション処理

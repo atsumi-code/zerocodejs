@@ -517,6 +517,30 @@
                       class="zcode-monaco-editor"
                     />
                   </div>
+                  <div
+                    v-if="codeTab === 'html' && templateSyntaxWarnings.length > 0"
+                    class="zcode-template-lint"
+                    tabindex="0"
+                    :aria-label="$t('partsManager.templateLintTitle')"
+                  >
+                    <div class="zcode-template-lint-title">
+                      <AlertTriangle :size="14" class="zcode-template-lint-icon" />
+                      <span>{{ $t('partsManager.templateLintTitle') }}</span>
+                    </div>
+                    <div role="list" class="zcode-template-lint-list">
+                      <div
+                        v-for="(warning, index) in templateSyntaxWarnings"
+                        :key="`${warning.code}-${index}`"
+                        role="listitem"
+                        class="zcode-template-lint-item"
+                      >
+                        <code class="zcode-template-lint-raw">{{ warning.raw }}</code>
+                        <span class="zcode-template-lint-message">{{
+                          templateLintMessage(warning)
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="zcode-part-editor-pane zcode-part-editor-pane--side">
@@ -692,6 +716,7 @@ import type { ZeroCodeData, TypeData, CMSConfig, ComponentData } from '../../../
 import { usePartsManager } from '../composables/usePartsManager';
 import { getAvailableFieldsFromPart } from '../../../core/utils/edit-panel-fields';
 import { findFirstComponentWithPartId } from '../../../core/utils/path-utils';
+import { lintTemplateSyntax, type TemplateSyntaxWarning } from '../../../core/utils/template-lint';
 import EditPanel from '../../editor/components/EditPanel.vue';
 import {
   Plus,
@@ -702,7 +727,8 @@ import {
   ArrowUpDown,
   HelpCircle,
   Info,
-  SlidersHorizontal
+  SlidersHorizontal,
+  AlertTriangle
 } from 'lucide-vue-next';
 import MonacoEditor from './MonacoEditor.vue';
 import PartZoomPreviewModal from './PartZoomPreviewModal.vue';
@@ -1214,6 +1240,34 @@ const availableSlotsForPart = computed(() => {
 });
 
 // テンプレートにz-slotが含まれているか、または既にスロットが設定されているかを判定
+const templateSyntaxWarnings = computed<TemplateSyntaxWarning[]>(() =>
+  editingPart.value?.part.body ? lintTemplateSyntax(editingPart.value.part.body) : []
+);
+
+const TEMPLATE_LINT_MESSAGES: Record<
+  TemplateSyntaxWarning['code'],
+  { key: string; example: string }
+> = {
+  unrecognized: { key: 'partsManager.templateLintUnrecognized', example: '{$name:default}' },
+  'default-contains-dot': {
+    key: 'partsManager.templateLintDefaultContainsDot',
+    example: '{$name.group:https://example.com}'
+  },
+  'empty-default-before-type': {
+    key: 'partsManager.templateLintEmptyDefaultBeforeType',
+    example: '{$name:default:rich}'
+  },
+  'validation-after-type': {
+    key: 'partsManager.templateLintValidationAfterType',
+    example: '{$name:default:required:rich}'
+  }
+};
+
+function templateLintMessage(warning: TemplateSyntaxWarning): string {
+  const { key, example } = TEMPLATE_LINT_MESSAGES[warning.code];
+  return t(key, { example, ignored: (warning.ignored ?? []).map((v) => `:${v}`).join(' ') });
+}
+
 const hasSlotsInTemplate = computed(() => {
   if (!editingPart.value) return false;
 

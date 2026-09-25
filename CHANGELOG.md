@@ -8,6 +8,8 @@
 
 ### 追加
 
+- **テンプレート記法の警告**: パーツ編集モーダルの HTML エディタの下に、意図どおりに動かない記法を警告として表示する（`lintTemplateSyntax`）。対象は、デフォルト値の無い `{$name}` など認識されない記法、グループなしのテキストでデフォルト値に `.` を含むもの（編集パネルに出ない）、型の前のデフォルト値が空のもの（`{$f::rich}`）、型の後ろに書いた validation（`{$f:既定:rich:required}` の `:required` は無視される）
+
 - **データ形式のバージョン**: `ZeroCodeData` に `version`（現在は `1`）を追加し、`ZERO_CODE_DATA_VERSION` と `migrateZeroCodeData()` を export。`version` が無い既存データは `1` とみなすため、既存データはそのまま使える。`getData()` の結果に `version` が含まれ、`setData(オブジェクト)` と `renderToHtml()` は受け取ったデータを現在の形式に移行してから使う。ライブラリより新しい `version` のデータには警告を出す
 
 ### 修正

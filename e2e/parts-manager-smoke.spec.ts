@@ -24,6 +24,41 @@ test.describe('zcode-editor パーツ管理スモークテスト', () => {
     await expect(partItems.first()).toBeVisible();
   });
 
+  test('テンプレート記法の誤りをエディタの下に警告する', async ({ page }) => {
+    await page.goto('/test-dev.html');
+    const editor = page.locator('#test-cms');
+    await editor.locator('[data-zcode-id][data-zcode-path="page.0"]').waitFor();
+
+    await editor.locator('.zcode-dev-tab', { hasText: 'パーツ管理' }).click();
+    await editor.locator('.zcode-part-item').first().click();
+    const modal = editor.locator('.zcode-part-modal');
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('.zcode-template-lint')).toBeHidden();
+    await modal.locator('.zcode-close-btn').first().click();
+    await expect(modal).toBeHidden();
+
+    // Monaco は CDN から読み込まれるため、エディタへの入力ではなくデータ側でテンプレートを変更する
+    await page.evaluate(() => {
+      const el = document.querySelector('#test-cms') as unknown as {
+        getData: (path: string) => Record<string, { parts: { body: string }[] }[]>;
+      };
+      const parts = el.getData('parts');
+      for (const category of Object.values(parts)) {
+        for (const type of category) {
+          for (const part of type.parts) {
+            part.body += '<h3>{$subtitle}</h3>';
+          }
+        }
+      }
+    });
+
+    await editor.locator('.zcode-part-item').first().click();
+    await expect(modal).toBeVisible();
+    const lint = modal.locator('.zcode-template-lint');
+    await expect(lint).toBeVisible();
+    await expect(lint.locator('.zcode-template-lint-raw')).toHaveText('{$subtitle}');
+  });
+
   test('Esc キーでモーダルが閉じ、重なったモーダルは最前面から閉じる', async ({ page }) => {
     await page.goto('/test-dev.html');
     const editor = page.locator('#test-cms');

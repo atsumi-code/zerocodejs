@@ -237,7 +237,15 @@ export default {
     syntax: 'Syntax',
     description: 'Description',
     example: 'Example',
-    templateHelpButton: 'Template syntax help'
+    templateHelpButton: 'Template syntax help',
+    templateLintTitle: 'Template syntax notes',
+    templateLintUnrecognized: 'Not recognized as a field. Write it as {example}.',
+    templateLintDefaultContainsDot:
+      'Not shown in the edit panel because the default value contains a period. Use the grouped form ({example}) or remove the period from the default value.',
+    templateLintEmptyDefaultBeforeType:
+      'Not recognized as a typed field (and not shown in the edit panel) because the default value before the type is empty. Add a default value, e.g. {example}.',
+    templateLintValidationAfterType:
+      '{ignored} is ignored because it comes after the type. Put it before the type, e.g. {example}.'
   },
   imagesManager: {
     addImage: 'Add image',

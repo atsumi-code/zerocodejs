@@ -226,6 +226,14 @@ export default {
     description: '説明',
     example: '例',
     templateHelpButton: 'テンプレート記法のヘルプ',
+    templateLintTitle: 'テンプレート記法の注意',
+    templateLintUnrecognized: '記法として認識されません。{example} の形式で書いてください。',
+    templateLintDefaultContainsDot:
+      'デフォルト値に「.」を含むため、編集パネルに表示されません。グループ付き記法（{example}）にするか、デフォルト値から「.」を除いてください。',
+    templateLintEmptyDefaultBeforeType:
+      '型の前のデフォルト値が空のため、型として認識されず編集パネルに表示されません。{example} のようにデフォルト値を入れてください。',
+    templateLintValidationAfterType:
+      '{ignored} は型の後ろにあるため無視されます。{example} のように型の前に書いてください。',
     clickToEnlarge: 'クリックで拡大',
     displayPreview: '表示プレビュー',
     editPanelPreview: '編集パネルプレビュー',

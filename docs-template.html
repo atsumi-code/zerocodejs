@@ -306,6 +306,28 @@
             複雑なバリデーション（メール形式チェック、重複チェックなど）は、バックエンドで実施することを推奨します。フロントエンドでは、<code>required</code>と<code>max</code>のみをサポートしています。
           </p>
         </div>
+        <div class="docs-warning">
+          <p><strong>記法の注意点（パーツ管理画面で警告されます）:</strong></p>
+          <ul>
+            <li>
+              デフォルト値の無い <code>{$name}</code> はフィールドとして認識されません。<code
+                >{$name:デフォルト値}</code
+              >
+              の形式で書いてください。
+            </li>
+            <li>
+              型付きフィールドでは、バリデーションを型の<strong>前</strong>に書きます（<code>{$body:本文:required:rich}</code>）。<code
+                >{$body:本文:rich:required}</code
+              >
+              の <code>:required</code> は無視されます。
+            </li>
+            <li>
+              グループなしのテキストフィールドは、デフォルト値に「.」を含むと編集パネルに表示されません（例:
+              <code>{$url:https://example.com}</code
+              >）。グループ付き記法（<code>{$url.link:https://example.com}</code>）を使ってください。
+            </li>
+          </ul>
+        </div>
 
         <h4 id="backend-data">バックエンドデータの参照</h4>
         <p>
