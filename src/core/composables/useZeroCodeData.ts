@@ -1,10 +1,12 @@
 import { reactive } from 'vue';
 import type { ZeroCodeData, ZeroCodeDataProps } from '../../types';
 import { initializeAllComponentFields } from '../utils/component-initializer';
+import { migrateZeroCodeData, ZERO_CODE_DATA_VERSION } from '../utils/data-version';
 import { logger } from '../utils/logger';
 
 export function useZeroCodeData(props: ZeroCodeDataProps) {
   const cmsData = reactive<ZeroCodeData>({
+    version: ZERO_CODE_DATA_VERSION,
     page: [],
     css: { common: undefined, individual: undefined, special: undefined },
     parts: { common: [], individual: [], special: [] },
@@ -89,7 +91,7 @@ export function useZeroCodeData(props: ZeroCodeDataProps) {
       target[keys[keys.length - 1]] = value;
     } else {
       // 全体更新（Object.assignでリアクティブを維持）
-      Object.assign(cmsData, pathOrData);
+      Object.assign(cmsData, migrateZeroCodeData(pathOrData));
     }
   }
 

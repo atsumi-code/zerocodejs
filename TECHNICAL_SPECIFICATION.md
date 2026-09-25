@@ -37,6 +37,7 @@ ZeroCodeEditor (エンジニア用管理画面)
 
 ```typescript
 interface ZeroCodeData {
+  version?: number; // データ形式のバージョン（未指定は 1 とみなす）
   page: ComponentData[];
   css: {
     common?: string; // 共通パーツ用CSS
@@ -56,6 +57,14 @@ interface ZeroCodeData {
   backendData?: Record<string, any>; // バックエンドデータ
 }
 ```
+
+#### データ形式のバージョン（`version`）
+
+- 現在のデータ形式は **`1`**（`ZERO_CODE_DATA_VERSION` として export）。`version` が無い既存データは `1` とみなす
+- `getData()` の結果には `version` が含まれる。`setData(オブジェクト)` と `renderToHtml()` に渡したデータは、`migrateZeroCodeData()` で現在の形式に移行してから使われる
+- ライブラリより新しい `version` のデータを渡すと、コンソールに警告を出してそのまま扱う（ライブラリの更新を促す）
+- 将来データ形式を変える場合は、`version` を上げ、`src/core/utils/data-version.ts` の `MIGRATIONS` に移行処理を追加する
+- **制約**: Web Component の属性（`page` / `parts-*` / `images-*`）で読み込むデータには `version` を渡す手段が無く、現在の形式として扱う。ホスト側でデータを保存する際は、将来の移行に備えて `getData().version` も併せて保存しておくことを推奨する
 
 #### カテゴリ名（UI と内部キー）
 

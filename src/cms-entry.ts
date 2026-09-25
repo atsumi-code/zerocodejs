@@ -11,5 +11,7 @@ export { renderToHtml, renderCssToHtml, RenderError } from './core/renderer/rend
 export { sanitizeRichText, sanitizeUrl, sanitizePartTemplate } from './core/utils/sanitize';
 export type { UrlContext } from './core/utils/sanitize';
 
+export { ZERO_CODE_DATA_VERSION, migrateZeroCodeData } from './core/utils/data-version';
+
 export { default as ZeroCodePreview } from './components/ZeroCodePreview.vue';
 export { default as ZeroCodeCMS } from './components/ZeroCodeCMS.vue';

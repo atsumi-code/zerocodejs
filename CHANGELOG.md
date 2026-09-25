@@ -6,6 +6,10 @@
 
 ## [未リリース]
 
+### 追加
+
+- **データ形式のバージョン**: `ZeroCodeData` に `version`（現在は `1`）を追加し、`ZERO_CODE_DATA_VERSION` と `migrateZeroCodeData()` を export。`version` が無い既存データは `1` とみなすため、既存データはそのまま使える。`getData()` の結果に `version` が含まれ、`setData(オブジェクト)` と `renderToHtml()` は受け取ったデータを現在の形式に移行してから使う。ライブラリより新しい `version` のデータには警告を出す
+
 ### 修正
 
 - ESM から `zerocodejs/ssr` を使う場合に jsdom が自動で読み込まれず、ホスト側でグローバルの `DOMParser` / `window` を用意する必要があった問題を修正。Node.js 20.16+ / 22.3+ では `process.getBuiltinModule` 経由で jsdom を読み込み、その `window` を `DOMParser` と DOMPurify の両方に使う。従来どおりホスト側でグローバルを用意する方法も引き続き使える
