@@ -530,6 +530,7 @@ interface ImageData {
 - `src/core/utils/path-utils.ts`: パス操作ユーティリティ
 - `src/core/utils/image-utils.ts`: 画像処理ユーティリティ
 - `src/core/utils/image-scope.ts`: 専用画像の page-id スコープ（フィルタ・追加デフォルト）
+- `src/features/parts-manager/monaco-cdn.ts`: Monaco を CDN から読み込む版（`MONACO_VERSION`）。devDependencies の `monaco-editor` と一致させる（`monaco-cdn.test.ts` と E2E で一致、CI の `scripts/audit-monaco.mjs` で脆弱性を検査）
 - `src/core/utils/data-version.ts`: データ形式のバージョン（`ZERO_CODE_DATA_VERSION`）と移行処理（`migrateZeroCodeData`）。データ形式を変える場合は version を上げて `MIGRATIONS` に移行処理を追加する
 - `src/core/utils/css-manager.ts`: CSS管理
 - `src/core/utils/validation.ts`: バリデーション処理
@@ -761,6 +762,7 @@ interface ImageData {
 - **セキュリティ**: 有効なタグ名のみ許可（`z-tag`の場合）
 - **信頼境界**: パーツテンプレート・CSS・`backendData` は信頼する入力（無害化しない）、CMS のフィールド値は信頼しない入力（公開・編集・SSR すべてで無害化）。詳細は `TECHNICAL_SPECIFICATION.md` の「セキュリティモデル（信頼境界）」
 - **URL 属性**: トークン単位ではなく、`markTemplatedUrlAttributes` / `sanitizeMarkedUrlAttributes` で全展開後の最終値を検査する。URL 属性を追加する場合は `isUrlAttribute` に追加する
+- **CSP**: `unsafe-eval` を必要としない状態を保つ（`eval` / `new Function` を使わない。vue-i18n は各 vite 設定の `__INTLIFY_JIT_COMPILATION__: true` で JIT コンパイル）。回帰テストは `e2e/csp.spec.ts`
 - **DOMPurify のテスト**: happy-dom 上では DOMPurify 3.4 の無害化が機能しないため、無害化を検証するテストは `// @vitest-environment jsdom` を付ける
 - **オプショナルフィールド**: `undefined`のまま残す（初期化しない）
 

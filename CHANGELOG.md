@@ -6,6 +6,17 @@
 
 ## [未リリース]
 
+### セキュリティ
+
+- **Monaco エディタを 0.57.0 に更新**: Editor / Studio のパーツ管理で CDN から読み込む Monaco が、`@monaco-editor/loader` の既定で 0.55.1（脆弱性のある DOMPurify 3.2.7 を同梱）に固定されていたため、npm の `monaco-editor` と同じ 0.57.0（DOMPurify 3.4.15）を読み込むよう明示。両者の版の一致はテストで検査する
+- **`monaco-editor` を devDependencies に移動**: Monaco は実行時に CDN から読み込むため、npm の `monaco-editor` は使われていなかった。`npm install zerocodejs` で入る容量が約 82MB 減る。CDN から読み込む版の脆弱性は CI（`scripts/audit-monaco.mjs`）で検査する。ホスト側で `monaco-editor` を直接使っている場合は、ホストの依存に追加すること
+- **CSP の `unsafe-eval` を不要に**: vue-i18n が文言の変換に `new Function` を使っていたため、`unsafe-eval` を許可しない CSP の下で管理画面が描画できなかった問題を修正（vue-i18n の JIT コンパイルを有効化）
+
+### ドキュメント
+
+- 技術仕様書と docs に CSP の要件を追加
+- 技術仕様書に「1.0 で安定させる範囲（草案）」を追加
+
 ### 変更
 
 - **テンプレート記法をより柔軟に解釈**（編集パネルに出なかった・設定が無視されていた書き方を、書いた意図どおりに扱う）

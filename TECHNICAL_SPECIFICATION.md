@@ -974,6 +974,22 @@ ZeroCode.js は Web Component ごとに責務を分け、**HTML を生成でき�
 - パーツテンプレートを信頼できない主体に編集させる場合（Studio を外部の制作会社に開放する等）は、`studio.sanitizePartTemplate: true` を有効にしたうえで、**サーバー側でも `sanitizePartTemplate`（npm パッケージから export）を再実行**すること。クライアント側の無害化は API を直接呼ぶことで回避できる
 - `backendData` にエンドユーザーの投稿（商品名・レビュー等）を含める場合、その値は信頼する入力として描画される。HTML 挿入はされないが、値に含まれるテンプレート記法（`{$field}` 等）が展開されうるため、必要に応じてサーバー側で除去すること
 
+### CSP（Content Security Policy）
+
+ZeroCode.js は `unsafe-eval` を必要としない（1.0.1-beta.26 以降。vue-i18n の JIT コンパイルを有効化）。必要なディレクティブは次のとおり（実ブラウザで確認済み）。
+
+| 用途                                       | ディレクティブ                                               | 理由                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------------------- |
+| 全コンポーネント                           | `script-src` にライブラリの配信元（自サーバーや unpkg など） |                                                                      |
+| 全コンポーネント                           | `style-src 'unsafe-inline'`                                  | Web Component が UI 用とパーツ用 CSS の `<style>` 要素を注入するため |
+| 全コンポーネント                           | `img-src` に画像の配信元と `data:`                           | パーツの画像と、アップロード前の base64 画像を表示するため           |
+| Editor / Studio のパーツ管理（コード編集） | `script-src` と `style-src` に `https://cdn.jsdelivr.net`    | Monaco エディタを CDN から読み込むため                               |
+| Editor / Studio のパーツ管理（コード編集） | `font-src data:`                                             | Monaco のアイコン用フォント                                          |
+| Editor / Studio のパーツ管理（コード編集） | `worker-src blob:`                                           | Monaco の Web Worker                                                 |
+
+- `zcode-cms`（`zerocodejs/cms`）は外部 CDN を使わない。Monaco は Editor / Studio のパーツ管理を開いたときだけ読み込まれる
+- 回帰テスト: `e2e/csp.spec.ts`（`unsafe-eval` を禁止した CSP の下で `zcode-cms` が描画されることを確認）
+
 ### 推奨事項
 
 #### 1. サーバー側での検証（必須）
@@ -1245,7 +1261,7 @@ cms.addEventListener('save-request', async (event) => {
 ### 主要な依存関係
 
 - **Vue 3**: UIフレームワーク
-- **Monaco Editor**: コードエディター
+- **Monaco Editor**: コードエディター（Editor / Studio のパーツ管理のみ）。パッケージの容量を抑えるため、実行時に CDN（jsdelivr）から読み込む。npm の `monaco-editor` は版の管理と脆弱性監査のための devDependencies
 - **TipTap**: リッチテキストエディター
 - **SortableJS**: 並べ替えパネル内 D&D
 - **lucide-vue-next**: アイコンライブラリ
@@ -1300,6 +1316,35 @@ npm run lint
 - Firefox (最新版)
 - Safari (最新版)
 - Edge (最新版)
+
+## 1.0 で安定させる範囲（草案）
+
+> **草案**: 1.0 リリース前に確定する。ベータ期間中は、以下も含めて破壊的変更がありうる。
+
+1.0 以降は[セマンティック バージョニング](https://semver.org/lang/ja/)に従い、以下の**公開 API** を破壊的に変更する場合はメジャーバージョンを上げる。
+
+### 公開 API（安定させる対象）
+
+- **Web Component**: `<zcode-cms>` / `<zcode-editor>` / `<zcode-studio>` のタグ名と属性（`locale`、`page`、`page-id`、`css-*`、`parts-*`、`images-*`、`config`、`endpoints`、`backend-data`、`use-shadow-dom`、Editor の `enable-parts-manager` / `enable-images-manager`）
+- **メソッド**: `getData()` / `setData()`
+- **イベント**: `save-request` / `save-result` / `zcode-dom-updated` とその `detail` の形
+- **設定**: `config` 属性で受け付ける設定オプション（「設定オプション」の節）
+- **データ形式**: `ZeroCodeData`（`version` を含む）。形式を変える場合は `version` を上げ、`migrateZeroCodeData()` で旧形式から自動で移行できるようにする
+- **テンプレート記法**: フィールド・選択肢・バリデーション・バックエンドデータ参照・`z-if` / `z-tag` / `z-empty` / `z-for` / `z-slot`
+- **npm エントリと export**: `zerocodejs`・`zerocodejs/cms`・`zerocodejs/ssr` と、そこから export する関数・型（`renderToHtml`、`renderCssToHtml`、`RenderError`、`sanitizeRichText`、`sanitizeUrl`、`sanitizePartTemplate`、`ZERO_CODE_DATA_VERSION`、`migrateZeroCodeData`、型定義）
+- **公開 HTML**: 公開表示（`enableEditorAttributes: false`）の出力に、編集用の `data-zcode-*` 属性やラッパー要素を含めないこと
+
+### 安定させない対象（予告なく変わりうる）
+
+- 管理画面 UI の DOM 構造・CSS クラス名（`zcode-*`）・見た目
+- 編集モードで出力される `data-zcode-*` 属性
+- `localStorage` のキーと内容（ユーザー設定の保存）
+- Vue コンポーネントとしての直接利用（`ZeroCodeCMS` などの export）と、`src/` 配下の内部関数
+
+### 変更の進め方
+
+- 公開 API を廃止する場合は、少なくとも1つ前のマイナーバージョンで非推奨にし、CHANGELOG とコンソール警告で予告する
+- セキュリティ修正は、公開 API の挙動を変える場合でもパッチ／マイナーバージョンで行うことがある（CHANGELOG の「セキュリティ」に明記する）
 
 ## ライセンス
 
