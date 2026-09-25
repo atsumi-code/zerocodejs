@@ -25,7 +25,7 @@
 
 - **ドキュメント・デモサイトを再構成**: docs を4ページ（はじめに / テンプレート記法 / 管理画面とAPI / バックエンド連携）に分割し横断検索と読者別ガイドを追加。index を日本語デフォルトに統一し、デモページに操作ガイドバナーと Studio / SSR / Light DOM への導線を設置
 - `PartsManagerPanel.vue` の独立モーダル4つ（拡大プレビュー / CSS警告 / カテゴリ情報 / テンプレート記法ヘルプ）を子コンポーネントに分割（1,538行 → 1,321行。挙動は不変）
-- **破壊的変更: jsdom を任意の peer 依存に変更**。SSR（`zerocodejs/ssr`）で使う場合は `npm install jsdom` が別途必要。ブラウザのみの利用では本番依存が 129 → 82 パッケージに減少
+- **破壊的変更: jsdom を任意の peer 依存に変更**。SSR（`zerocodejs/ssr`）で使う場合は `npm install jsdom`（20 以上）が別途必要。ブラウザのみの利用では本番依存が 129 → 82 パッケージに減少
 - 不要な `@types/dompurify` を依存から削除（DOMPurify 3 は型定義を同梱）
 - README の「軽量」表記を計測値ベース（`zerocodejs/cms` 初期ロード 圧縮後約100KB）に修正
 - CI に本番依存の脆弱性監査（`npm audit --omit=dev --audit-level=high`）を追加
