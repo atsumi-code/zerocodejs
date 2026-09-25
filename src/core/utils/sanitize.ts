@@ -1,4 +1,5 @@
 import createDOMPurify from 'dompurify';
+import { getJSDOMWindow } from './dom-utils';
 
 type Purify = ReturnType<typeof createDOMPurify>;
 
@@ -7,9 +8,9 @@ type SsrGlobals = typeof globalThis & {
   window?: Window;
 };
 
-function purifyWindow(): Window | undefined {
+function purifyWindow(): Window {
   const g = globalThis as SsrGlobals;
-  return g.__ZCODE_SSR_WINDOW__ ?? g.window;
+  return g.__ZCODE_SSR_WINDOW__ ?? g.window ?? getJSDOMWindow();
 }
 
 let cachedPurify: Purify | null = null;
@@ -33,11 +34,11 @@ function getPurify(): Purify {
     return cachedPurify;
   }
 
-  if (!w) {
-    throw new Error('DOMPurify requires a window');
+  const purify = createDOMPurify(w as unknown as Parameters<typeof createDOMPurify>[0]);
+  if (!purify.isSupported) {
+    throw new Error('DOMPurify is not supported with the provided window');
   }
-
-  cachedPurify = createDOMPurify(w as unknown as Parameters<typeof createDOMPurify>[0]);
+  cachedPurify = purify;
   cachedWindow = w;
   return cachedPurify;
 }

@@ -128,7 +128,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atsumi-code/zerocodejs"
+    "url": "git+https://github.com/atsumi-code/zerocodejs.git"
   },
   "homepage": "https://atsumi-code.github.io/zerocodejs/",
   "size-limit": [

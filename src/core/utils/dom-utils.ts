@@ -9,26 +9,61 @@ import { logger } from './logger';
 export const DOM_NODE_TYPE_ELEMENT = 1;
 export const DOM_NODE_TYPE_TEXT = 3;
 
-let cachedJSDOMParserClass: typeof DOMParser | undefined;
+type NodeRequire = (id: string) => unknown;
 
-function loadDOMParserFromJSDOM(): typeof DOMParser {
-  if (cachedJSDOMParserClass) {
-    return cachedJSDOMParserClass;
+type NodeGlobals = typeof globalThis & {
+  process?: {
+    cwd?: () => string;
+    getBuiltinModule?: (id: string) => unknown;
+  };
+};
+
+type JSDOMWindow = Window & { DOMParser: typeof DOMParser };
+
+let cachedJSDOMWindow: JSDOMWindow | undefined;
+
+/**
+ * ESM では `require` が未定義のため、Node 20.16+ / 22.3+ の `process.getBuiltinModule` から
+ * `createRequire` を取り出し、ホストのカレントディレクトリ基準で jsdom（任意の peer 依存）を解決する。
+ * 静的 import を使わないため、ブラウザ向けバンドルには影響しない。
+ */
+function resolveNodeRequire(): NodeRequire | undefined {
+  if (typeof require === 'function') {
+    return require;
   }
-  if (typeof require === 'undefined') {
-    throw new Error('DOMParser is not available in this environment');
+  const proc = (globalThis as NodeGlobals).process;
+  const nodeModule = proc?.getBuiltinModule?.('node:module') as
+    | { createRequire?: (path: string) => NodeRequire }
+    | undefined;
+  if (!nodeModule?.createRequire || !proc?.cwd) {
+    return undefined;
   }
+  return nodeModule.createRequire(`${proc.cwd()}/`);
+}
+
+/**
+ * サーバー側で DOMParser / DOMPurify に使う jsdom の window を返す（初回のみ生成）。
+ */
+export function getJSDOMWindow(): JSDOMWindow {
+  if (cachedJSDOMWindow) {
+    return cachedJSDOMWindow;
+  }
+  const nodeRequire = resolveNodeRequire();
+  if (!nodeRequire) {
+    throw new Error(
+      'DOMParser is not available in this environment. Use Node.js 20.16+ / 22.3+, or set globalThis.DOMParser (e.g. from jsdom) before rendering.'
+    );
+  }
+  let JSDOM: new (html: string) => { window: JSDOMWindow };
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { JSDOM } = require('jsdom');
-    const dom = new JSDOM('');
-    cachedJSDOMParserClass = dom.window.DOMParser as typeof DOMParser;
-    return cachedJSDOMParserClass;
+    ({ JSDOM } = nodeRequire('jsdom') as { JSDOM: typeof JSDOM });
   } catch {
     throw new Error(
       'jsdom is required for server-side rendering. Please install it: npm install jsdom'
     );
   }
+  cachedJSDOMWindow = new JSDOM('').window;
+  return cachedJSDOMWindow;
 }
 
 export function getDOMParser(): typeof DOMParser {
@@ -41,7 +76,7 @@ export function getDOMParser(): typeof DOMParser {
     return g.window.DOMParser;
   }
 
-  return loadDOMParserFromJSDOM();
+  return getJSDOMWindow().DOMParser;
 }
 
 /**
