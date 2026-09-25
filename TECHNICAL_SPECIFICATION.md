@@ -596,13 +596,19 @@ watch(enableContextMenu, (newValue) => {
 
 ```
 {$fieldName:defaultValue}
+{$fieldName}
 ```
 
 **例**:
 
 ```html
 <h1>{$title:タイトル}</h1>
+<a href="{$url:https://example.com/contact}">{$label}</a>
 ```
+
+- デフォルト値は省略できる（`{$fieldName}` は空のデフォルト値）。型付きフィールドも `{$fieldName::rich}` / `{$fieldName:rich}` のように省略できる
+- デフォルト値には `.` や `:` を含めてよい（URL・メールアドレスなど）
+- バリデーション（`:required` など）は型トークンの前後どちらに書いてもよい
 
 #### リッチテキストフィールド
 

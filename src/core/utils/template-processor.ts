@@ -494,7 +494,7 @@ export function processTemplateWithDOM(
       }
 
       // 元の属性値がオプショナルフィールドのみかチェック
-      const isOptionalOnly = /^\{\$[\w.]+?\?:[^}]+\}(?::(rich|image|textarea))?$/.test(
+      const isOptionalOnly = /^\{\$[\w.]+?\?(?::[^}]*)?\}(?::(rich|image|textarea))?$/.test(
         originalValue.trim()
       );
 

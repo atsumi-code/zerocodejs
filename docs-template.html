@@ -156,6 +156,13 @@
         <pre><code>{$fieldName:defaultValue}</code></pre>
         <p>単一行のテキスト入力フィールドとして表示されます。</p>
         <pre><code>&lt;h1&gt;{$title:タイトル}&lt;/h1&gt;</code></pre>
+        <p>
+          デフォルト値は省略できます（<code>{$title}</code>）。URL
+          やメールアドレスのように、デフォルト値に「.」や「:」を含めることもできます（<code>{$url:https://example.com/contact}</code>）。型付きフィールドでもデフォルト値を省略でき（<code>{$content::rich}</code>）、バリデーション（<code
+            >:required</code
+          >
+          など）は型の前後どちらに書いても有効です。
+        </p>
 
         <h4 id="textarea-field">テキストエリアフィールド</h4>
         <pre><code>{$fieldName:defaultValue:textarea}</code></pre>

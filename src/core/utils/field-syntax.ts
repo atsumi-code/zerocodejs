@@ -3,9 +3,10 @@ import type { FieldInfo } from './template-regex';
 /**
  * フィールド記法の単一トークナイザ。
  *
- * 値フィールド: {$name(.group)?(?)?:body}
- *   body は「default(:型)?(:validationトークン)*」。default は : を含み得る。
- *   型トークン（rich/textarea/image）より後ろのセグメントは無視される（従来仕様）。
+ * 値フィールド: {$name(.group)?(?)?(:body)?}
+ *   body は「default(:型)?(:validationトークン)*」。default は : や . を含み得る。
+ *   body 省略（{$name}）と default 省略（{$name::rich} / {$name:rich}）は空のデフォルト値として扱う。
+ *   validation トークンは型トークンの前後どちらに書いてもよい。
  * 選択肢: ($name(.group)?(@)?:options)
  *   options は | 区切り（単一選択）または , 区切り（複数選択）。
  *
@@ -42,11 +43,12 @@ export function parseValidationFromTokens(tokens: string[]): FieldValidation {
   return parsed;
 }
 
+const isValidationToken = (t: string) =>
+  t === 'required' || t === 'readonly' || t === 'disabled' || /^max=\d+$/.test(t);
+
 export function splitDefaultAndValidation(raw: string) {
   const tokens = raw.split(':');
   const validationTokens: string[] = [];
-  const isValidationToken = (t: string) =>
-    t === 'required' || t === 'readonly' || t === 'disabled' || /^max=\d+$/.test(t);
 
   while (tokens.length > 0 && isValidationToken(tokens[tokens.length - 1])) {
     validationTokens.unshift(tokens.pop() as string);
@@ -124,7 +126,7 @@ export interface ChoiceFieldToken extends FieldTokenBase {
 
 export type FieldToken = ValueFieldToken | ChoiceFieldToken;
 
-const VALUE_FIELD_REGEX = /\{\$(\w+)(?:\.(\w+))?(\?)?:([^}]+)\}/g;
+const VALUE_FIELD_REGEX = /\{\$(\w+)(?:\.(\w+))?(\?)?(?::([^}]*))?\}/g;
 const CHOICE_FIELD_REGEX = /\(\$(\w+)(?:\.(\w+))?(@)?:([^)]+)\)/g;
 
 // 優先順位順（body に複数の型トークンがある場合、rich が最優先。従来の分岐順を踏襲）
@@ -138,13 +140,19 @@ function classifyBody(body: string): {
 } {
   const segments = body.split(':');
   for (const type of TYPE_TOKENS) {
-    for (let i = 1; i < segments.length; i++) {
+    for (let i = 0; i < segments.length; i++) {
       if (segments[i] !== type) continue;
       const head = segments.slice(0, i).join(':');
-      // 型トークンの前が空（例: {$f::rich}）の場合は型付きとみなさない（従来仕様）
-      if (head === '') continue;
       const { defaultValue, validation } = splitDefaultAndValidation(head);
-      return { fieldType: type, defaultValue, rawDefault: head, validation };
+      const trailingValidation = parseValidationFromTokens(
+        segments.slice(i + 1).filter(isValidationToken)
+      );
+      return {
+        fieldType: type,
+        defaultValue,
+        rawDefault: head,
+        validation: { ...validation, ...trailingValidation }
+      };
     }
   }
   const { defaultValue, validation } = splitDefaultAndValidation(body);
@@ -155,7 +163,7 @@ export function scanFieldTokens(text: string): FieldToken[] {
   const tokens: FieldToken[] = [];
 
   for (const match of text.matchAll(VALUE_FIELD_REGEX)) {
-    const body = match[4];
+    const body = match[4] ?? '';
     const { fieldType, defaultValue, rawDefault, validation } = classifyBody(body);
     tokens.push({
       kind: 'value',
