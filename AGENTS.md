@@ -689,6 +689,13 @@ interface ImageData {
 - `ImagesManagerPanel.vue` の画像編集モーダル（差し替え用）にも `useModalA11y` を適用
 - `sanitizePartTemplate` の `srcset` 属性の安全性を検証: DOMPurify（v3系）が `srcset` 内の危険なスキーム（`javascript:` 等）を検出すると属性ごと除去することを確認し、`sanitize.test.ts` に特性テストとして固定（実装変更なし。安全側であることが判明したため）
 
+32. ✅ **脆弱性診断の必須対応**（2026年9月）
+
+- DOMPurify 3.4.16 / Tiptap 3.31.3 / ws 8.21 へ更新（既知脆弱性の解消。monaco-editor 同梱の DOMPurify は Editor のコード編集専用のため対象外）
+- リッチテキストを編集モードでも無害化（改ざんデータによる Editor / Studio での XSS を防止）
+- URL 属性を全展開後の最終値で検査、`xlink:href` を対象に追加（トークン連結・`{key}` プレースホルダー経由の `javascript:` を防止）
+- 信頼境界を `TECHNICAL_SPECIFICATION.md` / `docs-backend.html` に明記。回帰テストは `template-processor.security.test.ts`
+
 ### 未実装（スコープ関連）
 
 - **専用パーツのページスコープ**: Phase 2 以降で検討（画像 Phase 1 完了後）
@@ -749,6 +756,9 @@ interface ImageData {
 - **処理順序を守る**: `z-if` → `z-tag` → `z-empty` → `z-for` → `z-slot`の順で処理
 - **特殊属性の削除**: 各処理内で個別に属性を削除（`z-if`、`z-empty`、`z-for`、`z-slot`は処理後に削除、`z-tag`は新しい要素にコピーしない）
 - **セキュリティ**: 有効なタグ名のみ許可（`z-tag`の場合）
+- **信頼境界**: パーツテンプレート・CSS・`backendData` は信頼する入力（無害化しない）、CMS のフィールド値は信頼しない入力（公開・編集・SSR すべてで無害化）。詳細は `TECHNICAL_SPECIFICATION.md` の「セキュリティモデル（信頼境界）」
+- **URL 属性**: トークン単位ではなく、`markTemplatedUrlAttributes` / `sanitizeMarkedUrlAttributes` で全展開後の最終値を検査する。URL 属性を追加する場合は `isUrlAttribute` に追加する
+- **DOMPurify のテスト**: happy-dom 上では DOMPurify 3.4 の無害化が機能しないため、無害化を検証するテストは `// @vitest-environment jsdom` を付ける
 - **オプショナルフィールド**: `undefined`のまま残す（初期化しない）
 
 ### コンポーネント初期化

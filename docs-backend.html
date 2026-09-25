@@ -778,6 +778,35 @@ cms.dispatchEvent(
           </p>
         </div>
 
+        <h3 id="security-model">セキュリティモデル（信頼境界）</h3>
+        <p>
+          ZeroCode.js は
+          <strong>HTML を生成できる入力は信頼できる人に限る</strong>ことを前提としています。
+        </p>
+        <ul>
+          <li>
+            <strong>信頼する入力</strong>（そのまま描画）:
+            パーツテンプレート（<code>part.body</code>）・パーツ用CSS・<code>backendData</code>・ホストからの
+            API
+            呼び出し。書き込めるのはエンジニア（Editor）・制作会社（Studio）・ホストのみにしてください
+          </li>
+          <li>
+            <strong>信頼しない入力</strong>（ライブラリが無害化）: CMS
+            で入力するフィールド値。リッチテキストは許可リストで無害化し、URL 属性（<code
+              >href</code
+            >
+            <code>xlink:href</code> <code>src</code> など）は展開後の最終値から
+            <code>javascript:</code> 等を除去します。公開表示・編集画面・SSR のすべてに適用されます
+          </li>
+          <li>
+            Studio
+            を外部の制作会社に開放するなど、パーツテンプレートを信頼できない主体に編集させる場合は、<code
+              >studio.sanitizePartTemplate: true</code
+            >
+            に加えて、サーバー側でも <code>sanitizePartTemplate</code> を再実行してください
+          </li>
+        </ul>
+
         <h3>必須実装事項</h3>
 
         <h4>1. サーバー側でのデータ検証（必須）</h4>
@@ -803,7 +832,8 @@ cms.dispatchEvent(
         <ul>
           <li>
             URL属性（<code>href</code>, <code>src</code>,
-            <code>action</code>）の検証を実装してください
+            <code>action</code
+            >）はライブラリ側でも検証されますが、サーバー側での追加検証を推奨します
           </li>
           <li>
             <code>style</code>属性にユーザー入力を直接設定する場合は、サーバー側での検証を推奨します

@@ -139,11 +139,46 @@ export interface ProcessTemplateOptions {
 function isUrlAttribute(attrName: string | null): boolean {
   return (
     attrName === 'href' ||
+    attrName === 'xlink:href' ||
     attrName === 'src' ||
     attrName === 'action' ||
     attrName === 'formaction' ||
     attrName === 'poster'
   );
+}
+
+const URL_CHECK_MARKER = 'data-zcode-url-check';
+const TEMPLATE_SYNTAX_IN_ATTR = /\{[$@\w]|\(\$/;
+
+/**
+ * トークン単位の URL 検査だけでは、href="{$a}{$b}" のように複数トークンを連結して
+ * javascript: を組み立てられる。展開前にテンプレート記法を含む URL 属性へ目印を付け、
+ * すべての展開後に最終値を検査する（作者が直接書いた固定値は検査対象外）。
+ */
+function markTemplatedUrlAttributes(content: DocumentFragment): void {
+  content.querySelectorAll('*').forEach((el) => {
+    const names = Array.from(el.attributes)
+      .filter(
+        (attr) =>
+          isUrlAttribute(attr.name.toLowerCase()) && TEMPLATE_SYNTAX_IN_ATTR.test(attr.value)
+      )
+      .map((attr) => attr.name);
+    if (names.length > 0) {
+      el.setAttribute(URL_CHECK_MARKER, names.join(' '));
+    }
+  });
+}
+
+function sanitizeMarkedUrlAttributes(content: DocumentFragment): void {
+  content.querySelectorAll(`[${URL_CHECK_MARKER}]`).forEach((el) => {
+    (el.getAttribute(URL_CHECK_MARKER) || '').split(' ').forEach((name) => {
+      const value = el.getAttribute(name);
+      if (value !== null) {
+        el.setAttribute(name, sanitizeUrlForAttr(value, name.toLowerCase()));
+      }
+    });
+    el.removeAttribute(URL_CHECK_MARKER);
+  });
 }
 
 function sanitizeUrlForAttr(url: string, attrName: string | null): string {
@@ -206,6 +241,8 @@ export function processTemplateWithDOM(
     return html;
   }
 
+  markTemplatedUrlAttributes(template.content);
+
   // 1. テキストノードの変数展開 {$variable:default}
   // ===== フィールド展開エンジン =====
   // scanFieldTokens が返すトークンを、コンテキスト（テキストノード / 属性）ごとの
@@ -260,9 +297,7 @@ export function processTemplateWithDOM(
           ? rawValue
           : String(rawValue || defaultValue);
 
-    if (!enableEditorAttributes) {
-      richTextValue = sanitizeRichText(richTextValue);
-    }
+    richTextValue = sanitizeRichText(richTextValue);
 
     if (!richTextValue) {
       // 従来仕様: optional は何も挿入せず、通常は空の <p></p> を挿入
@@ -765,6 +800,8 @@ export function processTemplateWithDOM(
   };
 
   processLoops();
+
+  sanitizeMarkedUrlAttributes(template.content);
 
   // 5. z-slot 処理
   const processSlots = (slotElements: Element[]) => {
