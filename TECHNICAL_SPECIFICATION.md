@@ -887,7 +887,7 @@ watch(enableContextMenu, (newValue) => {
 
 #### パッケージのエントリ
 
-- **Node / SSR（推奨）**: `zerocodejs/ssr` から `renderToHtml`、`renderCssToHtml`、`RenderError` を import する。Vue や Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）。テンプレート処理は **グローバルに `DOMParser` があればそれを利用**し、無い環境では [jsdom](https://github.com/jsdom/jsdom) を `require` する（`zerocodejs` の依存として同梱・インストールされる想定）。`DOMParser` が先に使える場合は `require("jsdom")` を行わない。
+- **Node / SSR（推奨）**: `zerocodejs/ssr` から `renderToHtml`、`renderCssToHtml`、`RenderError` を import する。Vue や Web Components を含まない軽量バンドル（`package.json` の `exports["./ssr"]`）。テンプレート処理は **グローバルに `DOMParser` があればそれを利用**し、無い環境では [jsdom](https://github.com/jsdom/jsdom) を `require` する（jsdom は任意の peer 依存。SSR で使う場合はホスト側で `npm install jsdom` する）。`DOMParser` が先に使える場合は `require("jsdom")` を行わない。
 - **フルエントリ**: `zerocodejs` 本体からも同じ関数が export されている（ブラウザ用ビルドにまとめて解決する場合や、既存コードとの互換用）。
 - **CMS 専用エントリ**: `zerocodejs/cms`（`package.json` の `exports["./cms"]`）。`<zcode-cms>` のみを登録する軽量エントリで、editor / studio・パーツ管理・画像管理・データビューアを含まない。サニタイズ関数・`renderToHtml` / `renderCssToHtml`・`ZeroCodePreview` は本体と同様に export される。リッチテキストエディタ（Tiptap）は初回利用時に遅延ロードされる（UMD ビルドでは従来どおりインライン）。
 

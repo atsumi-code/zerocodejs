@@ -6,6 +6,15 @@
 
 ## [未リリース]
 
+## [1.0.1-beta.23] - 2026-09-25
+
+### セキュリティ
+
+- **URL 属性をすべての展開後の最終値で検査**: `href="{$a}{$b}"` のような複数トークンの連結や、URL プレースホルダー `{key}` 経由で `javascript:` 等を組み立てられた問題を修正。`xlink:href` も検査対象に追加。危険な最終値は空文字になる（テンプレート作者が直接書いた固定値は従来どおり検査しない）
+- **編集モードでもリッチテキストを無害化**: 改ざんされたページデータを Editor / Studio で開いた際にスクリプトが実行されうる問題を修正。許可リスト外のタグ・属性は編集画面のプレビューでも表示されなくなる（公開表示と同じ結果。保存データは変更しない）
+- 依存パッケージを既知脆弱性の修正版へ更新: dompurify 3.4.16、@tiptap/\* 3.31.3、ws 8.21（jsdom 経由）、postcss / nanoid
+- セキュリティモデル（信頼境界）を技術仕様書と docs に明記
+
 ### 追加
 
 - **パーツマネージャーの `hiddenCategories` オプション**（`config.studio.hiddenCategories`）: 指定したカテゴリ（common/individual/special）をパーツマネージャーのタブ・一覧・追加/編集/削除/並べ替え操作から除外する。ホストアプリ側で特定カテゴリのパーツ定義をCMS外（コード管理等）で行いたい場合に使用（`usePartsManager`）
@@ -16,6 +25,15 @@
 
 - **ドキュメント・デモサイトを再構成**: docs を4ページ（はじめに / テンプレート記法 / 管理画面とAPI / バックエンド連携）に分割し横断検索と読者別ガイドを追加。index を日本語デフォルトに統一し、デモページに操作ガイドバナーと Studio / SSR / Light DOM への導線を設置
 - `PartsManagerPanel.vue` の独立モーダル4つ（拡大プレビュー / CSS警告 / カテゴリ情報 / テンプレート記法ヘルプ）を子コンポーネントに分割（1,538行 → 1,321行。挙動は不変）
+- **破壊的変更: jsdom を任意の peer 依存に変更**。SSR（`zerocodejs/ssr`）で使う場合は `npm install jsdom`（20 以上）が別途必要。ブラウザのみの利用では本番依存が 129 → 82 パッケージに減少
+- 不要な `@types/dompurify` を依存から削除（DOMPurify 3 は型定義を同梱）
+- README の「軽量」表記を計測値ベース（`zerocodejs/cms` 初期ロード 圧縮後約100KB）に修正
+- CI に本番依存の脆弱性監査（`npm audit --omit=dev --audit-level=high`）を追加
+
+### 修正
+
+- SSR で DOMPurify を jsdom の window から初期化する（Next.js 等の SSR 環境で無害化が初期化できない問題）
+- 日本語ロケールの未翻訳キー（`editor.saveFailed` 系・`partsManager.templateHelp` 系）を追加
 
 ## [1.0.1-beta.22] - 2026-07-06
 
@@ -97,7 +115,8 @@
 
 本ファイル導入前のため個別記録がありません。主な内容: 初回公開、i18n（日英 UI）、バリデーション記法、タグの動的変更（`z-tag`）、バックエンドデータ参照（`{@...}` / `z-for`）、選択肢記法の `ラベル=値` 対応、スマホ対応、パーツ管理のプレビュー連動・画像 ID 参照パネルなど。詳細は Git 履歴（`git log v1.0.1-beta.16` および各タグ）を参照してください。
 
-[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.22...HEAD
+[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.23...HEAD
+[1.0.1-beta.23]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.22...v1.0.1-beta.23
 [1.0.1-beta.22]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.21...v1.0.1-beta.22
 [1.0.1-beta.21]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.20...v1.0.1-beta.21
 [1.0.1-beta.20]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.19...v1.0.1-beta.20
