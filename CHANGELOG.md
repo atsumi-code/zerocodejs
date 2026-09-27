@@ -6,6 +6,12 @@
 
 ## [未リリース]
 
+### 修正
+
+- 追加パネルのタイプタブ・カテゴリタブと編集パネルのグループタブで、タブが多いときに文字がタブに収まらず切れることがあった問題を修正（ホスト CSS やブラウザの違いでボタンの最小幅が 0 になる環境で発生）。タブは縮めずに横スクロールで表示する
+
+## [1.0.1-beta.26] - 2026-09-26
+
 ### セキュリティ
 
 - **Monaco エディタを 0.57.0 に更新**: Editor / Studio のパーツ管理で CDN から読み込む Monaco が、`@monaco-editor/loader` の既定で 0.55.1（脆弱性のある DOMPurify 3.2.7 を同梱）に固定されていたため、npm の `monaco-editor` と同じ 0.57.0（DOMPurify 3.4.15）を読み込むよう明示。両者の版の一致はテストで検査する
@@ -164,7 +170,8 @@
 
 本ファイル導入前のため個別記録がありません。主な内容: 初回公開、i18n（日英 UI）、バリデーション記法、タグの動的変更（`z-tag`）、バックエンドデータ参照（`{@...}` / `z-for`）、選択肢記法の `ラベル=値` 対応、スマホ対応、パーツ管理のプレビュー連動・画像 ID 参照パネルなど。詳細は Git 履歴（`git log v1.0.1-beta.16` および各タグ）を参照してください。
 
-[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.25...HEAD
+[未リリース]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.26...HEAD
+[1.0.1-beta.26]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.25...v1.0.1-beta.26
 [1.0.1-beta.25]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.24...v1.0.1-beta.25
 [1.0.1-beta.24]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.21...v1.0.1-beta.24
 [1.0.1-beta.23]: https://github.com/atsumi-code/zerocodejs/compare/v1.0.1-beta.22...v1.0.1-beta.23

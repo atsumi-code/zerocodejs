@@ -1903,6 +1903,8 @@
 }
 
 .zcode-group-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 6px 12px;
   font-size: 13px;
   font-weight: 500;
@@ -2206,6 +2208,8 @@
 }
 
 .zcode-category-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 6px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -2243,6 +2247,7 @@
 }
 
 .zcode-type-tab {
+  flex-shrink: 0;
   padding: 6px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
