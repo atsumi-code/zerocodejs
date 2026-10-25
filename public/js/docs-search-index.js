@@ -615,6 +615,24 @@ window.__DOCS_SEARCH_INDEX__ = [
   },
   {
     page: 'docs-backend.html',
+    id: 'without-node',
+    text: 'Node がないサーバーで使う',
+    parent: ''
+  },
+  {
+    page: 'docs-backend.html',
+    id: 'without-node-save',
+    text: '保存のときに HTML も作る',
+    parent: 'Node がないサーバーで使う'
+  },
+  {
+    page: 'docs-backend.html',
+    id: 'without-node-notes',
+    text: 'この方法の注意点',
+    parent: 'Node がないサーバーで使う'
+  },
+  {
+    page: 'docs-backend.html',
     id: 'security',
     text: 'セキュリティ',
     parent: ''

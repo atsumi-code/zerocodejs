@@ -155,6 +155,7 @@
               <a href="#save-request-image-upload" class="docs-nav-link-sub">画像のアップロード</a>
               <a href="#save-request-validation" class="docs-nav-link-sub">バリデーションエラー</a>
             </div>
+            <a href="#without-node" class="docs-nav-link">Node がないサーバーで使う</a>
             <a href="#security" class="docs-nav-link">セキュリティ</a>
           </div>
         </div>
@@ -841,6 +842,98 @@ cms.dispatchEvent(
             >は<code>save-request</code>イベントの<code>requestId</code>と同じ値を使用してください。これにより、複数の保存リクエストが同時に発火した場合でも、正しいレスポンスとリクエストを関連付けることができます。
           </p>
         </div>
+
+        <h2 id="without-node">Node がないサーバーで使う</h2>
+        <p>
+          管理画面（<code>zcode-cms</code> など）と保存は、サーバーの言語を問いません。Node
+          が必要になるのは、公開ページの HTML をサーバーで作るとき（<code>zerocodejs/ssr</code> の
+          <code>renderToHtml</code>）だけです。PHP などのサーバーでは、<strong
+            >保存のときにブラウザで HTML も作って一緒に送れば</strong
+          >、公開ページはその HTML を出すだけで済みます。
+        </p>
+
+        <h3 id="without-node-save">保存のときに HTML も作る</h3>
+        <p>
+          <code>renderToHtml</code> と <code>renderCssToHtml</code> はブラウザでも動きます（CDN の
+          UMD 版では <code>ZeroCode.renderToHtml</code>、npm では
+          <code>import { renderToHtml, renderCssToHtml } from 'zerocodejs'</code>）。
+        </p>
+        <pre><code>const cms = document.getElementById('cms');
+
+cms.addEventListener('save-request', async (event) =&gt; {
+  const { requestId, targets } = event.detail;
+  const data = cms.getData();
+
+  const res = await fetch('/save.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      page: data.page, // 次に編集するときのデータ
+      html: ZeroCode.renderToHtml(data), // 公開ページの本文
+      css: ZeroCode.renderCssToHtml(data.css) // パーツの CSS（&lt;style&gt; タグ）
+    })
+  });
+
+  for (const target of targets) {
+    cms.dispatchEvent(
+      new CustomEvent('save-result', {
+        detail: { requestId, target, ok: res.ok, errors: [] }
+      })
+    );
+  }
+});</code></pre>
+        <p>受け取る側（PHP の例。ファイルに保存していますが、データベースでも同じです）:</p>
+        <pre><code>&lt;?php
+// save.php: 管理画面にログインしている人だけが呼べるようにする（ここでは省略）
+$body = json_decode(file_get_contents('php://input'), true);
+if (!is_array($body) || !is_array($body['page'] ?? null) || !is_string($body['html'] ?? null)) {
+  http_response_code(400);
+  exit;
+}
+
+$dir = __DIR__ . '/data';
+file_put_contents("$dir/page.json", json_encode($body['page'], JSON_UNESCAPED_UNICODE));
+file_put_contents("$dir/page.html", $body['html']);
+file_put_contents("$dir/page.css.html", $body['css'] ?? '');</code></pre>
+        <p>公開ページは、保存した HTML をそのまま出します:</p>
+        <pre><code>&lt;head&gt;
+  &lt;?= file_get_contents(__DIR__ . '/data/page.css.html') ?&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;&lt;?= file_get_contents(__DIR__ . '/data/page.html') ?&gt;&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+        <p>
+          管理画面には、保存した <code>page.json</code> を <code>page</code> 属性で渡します（<code
+            >htmlspecialchars</code
+          >
+          で属性の値としてエスケープする）。
+        </p>
+
+        <h3 id="without-node-notes">この方法の注意点</h3>
+        <ul>
+          <li>
+            <strong>HTML はブラウザから届きます。</strong>
+            管理画面にログインできる人が API を直接呼べば、どんな HTML
+            でも保存できます。ログインできる人を信頼できる場合に使ってください。そうでない場合は、サーバー側で
+            HTML を無害化するか、Node で描画し直してください（<a href="#security-model"
+              >セキュリティモデル</a
+            >）
+          </li>
+          <li>
+            <strong>パーツや CSS を直しても、公開ページの HTML は変わりません。</strong>
+            HTML
+            は各ページを保存したときに作られるため、パーツ管理でパーツを直したら、そのパーツを使うページを開いて保存し直してください
+          </li>
+          <li>
+            <strong
+              ><code>backendData</code
+              >（<code>{@...}</code>・<code>z-for</code>）の値は、保存したときの値で固まります。</strong
+            >
+            在庫や価格のように表示のたびに変わる値を出すなら、公開ページのブラウザで最新の
+            <code>backendData</code> を渡して <code>renderToHtml</code> で描き直すか、Node
+            で表示のたびに作ってください
+          </li>
+        </ul>
 
         <h2 id="security">セキュリティ</h2>
         <div class="docs-warning">
