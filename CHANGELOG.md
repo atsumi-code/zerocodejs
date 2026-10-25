@@ -14,6 +14,7 @@
 
 ### 変更
 
+- ドキュメントに「Node がないサーバーで使う」（`docs-backend.html`）を追加。保存のときにブラウザで `renderToHtml` を呼んで HTML も送り、公開ページは保存した HTML を出すだけにする方法と、PHP の例・注意点（届く HTML の信頼、パーツを直したときの保存し直し、`backendData` の値が保存時に固まること）
 - **`config.studio` を廃止**（破壊的変更）: Editor でも効いていたパーツ管理の設定を `config.parts` に移した（`studio.fileManagedCategories` → `parts.fileManagedCategories`、`studio.sanitizePartTemplate` → `parts.sanitizeTemplate`）。保存の確認は Editor と同じ `dev.showSaveConfirm` を使う（Studio でも設定パネルで変えた値が localStorage に残る）。`config.studio` を指定すると警告を出す
 - **`dev.showDataViewer` を削除**（破壊的変更）: 設定しても画面に影響しなかった（データビューアのタブは常に表示）
 - 内部の整理: `zcode-cms` / `zcode-editor` / `zcode-studio` の共通処理を基底クラス（`src/web-components/zerocode-element.ts`）に、`ZeroCodeEditor` と `ZeroCodeStudio` の画面を `ZeroCodeWorkspace.vue` にまとめた（コンポーネントの行数は約半分）。保存の流れ・保存結果の表示・CMS の設定・パーツ編集の CSS の下書きを composable に分けた。lint の警告を0件にした

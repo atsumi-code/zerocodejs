@@ -146,6 +146,8 @@ import { renderToHtml, renderCssToHtml } from 'zerocodejs/ssr';
 
 The main **`zerocodejs`** entry also exports these functions if you prefer one resolution from the full library.
 
+**Without Node.js** (PHP, Rails, etc.): the admin UI and saving work with any server. Call `renderToHtml` / `renderCssToHtml` in the browser inside your `save-request` handler and send the HTML together with the page data, then output the stored HTML on the public page. Values from `backendData` are fixed at save time with this approach. See [docs: Node がないサーバーで使う](./docs-backend.html#without-node).
+
 ## Managing parts as files
 
 Write parts as HTML files in your product's repository (one file per part, with a `<!--zerocode { "id": ... } -->` header) and bundle them with the CLI (Node 20+, no dependencies):

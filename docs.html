@@ -157,6 +157,9 @@
                 >バリデーションエラー</a
               >
             </div>
+            <a href="docs-backend.html#without-node" class="docs-nav-link"
+              >Node がないサーバーで使う</a
+            >
             <a href="docs-backend.html#security" class="docs-nav-link">セキュリティ</a>
           </div>
         </div>
@@ -574,8 +577,10 @@
               <td>
                 Node のサーバーなら <code>zerocodejs/ssr</code> の
                 <code>renderToHtml</code> で作り、既存のテンプレートの中に入れる。Node
-                がないサーバー（PHP など）では、HTML を作る小さな Node
-                のサーバーを別に置くか、ブラウザで表示する
+                がないサーバー（PHP など）では、保存のときにブラウザで HTML も作って送る（<a
+                  href="docs-backend.html#without-node"
+                  >Node がないサーバーで使う</a
+                >）
               </td>
             </tr>
             <tr>
