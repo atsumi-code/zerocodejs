@@ -8,6 +8,7 @@
 
 ### セキュリティ
 
+- `examples/corporate` の PHP を 8.2 から 8.4 に上げた（PHP の重大な脆弱性 CVE-2026-109618 / CVE-2026-109619 の修正版を取り込み、2026年末にサポートが終わる 8.2 から移るため）。README にイメージを作り直す手順（`docker compose build --pull app`）を追加
 - **DOMPurify を 3.4.17 に更新**（GHSA-cg2g-xh64-v4q7 ほか。いずれも `IN_PLACE` / `SAFE_FOR_TEMPLATES` / `PARSER_MEDIA_TYPE` を使う場合に成立し、ZeroCode の使い方では該当しないが、既知の脆弱性を含む版を使わないため更新）
 - 開発用の Vue を 3.5.44 に更新（`@vue/server-renderer` の GHSA-g2v6-rqmx-r4w6）、`source-map-js` を 1.2.2 に更新
 - Monaco 0.57.0 に同梱の DOMPurify 3.4.15 の脆弱性（上記と同種の5件）は、修正版の Monaco がまだないため、Monaco の使い方では成立しないことを確認したうえで CI の監査（`scripts/audit-monaco.mjs`）で Monaco 0.57.0 に限って例外にした。Monaco を更新すると例外は無効になる（その後 Monaco 自体を削除したため、この例外と監査スクリプトもなくなった）
