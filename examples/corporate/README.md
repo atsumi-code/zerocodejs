@@ -16,8 +16,9 @@ ZeroCode.js でコーポレートサイトを編集・公開する事例です�
 Docker・Composer・Laravel の環境構築は [SETUP.md](./SETUP.md) を参照してください。
 
 - **Docker** と **Docker Compose** のインストール
-- **Laravel プロジェクト**を `src/` に作成（`docker compose run --rm app composer create-project laravel/laravel . --no-interaction`）
-- **Laravel の .env** を `src/.env` に用意し、DB 設定（DB_HOST=mysql など）を記述
+- **Laravel が使うライブラリ**を入れる: `docker compose run --rm app composer install`
+- **Laravel の .env** を用意: `cp src/.env.example src/.env` と `docker compose run --rm app php artisan key:generate`（DB の設定は Docker の MySQL に合わせてある）
+- **テーブルと初期データ**: `docker compose up -d` のあと `docker compose run --rm app php artisan migrate --force` と `docker compose run --rm app php artisan db:seed --force`
 
 ## 起動方法
 
