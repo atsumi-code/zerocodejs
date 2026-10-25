@@ -64,52 +64,40 @@ cp .env.example .env
 # 必要なら .env の APP_PORT, DB_PORT, DB_PASSWORD などを編集
 ```
 
-| 変数 | 既定値 | 説明 |
-|------|--------|------|
-| APP_PORT | 8080 | ブラウザでアクセスするポート（http://localhost:8080） |
-| DB_PORT | 33060 | ホストから MySQL に接続する場合のポート |
-| PMA_PORT | 8081 | phpMyAdmin のポート（http://localhost:8081） |
-| DB_DATABASE | zerocode_corporate | DB 名 |
-| DB_USERNAME | zerocode | DB ユーザー |
-| DB_PASSWORD | secret | DB パスワード |
+| 変数        | 既定値             | 説明                                                  |
+| ----------- | ------------------ | ----------------------------------------------------- |
+| APP_PORT    | 8080               | ブラウザでアクセスするポート（http://localhost:8080） |
+| DB_PORT     | 33060              | ホストから MySQL に接続する場合のポート               |
+| PMA_PORT    | 8081               | phpMyAdmin のポート（http://localhost:8081）          |
+| DB_DATABASE | zerocode_corporate | DB 名                                                 |
+| DB_USERNAME | zerocode           | DB ユーザー                                           |
+| DB_PASSWORD | secret             | DB パスワード                                         |
 
 ---
 
-## 3. Laravel プロジェクトの作成（src/）
+## 3. Laravel が使うライブラリを入れる（src/vendor/）
 
-Laravel を `src/` に作成します。**初回のみ**実行します。
-
-### 方法 A: Docker 内で Composer を実行（推奨）
-
-`docker-compose.yml` では `./src` がコンテナの `/var/www/html` にマウントされています。**ホストの `src/` が空**（または .gitkeep のみ）の状態で実行します。
+`src/` にはコーポレート事例の Laravel のコードが入っています。Laravel が使うライブラリ（`src/vendor/`）は Git に含めていないため、**初回のみ** `composer install` で入れます。
 
 ```bash
 cd examples/corporate
-# src/ が無い場合は mkdir -p src
-docker compose run --rm app composer create-project laravel/laravel . --no-interaction
+docker compose run --rm app composer install
 ```
 
-- コンテナ内のカレントディレクトリは `/var/www/html`（= ホストの `src/`）なので、このコマンドで `src/` に Laravel 一式が作成されます。
-- 既に `src/` にファイルがある場合は、別の場所に退避するか、方法 B でホストから `src` を指定して作成してください。
-
-### 方法 B: ホストに Composer がある場合
-
-```bash
-cd examples/corporate
-composer create-project laravel/laravel src --no-interaction
-```
+- これをしないと、ブラウザで開いたときに `vendor/autoload.php` が見つからないというエラーになります。
+- ホストに Composer がある場合は、`cd src && composer install` でも同じです。
 
 ---
 
 ## 4. Laravel の .env を用意
 
 ```bash
-cd examples/corporate/src
-cp .env.example .env
-php artisan key:generate
+cd examples/corporate
+cp src/.env.example src/.env
+docker compose run --rm app php artisan key:generate
 ```
 
-`.env` の DB 設定を、Docker の MySQL に合わせます。
+`src/.env.example` は、Docker の MySQL につなぐ設定になっています。
 
 ```env
 DB_CONNECTION=mysql
@@ -120,8 +108,8 @@ DB_USERNAME=zerocode
 DB_PASSWORD=secret
 ```
 
-- `DB_HOST=mysql` は docker-compose のサービス名です。  
-- パスワードなどは、`examples/corporate/.env`（docker-compose 用）と揃えてください。
+- `DB_HOST=mysql` は docker-compose のサービス名です。
+- パスワードなどを変えた場合は、`examples/corporate/.env`（docker-compose 用）とそろえてください。
 
 ---
 
@@ -163,13 +151,13 @@ npm run build
 
 ## まとめ
 
-| 順番 | 作業 |
-|------|------|
-| 1 | **Docker がまだなら** 上記「1. Docker / Docker Compose のインストール」でインストールし、`docker --version` と `docker compose version` で確認 |
-| 2 | `examples/corporate/.env` を用意（任意。`cp .env.example .env`） |
-| 3 | `docker compose run --rm app composer create-project laravel/laravel . --no-interaction` で `src/` に Laravel 作成 |
-| 4 | `src/.env` を用意し、`APP_KEY` と DB 設定を編集 |
-| 5 | `docker compose up -d` で起動 |
-| 6 | `docker compose run --rm app php artisan migrate --force` と `php artisan db:seed --force` でコーポレート用テーブル・初期データ（固定ページ・新着サンプル 5 件含む）投入 |
-| 7 | 管理・公開で ZeroCode を使う場合は、**リポジトリルート**で `npm run build` を実行 |
-| 8 | 動作確認は [README.md](./README.md) の「動作確認」を参照 |
+| 順番 | 作業                                                                                                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | **Docker がまだなら** 上記「1. Docker / Docker Compose のインストール」でインストールし、`docker --version` と `docker compose version` で確認                           |
+| 2    | `examples/corporate/.env` を用意（任意。`cp .env.example .env`）                                                                                                         |
+| 3    | `docker compose run --rm app composer install` で Laravel が使うライブラリ（`src/vendor/`）を入れる                                                                      |
+| 4    | `cp src/.env.example src/.env` と `docker compose run --rm app php artisan key:generate` で `src/.env` を用意                                                            |
+| 5    | `docker compose up -d` で起動                                                                                                                                            |
+| 6    | `docker compose run --rm app php artisan migrate --force` と `php artisan db:seed --force` でコーポレート用テーブル・初期データ（固定ページ・新着サンプル 5 件含む）投入 |
+| 7    | 管理・公開で ZeroCode を使う場合は、**リポジトリルート**で `npm run build` を実行                                                                                        |
+| 8    | 動作確認は [README.md](./README.md) の「動作確認」を参照                                                                                                                 |
